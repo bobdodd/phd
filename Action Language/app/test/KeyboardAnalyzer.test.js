@@ -941,13 +941,35 @@ test('no conflicts for non-quick-nav letters', () => {
   const code = `
     element.addEventListener("keydown", (e) => {
       if (e.key === "j") moveDown();
+    });
+  `;
+  const results = analyzeCode(code);
+  // j is not a standard screen reader quick nav key
+  assertFalse(results.hasScreenReaderConflicts());
+});
+
+test('detects JAWS paragraph key (p) conflict', () => {
+  const code = `
+    element.addEventListener("keydown", (e) => {
       if (e.key === "p") pause();
     });
   `;
   const results = analyzeCode(code);
-  // j and p are not standard screen reader quick nav keys
-  // Note: This depends on what keys are in screenReaderQuickNavKeys
-  // If they're not there, should not conflict
+  assertTrue(results.hasScreenReaderConflicts());
+  const conflict = results.screenReaderConflicts.find(c => c.key === 'p');
+  assertTrue(conflict.screenReaderFunction.includes('paragraph'));
+});
+
+test('detects JAWS clickable key (y) conflict', () => {
+  const code = `
+    element.addEventListener("keydown", (e) => {
+      if (e.key === "y") confirmYes();
+    });
+  `;
+  const results = analyzeCode(code);
+  assertTrue(results.hasScreenReaderConflicts());
+  const conflict = results.screenReaderConflicts.find(c => c.key === 'y');
+  assertTrue(conflict.screenReaderFunction.includes('clickable'));
 });
 
 test('can disable screen reader conflict detection', () => {

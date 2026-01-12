@@ -72,8 +72,17 @@ class KeyboardAnalyzer {
     ]);
 
     // Screen reader quick navigation keys (used in browse/virtual cursor mode)
-    // These single-letter keys are used by NVDA, JAWS, VoiceOver for quick navigation
+    // These single-letter keys are used in browse mode by:
+    // - NVDA (Windows): Most comprehensive single-letter navigation
+    // - JAWS (Windows): Similar to NVDA with some unique keys
+    // - VoiceOver (macOS): Quick Nav mode (VO+Q to toggle)
+    // - TalkBack (Android): Uses Alt+key combinations when keyboard connected
+    //   (TalkBack Alt shortcuts are less likely to conflict with web apps)
+    //
+    // Key: [letter, 'element type navigated to']
+    // Shift+letter navigates to previous element of that type
     this.screenReaderQuickNavKeys = new Map([
+      // === Headings (NVDA, JAWS, VoiceOver) ===
       ['h', 'heading'],
       ['H', 'heading (previous)'],
       ['1', 'heading level 1'],
@@ -82,22 +91,50 @@ class KeyboardAnalyzer {
       ['4', 'heading level 4'],
       ['5', 'heading level 5'],
       ['6', 'heading level 6'],
+
+      // === Interactive elements (NVDA, JAWS, VoiceOver) ===
       ['b', 'button'],
       ['B', 'button (previous)'],
-      ['d', 'landmark'],
-      ['D', 'landmark (previous)'],
-      ['e', 'edit field'],
-      ['E', 'edit field (previous)'],
+      ['k', 'link'],               // NVDA, VoiceOver
+      ['K', 'link (previous)'],
+      ['u', 'unvisited link'],     // NVDA, JAWS
+      ['U', 'unvisited link (previous)'],
+      ['v', 'visited link'],       // NVDA, JAWS
+      ['V', 'visited link (previous)'],
+      ['a', 'anchor/link'],        // JAWS
+      ['A', 'anchor/link (previous)'],
+      ['y', 'clickable element'],  // JAWS
+      ['Y', 'clickable element (previous)'],
+
+      // === Form controls (NVDA, JAWS, VoiceOver) ===
       ['f', 'form field'],
       ['F', 'form field (previous)'],
-      ['g', 'graphic/image'],
-      ['G', 'graphic/image (previous)'],
-      ['i', 'list item'],
-      ['I', 'list item (previous)'],
-      ['k', 'link'],
-      ['K', 'link (previous)'],
+      ['e', 'edit field'],
+      ['E', 'edit field (previous)'],
+      ['x', 'checkbox'],
+      ['X', 'checkbox (previous)'],
+      ['r', 'radio button'],
+      ['R', 'radio button (previous)'],
+      ['c', 'combobox'],
+      ['C', 'combobox (previous)'],
+
+      // === Structural elements (NVDA, JAWS) ===
+      ['d', 'landmark'],
+      ['D', 'landmark (previous)'],
+      ['z', 'landmark'],           // Alternative landmark key
+      ['Z', 'landmark (previous)'],
+      ['t', 'table'],
+      ['T', 'table (previous)'],
       ['l', 'list'],
       ['L', 'list (previous)'],
+      ['i', 'list item'],
+      ['I', 'list item (previous)'],
+      ['p', 'paragraph'],          // JAWS
+      ['P', 'paragraph (previous)'],
+
+      // === Other elements (NVDA, JAWS) ===
+      ['g', 'graphic/image'],
+      ['G', 'graphic/image (previous)'],
       ['m', 'frame'],
       ['M', 'frame (previous)'],
       ['n', 'non-link text'],
@@ -106,29 +143,17 @@ class KeyboardAnalyzer {
       ['O', 'embedded object (previous)'],
       ['q', 'blockquote'],
       ['Q', 'blockquote (previous)'],
-      ['r', 'radio button'],
-      ['R', 'radio button (previous)'],
       ['s', 'separator'],
       ['S', 'separator (previous)'],
-      ['t', 'table'],
-      ['T', 'table (previous)'],
-      ['u', 'unvisited link'],
-      ['U', 'unvisited link (previous)'],
-      ['v', 'visited link'],
-      ['V', 'visited link (previous)'],
-      ['x', 'checkbox'],
-      ['X', 'checkbox (previous)'],
-      ['c', 'combobox'],
-      ['C', 'combobox (previous)'],
-      ['a', 'anchor/link'],
-      ['A', 'anchor/link (previous)'],
-      ['w', 'ARIA widget'],
-      ['W', 'ARIA widget (previous)'],
-      ['z', 'landmark'],
-      ['Z', 'landmark (previous)']
+      ['w', 'ARIA widget'],        // NVDA
+      ['W', 'ARIA widget (previous)']
     ]);
 
-    // Arrow keys are used for reading in browse mode
+    // Arrow keys are used for reading in browse mode (all screen readers)
+    // Custom arrow key handling may interfere with:
+    // - NVDA/JAWS: Virtual cursor navigation
+    // - VoiceOver: Quick Nav arrow navigation
+    // - TalkBack: Explore by touch linear navigation
     this.screenReaderReadingKeys = new Set([
       'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
       'Up', 'Down', 'Left', 'Right'
