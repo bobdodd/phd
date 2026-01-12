@@ -1,0 +1,122 @@
+{
+  "name": "actionlanguage-a11y",
+  "displayName": "ActionLanguage Accessibility Analyzer",
+  "description": "Real-time accessibility analysis for JavaScript code",
+  "version": "1.0.0",
+  "publisher": "actionlanguage",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Linters",
+    "Other"
+  ],
+  "keywords": [
+    "accessibility",
+    "a11y",
+    "wcag",
+    "aria",
+    "javascript"
+  ],
+  "activationEvents": [
+    "onLanguage:javascript",
+    "onLanguage:javascriptreact"
+  ],
+  "main": "./src/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "actionlanguage-a11y.analyzeFile",
+        "title": "Analyze Accessibility",
+        "category": "ActionLanguage"
+      },
+      {
+        "command": "actionlanguage-a11y.analyzeWorkspace",
+        "title": "Analyze Workspace Accessibility",
+        "category": "ActionLanguage"
+      },
+      {
+        "command": "actionlanguage-a11y.showReport",
+        "title": "Show Accessibility Report",
+        "category": "ActionLanguage"
+      }
+    ],
+    "configuration": {
+      "title": "ActionLanguage Accessibility",
+      "properties": {
+        "actionlanguage-a11y.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable accessibility analysis"
+        },
+        "actionlanguage-a11y.analyzeOnSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run analysis when file is saved"
+        },
+        "actionlanguage-a11y.analyzeOnType": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run analysis as you type (may impact performance)"
+        },
+        "actionlanguage-a11y.analyzeOnTypeDelay": {
+          "type": "number",
+          "default": 1000,
+          "description": "Delay in milliseconds before analyzing after typing stops"
+        },
+        "actionlanguage-a11y.minSeverity": {
+          "type": "string",
+          "enum": ["error", "warning", "info"],
+          "default": "info",
+          "description": "Minimum severity level to report"
+        },
+        "actionlanguage-a11y.showInlineHints": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show inline hints for accessibility issues"
+        },
+        "actionlanguage-a11y.excludePatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": ["**/node_modules/**", "**/dist/**", "**/build/**"],
+          "description": "Glob patterns for files to exclude from analysis"
+        }
+      }
+    },
+    "menus": {
+      "editor/context": [
+        {
+          "command": "actionlanguage-a11y.analyzeFile",
+          "when": "editorLangId == javascript || editorLangId == javascriptreact",
+          "group": "actionlanguage"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "actionlanguage-a11y.analyzeFile",
+          "when": "resourceLangId == javascript || resourceLangId == javascriptreact",
+          "group": "actionlanguage"
+        }
+      ]
+    },
+    "languages": [
+      {
+        "id": "javascript",
+        "extensions": [".js", ".jsx", ".mjs"]
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "echo 'No compilation needed'",
+    "watch": "echo 'No watch needed'",
+    "test": "node test/extension.test.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "vscode-test": "^1.6.1"
+  },
+  "dependencies": {}
+}
