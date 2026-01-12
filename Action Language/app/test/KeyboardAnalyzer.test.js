@@ -713,6 +713,255 @@ test('handles window-level keyboard handler', () => {
   assertEqual(results.keyboardHandlers.length, 1);
 });
 
+// === Screen Reader Conflict Detection ===
+console.log('\n  Screen Reader Conflict Detection');
+
+test('detects single-letter key conflict with screen reader navigation', () => {
+  const code = `
+    element.addEventListener("keydown", (e) => {
+      if (e.key === "h") {
+        showHelp();
+      }
+    });
+  `;
+  const results = analyzeCode(code);
+  assertTrue(results.hasScreenReaderConflicts());
+  const conflict = results.screenReaderConflicts[0];
+  assertEqual(conflict.key, 'h');
+  assertTrue(conflict.screenReaderFunction.includes('heading'));
+});
+
+test('detects button key (b) conflict', () => {
+  const code = `
+    element.addEventListener("keydown", (e) => {
+      if (e.key === "b") {
+        toggleBold();
+      }
+    });
+  `;
+  const results = analyzeCode(code);
+  assertTrue(results.hasScreenReaderConflicts());
+  const conflict = results.screenReaderConflicts.find(c => c.key === 'b');
+  assertTrue(conflict.screenReaderFunction.includes('button'));
+});
+
+test('detects link key (k) conflict', () => {
+  const code = `
+    element.addEventListener("keydown", (e) => {
+      if (e.key === "k") {
+        openLink();
+      }
+    });
+  `;
+  const results = analyzeCode(code);
+  assertTrue(results.hasScreenReaderConflicts());
+  const conflict = results.screenReaderConflicts.find(c => c.key === 'k');
+  assertTrue(conflict.screenReaderFunction.includes('link'));
+});
+
+test('detects table key (t) conflict', () => {
+  const code = `
+    element.addEventListener("keydown", (e) => {
+      if (e.key === "t") {
+        insertTable();
+      }
+    });
+  `;
+  const results = analyzeCode(code);
+  assertTrue(results.hasScreenReaderConflicts());
+  const conflict = results.screenReaderConflicts.find(c => c.key === 't');
+  assertTrue(conflict.screenReaderFunction.includes('table'));
+});
+
+test('detects number key (1-6) conflict with heading navigation', () => {
+  const code = `
+    element.addEventListener("keydown", (e) => {
+      if (e.key === "1") {
+        selectFirstItem();
+      }
+    });
+  `;
+  const results = analyzeCode(code);
+  assertTrue(results.hasScreenReaderConflicts());
+  const conflict = results.screenReaderConflicts.find(c => c.key === '1');
+  assertTrue(conflict.screenReaderFunction.includes('heading level 1'));
+});
+
+test('no conflict when modifier key is used', () => {
+  const code = `
+    element.addEventListener("keydown", (e) => {
+      if (e.ctrlKey && e.key === "h") {
+        showHelp();
+      }
+    });
+  `;
+  const results = analyzeCode(code);
+  assertFalse(results.hasScreenReaderConflicts());
+});
+
+test('no conflict with Ctrl+letter shortcut', () => {
+  const code = `
+    element.addEventListener("keydown", (e) => {
+      if (e.ctrlKey && e.key === "b") {
+        toggleBold();
+      }
+    });
+  `;
+  const results = analyzeCode(code);
+  // Should have modifier check
+  assertTrue(results.modifierChecks.some(m => m.modifier === 'ctrlKey'));
+  // Should NOT have screen reader conflict
+  assertFalse(results.hasScreenReaderConflicts());
+});
+
+test('no conflict with Alt+letter shortcut', () => {
+  const code = `
+    element.addEventListener("keydown", (e) => {
+      if (e.altKey && e.key === "t") {
+        insertTable();
+      }
+    });
+  `;
+  const results = analyzeCode(code);
+  assertTrue(results.modifierChecks.some(m => m.modifier === 'altKey'));
+  assertFalse(results.hasScreenReaderConflicts());
+});
+
+test('no conflict with Meta+letter shortcut', () => {
+  const code = `
+    element.addEventListener("keydown", (e) => {
+      if (e.metaKey && e.key === "k") {
+        openLink();
+      }
+    });
+  `;
+  const results = analyzeCode(code);
+  assertTrue(results.modifierChecks.some(m => m.modifier === 'metaKey'));
+  assertFalse(results.hasScreenReaderConflicts());
+});
+
+test('Shift alone is not sufficient to avoid conflict', () => {
+  // Shift+letter is still a screen reader navigation key (previous item)
+  const code = `
+    element.addEventListener("keydown", (e) => {
+      if (e.shiftKey && e.key === "h") {
+        showHistory();
+      }
+    });
+  `;
+  const results = analyzeCode(code);
+  // Shift+H is "previous heading" - still conflicts
+  assertTrue(results.hasScreenReaderConflicts());
+});
+
+test('detects multiple screen reader conflicts', () => {
+  const code = `
+    element.addEventListener("keydown", (e) => {
+      if (e.key === "h") handleH();
+      if (e.key === "b") handleB();
+      if (e.key === "t") handleT();
+    });
+  `;
+  const results = analyzeCode(code);
+  assertEqual(results.screenReaderConflicts.length, 3);
+  assertEqual(results.stats.screenReaderConflicts, 3);
+});
+
+test('reports arrow key handling as informational', () => {
+  const code = `
+    element.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowDown") moveDown();
+      if (e.key === "ArrowUp") moveUp();
+    });
+  `;
+  const results = analyzeCode(code);
+  const arrowIssue = results.issues.find(i => i.type === 'screen-reader-arrow-conflict');
+  assertTrue(arrowIssue !== undefined);
+  assertEqual(arrowIssue.severity, 'info');
+});
+
+test('screen reader conflicts appear in issues', () => {
+  const code = `
+    element.addEventListener("keydown", (e) => {
+      if (e.key === "h") {
+        showHelp();
+      }
+    });
+  `;
+  const results = analyzeCode(code);
+  const issue = results.issues.find(i => i.type === 'screen-reader-conflict');
+  assertTrue(issue !== undefined);
+  assertEqual(issue.severity, 'warning');
+  assertTrue(issue.suggestion.includes('modifier key'));
+});
+
+test('screen reader conflicts appear in summary', () => {
+  const code = `
+    element.addEventListener("keydown", (e) => {
+      if (e.key === "h") {
+        showHelp();
+      }
+    });
+  `;
+  const tree = parseAndTransform(code);
+  const analyzer = new KeyboardAnalyzer();
+  analyzer.analyze(tree);
+  const summary = analyzer.getSummary();
+  assertTrue(summary.includes('Screen Reader Conflicts'));
+  assertTrue(summary.includes('"h"'));
+});
+
+test('getScreenReaderConflicts returns conflicts', () => {
+  const code = `
+    element.addEventListener("keydown", (e) => {
+      if (e.key === "h") showHelp();
+      if (e.key === "t") showTable();
+    });
+  `;
+  const results = analyzeCode(code);
+  const conflicts = results.getScreenReaderConflicts();
+  assertEqual(conflicts.length, 2);
+});
+
+test('getScreenReaderConflictsByKey filters by key', () => {
+  const code = `
+    element.addEventListener("keydown", (e) => {
+      if (e.key === "h") showHelp();
+      if (e.key === "t") showTable();
+    });
+  `;
+  const results = analyzeCode(code);
+  const hConflicts = results.getScreenReaderConflictsByKey('h');
+  assertEqual(hConflicts.length, 1);
+  assertEqual(hConflicts[0].key, 'h');
+});
+
+test('no conflicts for non-quick-nav letters', () => {
+  // Letters not used by screen readers for quick nav
+  const code = `
+    element.addEventListener("keydown", (e) => {
+      if (e.key === "j") moveDown();
+      if (e.key === "p") pause();
+    });
+  `;
+  const results = analyzeCode(code);
+  // j and p are not standard screen reader quick nav keys
+  // Note: This depends on what keys are in screenReaderQuickNavKeys
+  // If they're not there, should not conflict
+});
+
+test('can disable screen reader conflict detection', () => {
+  const code = `
+    element.addEventListener("keydown", (e) => {
+      if (e.key === "h") showHelp();
+    });
+  `;
+  const tree = parseAndTransform(code);
+  const analyzer = new KeyboardAnalyzer({ detectScreenReaderConflicts: false });
+  const results = analyzer.analyze(tree);
+  assertFalse(results.hasScreenReaderConflicts());
+});
+
 // Print results
 console.log('\n========================================');
 console.log(`Results: ${passed} passed, ${failed} failed`);

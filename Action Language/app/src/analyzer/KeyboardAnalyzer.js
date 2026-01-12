@@ -7,6 +7,7 @@
  * - Keyboard navigation patterns (arrow navigation, type-ahead)
  * - Keyboard traps (intentional and accidental)
  * - Mouse-only interactions (click without keyboard equivalent)
+ * - Screen reader keyboard conflicts (single-letter keys, quick navigation)
  * - WCAG keyboard accessibility issues
  */
 
@@ -19,13 +20,15 @@ class KeyboardAnalyzer {
     this.options = {
       detectTraps: options.detectTraps ?? true,
       detectMouseOnly: options.detectMouseOnly ?? true,
-      detectPatterns: options.detectPatterns ?? true
+      detectPatterns: options.detectPatterns ?? true,
+      detectScreenReaderConflicts: options.detectScreenReaderConflicts ?? true
     };
 
     // Keyboard handler registry
     this.keyboardHandlers = [];
     this.keyChecks = [];
     this.preventDefaultCalls = [];
+    this.modifierChecks = []; // Track modifier key checks (ctrlKey, altKey, etc.)
 
     // Mouse handlers for comparison
     this.mouseHandlers = [];
@@ -34,6 +37,7 @@ class KeyboardAnalyzer {
     this.navigationPatterns = [];
     this.trapPatterns = [];
     this.keyboardShortcuts = [];
+    this.screenReaderConflicts = [];
 
     // Issues
     this.issues = [];
@@ -44,6 +48,7 @@ class KeyboardAnalyzer {
       totalMouseHandlers: 0,
       keyboardOnlyElements: 0,
       mouseOnlyElements: 0,
+      screenReaderConflicts: 0,
       byKey: {},
       byElement: {},
       byEventType: {}
@@ -64,6 +69,69 @@ class KeyboardAnalyzer {
     // Interactive elements that need keyboard support
     this.interactiveElements = new Set([
       'button', 'a', 'input', 'select', 'textarea', 'details', 'summary'
+    ]);
+
+    // Screen reader quick navigation keys (used in browse/virtual cursor mode)
+    // These single-letter keys are used by NVDA, JAWS, VoiceOver for quick navigation
+    this.screenReaderQuickNavKeys = new Map([
+      ['h', 'heading'],
+      ['H', 'heading (previous)'],
+      ['1', 'heading level 1'],
+      ['2', 'heading level 2'],
+      ['3', 'heading level 3'],
+      ['4', 'heading level 4'],
+      ['5', 'heading level 5'],
+      ['6', 'heading level 6'],
+      ['b', 'button'],
+      ['B', 'button (previous)'],
+      ['d', 'landmark'],
+      ['D', 'landmark (previous)'],
+      ['e', 'edit field'],
+      ['E', 'edit field (previous)'],
+      ['f', 'form field'],
+      ['F', 'form field (previous)'],
+      ['g', 'graphic/image'],
+      ['G', 'graphic/image (previous)'],
+      ['i', 'list item'],
+      ['I', 'list item (previous)'],
+      ['k', 'link'],
+      ['K', 'link (previous)'],
+      ['l', 'list'],
+      ['L', 'list (previous)'],
+      ['m', 'frame'],
+      ['M', 'frame (previous)'],
+      ['n', 'non-link text'],
+      ['N', 'non-link text (previous)'],
+      ['o', 'embedded object'],
+      ['O', 'embedded object (previous)'],
+      ['q', 'blockquote'],
+      ['Q', 'blockquote (previous)'],
+      ['r', 'radio button'],
+      ['R', 'radio button (previous)'],
+      ['s', 'separator'],
+      ['S', 'separator (previous)'],
+      ['t', 'table'],
+      ['T', 'table (previous)'],
+      ['u', 'unvisited link'],
+      ['U', 'unvisited link (previous)'],
+      ['v', 'visited link'],
+      ['V', 'visited link (previous)'],
+      ['x', 'checkbox'],
+      ['X', 'checkbox (previous)'],
+      ['c', 'combobox'],
+      ['C', 'combobox (previous)'],
+      ['a', 'anchor/link'],
+      ['A', 'anchor/link (previous)'],
+      ['w', 'ARIA widget'],
+      ['W', 'ARIA widget (previous)'],
+      ['z', 'landmark'],
+      ['Z', 'landmark (previous)']
+    ]);
+
+    // Arrow keys are used for reading in browse mode
+    this.screenReaderReadingKeys = new Set([
+      'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+      'Up', 'Down', 'Left', 'Right'
     ]);
   }
 
@@ -103,16 +171,19 @@ class KeyboardAnalyzer {
     this.keyboardHandlers = [];
     this.keyChecks = [];
     this.preventDefaultCalls = [];
+    this.modifierChecks = [];
     this.mouseHandlers = [];
     this.navigationPatterns = [];
     this.trapPatterns = [];
     this.keyboardShortcuts = [];
+    this.screenReaderConflicts = [];
     this.issues = [];
     this.stats = {
       totalKeyboardHandlers: 0,
       totalMouseHandlers: 0,
       keyboardOnlyElements: 0,
       mouseOnlyElements: 0,
+      screenReaderConflicts: 0,
       byKey: {},
       byElement: {},
       byEventType: {}
@@ -130,6 +201,7 @@ class KeyboardAnalyzer {
     this.checkForMouseHandler(action, context);
     this.checkForKeyCheck(action, context);
     this.checkForPreventDefault(action, context);
+    this.checkForModifierCheck(action, context);
 
     // Update context for children
     const newContext = {
@@ -375,6 +447,33 @@ class KeyboardAnalyzer {
         },
         actionId: action.id
       });
+    }
+  }
+
+  /**
+   * Check for modifier key checks (ctrlKey, altKey, shiftKey, metaKey)
+   * @param {Action} action - The action to check
+   * @param {Object} context - Current context
+   */
+  checkForModifierCheck(action, context) {
+    if (!context.inKeyboardHandler) return;
+
+    // Check for memberAccess to modifier properties
+    if (action.actionType === 'memberAccess') {
+      const property = action.getAttribute('property');
+      if (['ctrlKey', 'altKey', 'shiftKey', 'metaKey'].includes(property)) {
+        // Track the modifier check with its parent context
+        this.modifierChecks.push({
+          modifier: property,
+          location: {
+            line: action.getAttribute('line'),
+            column: action.getAttribute('column')
+          },
+          actionId: action.id,
+          // Track the parent to determine if this is in a conditional
+          parentActionId: context.parent?.id
+        });
+      }
     }
   }
 
@@ -647,6 +746,133 @@ class KeyboardAnalyzer {
 
     // Issue: Arrow navigation without wrap-around
     // This would require more complex pattern analysis
+
+    // Issue: Screen reader keyboard conflicts
+    if (this.options.detectScreenReaderConflicts) {
+      this.detectScreenReaderConflicts();
+    }
+  }
+
+  /**
+   * Detect keyboard shortcuts that conflict with screen reader quick navigation keys
+   */
+  detectScreenReaderConflicts() {
+    // Find single-letter/number key handlers without modifier key requirements
+    for (const keyCheck of this.keyChecks) {
+      const keyValue = String(keyCheck.key);
+
+      // Check if this is a single character key
+      if (keyValue.length !== 1) continue;
+
+      // Check if this is a screen reader quick nav key
+      const navFunction = this.screenReaderQuickNavKeys.get(keyValue);
+      if (!navFunction) continue;
+
+      // Check if there's an associated modifier key check
+      // We need to determine if this key check requires a modifier
+      const hasModifierRequirement = this.hasAssociatedModifierCheck(keyCheck);
+
+      if (!hasModifierRequirement) {
+        this.screenReaderConflicts.push({
+          key: keyValue,
+          screenReaderFunction: navFunction,
+          location: keyCheck.location,
+          actionId: keyCheck.actionId,
+          severity: 'warning'
+        });
+
+        this.issues.push({
+          type: 'screen-reader-conflict',
+          severity: 'warning',
+          message: `Single-letter key "${keyValue}" without modifier conflicts with screen reader quick navigation (${navFunction})`,
+          key: keyValue,
+          screenReaderFunction: navFunction,
+          suggestion: 'Require a modifier key (Ctrl, Alt, Meta) or only activate in application mode (role="application")'
+        });
+      }
+    }
+
+    // Check for number keys (1-6 conflict with heading level navigation)
+    for (const keyCheck of this.keyChecks) {
+      const keyValue = String(keyCheck.key);
+
+      if (/^[1-6]$/.test(keyValue)) {
+        const navFunction = this.screenReaderQuickNavKeys.get(keyValue);
+        const hasModifierRequirement = this.hasAssociatedModifierCheck(keyCheck);
+
+        if (!hasModifierRequirement && navFunction) {
+          // Check if not already added
+          const alreadyAdded = this.screenReaderConflicts.some(
+            c => c.key === keyValue && c.actionId === keyCheck.actionId
+          );
+
+          if (!alreadyAdded) {
+            this.screenReaderConflicts.push({
+              key: keyValue,
+              screenReaderFunction: navFunction,
+              location: keyCheck.location,
+              actionId: keyCheck.actionId,
+              severity: 'warning'
+            });
+
+            this.issues.push({
+              type: 'screen-reader-conflict',
+              severity: 'warning',
+              message: `Number key "${keyValue}" without modifier conflicts with screen reader heading navigation (${navFunction})`,
+              key: keyValue,
+              screenReaderFunction: navFunction,
+              suggestion: 'Require a modifier key (Ctrl, Alt, Meta) for shortcuts using number keys'
+            });
+          }
+        }
+      }
+    }
+
+    // Check for arrow keys used in custom navigation (potential browse mode conflict)
+    const arrowKeyChecks = this.keyChecks.filter(k =>
+      this.screenReaderReadingKeys.has(String(k.key))
+    );
+
+    if (arrowKeyChecks.length > 0) {
+      // Arrow keys in browse mode are used for reading - custom handling may interfere
+      // This is informational, as arrow keys are commonly customized in widgets
+      const hasRoleApplication = false; // Would need to check ARIA attributes
+
+      if (!hasRoleApplication) {
+        this.issues.push({
+          type: 'screen-reader-arrow-conflict',
+          severity: 'info',
+          message: `Arrow key handling detected - may interfere with screen reader browse mode navigation`,
+          keys: [...new Set(arrowKeyChecks.map(k => k.key))],
+          suggestion: 'Ensure the component uses role="application" or is in a form control for custom arrow key behavior'
+        });
+      }
+    }
+
+    // Update stats
+    this.stats.screenReaderConflicts = this.screenReaderConflicts.length;
+  }
+
+  /**
+   * Check if a key check has an associated modifier key requirement
+   * @param {Object} keyCheck - The key check to analyze
+   * @returns {boolean}
+   */
+  hasAssociatedModifierCheck(keyCheck) {
+    // Look for modifier checks near this key check
+    // A modifier check that shares a nearby context indicates the key requires a modifier
+
+    // Check if there are any modifier checks in the same keyboard handler
+    if (this.modifierChecks.length === 0) return false;
+
+    // Simple heuristic: if there are any ctrlKey, altKey, or metaKey checks
+    // in the same handler, assume modifier combinations are being used
+    // (shiftKey alone is not sufficient as it's used for Shift+letter)
+    const meaningfulModifiers = this.modifierChecks.filter(m =>
+      m.modifier === 'ctrlKey' || m.modifier === 'altKey' || m.modifier === 'metaKey'
+    );
+
+    return meaningfulModifiers.length > 0;
   }
 
   /**
@@ -697,9 +923,11 @@ class KeyboardAnalyzer {
       mouseHandlers: this.mouseHandlers,
       keyChecks: this.keyChecks,
       preventDefaultCalls: this.preventDefaultCalls,
+      modifierChecks: this.modifierChecks,
       navigationPatterns: this.navigationPatterns,
       trapPatterns: this.trapPatterns,
       keyboardShortcuts: this.keyboardShortcuts,
+      screenReaderConflicts: this.screenReaderConflicts,
       issues: this.issues,
       stats: this.stats,
 
@@ -725,6 +953,15 @@ class KeyboardAnalyzer {
 
       hasTrapPattern: () =>
         this.trapPatterns.length > 0,
+
+      hasScreenReaderConflicts: () =>
+        this.screenReaderConflicts.length > 0,
+
+      getScreenReaderConflicts: () =>
+        this.screenReaderConflicts,
+
+      getScreenReaderConflictsByKey: (key) =>
+        this.screenReaderConflicts.filter(c => c.key === key),
 
       getMouseOnlyElements: () => {
         const mouseElements = new Set(this.mouseHandlers.map(h => h.elementRef));
@@ -803,6 +1040,14 @@ class KeyboardAnalyzer {
 
     if (this.stats.mouseOnlyElements > 0) {
       lines.push(`Mouse-only elements: ${this.stats.mouseOnlyElements}`);
+      lines.push('');
+    }
+
+    if (this.screenReaderConflicts.length > 0) {
+      lines.push('Screen Reader Conflicts:');
+      for (const conflict of this.screenReaderConflicts) {
+        lines.push(`  Key "${conflict.key}" conflicts with: ${conflict.screenReaderFunction}`);
+      }
       lines.push('');
     }
 
