@@ -43,5 +43,6 @@ module.exports = {
 
   // Analyzer (Semantic Analysis)
   EventAnalyzer: analyzer.EventAnalyzer,
-  FocusAnalyzer: analyzer.FocusAnalyzer
+  FocusAnalyzer: analyzer.FocusAnalyzer,
+  ARIAAnalyzer: analyzer.ARIAAnalyzer
 };

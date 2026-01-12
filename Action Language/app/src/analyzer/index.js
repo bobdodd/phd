@@ -6,8 +6,10 @@
 
 const EventAnalyzer = require('./EventAnalyzer');
 const FocusAnalyzer = require('./FocusAnalyzer');
+const ARIAAnalyzer = require('./ARIAAnalyzer');
 
 module.exports = {
   EventAnalyzer,
-  FocusAnalyzer
+  FocusAnalyzer,
+  ARIAAnalyzer
 };
