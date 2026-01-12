@@ -237,7 +237,18 @@ class ASTTransformer {
 
       // Other
       'ThisExpression': this.transformThisExpression,
-      'Super': this.transformSuper
+      'Super': this.transformSuper,
+
+      // JSX (React)
+      'JSXElement': this.transformJSXElement,
+      'JSXFragment': this.transformJSXFragment,
+      'JSXOpeningElement': this.transformJSXOpeningElement,
+      'JSXClosingElement': () => null, // Not needed
+      'JSXAttribute': this.transformJSXAttribute,
+      'JSXExpressionContainer': this.transformJSXExpressionContainer,
+      'JSXText': this.transformJSXText,
+      'JSXIdentifier': this.transformJSXIdentifier,
+      'JSXSpreadAttribute': this.transformJSXSpreadAttribute
     };
   }
 
@@ -1252,6 +1263,131 @@ class ASTTransformer {
 
   transformSuper(node) {
     return this.createAction('identifier', node, { name: 'super' });
+  }
+
+  // === JSX Handlers (React) ===
+
+  transformJSXElement(node) {
+    const action = this.createAction('jsxElement', node);
+
+    // Transform opening element (contains tag name and attributes)
+    if (node.openingElement) {
+      const openingAction = this.transformNode(node.openingElement);
+      if (openingAction) {
+        // Merge opening element info into the jsxElement
+        action.setAttribute('tagName', openingAction.getAttribute('tagName'));
+
+        // Add attributes as children
+        for (const child of openingAction.children) {
+          action.addChild(child);
+        }
+      }
+    }
+
+    // Transform children (nested elements, text, expressions)
+    for (const child of node.children || []) {
+      const childAction = this.transformNode(child);
+      if (childAction) {
+        childAction.setAttribute('role', 'child');
+        action.addChild(childAction);
+      }
+    }
+
+    return action;
+  }
+
+  transformJSXFragment(node) {
+    const action = this.createAction('jsxFragment', node);
+
+    for (const child of node.children || []) {
+      const childAction = this.transformNode(child);
+      if (childAction) {
+        childAction.setAttribute('role', 'child');
+        action.addChild(childAction);
+      }
+    }
+
+    return action;
+  }
+
+  transformJSXOpeningElement(node) {
+    const tagName = node.name?.name || node.name?.property?.name || 'unknown';
+    const action = this.createAction('jsxOpeningElement', node, {
+      tagName: tagName,
+      selfClosing: node.selfClosing
+    });
+
+    // Transform attributes
+    for (const attr of node.attributes || []) {
+      const attrAction = this.transformNode(attr);
+      if (attrAction) {
+        action.addChild(attrAction);
+      }
+    }
+
+    return action;
+  }
+
+  transformJSXAttribute(node) {
+    const name = node.name?.name || '';
+    const action = this.createAction('jsxAttribute', node, {
+      name: name
+    });
+
+    // Check if it's an event handler (starts with 'on' followed by uppercase)
+    if (name.length > 2 && name.startsWith('on') && name[2] === name[2].toUpperCase()) {
+      action.setAttribute('isEventHandler', true);
+      action.setAttribute('eventType', name.slice(2).toLowerCase());
+      action.setAttribute('pattern', 'jsxEventHandler');
+    }
+
+    // Transform value
+    if (node.value) {
+      const valueAction = this.transformNode(node.value);
+      if (valueAction) {
+        valueAction.setAttribute('role', 'value');
+        action.addChild(valueAction);
+      }
+    }
+
+    return action;
+  }
+
+  transformJSXExpressionContainer(node) {
+    // The container just wraps an expression - return the expression directly
+    if (node.expression) {
+      return this.transformNode(node.expression);
+    }
+    return null;
+  }
+
+  transformJSXText(node) {
+    const value = node.value?.trim();
+    if (!value) return null; // Skip whitespace-only text
+
+    return this.createAction('literal', node, {
+      value: value,
+      type: 'string'
+    });
+  }
+
+  transformJSXIdentifier(node) {
+    return this.createAction('identifier', node, {
+      name: node.name
+    });
+  }
+
+  transformJSXSpreadAttribute(node) {
+    const action = this.createAction('jsxSpreadAttribute', node);
+
+    if (node.argument) {
+      const argAction = this.transformNode(node.argument);
+      if (argAction) {
+        action.addChild(argAction);
+      }
+    }
+
+    return action;
   }
 
   // === Utility Methods ===

@@ -9,6 +9,7 @@ const execution = require('./execution');
 const parser = require('./parser');
 const dom = require('./dom');
 const transformer = require('./transformer');
+const analyzer = require('./analyzer');
 
 module.exports = {
   // ActionLanguage core
@@ -38,5 +39,8 @@ module.exports = {
   MockElement: dom.MockElement,
   MockDocument: dom.MockDocument,
   MockWindow: dom.MockWindow,
-  createDOMEnvironment: dom.createDOMEnvironment
+  createDOMEnvironment: dom.createDOMEnvironment,
+
+  // Analyzer (Semantic Analysis)
+  EventAnalyzer: analyzer.EventAnalyzer
 };

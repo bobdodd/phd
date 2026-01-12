@@ -13,7 +13,8 @@ const testFiles = [
   'Parser.test.js',
   'ExecutionEngine.test.js',
   'dom.test.js',
-  'JavaScriptGenerator.test.js'
+  'JavaScriptGenerator.test.js',
+  'EventAnalyzer.test.js'
 ];
 
 console.log('╔══════════════════════════════════════════╗');
