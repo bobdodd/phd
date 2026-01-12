@@ -16,7 +16,8 @@ const testFiles = [
   'JavaScriptGenerator.test.js',
   'EventAnalyzer.test.js',
   'FocusAnalyzer.test.js',
-  'ARIAAnalyzer.test.js'
+  'ARIAAnalyzer.test.js',
+  'KeyboardAnalyzer.test.js'
 ];
 
 console.log('╔══════════════════════════════════════════╗');
