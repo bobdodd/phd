@@ -17,7 +17,8 @@ const testFiles = [
   'EventAnalyzer.test.js',
   'FocusAnalyzer.test.js',
   'ARIAAnalyzer.test.js',
-  'KeyboardAnalyzer.test.js'
+  'KeyboardAnalyzer.test.js',
+  'WidgetPatternValidator.test.js'
 ];
 
 console.log('╔══════════════════════════════════════════╗');

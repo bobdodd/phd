@@ -45,5 +45,6 @@ module.exports = {
   EventAnalyzer: analyzer.EventAnalyzer,
   FocusAnalyzer: analyzer.FocusAnalyzer,
   ARIAAnalyzer: analyzer.ARIAAnalyzer,
-  KeyboardAnalyzer: analyzer.KeyboardAnalyzer
+  KeyboardAnalyzer: analyzer.KeyboardAnalyzer,
+  WidgetPatternValidator: analyzer.WidgetPatternValidator
 };
