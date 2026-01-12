@@ -46,5 +46,6 @@ module.exports = {
   FocusAnalyzer: analyzer.FocusAnalyzer,
   ARIAAnalyzer: analyzer.ARIAAnalyzer,
   KeyboardAnalyzer: analyzer.KeyboardAnalyzer,
-  WidgetPatternValidator: analyzer.WidgetPatternValidator
+  WidgetPatternValidator: analyzer.WidgetPatternValidator,
+  AccessibilityReporter: analyzer.AccessibilityReporter
 };

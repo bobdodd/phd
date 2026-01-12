@@ -9,11 +9,13 @@ const FocusAnalyzer = require('./FocusAnalyzer');
 const ARIAAnalyzer = require('./ARIAAnalyzer');
 const KeyboardAnalyzer = require('./KeyboardAnalyzer');
 const WidgetPatternValidator = require('./WidgetPatternValidator');
+const AccessibilityReporter = require('./AccessibilityReporter');
 
 module.exports = {
   EventAnalyzer,
   FocusAnalyzer,
   ARIAAnalyzer,
   KeyboardAnalyzer,
-  WidgetPatternValidator
+  WidgetPatternValidator,
+  AccessibilityReporter
 };
