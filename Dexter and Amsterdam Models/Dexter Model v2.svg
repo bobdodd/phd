@@ -1,0 +1,216 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 650" width="800" height="650">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="black"/>
+    </marker>
+    <marker id="arrowhead-start" markerWidth="10" markerHeight="7" refX="1" refY="3.5" orient="auto">
+      <polygon points="10 0, 0 3.5, 10 7" fill="black"/>
+    </marker>
+    <marker id="arrowhead-white" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#555"/>
+    </marker>
+    <marker id="arrowhead-start-white" markerWidth="10" markerHeight="7" refX="1" refY="3.5" orient="auto">
+      <polygon points="10 0, 0 3.5, 10 7" fill="#555"/>
+    </marker>
+    <marker id="diamond" markerWidth="12" markerHeight="12" refX="6" refY="6" orient="auto">
+      <polygon points="6 0, 12 6, 6 12, 0 6" fill="white" stroke="black" stroke-width="1"/>
+    </marker>
+  </defs>
+
+  <style>
+    .box { fill: white; stroke: black; stroke-width: 1.5; }
+    .box-highlight { fill: #e8f4e8; stroke: #2a7d2a; stroke-width: 2; }
+    .box-context { fill: #fff3e0; stroke: #e65100; stroke-width: 2; }
+    .label { font-family: Arial, sans-serif; font-size: 11px; text-anchor: middle; dominant-baseline: middle; }
+    .label-bold { font-family: Arial, sans-serif; font-size: 11px; text-anchor: middle; dominant-baseline: middle; font-weight: bold; }
+    .layer-label { font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; fill: #444; }
+    .layer-box { fill: none; stroke: #999; stroke-width: 1; stroke-dasharray: 5,3; }
+    .line { stroke: black; stroke-width: 1.5; fill: none; }
+    .line-highlight { stroke: #2a7d2a; stroke-width: 2.5; fill: none; }
+    .line-context { stroke: #e65100; stroke-width: 2; fill: none; stroke-dasharray: 4,2; }
+    .num { font-family: Arial, sans-serif; font-size: 11px; }
+    .annotation { font-family: Arial, sans-serif; font-size: 10px; font-style: italic; fill: #666; }
+  </style>
+
+  <!-- White background for dark mode compatibility -->
+  <rect x="0" y="0" width="800" height="650" fill="white"/>
+
+  <!-- LAYER BACKGROUNDS -->
+
+  <!-- Runtime Layer -->
+  <rect x="15" y="15" width="770" height="130" class="layer-box" rx="5"/>
+  <text x="30" y="35" class="layer-label">Runtime Layer</text>
+
+  <!-- Storage Layer -->
+  <rect x="15" y="155" width="770" height="340" class="layer-box" rx="5"/>
+  <text x="30" y="175" class="layer-label">Storage Layer</text>
+
+  <!-- Within-Component Layer -->
+  <rect x="15" y="505" width="770" height="130" class="layer-box" rx="5"/>
+  <text x="30" y="525" class="layer-label">Within-Component Layer</text>
+
+  <!-- ==================== RUNTIME LAYER ==================== -->
+
+  <!-- Context of Use (NEW - highlighted) -->
+  <rect x="40" y="55" width="100" height="70" class="box-context" rx="3"/>
+  <text x="90" y="72" class="label-bold">Context of Use</text>
+  <text x="90" y="88" class="label" font-size="9">User Capability</text>
+  <text x="90" y="100" class="label" font-size="9">Device</text>
+  <text x="90" y="112" class="label" font-size="9">Environment</text>
+
+  <!-- Runtime Presentation Specification -->
+  <rect x="200" y="60" width="120" height="50" class="box-context" rx="3"/>
+  <text x="260" y="78" class="label-bold">Presentation</text>
+  <text x="260" y="93" class="label-bold">Specification</text>
+  <text x="260" y="106" class="label" font-size="9">(Runtime)</text>
+
+  <!-- Session -->
+  <rect x="500" y="65" width="90" height="35" class="box"/>
+  <text x="545" y="83" class="label">Session</text>
+
+  <!-- Runtime Instance -->
+  <rect x="640" y="65" width="100" height="35" class="box"/>
+  <text x="690" y="83" class="label">Runtime Instance</text>
+
+  <!-- Context to Presentation Spec -->
+  <line x1="140" y1="90" x2="200" y2="85" class="line-context" marker-end="url(#arrowhead)"/>
+  <text x="168" y="78" class="annotation">adapts</text>
+
+  <!-- Presentation Spec to Session -->
+  <line x1="320" y1="85" x2="500" y2="82" class="line" marker-end="url(#arrowhead)"/>
+
+  <!-- Session to Runtime Instance -->
+  <line x1="590" y1="82" x2="640" y2="82" class="line" marker-end="url(#arrowhead)"/>
+
+  <!-- ==================== STORAGE LAYER ==================== -->
+
+  <!-- Storage Presentation Specification -->
+  <rect x="40" y="190" width="110" height="45" class="box"/>
+  <text x="95" y="205" class="label">Presentation</text>
+  <text x="95" y="218" class="label">Specification</text>
+  <text x="95" y="230" class="label" font-size="9">(Storage)</text>
+
+  <!-- Attribute -->
+  <rect x="40" y="260" width="80" height="30" class="box"/>
+  <text x="80" y="275" class="label">Attribute</text>
+
+  <!-- Component -->
+  <rect x="200" y="250" width="110" height="40" class="box"/>
+  <text x="255" y="270" class="label-bold">Component</text>
+
+  <!-- Runtime Pres Spec down to Storage Pres Spec -->
+  <line x1="260" y1="110" x2="95" y2="190" class="line-context" marker-end="url(#arrowhead)" marker-start="url(#arrowhead-start)"/>
+
+  <!-- Storage Pres Spec to Component -->
+  <line x1="150" y1="212" x2="200" y2="255" class="line" marker-end="url(#diamond)"/>
+
+  <!-- Attribute to Component -->
+  <line x1="120" y1="275" x2="200" y2="270" class="line" marker-end="url(#diamond)"/>
+
+  <!-- ===== ANCHOR SECTION ===== -->
+
+  <!-- Anchor (highlighted for bidirectional emphasis) -->
+  <rect x="420" y="250" width="90" height="40" class="box-highlight" rx="3"/>
+  <text x="465" y="270" class="label-bold">Anchor</text>
+
+  <!-- Component to Anchor (BIDIRECTIONAL - highlighted) -->
+  <line x1="310" y1="270" x2="420" y2="270" class="line-highlight" marker-end="url(#arrowhead)" marker-start="url(#arrowhead-start)"/>
+  <text x="365" y="260" class="annotation">bidirectional</text>
+
+  <!-- ===== LINK STRUCTURE (Highlighted) ===== -->
+
+  <!-- Link Component (highlighted) -->
+  <rect x="540" y="195" width="100" height="40" class="box-highlight" rx="3"/>
+  <text x="590" y="208" class="label-bold">Link</text>
+  <text x="590" y="222" class="label-bold">Component</text>
+
+  <!-- Specifier (replaces Arc End) -->
+  <rect x="680" y="195" width="90" height="40" class="box-highlight" rx="3"/>
+  <text x="725" y="215" class="label-bold">Specifier</text>
+
+  <!-- Link Component to Specifier (2 specifiers, bidirectional emphasis) -->
+  <line x1="640" y1="215" x2="680" y2="215" class="line-highlight" marker-end="url(#arrowhead)"/>
+  <text x="660" y="205" class="num">2+</text>
+
+  <!-- Specifier to Anchor -->
+  <path d="M 725,235 L 725,320 L 465,320 L 465,290" class="line-highlight" marker-end="url(#arrowhead)"/>
+  <text x="595" y="335" class="annotation">each specifier references an anchor</text>
+
+  <!-- Bidirectional Link Illustration Box -->
+  <rect x="540" y="360" width="230" height="115" fill="#f5f5f5" stroke="#999" stroke-width="1" rx="5"/>
+  <text x="655" y="378" class="label-bold">Bidirectional Traversal</text>
+
+  <!-- Example: Button and Dialog -->
+  <rect x="560" y="395" width="60" height="30" fill="white" stroke="#2a7d2a" stroke-width="1.5" rx="3"/>
+  <text x="590" y="413" class="label" font-size="10">Button</text>
+
+  <rect x="690" y="395" width="60" height="30" fill="white" stroke="#2a7d2a" stroke-width="1.5" rx="3"/>
+  <text x="720" y="413" class="label" font-size="10">Dialog</text>
+
+  <!-- Bidirectional arrows between button and dialog -->
+  <line x1="620" y1="403" x2="690" y2="403" stroke="#2a7d2a" stroke-width="2" marker-end="url(#arrowhead-white)"/>
+  <line x1="690" y1="417" x2="620" y2="417" stroke="#2a7d2a" stroke-width="2" marker-end="url(#arrowhead-white)"/>
+
+  <text x="655" y="445" class="annotation">open: focus moves to dialog</text>
+  <text x="655" y="458" class="annotation">close: focus returns to button</text>
+
+  <!-- ===== COMPONENT TYPES ===== -->
+
+  <!-- Composite Component -->
+  <rect x="170" y="340" width="90" height="40" class="box"/>
+  <text x="215" y="353" class="label">Composite</text>
+  <text x="215" y="367" class="label">Component</text>
+
+  <!-- Atom Component (moved up to reduce line crossings) -->
+  <rect x="310" y="195" width="90" height="40" class="box"/>
+  <text x="355" y="208" class="label">Atom</text>
+  <text x="355" y="222" class="label">Component</text>
+
+  <!-- Component to subtypes -->
+  <!-- To Composite Component -->
+  <line x1="230" y1="290" x2="215" y2="340" class="line" marker-end="url(#arrowhead)"/>
+  <!-- To Atom Component (now above) -->
+  <line x1="270" y1="250" x2="310" y2="220" class="line" marker-end="url(#arrowhead)"/>
+  <!-- To Link Component -->
+  <line x1="310" y1="255" x2="540" y2="215" class="line" marker-end="url(#arrowhead)"/>
+
+  <!-- Composite contains Components (aggregation relationship) -->
+  <path d="M 170,360 Q 140,360 140,300 Q 140,270 200,270" class="line" marker-end="url(#diamond)"/>
+
+  <!-- ==================== WITHIN-COMPONENT LAYER ==================== -->
+
+  <!-- Content Structure -->
+  <rect x="200" y="540" width="100" height="35" class="box"/>
+  <text x="250" y="558" class="label">Content Structure</text>
+
+  <!-- Content Data -->
+  <rect x="340" y="540" width="100" height="35" class="box"/>
+  <text x="390" y="558" class="label">Content Data</text>
+
+  <!-- Anchor Value -->
+  <rect x="480" y="540" width="90" height="35" class="box"/>
+  <text x="525" y="558" class="label">Anchor Value</text>
+
+  <!-- Lines from Component down to Within-Component elements -->
+  <line x1="240" y1="290" x2="240" y2="500" class="line" stroke-dasharray="3,3"/>
+  <line x1="240" y1="500" x2="250" y2="540" class="line" marker-end="url(#arrowhead)"/>
+
+  <line x1="270" y1="290" x2="270" y2="500" class="line" stroke-dasharray="3,3"/>
+  <line x1="270" y1="500" x2="390" y2="540" class="line" marker-end="url(#arrowhead)"/>
+
+  <!-- Anchor down to Anchor Value -->
+  <line x1="465" y1="290" x2="465" y2="500" class="line" stroke-dasharray="3,3"/>
+  <line x1="465" y1="500" x2="525" y2="540" class="line" marker-end="url(#arrowhead)"/>
+
+  <!-- ==================== LEGEND ==================== -->
+
+  <rect x="40" y="410" width="180" height="75" fill="#fafafa" stroke="#ccc" stroke-width="1" rx="3"/>
+  <text x="130" y="425" class="label-bold">Legend</text>
+
+  <line x1="50" y1="442" x2="80" y2="442" class="line-highlight" marker-end="url(#arrowhead)" marker-start="url(#arrowhead-start)"/>
+  <text x="145" y="445" class="label" text-anchor="start" font-size="10">Bidirectional link structure</text>
+
+  <line x1="50" y1="462" x2="80" y2="462" class="line-context"/>
+  <text x="145" y="465" class="label" text-anchor="start" font-size="10">Context-adaptive flow</text>
+
+</svg>
