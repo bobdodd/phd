@@ -1,2 +1,5 @@
 # Temporary screenshot files
 2026-*.png
+
+# macOS system files
+.DS_Store
