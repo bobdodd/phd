@@ -5,7 +5,9 @@
  */
 
 const EventAnalyzer = require('./EventAnalyzer');
+const FocusAnalyzer = require('./FocusAnalyzer');
 
 module.exports = {
-  EventAnalyzer
+  EventAnalyzer,
+  FocusAnalyzer
 };

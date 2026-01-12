@@ -14,7 +14,8 @@ const testFiles = [
   'ExecutionEngine.test.js',
   'dom.test.js',
   'JavaScriptGenerator.test.js',
-  'EventAnalyzer.test.js'
+  'EventAnalyzer.test.js',
+  'FocusAnalyzer.test.js'
 ];
 
 console.log('╔══════════════════════════════════════════╗');

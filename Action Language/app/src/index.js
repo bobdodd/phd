@@ -42,5 +42,6 @@ module.exports = {
   createDOMEnvironment: dom.createDOMEnvironment,
 
   // Analyzer (Semantic Analysis)
-  EventAnalyzer: analyzer.EventAnalyzer
+  EventAnalyzer: analyzer.EventAnalyzer,
+  FocusAnalyzer: analyzer.FocusAnalyzer
 };
