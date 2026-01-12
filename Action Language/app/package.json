@@ -10,7 +10,8 @@
     "test:tree": "node test/ActionTree.test.js",
     "test:xml": "node test/XMLSerializer.test.js",
     "test:stack": "node test/Stack.test.js",
-    "test:parser": "node test/Parser.test.js"
+    "test:parser": "node test/Parser.test.js",
+    "test:engine": "node test/ExecutionEngine.test.js"
   },
   "keywords": [
     "accessibility",

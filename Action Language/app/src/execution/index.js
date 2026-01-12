@@ -1,7 +1,7 @@
 /**
  * Execution Module
  *
- * Exports stack architecture and execution context classes
+ * Exports stack architecture, execution context, and execution engine
  */
 
 const {
@@ -13,11 +13,24 @@ const {
   ExecutionContext
 } = require('./Stack');
 
+const {
+  ExecutionEngine,
+  ReturnValue,
+  BreakSignal,
+  ContinueSignal,
+  ThrowSignal
+} = require('./ExecutionEngine');
+
 module.exports = {
   Stack,
   VariableStack,
   ConstantStack,
   FunctionStack,
   CallStack,
-  ExecutionContext
+  ExecutionContext,
+  ExecutionEngine,
+  ReturnValue,
+  BreakSignal,
+  ContinueSignal,
+  ThrowSignal
 };

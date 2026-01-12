@@ -10,7 +10,8 @@ const testFiles = [
   'ActionTree.test.js',
   'XMLSerializer.test.js',
   'Stack.test.js',
-  'Parser.test.js'
+  'Parser.test.js',
+  'ExecutionEngine.test.js'
 ];
 
 console.log('╔══════════════════════════════════════════╗');

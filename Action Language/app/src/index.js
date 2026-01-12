@@ -21,6 +21,7 @@ module.exports = {
   FunctionStack: execution.FunctionStack,
   CallStack: execution.CallStack,
   ExecutionContext: execution.ExecutionContext,
+  ExecutionEngine: execution.ExecutionEngine,
 
   // Parser
   JavaScriptParser: parser.JavaScriptParser,
