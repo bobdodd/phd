@@ -8,6 +8,7 @@ const actionLanguage = require('./action-language');
 const execution = require('./execution');
 const parser = require('./parser');
 const dom = require('./dom');
+const transformer = require('./transformer');
 
 module.exports = {
   // ActionLanguage core
@@ -29,6 +30,9 @@ module.exports = {
   ParseError: parser.ParseError,
   ASTTransformer: parser.ASTTransformer,
   parseAndTransform: parser.parseAndTransform,
+
+  // Transformer (Code Generation)
+  JavaScriptGenerator: transformer.JavaScriptGenerator,
 
   // DOM Simulation
   MockElement: dom.MockElement,

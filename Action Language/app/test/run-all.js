@@ -12,7 +12,8 @@ const testFiles = [
   'Stack.test.js',
   'Parser.test.js',
   'ExecutionEngine.test.js',
-  'dom.test.js'
+  'dom.test.js',
+  'JavaScriptGenerator.test.js'
 ];
 
 console.log('╔══════════════════════════════════════════╗');

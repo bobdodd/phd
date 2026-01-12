@@ -1084,9 +1084,21 @@ class ASTTransformer {
     });
 
     for (const specifier of node.specifiers) {
+      let imported;
+
+      // Determine the import kind based on specifier type
+      if (specifier.type === 'ImportDefaultSpecifier') {
+        imported = 'default';
+      } else if (specifier.type === 'ImportNamespaceSpecifier') {
+        imported = '*';
+      } else {
+        // ImportSpecifier - named import
+        imported = specifier.imported?.name || specifier.local?.name;
+      }
+
       const spec = this.createAction('identifier', specifier, {
         name: specifier.local?.name,
-        imported: specifier.imported?.name || specifier.local?.name
+        imported: imported
       });
       action.addChild(spec);
     }
