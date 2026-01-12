@@ -6,6 +6,7 @@
 
 const actionLanguage = require('./action-language');
 const execution = require('./execution');
+const parser = require('./parser');
 
 module.exports = {
   // ActionLanguage core
@@ -19,5 +20,11 @@ module.exports = {
   ConstantStack: execution.ConstantStack,
   FunctionStack: execution.FunctionStack,
   CallStack: execution.CallStack,
-  ExecutionContext: execution.ExecutionContext
+  ExecutionContext: execution.ExecutionContext,
+
+  // Parser
+  JavaScriptParser: parser.JavaScriptParser,
+  ParseError: parser.ParseError,
+  ASTTransformer: parser.ASTTransformer,
+  parseAndTransform: parser.parseAndTransform
 };

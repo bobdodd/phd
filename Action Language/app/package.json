@@ -9,12 +9,20 @@
     "test:action": "node test/Action.test.js",
     "test:tree": "node test/ActionTree.test.js",
     "test:xml": "node test/XMLSerializer.test.js",
-    "test:stack": "node test/Stack.test.js"
+    "test:stack": "node test/Stack.test.js",
+    "test:parser": "node test/Parser.test.js"
   },
-  "keywords": ["accessibility", "javascript", "analysis"],
+  "keywords": [
+    "accessibility",
+    "javascript",
+    "analysis"
+  ],
   "author": "Bob Dodd",
   "license": "MIT",
   "devDependencies": {
     "electron": "^39.2.7"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.28.5"
   }
 }
