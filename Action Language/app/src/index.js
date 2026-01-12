@@ -10,6 +10,7 @@ const parser = require('./parser');
 const dom = require('./dom');
 const transformer = require('./transformer');
 const analyzer = require('./analyzer');
+const CLI = require('./cli');
 
 module.exports = {
   // ActionLanguage core
@@ -47,5 +48,8 @@ module.exports = {
   ARIAAnalyzer: analyzer.ARIAAnalyzer,
   KeyboardAnalyzer: analyzer.KeyboardAnalyzer,
   WidgetPatternValidator: analyzer.WidgetPatternValidator,
-  AccessibilityReporter: analyzer.AccessibilityReporter
+  AccessibilityReporter: analyzer.AccessibilityReporter,
+
+  // CLI
+  CLI: CLI
 };

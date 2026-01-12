@@ -19,7 +19,9 @@ const testFiles = [
   'ARIAAnalyzer.test.js',
   'KeyboardAnalyzer.test.js',
   'WidgetPatternValidator.test.js',
-  'AccessibilityReporter.test.js'
+  'AccessibilityReporter.test.js',
+  'CLI.test.js',
+  'fixtures.test.js'
 ];
 
 console.log('╔══════════════════════════════════════════╗');

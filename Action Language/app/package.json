@@ -3,15 +3,20 @@
   "version": "1.0.0",
   "description": "JavaScript to ActionLanguage Transcoder for Accessibility Analysis",
   "main": "main.js",
+  "bin": {
+    "a11y-analyze": "./src/cli/index.js"
+  },
   "scripts": {
     "start": "electron .",
+    "analyze": "node src/cli/index.js",
     "test": "node test/run-all.js",
     "test:action": "node test/Action.test.js",
     "test:tree": "node test/ActionTree.test.js",
     "test:xml": "node test/XMLSerializer.test.js",
     "test:stack": "node test/Stack.test.js",
     "test:parser": "node test/Parser.test.js",
-    "test:engine": "node test/ExecutionEngine.test.js"
+    "test:engine": "node test/ExecutionEngine.test.js",
+    "test:cli": "node test/CLI.test.js"
   },
   "keywords": [
     "accessibility",
