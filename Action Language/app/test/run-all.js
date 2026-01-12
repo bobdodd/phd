@@ -11,7 +11,8 @@ const testFiles = [
   'XMLSerializer.test.js',
   'Stack.test.js',
   'Parser.test.js',
-  'ExecutionEngine.test.js'
+  'ExecutionEngine.test.js',
+  'dom.test.js'
 ];
 
 console.log('╔══════════════════════════════════════════╗');

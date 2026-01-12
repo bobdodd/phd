@@ -6,6 +6,7 @@
  */
 
 const { ExecutionContext } = require('./Stack');
+const { createDOMEnvironment } = require('../dom');
 
 /**
  * Special return value wrappers for control flow
@@ -42,26 +43,98 @@ class ExecutionEngine {
    * @param {Function} [options.onOutput] - Callback for console output
    * @param {number} [options.maxIterations] - Max loop iterations (safety limit)
    * @param {number} [options.maxCallDepth] - Max call stack depth
+   * @param {boolean} [options.enableDOM] - Enable DOM simulation
+   * @param {Object} [options.domEnvironment] - Custom DOM environment
    */
   constructor(options = {}) {
     this.options = {
       maxIterations: options.maxIterations || 100000,
       maxCallDepth: options.maxCallDepth || 1000,
       onOutput: options.onOutput || console.log,
-      globals: options.globals || {}
+      globals: options.globals || {},
+      enableDOM: options.enableDOM || false
     };
 
     this.context = new ExecutionContext();
     this.output = [];
     this.iterationCount = 0;
 
+    // Initialize DOM environment if enabled
+    if (this.options.enableDOM) {
+      if (options.domEnvironment) {
+        this.window = options.domEnvironment.window;
+        this.document = options.domEnvironment.document;
+      } else {
+        const { window, document } = createDOMEnvironment();
+        this.window = window;
+        this.document = document;
+      }
+    }
+
     // Initialize built-ins
     this.initializeBuiltins();
+
+    // Initialize DOM globals if enabled
+    if (this.options.enableDOM) {
+      this.initializeDOMGlobals();
+    }
 
     // Inject custom globals
     for (const [name, value] of Object.entries(this.options.globals)) {
       this.context.variables.declare(name, value, 'const');
     }
+  }
+
+  /**
+   * Initialize DOM-related globals
+   */
+  initializeDOMGlobals() {
+    const engine = this;
+
+    // Window object
+    this.context.variables.declare('window', this.window, 'const');
+    this.context.variables.declare('self', this.window, 'const');
+
+    // Document object
+    this.context.variables.declare('document', this.document, 'const');
+
+    // Timer functions bound to window
+    this.context.variables.declare('setTimeout', (cb, delay, ...args) => {
+      return engine.window.setTimeout(cb, delay, ...args);
+    }, 'const');
+    this.context.variables.declare('clearTimeout', (id) => {
+      return engine.window.clearTimeout(id);
+    }, 'const');
+    this.context.variables.declare('setInterval', (cb, delay, ...args) => {
+      return engine.window.setInterval(cb, delay, ...args);
+    }, 'const');
+    this.context.variables.declare('clearInterval', (id) => {
+      return engine.window.clearInterval(id);
+    }, 'const');
+    this.context.variables.declare('requestAnimationFrame', (cb) => {
+      return engine.window.requestAnimationFrame(cb);
+    }, 'const');
+    this.context.variables.declare('cancelAnimationFrame', (id) => {
+      return engine.window.cancelAnimationFrame(id);
+    }, 'const');
+
+    // Dialog functions
+    this.context.variables.declare('alert', (msg) => engine.window.alert(msg), 'const');
+    this.context.variables.declare('confirm', (msg) => engine.window.confirm(msg), 'const');
+    this.context.variables.declare('prompt', (msg, def) => engine.window.prompt(msg, def), 'const');
+
+    // Location and navigator
+    this.context.variables.declare('location', this.window.location, 'const');
+    this.context.variables.declare('navigator', this.window.navigator, 'const');
+
+    // Storage
+    this.context.variables.declare('localStorage', this.window.localStorage, 'const');
+    this.context.variables.declare('sessionStorage', this.window.sessionStorage, 'const');
+
+    // Element constructor (for instanceof checks)
+    const MockElement = require('../dom/MockElement');
+    this.context.variables.declare('Element', MockElement, 'const');
+    this.context.variables.declare('HTMLElement', MockElement, 'const');
   }
 
   /**
@@ -860,17 +933,37 @@ class ExecutionEngine {
       }
     }
 
-    // Get the function
-    const func = this.executeAction(callee);
-
     // Check call depth
     if (this.context.callStack.callDepth() >= this.options.maxCallDepth) {
       throw new Error('Maximum call stack size exceeded');
     }
 
+    // Check if callee is a memberAccess (method call)
+    // We need to preserve `this` binding for method calls
+    if (callee && (callee.type === 'memberAccess' || callee.actionType === 'memberAccess')) {
+      const objAction = callee.children.find(c => c.getAttribute('role') === 'object');
+      const obj = this.executeAction(objAction);
+      const prop = callee.getAttribute('property');
+
+      if (obj && typeof obj[prop] === 'function') {
+        // Call method with proper this binding
+        return obj[prop].call(obj, ...args);
+      }
+
+      if (obj && obj[prop] && obj[prop].body) {
+        // ActionLanguage method
+        return this.callFunction(obj[prop], args);
+      }
+
+      throw new Error(`${prop} is not a function`);
+    }
+
+    // Get the function for non-method calls
+    const func = this.executeAction(callee);
+
     // Handle different function types
     if (typeof func === 'function') {
-      // Native function
+      // Native function (not a method call)
       return func(...args);
     }
 
@@ -880,13 +973,12 @@ class ExecutionEngine {
     }
 
     if (func && typeof func === 'object') {
-      // Could be a method call
+      // Could be a method call via attribute
       const calleeAttr = action.getAttribute('callee');
       if (calleeAttr && calleeAttr.includes('.')) {
         // Method call - need to get object and method separately
         const parts = calleeAttr.split('.');
         const methodName = parts.pop();
-        const objPath = parts.join('.');
 
         let obj = this.context.variables.getValue(parts[0]);
         for (let i = 1; i < parts.length; i++) {
@@ -894,7 +986,7 @@ class ExecutionEngine {
         }
 
         if (typeof obj[methodName] === 'function') {
-          return obj[methodName](...args);
+          return obj[methodName].call(obj, ...args);
         }
       }
     }

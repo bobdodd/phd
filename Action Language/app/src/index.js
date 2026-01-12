@@ -7,6 +7,7 @@
 const actionLanguage = require('./action-language');
 const execution = require('./execution');
 const parser = require('./parser');
+const dom = require('./dom');
 
 module.exports = {
   // ActionLanguage core
@@ -27,5 +28,11 @@ module.exports = {
   JavaScriptParser: parser.JavaScriptParser,
   ParseError: parser.ParseError,
   ASTTransformer: parser.ASTTransformer,
-  parseAndTransform: parser.parseAndTransform
+  parseAndTransform: parser.parseAndTransform,
+
+  // DOM Simulation
+  MockElement: dom.MockElement,
+  MockDocument: dom.MockDocument,
+  MockWindow: dom.MockWindow,
+  createDOMEnvironment: dom.createDOMEnvironment
 };
