@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
+  <title>ActionLanguage Transcoder</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #eee;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      text-align: center;
+      max-width: 600px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      color: #aaa;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 1.5rem;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 1.1rem;
+    }
+
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      background: #00ff88;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.1); }
+    }
+
+    .info {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #888;
+    }
+
+    #app-info {
+      font-family: monospace;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+
+    button {
+      background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+      border: none;
+      color: white;
+      padding: 12px 24px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 1rem;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>ActionLanguage Transcoder</h1>
+    <p class="subtitle">JavaScript to ActionLanguage for Accessibility Analysis</p>
+
+    <div class="card">
+      <div class="status">
+        <div class="status-dot"></div>
+        <span>Electron is running successfully!</span>
+      </div>
+      <div class="info">
+        The application framework is ready for development.
+      </div>
+      <div id="app-info">Loading app info...</div>
+      <button id="test-btn">Test Interaction</button>
+    </div>
+
+    <p class="info">
+      This will become the JavaScript to ActionLanguage transcoder<br>
+      for analyzing web page accessibility.
+    </p>
+  </div>
+
+  <script>
+    // Wait for DOM to load
+    document.addEventListener('DOMContentLoaded', () => {
+      // Get app info from preload script
+      if (window.electronAPI) {
+        const info = window.electronAPI.getAppInfo();
+        document.getElementById('app-info').innerHTML =
+          `App: ${info.name}<br>Version: ${info.version}<br>Platform: ${info.platform}`;
+      } else {
+        document.getElementById('app-info').textContent = 'electronAPI not available';
+      }
+
+      // Test button interaction
+      document.getElementById('test-btn').addEventListener('click', () => {
+        alert('Hello from Electron! The app is working correctly.');
+      });
+    });
+  </script>
+</body>
+</html>
