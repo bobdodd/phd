@@ -1,0 +1,1 @@
+// Accessible focus implementation - placeholder

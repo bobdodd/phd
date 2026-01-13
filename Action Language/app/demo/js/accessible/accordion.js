@@ -1,0 +1,1 @@
+// Accessible accordion implementation - placeholder

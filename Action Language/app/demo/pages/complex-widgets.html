@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Complex Widgets - A11y Demo</title>
+  <link rel="stylesheet" href="../css/demo.css">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <header>
+    <nav class="breadcrumb"><a href="../index.html">← Back to Demo Index</a></nav>
+    <h1>Complex Widgets Demo</h1>
+  </header>
+  <main id="main">
+    <section class="explanation">
+      <h2>About This Pattern</h2>
+      <p>Advanced widgets like trees, grids, and comboboxes require full ARIA implementation.</p>
+      <ul><li><strong>WCAG:</strong> 2.1.1 (Keyboard), 4.1.2 (Name, Role, Value)</li></ul>
+    </section>
+    <div class="comparison">
+      <section class="example good">
+        <h2>✓ Fully implemented widgets</h2>
+        <div class="demo-container"><p>Tree, grid, combobox with full keyboard support</p></div>
+      </section>
+      <section class="example bad">
+        <h2>✗ Incomplete implementations</h2>
+        <div class="demo-container"><p>Missing keyboard navigation and ARIA</p></div>
+        <div class="expected-issues">
+          <h3>Issues:</h3>
+          <ul><li><code>incomplete-widget-pattern</code> - Multiple pattern violations</li></ul>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer><nav><a href="aria-live.html">← Previous</a><a href="../index.html">Back to Index →</a></nav></footer>
+  <script src="../js/accessible/complex.js"></script>
+  <script src="../js/inaccessible/complex.js"></script>
+</body>
+</html>

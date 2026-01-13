@@ -1,0 +1,1 @@
+// Accessible navigation implementation - placeholder

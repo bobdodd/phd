@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Focus Management - A11y Demo</title>
+  <link rel="stylesheet" href="../css/demo.css">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <header>
+    <nav class="breadcrumb"><a href="../index.html">← Back to Demo Index</a></nav>
+    <h1>Focus Management Demo</h1>
+  </header>
+  <main id="main">
+    <section class="explanation">
+      <h2>About This Pattern</h2>
+      <p>Check focus before removing/hiding elements.</p>
+      <ul><li><strong>WCAG:</strong> 2.4.3 (Focus Order), 2.4.7 (Focus Visible)</li></ul>
+    </section>
+    <div class="comparison">
+      <section class="example good">
+        <h2>✓ Checks focus before removal</h2>
+        <div class="demo-container"><button id="good-remove">Remove Element</button></div>
+      </section>
+      <section class="example bad">
+        <h2>✗ Removes element without checking focus</h2>
+        <div class="demo-container"><button id="bad-remove">Remove Element</button></div>
+        <div class="expected-issues">
+          <h3>Issues:</h3>
+          <ul><li><code>removal-without-focus-management</code></li></ul>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer><nav><a href="keyboard-shortcuts.html">← Previous</a><a href="aria-live.html">Next →</a></nav></footer>
+  <script src="../js/accessible/focus.js"></script>
+  <script src="../js/inaccessible/focus.js"></script>
+</body>
+</html>

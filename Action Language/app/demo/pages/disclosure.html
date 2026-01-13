@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Accordions - A11y Demo</title>
+  <link rel="stylesheet" href="../css/demo.css">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <header>
+    <nav class="breadcrumb"><a href="../index.html">← Back to Demo Index</a></nav>
+    <h1>Accordion Demo</h1>
+  </header>
+  <main id="main">
+    <section class="explanation">
+      <h2>About This Pattern</h2>
+      <p>Accordions use aria-expanded to indicate state.</p>
+      <ul><li><strong>WCAG:</strong> 2.1.1 (Keyboard), 4.1.2 (Name, Role, Value)</li></ul>
+    </section>
+    <div class="comparison">
+      <section class="example good">
+        <h2>✓ Accessible Accordion</h2>
+        <div class="demo-container">
+          <button aria-expanded="false" aria-controls="panel-1">Section 1</button>
+          <div id="panel-1" hidden>Content</div>
+        </div>
+      </section>
+      <section class="example bad">
+        <h2>✗ Inaccessible Accordion</h2>
+        <div class="demo-container">
+          <div id="bad-header">Section 1</div>
+          <div id="bad-panel" style="display:none">Content</div>
+        </div>
+        <div class="expected-issues">
+          <h3>Issues:</h3>
+          <ul><li><code>missing-aria-expanded</code></li></ul>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer><nav><a href="modals.html">← Previous</a><a href="keyboard-shortcuts.html">Next →</a></nav></footer>
+  <script src="../js/accessible/accordion.js"></script>
+  <script src="../js/inaccessible/accordion.js"></script>
+</body>
+</html>

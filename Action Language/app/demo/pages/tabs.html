@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tab Widget - A11y Demo</title>
+  <link rel="stylesheet" href="../css/demo.css">
+  <style>
+    .tabs {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .tab-list {
+      display: flex;
+      background: #f5f5f5;
+      border-bottom: 2px solid #ddd;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .tab {
+      padding: 1rem 1.5rem;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #666;
+      border-bottom: 3px solid transparent;
+    }
+
+    .tab:hover {
+      background: #e8e8e8;
+    }
+
+    .tab[aria-selected="true"] {
+      color: #0078d4;
+      background: white;
+      border-bottom-color: #0078d4;
+    }
+
+    .tab-panel {
+      padding: 1.5rem;
+      display: none;
+    }
+
+    .tab-panel[aria-hidden="false"] {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <header>
+    <nav class="breadcrumb">
+      <a href="../index.html">← Back to Demo Index</a>
+    </nav>
+    <h1>Tab Widget Demo</h1>
+    <p>Complete WAI-ARIA tab pattern with keyboard navigation</p>
+  </header>
+
+  <main id="main">
+    <section class="explanation">
+      <h2>About This Pattern</h2>
+      <p>
+        Tabs organize related content into sections. The WAI-ARIA Authoring Practices define specific
+        requirements for keyboard navigation and ARIA attributes.
+      </p>
+      <ul>
+        <li><strong>WCAG Criteria:</strong> 2.1.1 (Keyboard), 2.4.3 (Focus Order), 4.1.2 (Name, Role, Value)</li>
+        <li><strong>Required ARIA:</strong> role="tablist", role="tab", role="tabpanel", aria-selected, aria-controls</li>
+        <li><strong>Keyboard:</strong> Left/Right arrows navigate tabs, Home/End jump to first/last, Enter/Space activate</li>
+      </ul>
+    </section>
+
+    <div class="comparison">
+      <section class="example good">
+        <h2>✓ Accessible Implementation</h2>
+        <div class="demo-container">
+          <div class="tabs">
+            <ul role="tablist" aria-label="Sample Tabs">
+              <li role="presentation">
+                <button role="tab" aria-selected="true" aria-controls="good-panel-1" id="good-tab-1" tabindex="0" class="tab">
+                  Tab 1
+                </button>
+              </li>
+              <li role="presentation">
+                <button role="tab" aria-selected="false" aria-controls="good-panel-2" id="good-tab-2" tabindex="-1" class="tab">
+                  Tab 2
+                </button>
+              </li>
+              <li role="presentation">
+                <button role="tab" aria-selected="false" aria-controls="good-panel-3" id="good-tab-3" tabindex="-1" class="tab">
+                  Tab 3
+                </button>
+              </li>
+            </ul>
+
+            <div role="tabpanel" id="good-panel-1" aria-labelledby="good-tab-1" aria-hidden="false" class="tab-panel">
+              <h3>Panel 1 Content</h3>
+              <p>This is the content for the first tab. Notice how it's properly associated with its tab via aria-controls and aria-labelledby.</p>
+            </div>
+
+            <div role="tabpanel" id="good-panel-2" aria-labelledby="good-tab-2" aria-hidden="true" class="tab-panel">
+              <h3>Panel 2 Content</h3>
+              <p>Second tab content. Use Left/Right arrow keys to navigate between tabs.</p>
+            </div>
+
+            <div role="tabpanel" id="good-panel-3" aria-labelledby="good-tab-3" aria-hidden="true" class="tab-panel">
+              <h3>Panel 3 Content</h3>
+              <p>Third tab content. Press Home to go to first tab, End to go to last tab.</p>
+            </div>
+          </div>
+        </div>
+
+        <details>
+          <summary>View Code</summary>
+          <pre><code>&lt;ul role="tablist" aria-label="Sample Tabs"&gt;
+  &lt;li role="presentation"&gt;
+    &lt;button
+      role="tab"
+      aria-selected="true"
+      aria-controls="panel-1"
+      id="tab-1"
+      tabindex="0"&gt;
+      Tab 1
+    &lt;/button&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div role="tabpanel" id="panel-1" aria-labelledby="tab-1"&gt;
+  Panel content...
+&lt;/div&gt;
+
+&lt;script&gt;
+tabs.forEach(tab =&gt; {
+  tab.addEventListener('click', activateTab);
+  tab.addEventListener('keydown', handleKeyboard);
+});
+
+function handleKeyboard(e) {
+  switch(e.key) {
+    case 'ArrowLeft': // Previous tab
+    case 'ArrowRight': // Next tab
+    case 'Home': // First tab
+    case 'End': // Last tab
+  }
+}
+&lt;/script&gt;</code></pre>
+        </details>
+      </section>
+
+      <section class="example bad">
+        <h2>✗ Inaccessible Implementation</h2>
+        <div class="demo-container">
+          <div class="tabs">
+            <div class="tab-list">
+              <div id="bad-tab-1" class="tab" style="color: #0078d4; background: white; border-bottom: 3px solid #0078d4;">
+                Tab 1
+              </div>
+              <div id="bad-tab-2" class="tab">
+                Tab 2
+              </div>
+              <div id="bad-tab-3" class="tab">
+                Tab 3
+              </div>
+            </div>
+
+            <div id="bad-panel-1" class="tab-panel" style="display: block;">
+              <h3>Panel 1 Content</h3>
+              <p>No ARIA roles, no keyboard navigation, style.display for hiding.</p>
+            </div>
+
+            <div id="bad-panel-2" class="tab-panel" style="display: none;">
+              <h3>Panel 2 Content</h3>
+              <p>Click-only tabs without proper semantics.</p>
+            </div>
+
+            <div id="bad-panel-3" class="tab-panel" style="display: none;">
+              <h3>Panel 3 Content</h3>
+              <p>Try using keyboard - it won't work!</p>
+            </div>
+          </div>
+        </div>
+
+        <details>
+          <summary>View Code</summary>
+          <pre><code>&lt;!-- Missing tablist, tab, tabpanel roles --&gt;
+&lt;div class="tab-list"&gt;
+  &lt;div id="bad-tab-1" class="tab"&gt;Tab 1&lt;/div&gt;
+  &lt;div id="bad-tab-2" class="tab"&gt;Tab 2&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id="bad-panel-1" style="display: block;"&gt;
+  Panel content...
+&lt;/div&gt;
+
+&lt;script&gt;
+// Only click handlers, no keyboard support
+tab1.addEventListener('click', () =&gt; {
+  panel1.style.display = 'block';
+  panel2.style.display = 'none';
+});
+// Missing: arrow key navigation, aria-selected, aria-controls
+&lt;/script&gt;</code></pre>
+        </details>
+
+        <div class="expected-issues">
+          <h3>Issues the analyzer will detect:</h3>
+          <ul>
+            <li><code>missing-tablist-role</code> - Tab container without role="tablist"</li>
+            <li><code>missing-tab-role</code> - Tab elements without role="tab"</li>
+            <li><code>missing-tabpanel-role</code> - Panel without role="tabpanel"</li>
+            <li><code>missing-aria-selected</code> - Tabs without aria-selected state</li>
+            <li><code>missing-aria-controls</code> - No association between tabs and panels</li>
+            <li><code>mouse-only-click</code> - Click handlers without keyboard support (WCAG 2.1.1)</li>
+            <li><code>incomplete-tabs-pattern</code> - WidgetPatternValidator detects missing keyboard navigation</li>
+            <li><code>style-display-visibility</code> - Using style.display instead of aria-hidden</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <section class="try-it">
+      <h2>Try It Yourself</h2>
+      <ol>
+        <li><strong>Keyboard Test:</strong> Tab to focus tabs, use Left/Right arrows to navigate, Enter to activate</li>
+        <li><strong>Home/End Keys:</strong> Jump to first/last tab</li>
+        <li><strong>Screen Reader:</strong> Announces "tab 1 of 3" and panel content</li>
+        <li><strong>Run Analyzer:</strong> <code>node src/cli.js demo/pages/tabs.html</code></li>
+      </ol>
+    </section>
+  </main>
+
+  <footer>
+    <nav>
+      <a href="navigation.html">← Previous: Navigation</a>
+      <a href="modals.html">Next: Modals →</a>
+    </nav>
+  </footer>
+
+  <script src="../js/accessible/tabs.js"></script>
+  <script src="../js/inaccessible/tabs.js"></script>
+</body>
+</html>

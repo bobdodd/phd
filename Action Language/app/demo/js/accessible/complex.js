@@ -1,0 +1,1 @@
+// Accessible complex implementation - placeholder

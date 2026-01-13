@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Modals - A11y Demo</title>
+  <link rel="stylesheet" href="../css/demo.css">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <header>
+    <nav class="breadcrumb"><a href="../index.html">← Back to Demo Index</a></nav>
+    <h1>Modal Dialogs Demo</h1>
+  </header>
+  <main id="main">
+    <section class="explanation">
+      <h2>About This Pattern</h2>
+      <p>Modals must trap focus, support Escape key, and restore focus on close.</p>
+      <ul>
+        <li><strong>WCAG:</strong> 2.1.2 (No Keyboard Trap), 2.4.3 (Focus Order)</li>
+        <li><strong>ARIA:</strong> role="dialog", aria-modal, aria-labelledby</li>
+      </ul>
+    </section>
+    <div class="comparison">
+      <section class="example good">
+        <h2>✓ Accessible Modal</h2>
+        <div class="demo-container"><button id="good-trigger">Open Modal</button></div>
+      </section>
+      <section class="example bad">
+        <h2>✗ Inaccessible Modal</h2>
+        <div class="demo-container"><button id="bad-trigger">Open Modal</button></div>
+        <div class="expected-issues">
+          <h3>Issues detected:</h3>
+          <ul><li><code>keyboard-trap-detected</code> - Focus trapped without Escape</li></ul>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer><nav><a href="tabs.html">← Previous</a><a href="disclosure.html">Next →</a></nav></footer>
+  <script src="../js/accessible/modal.js"></script>
+  <script src="../js/inaccessible/modal.js"></script>
+</body>
+</html>

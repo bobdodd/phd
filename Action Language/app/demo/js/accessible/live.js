@@ -1,0 +1,1 @@
+// Accessible live implementation - placeholder

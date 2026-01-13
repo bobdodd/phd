@@ -1,0 +1,1 @@
+// Accessible shortcuts implementation - placeholder
