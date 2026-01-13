@@ -707,17 +707,19 @@ class KeyboardAnalyzer {
       for (const element of mouseElements) {
         if (!keyboardElements.has(element) && element !== 'document' && element !== 'window') {
           // Check if it's a click handler (most important for accessibility)
-          const hasClick = this.mouseHandlers.some(h =>
+          const clickHandler = this.mouseHandlers.find(h =>
             h.elementRef === element && h.eventType === 'click'
           );
 
-          if (hasClick) {
+          if (clickHandler) {
             this.issues.push({
               type: 'mouse-only-click',
               severity: 'warning',
               message: `Element "${element}" has click handler but no keyboard handler`,
               elementRef: element,
-              suggestion: 'Add keydown handler for Enter/Space to ensure keyboard accessibility'
+              suggestion: 'Add keydown handler for Enter/Space to ensure keyboard accessibility',
+              location: clickHandler.location,
+              actionId: clickHandler.actionId
             });
           }
         }

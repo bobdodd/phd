@@ -271,7 +271,9 @@ class AccessibilityReporter {
           element: issue.elementRef,
           suggestion: issue.suggestion,
           wcag: this.mapFocusIssueToWCAG(issue),
-          source: 'FocusAnalyzer'
+          source: 'FocusAnalyzer',
+          location: issue.location,
+          actionId: issue.actionId
         });
       }
     }
@@ -287,7 +289,9 @@ class AccessibilityReporter {
           element: issue.elementRef,
           suggestion: issue.suggestion,
           wcag: this.mapAriaIssueToWCAG(issue),
-          source: 'ARIAAnalyzer'
+          source: 'ARIAAnalyzer',
+          location: issue.location,
+          actionId: issue.actionId
         });
       }
     }
@@ -303,7 +307,9 @@ class AccessibilityReporter {
           element: issue.elementRef,
           suggestion: issue.suggestion,
           wcag: this.mapKeyboardIssueToWCAG(issue),
-          source: 'KeyboardAnalyzer'
+          source: 'KeyboardAnalyzer',
+          location: issue.location,
+          actionId: issue.actionId
         });
       }
     }
@@ -337,7 +343,7 @@ class AccessibilityReporter {
       'positive-tabindex': ['2.4.3'],
       'standalone-blur': ['2.4.7'],
       'hiding-without-focus-management': ['2.4.3', '2.4.7'],
-      'removal-without-focus-management': ['2.4.3'],
+      'removal-without-focus-management': ['2.4.3', '2.4.7'], // Removing focused element loses visible focus (2.4.7) and changes focus order (2.4.3)
       'hiding-class-without-focus': ['2.4.7']
     };
     return mappings[issue.type] || ['2.4.3'];
