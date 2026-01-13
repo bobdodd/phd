@@ -2,40 +2,299 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Modals - A11y Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modal Dialogs - A11y Demo</title>
   <link rel="stylesheet" href="../css/demo.css">
+  <style>
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 8px;
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      background: #f0f0f0;
+      border-radius: 4px;
+    }
+
+    .modal-body {
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: flex-end;
+    }
+
+    .modal-footer button {
+      padding: 0.5rem 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: white;
+      cursor: pointer;
+    }
+
+    .modal-footer button.primary {
+      background: #0078d4;
+      color: white;
+      border-color: #0078d4;
+    }
+
+    .modal-footer button:hover {
+      background: #f0f0f0;
+    }
+
+    .modal-footer button.primary:hover {
+      background: #005a9e;
+    }
+  </style>
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
+
   <header>
-    <nav class="breadcrumb"><a href="../index.html">← Back to Demo Index</a></nav>
+    <nav class="breadcrumb">
+      <a href="../index.html">← Back to Demo Index</a>
+    </nav>
     <h1>Modal Dialogs Demo</h1>
+    <p>Focus trap management and proper dialog semantics</p>
   </header>
+
   <main id="main">
     <section class="explanation">
       <h2>About This Pattern</h2>
-      <p>Modals must trap focus, support Escape key, and restore focus on close.</p>
+      <p>
+        Modal dialogs overlay content and require user interaction before returning to the main page.
+        They must trap focus within the dialog, support Escape key to close, and restore focus when closed.
+      </p>
       <ul>
-        <li><strong>WCAG:</strong> 2.1.2 (No Keyboard Trap), 2.4.3 (Focus Order)</li>
-        <li><strong>ARIA:</strong> role="dialog", aria-modal, aria-labelledby</li>
+        <li><strong>WCAG Criteria:</strong> 2.1.2 (No Keyboard Trap), 2.4.3 (Focus Order), 4.1.2 (Name, Role, Value)</li>
+        <li><strong>Required ARIA:</strong> role="dialog", aria-modal="true", aria-labelledby (pointing to title)</li>
+        <li><strong>Keyboard:</strong> Tab cycles through focusable elements, Escape closes dialog</li>
       </ul>
     </section>
+
     <div class="comparison">
       <section class="example good">
-        <h2>✓ Accessible Modal</h2>
-        <div class="demo-container"><button id="good-trigger">Open Modal</button></div>
+        <h2>✓ Accessible Implementation</h2>
+        <div class="demo-container">
+          <button id="good-trigger">Open Accessible Modal</button>
+        </div>
+
+        <div id="good-modal-backdrop" class="modal-backdrop">
+          <div id="good-modal" role="dialog" aria-modal="true" aria-labelledby="good-modal-title" class="modal">
+            <div class="modal-header">
+              <h2 id="good-modal-title">Accessible Modal Dialog</h2>
+              <button id="good-close-x" class="modal-close" aria-label="Close dialog">&times;</button>
+            </div>
+            <div class="modal-body">
+              <p>This modal properly implements the dialog pattern:</p>
+              <ul>
+                <li>Focus is trapped within the dialog</li>
+                <li>Escape key closes the dialog</li>
+                <li>Focus returns to the trigger button</li>
+                <li>Backdrop click closes dialog</li>
+                <li>Screen readers announce "dialog" role</li>
+              </ul>
+              <label for="good-input">Try tabbing around:</label>
+              <input type="text" id="good-input" placeholder="First focusable element">
+            </div>
+            <div class="modal-footer">
+              <button id="good-cancel">Cancel</button>
+              <button id="good-confirm" class="primary">Confirm</button>
+            </div>
+          </div>
+        </div>
+
+        <details>
+          <summary>View Code</summary>
+          <pre><code>&lt;button id="trigger"&gt;Open Modal&lt;/button&gt;
+
+&lt;div class="backdrop"&gt;
+  &lt;div
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-title"&gt;
+    &lt;h2 id="modal-title"&gt;Dialog Title&lt;/h2&gt;
+    &lt;button aria-label="Close"&gt;&times;&lt;/button&gt;
+    &lt;!-- Dialog content --&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+// Save focus reference
+let previousFocus;
+
+function openModal() {
+  previousFocus = document.activeElement;
+  backdrop.classList.add('active');
+
+  // Move focus to first element in dialog
+  firstFocusable.focus();
+
+  // Trap focus with Tab
+  dialog.addEventListener('keydown', trapFocus);
+
+  // Close on Escape
+  dialog.addEventListener('keydown', handleEscape);
+}
+
+function closeModal() {
+  backdrop.classList.remove('active');
+
+  // Restore focus to trigger button
+  previousFocus.focus();
+
+  // Clean up listeners
+  dialog.removeEventListener('keydown', trapFocus);
+}
+
+function trapFocus(e) {
+  if (e.key === 'Tab') {
+    // Cycle focus within dialog only
+  }
+}
+&lt;/script&gt;</code></pre>
+        </details>
       </section>
+
       <section class="example bad">
-        <h2>✗ Inaccessible Modal</h2>
-        <div class="demo-container"><button id="bad-trigger">Open Modal</button></div>
+        <h2>✗ Inaccessible Implementation</h2>
+        <div class="demo-container">
+          <button id="bad-trigger">Open Inaccessible Modal</button>
+        </div>
+
+        <div id="bad-modal-backdrop" class="modal-backdrop">
+          <div id="bad-modal" class="modal">
+            <div class="modal-header">
+              <h2>Inaccessible Modal</h2>
+              <button id="bad-close-x" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+              <p>This modal has multiple issues:</p>
+              <ul>
+                <li>No role="dialog" or aria-modal</li>
+                <li>Focus can escape to background page (Tab key)</li>
+                <li>Escape key doesn't close the dialog</li>
+                <li>Focus not restored when closed</li>
+                <li>Close button has no accessible label</li>
+              </ul>
+              <input type="text" placeholder="Try pressing Tab repeatedly...">
+            </div>
+            <div class="modal-footer">
+              <button id="bad-cancel">Cancel</button>
+              <button id="bad-confirm" class="primary">Confirm</button>
+            </div>
+          </div>
+        </div>
+
+        <details>
+          <summary>View Code</summary>
+          <pre><code>&lt;!-- Missing role="dialog" and aria-modal --&gt;
+&lt;div class="backdrop"&gt;
+  &lt;div class="modal"&gt;
+    &lt;h2&gt;Modal Title&lt;/h2&gt;
+    &lt;!-- Missing aria-label on close button --&gt;
+    &lt;button&gt;&times;&lt;/button&gt;
+    &lt;!-- Modal content --&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+// No focus reference saved
+function openModal() {
+  backdrop.classList.add('active');
+  // Missing: save previousFocus
+  // Missing: move focus into dialog
+  // Missing: trap focus with Tab listener
+  // Missing: Escape key handler
+}
+
+function closeModal() {
+  backdrop.classList.remove('active');
+  // Missing: restore focus to trigger
+}
+
+// No keyboard support - creates keyboard trap
+// Tab can escape to background (bad!)
+&lt;/script&gt;</code></pre>
+        </details>
+
         <div class="expected-issues">
-          <h3>Issues detected:</h3>
-          <ul><li><code>keyboard-trap-detected</code> - Focus trapped without Escape</li></ul>
+          <h3>Issues the analyzer will detect:</h3>
+          <ul>
+            <li><code>keyboard-trap-detected</code> - Focus can escape modal without closing it (WCAG 2.1.2)</li>
+            <li><code>missing-dialog-role</code> - Modal without role="dialog" (WCAG 4.1.2)</li>
+            <li><code>missing-aria-modal</code> - No aria-modal="true" attribute</li>
+            <li><code>no-focus-restoration</code> - Focus not returned to trigger on close</li>
+            <li><code>incomplete-dialog-pattern</code> - WidgetPatternValidator detects missing Escape handler</li>
+            <li><code>missing-aria-label</code> - Close button without accessible name</li>
+          </ul>
         </div>
       </section>
     </div>
+
+    <section class="try-it">
+      <h2>Try It Yourself</h2>
+      <ol>
+        <li><strong>Open Accessible Modal:</strong> Press Tab repeatedly - focus stays within the dialog</li>
+        <li><strong>Press Escape:</strong> Dialog closes and focus returns to trigger button</li>
+        <li><strong>Open Inaccessible Modal:</strong> Press Tab - focus escapes to background page!</li>
+        <li><strong>Screen Reader:</strong> Accessible version announces "dialog", inaccessible doesn't</li>
+        <li><strong>Run Analyzer:</strong> <code>node src/cli.js demo/pages/modals.html</code></li>
+      </ol>
+    </section>
   </main>
-  <footer><nav><a href="tabs.html">← Previous</a><a href="disclosure.html">Next →</a></nav></footer>
+
+  <footer>
+    <nav>
+      <a href="tabs.html">← Previous: Tabs</a>
+      <a href="disclosure.html">Next: Accordions →</a>
+    </nav>
+  </footer>
+
   <script src="../js/accessible/modal.js"></script>
   <script src="../js/inaccessible/modal.js"></script>
 </body>

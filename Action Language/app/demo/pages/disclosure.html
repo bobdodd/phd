@@ -2,43 +2,356 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Accordions - A11y Demo</title>
   <link rel="stylesheet" href="../css/demo.css">
+  <style>
+    .accordion {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .accordion-item {
+      border-bottom: 1px solid #ddd;
+    }
+
+    .accordion-item:last-child {
+      border-bottom: none;
+    }
+
+    .accordion-header {
+      width: 100%;
+      padding: 1rem;
+      background: #f5f5f5;
+      border: none;
+      text-align: left;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .accordion-header:hover {
+      background: #e8e8e8;
+    }
+
+    .accordion-header:focus {
+      outline: 3px solid #0078d4;
+      outline-offset: -3px;
+    }
+
+    .accordion-icon {
+      transition: transform 0.2s;
+      font-size: 1.2rem;
+    }
+
+    .accordion-header[aria-expanded="true"] .accordion-icon {
+      transform: rotate(180deg);
+    }
+
+    .accordion-panel {
+      padding: 1rem;
+      background: white;
+    }
+
+    .accordion-panel[hidden] {
+      display: none;
+    }
+
+    /* Bad example uses divs */
+    .bad-accordion-item {
+      border-bottom: 1px solid #ddd;
+    }
+
+    .bad-accordion-header {
+      padding: 1rem;
+      background: #f5f5f5;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .bad-accordion-header:hover {
+      background: #e8e8e8;
+    }
+
+    .bad-accordion-panel {
+      padding: 1rem;
+      background: white;
+    }
+  </style>
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
+
   <header>
-    <nav class="breadcrumb"><a href="../index.html">← Back to Demo Index</a></nav>
-    <h1>Accordion Demo</h1>
+    <nav class="breadcrumb">
+      <a href="../index.html">← Back to Demo Index</a>
+    </nav>
+    <h1>Accordion / Disclosure Widget Demo</h1>
+    <p>Expandable sections with proper state management</p>
   </header>
+
   <main id="main">
     <section class="explanation">
       <h2>About This Pattern</h2>
-      <p>Accordions use aria-expanded to indicate state.</p>
-      <ul><li><strong>WCAG:</strong> 2.1.1 (Keyboard), 4.1.2 (Name, Role, Value)</li></ul>
+      <p>
+        Accordions (disclosure widgets) allow users to show and hide sections of content.
+        They must use button elements with aria-expanded to indicate their state.
+      </p>
+      <ul>
+        <li><strong>WCAG Criteria:</strong> 2.1.1 (Keyboard), 4.1.2 (Name, Role, Value)</li>
+        <li><strong>Required ARIA:</strong> aria-expanded on buttons, aria-controls linking to panels</li>
+        <li><strong>Keyboard:</strong> Enter/Space to toggle, arrow keys to navigate between headers (optional)</li>
+      </ul>
     </section>
+
     <div class="comparison">
       <section class="example good">
-        <h2>✓ Accessible Accordion</h2>
+        <h2>✓ Accessible Implementation</h2>
         <div class="demo-container">
-          <button aria-expanded="false" aria-controls="panel-1">Section 1</button>
-          <div id="panel-1" hidden>Content</div>
+          <div class="accordion" id="good-accordion">
+            <div class="accordion-item">
+              <h3>
+                <button
+                  class="accordion-header"
+                  aria-expanded="false"
+                  aria-controls="good-panel-1"
+                  id="good-header-1">
+                  <span>Section 1: Getting Started</span>
+                  <span class="accordion-icon" aria-hidden="true">▼</span>
+                </button>
+              </h3>
+              <div
+                class="accordion-panel"
+                id="good-panel-1"
+                role="region"
+                aria-labelledby="good-header-1"
+                hidden>
+                <p>This is the content for the first accordion section. Notice how:</p>
+                <ul>
+                  <li>The button has aria-expanded to indicate state</li>
+                  <li>aria-controls links the button to its panel</li>
+                  <li>The panel has role="region" for screen readers</li>
+                  <li>Keyboard works: Enter/Space to toggle</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <h3>
+                <button
+                  class="accordion-header"
+                  aria-expanded="false"
+                  aria-controls="good-panel-2"
+                  id="good-header-2">
+                  <span>Section 2: Implementation Details</span>
+                  <span class="accordion-icon" aria-hidden="true">▼</span>
+                </button>
+              </h3>
+              <div
+                class="accordion-panel"
+                id="good-panel-2"
+                role="region"
+                aria-labelledby="good-header-2"
+                hidden>
+                <p>When implementing accordions:</p>
+                <ul>
+                  <li>Always use button elements for headers</li>
+                  <li>Use the hidden attribute (not style.display)</li>
+                  <li>Sync aria-expanded with visibility</li>
+                  <li>Provide visual indication of state (icon rotation)</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <h3>
+                <button
+                  class="accordion-header"
+                  aria-expanded="false"
+                  aria-controls="good-panel-3"
+                  id="good-header-3">
+                  <span>Section 3: Best Practices</span>
+                  <span class="accordion-icon" aria-hidden="true">▼</span>
+                </button>
+              </h3>
+              <div
+                class="accordion-panel"
+                id="good-panel-3"
+                role="region"
+                aria-labelledby="good-header-3"
+                hidden>
+                <p>Best practices for accordions:</p>
+                <ul>
+                  <li>Allow multiple panels open simultaneously (unless space constrained)</li>
+                  <li>Don't nest interactive elements inside headers</li>
+                  <li>Ensure sufficient touch target size (44x44px minimum)</li>
+                  <li>Consider arrow key navigation for better UX</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <details>
+          <summary>View Code</summary>
+          <pre><code>&lt;div class="accordion"&gt;
+  &lt;div class="accordion-item"&gt;
+    &lt;h3&gt;
+      &lt;button
+        aria-expanded="false"
+        aria-controls="panel-1"
+        id="header-1"&gt;
+        Section Title
+      &lt;/button&gt;
+    &lt;/h3&gt;
+    &lt;div
+      id="panel-1"
+      role="region"
+      aria-labelledby="header-1"
+      hidden&gt;
+      Panel content...
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+button.addEventListener('click', function() {
+  const expanded = button.getAttribute('aria-expanded') === 'true';
+
+  // Toggle aria-expanded state
+  button.setAttribute('aria-expanded', !expanded);
+
+  // Toggle panel visibility
+  if (expanded) {
+    panel.setAttribute('hidden', '');
+  } else {
+    panel.removeAttribute('hidden');
+  }
+});
+&lt;/script&gt;</code></pre>
+        </details>
       </section>
+
       <section class="example bad">
-        <h2>✗ Inaccessible Accordion</h2>
+        <h2>✗ Inaccessible Implementation</h2>
         <div class="demo-container">
-          <div id="bad-header">Section 1</div>
-          <div id="bad-panel" style="display:none">Content</div>
+          <div class="accordion" id="bad-accordion">
+            <div class="bad-accordion-item">
+              <div class="bad-accordion-header" id="bad-header-1">
+                Section 1: Getting Started ▼
+              </div>
+              <div class="bad-accordion-panel" id="bad-panel-1" style="display: none;">
+                <p>This accordion has multiple issues:</p>
+                <ul>
+                  <li>Uses div instead of button (not keyboard accessible)</li>
+                  <li>No aria-expanded attribute</li>
+                  <li>No aria-controls linking to panel</li>
+                  <li>Uses style.display instead of hidden attribute</li>
+                  <li>Screen readers don't know this is expandable</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="bad-accordion-item">
+              <div class="bad-accordion-header" id="bad-header-2">
+                Section 2: Implementation Details ▼
+              </div>
+              <div class="bad-accordion-panel" id="bad-panel-2" style="display: none;">
+                <p>Common mistakes in accordion implementations:</p>
+                <ul>
+                  <li>Click-only event handlers</li>
+                  <li>Missing keyboard support</li>
+                  <li>State not communicated to assistive technologies</li>
+                  <li>Visibility changes without ARIA updates</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="bad-accordion-item">
+              <div class="bad-accordion-header" id="bad-header-3">
+                Section 3: Try Keyboard ▼
+              </div>
+              <div class="bad-accordion-panel" id="bad-panel-3" style="display: none;">
+                <p>Try using keyboard navigation:</p>
+                <ul>
+                  <li>Tab key skips over divs (not focusable)</li>
+                  <li>Enter/Space doesn't work</li>
+                  <li>Screen reader users have no indication of expandability</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <details>
+          <summary>View Code</summary>
+          <pre><code>&lt;!-- Missing button element --&gt;
+&lt;div class="accordion"&gt;
+  &lt;div class="accordion-item"&gt;
+    &lt;!-- Using div instead of button --&gt;
+    &lt;div id="header-1"&gt;Section Title&lt;/div&gt;
+    &lt;!-- Using style.display, missing aria-controls --&gt;
+    &lt;div id="panel-1" style="display: none;"&gt;
+      Panel content...
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+// Only click handler, no keyboard support
+header.addEventListener('click', function() {
+  // Using style.display instead of hidden
+  if (panel.style.display === 'none') {
+    panel.style.display = 'block';
+  } else {
+    panel.style.display = 'none';
+  }
+
+  // Missing: aria-expanded state update
+  // Missing: keyboard event handlers
+  // Missing: aria-controls association
+});
+&lt;/script&gt;</code></pre>
+        </details>
+
         <div class="expected-issues">
-          <h3>Issues:</h3>
-          <ul><li><code>missing-aria-expanded</code></li></ul>
+          <h3>Issues the analyzer will detect:</h3>
+          <ul>
+            <li><code>mouse-only-click</code> - Click handler without keyboard support (WCAG 2.1.1)</li>
+            <li><code>missing-aria-expanded</code> - No state indicator for expandable element</li>
+            <li><code>missing-aria-controls</code> - No association between header and panel</li>
+            <li><code>aria-expanded-without-visibility-change</code> - State not synchronized</li>
+            <li><code>click-only-disclosure</code> - Disclosure without proper keyboard handling</li>
+            <li><code>incomplete-accordion-pattern</code> - WidgetPatternValidator failure</li>
+            <li><code>not-focusable</code> - Interactive div without tabindex (WCAG 4.1.2)</li>
+          </ul>
         </div>
       </section>
     </div>
+
+    <section class="try-it">
+      <h2>Try It Yourself</h2>
+      <ol>
+        <li><strong>Accessible Version:</strong> Tab to headers, press Enter/Space to expand/collapse</li>
+        <li><strong>Screen Reader:</strong> Announces "button, collapsed" or "button, expanded"</li>
+        <li><strong>Inaccessible Version:</strong> Try keyboard - divs are not focusable!</li>
+        <li><strong>Visual State:</strong> Notice how aria-expanded controls the arrow icon rotation</li>
+        <li><strong>Run Analyzer:</strong> <code>node src/cli.js demo/pages/disclosure.html</code></li>
+      </ol>
+    </section>
   </main>
-  <footer><nav><a href="modals.html">← Previous</a><a href="keyboard-shortcuts.html">Next →</a></nav></footer>
+
+  <footer>
+    <nav>
+      <a href="modals.html">← Previous: Modals</a>
+      <a href="keyboard-shortcuts.html">Next: Keyboard Shortcuts →</a>
+    </nav>
+  </footer>
+
   <script src="../js/accessible/accordion.js"></script>
   <script src="../js/inaccessible/accordion.js"></script>
 </body>

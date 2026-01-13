@@ -2,37 +2,290 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Focus Management - A11y Demo</title>
   <link rel="stylesheet" href="../css/demo.css">
+  <style>
+    .focus-demo-box {
+      padding: 1.5rem;
+      border: 2px dashed #ccc;
+      border-radius: 4px;
+      margin: 1rem 0;
+      background: #f9f9f9;
+    }
+
+    .focus-demo-box button {
+      margin: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+    }
+
+    .status-message {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #e8f4f8;
+      border-left: 4px solid #0078d4;
+      border-radius: 4px;
+      min-height: 3rem;
+    }
+
+    .removable-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      margin: 0.25rem;
+      background: #e8e8e8;
+      border-radius: 4px;
+    }
+
+    .removable-item button {
+      padding: 0.25rem 0.5rem;
+      margin: 0;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+
+    .removable-item button:hover {
+      background: #f0f0f0;
+    }
+
+    .toggle-section {
+      margin-top: 1rem;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: white;
+    }
+
+    .toggle-section[hidden] {
+      display: none;
+    }
+  </style>
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
+
   <header>
-    <nav class="breadcrumb"><a href="../index.html">← Back to Demo Index</a></nav>
+    <nav class="breadcrumb">
+      <a href="../index.html">← Back to Demo Index</a>
+    </nav>
     <h1>Focus Management Demo</h1>
+    <p>Proper handling of focus when removing or hiding elements</p>
   </header>
+
   <main id="main">
     <section class="explanation">
       <h2>About This Pattern</h2>
-      <p>Check focus before removing/hiding elements.</p>
-      <ul><li><strong>WCAG:</strong> 2.4.3 (Focus Order), 2.4.7 (Focus Visible)</li></ul>
+      <p>
+        When removing or hiding focused elements, you must check if they have focus
+        and move focus elsewhere. Otherwise, keyboard users lose their place in the page.
+      </p>
+      <ul>
+        <li><strong>WCAG Criteria:</strong> 2.4.3 (Focus Order), 2.4.7 (Focus Visible)</li>
+        <li><strong>Key Principle:</strong> Always check <code>document.activeElement</code> before removing/hiding</li>
+        <li><strong>Common Mistakes:</strong> element.remove(), style.display='none', .blur() without moving focus</li>
+      </ul>
     </section>
+
     <div class="comparison">
       <section class="example good">
-        <h2>✓ Checks focus before removal</h2>
-        <div class="demo-container"><button id="good-remove">Remove Element</button></div>
+        <h2>✓ Accessible Implementation</h2>
+
+        <h3>Scenario 1: Removing Focused Elements</h3>
+        <div class="demo-container">
+          <div class="focus-demo-box">
+            <p>Focus one of these buttons, then click "Remove All" to see proper focus management:</p>
+            <div id="good-removable-container">
+              <div class="removable-item">
+                <span>Item 1</span>
+                <button class="good-remove-btn" data-item="1">×</button>
+              </div>
+              <div class="removable-item">
+                <span>Item 2</span>
+                <button class="good-remove-btn" data-item="2">×</button>
+              </div>
+              <div class="removable-item">
+                <span>Item 3</span>
+                <button class="good-remove-btn" data-item="3">×</button>
+              </div>
+            </div>
+            <button id="good-remove-all">Remove All Items</button>
+            <button id="good-reset-items">Reset Items</button>
+          </div>
+          <div class="status-message" id="good-status-1">Status: Ready</div>
+        </div>
+
+        <h3>Scenario 2: Hiding Focused Elements</h3>
+        <div class="demo-container">
+          <div class="focus-demo-box">
+            <button id="good-toggle">Toggle Section</button>
+            <div class="toggle-section" id="good-section">
+              <p>This section contains focusable elements:</p>
+              <input type="text" placeholder="Try focusing this input">
+              <button>Button in section</button>
+            </div>
+          </div>
+          <div class="status-message" id="good-status-2">Status: Section visible</div>
+        </div>
+
+        <details>
+          <summary>View Code</summary>
+          <pre><code>// Scenario 1: Removing focused element
+function removeElement(element) {
+  // Check if element (or any child) has focus
+  if (element.contains(document.activeElement)) {
+    // Move focus to a safe location first
+    const nextFocusable = findNextFocusable(element);
+    if (nextFocusable) {
+      nextFocusable.focus();
+    } else {
+      document.body.focus();
+    }
+  }
+
+  // Now safe to remove
+  element.remove();
+}
+
+// Scenario 2: Hiding focused element
+function hideElement(element) {
+  // Check if element (or any child) has focus
+  if (element.contains(document.activeElement)) {
+    // Move focus before hiding
+    const toggleButton = document.getElementById('toggle');
+    toggleButton.focus();
+  }
+
+  // Now safe to hide
+  element.setAttribute('hidden', '');
+}
+
+// Helper function
+function findNextFocusable(currentElement) {
+  const focusable = document.querySelectorAll(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+
+  for (let i = 0; i < focusable.length; i++) {
+    if (!currentElement.contains(focusable[i])) {
+      return focusable[i];
+    }
+  }
+  return null;
+}</code></pre>
+        </details>
       </section>
+
       <section class="example bad">
-        <h2>✗ Removes element without checking focus</h2>
-        <div class="demo-container"><button id="bad-remove">Remove Element</button></div>
+        <h2>✗ Inaccessible Implementation</h2>
+
+        <h3>Scenario 1: Removing Without Focus Check</h3>
+        <div class="demo-container">
+          <div class="focus-demo-box">
+            <p>Focus one of these buttons, then click "Remove All" - focus will be lost!</p>
+            <div id="bad-removable-container">
+              <div class="removable-item">
+                <span>Item 1</span>
+                <button class="bad-remove-btn" data-item="1">×</button>
+              </div>
+              <div class="removable-item">
+                <span>Item 2</span>
+                <button class="bad-remove-btn" data-item="2">×</button>
+              </div>
+              <div class="removable-item">
+                <span>Item 3</span>
+                <button class="bad-remove-btn" data-item="3">×</button>
+              </div>
+            </div>
+            <button id="bad-remove-all">Remove All Items</button>
+            <button id="bad-reset-items">Reset Items</button>
+          </div>
+          <div class="status-message" id="bad-status-1">Status: Ready (try focusing an item first!)</div>
+        </div>
+
+        <h3>Scenario 2: Hiding Without Focus Check</h3>
+        <div class="demo-container">
+          <div class="focus-demo-box">
+            <button id="bad-toggle">Toggle Section</button>
+            <div class="toggle-section" id="bad-section">
+              <p>Focus the input below, then click Toggle - focus will be lost!</p>
+              <input type="text" placeholder="Focus this, then toggle">
+              <button>Button in section</button>
+            </div>
+          </div>
+          <div class="status-message" id="bad-status-2">Status: Section visible</div>
+        </div>
+
+        <details>
+          <summary>View Code</summary>
+          <pre><code>// Scenario 1: Removing without focus check
+function removeElement(element) {
+  // ISSUE: No check for document.activeElement
+  // ISSUE: Directly removes element
+  element.remove(); // ← Analyzer detects this!
+
+  // Missing: Focus management before removal
+}
+
+// Scenario 2: Hiding without focus check
+function hideElement(element) {
+  // ISSUE: No check for document.activeElement
+  // ISSUE: Hides element that might have focus
+  element.style.display = 'none'; // ← Analyzer detects this!
+
+  // Missing: Move focus before hiding
+  // Missing: Check if element.contains(document.activeElement)
+}
+
+// Other problematic patterns:
+function blurWithoutReplacement() {
+  // ISSUE: Calling blur() without moving focus elsewhere
+  element.blur(); // ← Standalone blur() detected!
+}
+
+function removeParent() {
+  // ISSUE: Removing parent of focused element
+  parent.remove(); // ← Still detected if child has focus
+}</code></pre>
+        </details>
+
         <div class="expected-issues">
-          <h3>Issues:</h3>
-          <ul><li><code>removal-without-focus-management</code></li></ul>
+          <h3>Issues the analyzer will detect:</h3>
+          <ul>
+            <li><code>removal-without-focus-management</code> - element.remove() without checking document.activeElement (WCAG 2.4.3, 2.4.7)</li>
+            <li><code>hiding-focused-element</code> - style.display='none' or setAttribute('hidden') on focused element</li>
+            <li><code>standalone-blur</code> - Calling .blur() without moving focus to another element</li>
+            <li><code>focus-on-non-focusable-element</code> - .focus() called on element without tabindex</li>
+            <li><code>positive-tabindex</code> - tabindex > 0 disrupts natural tab order</li>
+          </ul>
         </div>
       </section>
     </div>
+
+    <section class="try-it">
+      <h2>Try It Yourself</h2>
+      <ol>
+        <li><strong>Accessible Remove:</strong> Focus Item 2's × button, click "Remove All" - focus moves to "Reset Items"</li>
+        <li><strong>Inaccessible Remove:</strong> Focus Item 2's × button, click "Remove All" - focus is lost completely!</li>
+        <li><strong>Accessible Hide:</strong> Focus the input, click "Toggle" - focus returns to toggle button</li>
+        <li><strong>Inaccessible Hide:</strong> Focus the input, click "Toggle" - focus is lost!</li>
+        <li><strong>Run Analyzer:</strong> <code>node src/cli.js demo/pages/focus-management.html</code></li>
+      </ol>
+      <p><strong>Tip:</strong> Use Tab key to navigate, and watch where focus goes after removal/hiding.</p>
+    </section>
   </main>
-  <footer><nav><a href="keyboard-shortcuts.html">← Previous</a><a href="aria-live.html">Next →</a></nav></footer>
+
+  <footer>
+    <nav>
+      <a href="keyboard-shortcuts.html">← Previous: Keyboard Shortcuts</a>
+      <a href="aria-live.html">Next: Live Regions →</a>
+    </nav>
+  </footer>
+
   <script src="../js/accessible/focus.js"></script>
   <script src="../js/inaccessible/focus.js"></script>
 </body>
