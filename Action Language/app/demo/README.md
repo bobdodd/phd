@@ -13,11 +13,29 @@ This demo project provides **side-by-side comparisons** of accessible (good) and
 
 ### View the Demo
 
+**Option 1: Using the Local Server (Recommended)**
+
+```bash
+# From the demo directory
+cd demo
+node serve.js
+
+# Or specify a custom port
+node serve.js 3000
+
+# Then open in your browser:
+# http://localhost:8080/
+```
+
+**Option 2: Open Directly**
+
 1. Open `index.html` in your browser
 2. Navigate to any demo page
 3. Try both accessible and inaccessible versions with:
    - **Keyboard only** (Tab, Enter, Space, Arrow keys)
    - **Screen reader** (NVDA, JAWS, or VoiceOver)
+
+**Note:** Some features may work better with the local server due to browser security restrictions on file:// URLs.
 
 ### Run the Analyzer
 
