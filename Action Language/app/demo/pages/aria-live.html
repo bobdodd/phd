@@ -2,43 +2,362 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Live Regions - A11y Demo</title>
   <link rel="stylesheet" href="../css/demo.css">
+  <style>
+    .live-region-demo {
+      padding: 1.5rem;
+      border: 2px dashed #ccc;
+      border-radius: 4px;
+      margin: 1rem 0;
+      background: #f9f9f9;
+    }
+
+    .live-region-demo button {
+      margin: 0.5rem 0.5rem 0.5rem 0;
+      padding: 0.5rem 1rem;
+    }
+
+    .status-box {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 4px;
+      min-height: 3rem;
+      font-weight: 600;
+    }
+
+    .status-box.status {
+      background: #e8f4f8;
+      border-left: 4px solid #0078d4;
+    }
+
+    .status-box.alert {
+      background: #ffe8e8;
+      border-left: 4px solid #d32f2f;
+      color: #d32f2f;
+    }
+
+    .status-box.success {
+      background: #e8f8e8;
+      border-left: 4px solid #2e7d32;
+      color: #2e7d32;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #0078d4;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      vertical-align: middle;
+      margin-right: 0.5rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .timer-display {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 1rem 0;
+      color: #0078d4;
+    }
+
+    .form-validation {
+      margin: 1rem 0;
+    }
+
+    .form-validation input {
+      padding: 0.5rem;
+      font-size: 1rem;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .form-validation input.error {
+      border-color: #d32f2f;
+    }
+
+    .form-validation input.success {
+      border-color: #2e7d32;
+    }
+  </style>
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
+
   <header>
-    <nav class="breadcrumb"><a href="../index.html">← Back to Demo Index</a></nav>
-    <h1>Live Regions Demo</h1>
+    <nav class="breadcrumb">
+      <a href="../index.html">← Back to Demo Index</a>
+    </nav>
+    <h1>ARIA Live Regions Demo</h1>
+    <p>Announcing dynamic content updates to screen readers</p>
   </header>
+
   <main id="main">
     <section class="explanation">
       <h2>About This Pattern</h2>
-      <p>Dynamic updates must be announced to screen readers.</p>
-      <ul><li><strong>WCAG:</strong> 4.1.3 (Status Messages)</li></ul>
+      <p>
+        Live regions announce dynamic content changes to screen readers without moving focus.
+        Essential for status messages, alerts, loading indicators, and dynamic updates.
+      </p>
+      <ul>
+        <li><strong>WCAG Criteria:</strong> 4.1.3 (Status Messages - Level AA)</li>
+        <li><strong>ARIA Attributes:</strong> aria-live (off/polite/assertive), role="status", role="alert", aria-busy</li>
+        <li><strong>Use Cases:</strong> Form validation, loading states, notifications, timer updates</li>
+      </ul>
     </section>
+
     <div class="comparison">
       <section class="example good">
-        <h2>✓ Uses aria-live for announcements</h2>
+        <h2>✓ Accessible Implementation</h2>
+
+        <h3>Scenario 1: Status Messages (role="status")</h3>
         <div class="demo-container">
-          <button id="good-update">Update</button>
-          <div role="status" aria-live="polite" id="good-status"></div>
+          <div class="live-region-demo">
+            <p>Click buttons to see polite status announcements:</p>
+            <button id="good-save">Save Changes</button>
+            <button id="good-refresh">Refresh Data</button>
+            <button id="good-export">Export</button>
+
+            <!-- role="status" implies aria-live="polite" -->
+            <div role="status" class="status-box status" id="good-status-1">
+              Ready
+            </div>
+          </div>
         </div>
+
+        <h3>Scenario 2: Error Alerts (role="alert")</h3>
+        <div class="demo-container">
+          <div class="live-region-demo">
+            <p>Trigger errors to hear assertive announcements:</p>
+            <button id="good-error">Simulate Error</button>
+            <button id="good-warning">Show Warning</button>
+
+            <!-- role="alert" implies aria-live="assertive" -->
+            <div role="alert" class="status-box alert" id="good-alert-1" style="display: none;">
+            </div>
+          </div>
+        </div>
+
+        <h3>Scenario 3: Loading States (aria-busy)</h3>
+        <div class="demo-container">
+          <div class="live-region-demo">
+            <p>Loading indicators with proper announcements:</p>
+            <button id="good-load">Load Data</button>
+
+            <div role="status" aria-live="polite" class="status-box status" id="good-loading-status">
+              Ready to load
+            </div>
+          </div>
+        </div>
+
+        <h3>Scenario 4: Form Validation</h3>
+        <div class="demo-container">
+          <div class="live-region-demo">
+            <p>Real-time validation with announcements:</p>
+            <div class="form-validation">
+              <label for="good-email">Email address:</label>
+              <input type="email" id="good-email" placeholder="example@domain.com" aria-describedby="good-email-error">
+              <div role="alert" class="status-box alert" id="good-email-error" style="display: none;"></div>
+            </div>
+          </div>
+        </div>
+
+        <details>
+          <summary>View Code</summary>
+          <pre><code>&lt;!-- Scenario 1: Status Messages --&gt;
+&lt;button id="save"&gt;Save Changes&lt;/button&gt;
+
+&lt;!-- role="status" implies aria-live="polite" --&gt;
+&lt;div role="status" id="status"&gt;
+  Ready
+&lt;/div&gt;
+
+&lt;script&gt;
+saveButton.addEventListener('click', function() {
+  // Update status - will be announced
+  status.textContent = 'Saving changes...';
+
+  // After save completes
+  setTimeout(() => {
+    status.textContent = 'Changes saved successfully';
+  }, 1000);
+});
+&lt;/script&gt;
+
+&lt;!-- Scenario 2: Error Alerts --&gt;
+&lt;!-- role="alert" implies aria-live="assertive" --&gt;
+&lt;div role="alert" id="alert"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+// Show error - will interrupt screen reader
+alert.textContent = 'Error: Could not save changes';
+&lt;/script&gt;
+
+&lt;!-- Scenario 3: Loading States --&gt;
+&lt;div role="status" aria-live="polite" aria-busy="true"&gt;
+  &lt;span class="spinner"&gt;&lt;/span&gt; Loading data...
+&lt;/div&gt;
+
+&lt;!-- Scenario 4: Form Validation --&gt;
+&lt;input type="email" aria-describedby="email-error"&gt;
+&lt;div role="alert" id="email-error"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+emailInput.addEventListener('blur', function() {
+  if (!isValidEmail(emailInput.value)) {
+    emailError.textContent = 'Please enter a valid email';
+  }
+});
+&lt;/script&gt;</code></pre>
+        </details>
       </section>
+
       <section class="example bad">
-        <h2>✗ Silent updates</h2>
+        <h2>✗ Inaccessible Implementation</h2>
+
+        <h3>Scenario 1: Silent Status Updates</h3>
         <div class="demo-container">
-          <button id="bad-update">Update</button>
-          <div id="bad-status"></div>
+          <div class="live-region-demo">
+            <p>Updates are silent - screen readers don't announce them:</p>
+            <button id="bad-save">Save Changes</button>
+            <button id="bad-refresh">Refresh Data</button>
+            <button id="bad-export">Export</button>
+
+            <!-- Missing role="status" and aria-live -->
+            <div class="status-box status" id="bad-status-1">
+              Ready
+            </div>
+          </div>
         </div>
+
+        <h3>Scenario 2: Silent Errors</h3>
+        <div class="demo-container">
+          <div class="live-region-demo">
+            <p>Errors appear visually but aren't announced:</p>
+            <button id="bad-error">Simulate Error</button>
+            <button id="bad-warning">Show Warning</button>
+
+            <!-- Missing role="alert" -->
+            <div class="status-box alert" id="bad-alert-1" style="display: none;">
+            </div>
+          </div>
+        </div>
+
+        <h3>Scenario 3: Loading Without Indication</h3>
+        <div class="demo-container">
+          <div class="live-region-demo">
+            <p>Loading states not communicated to assistive tech:</p>
+            <button id="bad-load">Load Data</button>
+
+            <!-- Missing aria-live and aria-busy -->
+            <div class="status-box status" id="bad-loading-status">
+              Ready to load
+            </div>
+          </div>
+        </div>
+
+        <h3>Scenario 4: Silent Validation Errors</h3>
+        <div class="demo-container">
+          <div class="live-region-demo">
+            <p>Validation errors not announced:</p>
+            <div class="form-validation">
+              <label for="bad-email">Email address:</label>
+              <input type="email" id="bad-email" placeholder="example@domain.com">
+              <!-- Missing role="alert" and aria-describedby -->
+              <div class="status-box alert" id="bad-email-error" style="display: none;"></div>
+            </div>
+          </div>
+        </div>
+
+        <details>
+          <summary>View Code</summary>
+          <pre><code>&lt;!-- Scenario 1: No ARIA Live Region --&gt;
+&lt;button id="save"&gt;Save Changes&lt;/button&gt;
+
+&lt;!-- Missing role="status" and aria-live --&gt;
+&lt;div id="status"&gt;Ready&lt;/div&gt;
+
+&lt;script&gt;
+saveButton.addEventListener('click', function() {
+  // ISSUE: Update is silent to screen readers
+  status.textContent = 'Saving changes...';
+  // Missing: aria-live or role="status"
+});
+&lt;/script&gt;
+
+&lt;!-- Scenario 2: No Alert Role --&gt;
+&lt;!-- Missing role="alert" --&gt;
+&lt;div id="alert"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+// ISSUE: Error not announced
+alert.textContent = 'Error: Could not save changes';
+// Missing: role="alert"
+&lt;/script&gt;
+
+&lt;!-- Scenario 3: No Loading Announcement --&gt;
+&lt;!-- Missing aria-live and aria-busy --&gt;
+&lt;div id="loading"&gt;
+  &lt;span class="spinner"&gt;&lt;/span&gt; Loading...
+&lt;/div&gt;
+
+&lt;!-- Scenario 4: No Validation Announcement --&gt;
+&lt;input type="email"&gt;
+&lt;!-- Missing role="alert" and aria-describedby --&gt;
+&lt;div id="email-error"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+// ISSUE: Validation error not announced
+emailError.textContent = 'Please enter a valid email';
+// Missing: role="alert" on error container
+&lt;/script&gt;</code></pre>
+        </details>
+
         <div class="expected-issues">
-          <h3>Issues:</h3>
-          <ul><li><code>missing-aria-live</code> - Dynamic content without live region</li></ul>
+          <h3>Issues the analyzer will detect:</h3>
+          <ul>
+            <li><code>missing-aria-live</code> - Dynamic content changes without aria-live attribute</li>
+            <li><code>status-message-not-announced</code> - Status updates without role="status" (WCAG 4.1.3)</li>
+            <li><code>assertive-live-region</code> - Overuse of aria-live="assertive" (interrupts users)</li>
+            <li><code>aria-busy-without-indication</code> - aria-busy without visual loading indicator</li>
+            <li><code>missing-role-alert</code> - Error messages without role="alert"</li>
+            <li><code>dynamic-content-without-announcement</code> - textContent changes without live region</li>
+          </ul>
         </div>
       </section>
     </div>
+
+    <section class="try-it">
+      <h2>Try It Yourself</h2>
+      <ol>
+        <li><strong>With Screen Reader:</strong> Enable NVDA/JAWS/VoiceOver and click "Save Changes" in both sections</li>
+        <li><strong>Accessible Version:</strong> Screen reader announces "Saving changes..." then "Changes saved successfully"</li>
+        <li><strong>Inaccessible Version:</strong> Screen reader says nothing - updates are silent!</li>
+        <li><strong>Error Alerts:</strong> Click "Simulate Error" - accessible version interrupts to announce error</li>
+        <li><strong>Loading States:</strong> Click "Load Data" - accessible version announces loading status</li>
+        <li><strong>Form Validation:</strong> Enter invalid email - accessible version announces error</li>
+        <li><strong>Run Analyzer:</strong> <code>node src/cli.js demo/pages/aria-live.html</code></li>
+      </ol>
+      <p><strong>Tip:</strong> Live regions only announce changes to their content, not initial content.</p>
+    </section>
   </main>
-  <footer><nav><a href="focus-management.html">← Previous</a><a href="complex-widgets.html">Next →</a></nav></footer>
+
+  <footer>
+    <nav>
+      <a href="focus-management.html">← Previous: Focus Management</a>
+      <a href="complex-widgets.html">Next: Complex Widgets →</a>
+    </nav>
+  </footer>
+
   <script src="../js/accessible/live.js"></script>
   <script src="../js/inaccessible/live.js"></script>
 </body>
