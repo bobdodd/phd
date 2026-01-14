@@ -40,76 +40,94 @@ export default function LearnActionLanguage() {
           </a>
 
           {/* Module 2 */}
-          <div className="block bg-white rounded-lg p-8 shadow-lg border-l-4 border-gray-300 opacity-75">
+          <a href="/learn-actionlanguage/module-2" className="block bg-white rounded-lg p-8 shadow-lg border-l-4 border-paradise-green hover:shadow-xl transition-shadow">
             <div className="flex items-start gap-4">
-              <div className="bg-gray-300 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl flex-shrink-0">
+              <div className="bg-paradise-green text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl flex-shrink-0">
                 2
               </div>
               <div>
-                <h3 className="text-2xl font-semibold mb-2 text-gray-600">ActionLanguage Schema Reference</h3>
-                <p className="text-gray-600 mb-2">
+                <h3 className="text-2xl font-semibold mb-2 text-paradise-green">ActionLanguage Schema Reference</h3>
+                <p className="text-gray-700 mb-2">
                   Deep dive into the structure: node types, properties, relationships, and how they represent UI interactions.
                 </p>
-                <p className="text-sm text-gray-500">
-                  <strong>Time:</strong> 30-40 minutes • <strong>Level:</strong> Intermediate • <em>Coming soon</em>
+                <p className="text-sm text-gray-600">
+                  <strong>Time:</strong> 30-40 minutes • <strong>Level:</strong> Intermediate
                 </p>
               </div>
             </div>
-          </div>
+          </a>
 
           {/* Module 3 */}
-          <div className="block bg-white rounded-lg p-8 shadow-lg border-l-4 border-gray-300 opacity-75">
+          <a href="/learn-actionlanguage/module-3" className="block bg-white rounded-lg p-8 shadow-lg border-l-4 border-paradise-orange hover:shadow-xl transition-shadow">
             <div className="flex items-start gap-4">
-              <div className="bg-gray-300 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl flex-shrink-0">
+              <div className="bg-paradise-orange text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl flex-shrink-0">
                 3
               </div>
               <div>
-                <h3 className="text-2xl font-semibold mb-2 text-gray-600">CRUD Operations on ActionLanguage ⭐</h3>
-                <p className="text-gray-600 mb-2">
+                <h3 className="text-2xl font-semibold mb-2 text-paradise-orange">CRUD Operations on ActionLanguage ⭐</h3>
+                <p className="text-gray-700 mb-2">
                   <strong>THE KEY SECTION:</strong> Learn how CREATE, READ, UPDATE, and DELETE operations enable universal adaptivity.
                 </p>
-                <p className="text-sm text-gray-500">
-                  <strong>Time:</strong> 45-60 minutes • <strong>Level:</strong> Intermediate • <em>Coming soon</em>
+                <p className="text-sm text-gray-600">
+                  <strong>Time:</strong> 45-60 minutes • <strong>Level:</strong> Intermediate
                 </p>
               </div>
             </div>
-          </div>
+          </a>
 
           {/* Module 4 */}
-          <div className="block bg-white rounded-lg p-8 shadow-lg border-l-4 border-gray-300 opacity-75">
+          <a href="/learn-actionlanguage/module-4" className="block bg-white rounded-lg p-8 shadow-lg border-l-4 border-paradise-purple hover:shadow-xl transition-shadow">
             <div className="flex items-start gap-4">
-              <div className="bg-gray-300 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl flex-shrink-0">
+              <div className="bg-paradise-purple text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl flex-shrink-0">
                 4
               </div>
               <div>
-                <h3 className="text-2xl font-semibold mb-2 text-gray-600">Adaptivity Across Languages</h3>
-                <p className="text-gray-600 mb-2">
+                <h3 className="text-2xl font-semibold mb-2 text-paradise-purple">Adaptivity Across Languages</h3>
+                <p className="text-gray-700 mb-2">
                   See how CRUD operations on ActionLanguage enable one set of analyzers to work for JavaScript, Objective-C, Kotlin, and beyond.
                 </p>
-                <p className="text-sm text-gray-500">
-                  <strong>Time:</strong> 30-40 minutes • <strong>Level:</strong> Advanced • <em>Coming soon</em>
+                <p className="text-sm text-gray-600">
+                  <strong>Time:</strong> 30-40 minutes • <strong>Level:</strong> Advanced
                 </p>
               </div>
             </div>
-          </div>
+          </a>
 
           {/* Module 5 */}
-          <div className="block bg-white rounded-lg p-8 shadow-lg border-l-4 border-gray-300 opacity-75">
+          <a href="/learn-actionlanguage/module-5" className="block bg-white rounded-lg p-8 shadow-lg border-l-4 border-paradise-blue hover:shadow-xl transition-shadow">
             <div className="flex items-start gap-4">
-              <div className="bg-gray-300 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl flex-shrink-0">
+              <div className="bg-paradise-blue text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl flex-shrink-0">
                 5
               </div>
               <div>
-                <h3 className="text-2xl font-semibold mb-2 text-gray-600">Writing Custom Analyzers</h3>
-                <p className="text-gray-600 mb-2">
+                <h3 className="text-2xl font-semibold mb-2 text-paradise-blue">Writing Custom Analyzers</h3>
+                <p className="text-gray-700 mb-2">
                   Build your own accessibility analyzers that operate on ActionLanguage. Detect custom patterns and generate fixes.
                 </p>
-                <p className="text-sm text-gray-500">
-                  <strong>Time:</strong> 60+ minutes • <strong>Level:</strong> Advanced • <em>Coming soon</em>
+                <p className="text-sm text-gray-600">
+                  <strong>Time:</strong> 60+ minutes • <strong>Level:</strong> Advanced
                 </p>
               </div>
             </div>
-          </div>
+          </a>
+
+          {/* Module 6 */}
+          <a href="/learn-actionlanguage/module-6" className="block bg-white rounded-lg p-8 shadow-lg border-l-4 border-paradise-green hover:shadow-xl transition-shadow">
+            <div className="flex items-start gap-4">
+              <div className="bg-paradise-green text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl flex-shrink-0">
+                6
+              </div>
+              <div>
+                <h3 className="text-2xl font-semibold mb-2 text-paradise-green">Building VS Code Extensions</h3>
+                <p className="text-gray-700 mb-2">
+                  Create VS Code extensions that integrate your custom analyzers with real-time diagnostics and one-click fixes.
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong>Time:</strong> 60+ minutes • <strong>Level:</strong> Advanced
+                </p>
+              </div>
+            </div>
+          </a>
         </div>
       </section>
 
