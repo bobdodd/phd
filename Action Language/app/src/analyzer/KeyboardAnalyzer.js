@@ -163,10 +163,14 @@ class KeyboardAnalyzer {
   /**
    * Analyze an ActionTree for keyboard navigation patterns
    * @param {ActionTree} tree - The ActionTree to analyze
+   * @param {Object} [eventAnalyzerData] - Optional EventAnalyzer results for enhanced detection
    * @returns {Object} Analysis results
    */
-  analyze(tree) {
+  analyze(tree, eventAnalyzerData = null) {
     this.reset();
+
+    // Store EventAnalyzer data for enhanced detections
+    this.eventAnalyzerData = eventAnalyzerData;
 
     if (!tree || !tree.root) {
       return this.getResults();
@@ -235,7 +239,9 @@ class KeyboardAnalyzer {
       parent: action,
       inKeyboardHandler: context.inKeyboardHandler || this.isKeyboardHandler(action),
       inMouseHandler: context.inMouseHandler || this.isMouseHandler(action),
-      currentHandler: this.isKeyboardHandler(action) ? action : context.currentHandler
+      currentHandler: this.isKeyboardHandler(action) ? action : context.currentHandler,
+      // Track the handler function's ID for new detections
+      currentHandlerFunctionId: this.isKeyboardHandler(action) ? this.getHandlerFunctionId(action) : (action.actionType === 'functionExpr' && context.inKeyboardHandler ? action.id : context.currentHandlerFunctionId)
     };
 
     // Traverse children
@@ -256,6 +262,19 @@ class KeyboardAnalyzer {
       }
     }
     return false;
+  }
+
+  /**
+   * Get the handler function's ID from an addEventListener call
+   */
+  getHandlerFunctionId(action) {
+    if (action.getAttribute('pattern') === 'eventHandler') {
+      const args = action.children.filter(c => c.getAttribute('role') === 'argument');
+      if (args.length >= 2) {
+        return args[1].id; // Return the function expression's ID
+      }
+    }
+    return action.id;
   }
 
   /**
@@ -290,6 +309,10 @@ class KeyboardAnalyzer {
     const calleeChild = action.children.find(c => c.getAttribute('role') === 'callee');
     const elementRef = this.getElementReference(calleeChild);
 
+    // Get the handler function (second argument)
+    const handlerFunc = args.length >= 2 ? args[1] : null;
+    const handlerActionId = handlerFunc ? handlerFunc.id : action.id;
+
     this.keyboardHandlers.push({
       type: 'addEventListener',
       eventType: eventType,
@@ -299,7 +322,7 @@ class KeyboardAnalyzer {
         column: action.getAttribute('column')
       },
       actionId: action.id,
-      handlerActionId: action.id
+      handlerActionId: handlerActionId
     });
   }
 
@@ -368,7 +391,8 @@ class KeyboardAnalyzer {
                     line: action.getAttribute('line'),
                     column: action.getAttribute('column')
                   },
-                  actionId: action.id
+                  actionId: action.id,
+                  handlerFunctionId: context.currentHandlerFunctionId
                 });
               }
             }
@@ -397,7 +421,8 @@ class KeyboardAnalyzer {
                 line: action.getAttribute('line'),
                 column: action.getAttribute('column')
               },
-              actionId: action.id
+              actionId: action.id,
+              handlerFunctionId: context.currentHandlerFunctionId
             });
           }
         }
@@ -470,7 +495,8 @@ class KeyboardAnalyzer {
           line: action.getAttribute('line'),
           column: action.getAttribute('column')
         },
-        actionId: action.id
+        actionId: action.id,
+        handlerFunctionId: context.currentHandlerFunctionId
       });
     }
   }
@@ -733,10 +759,21 @@ class KeyboardAnalyzer {
           type: 'potential-keyboard-trap',
           severity: 'warning',
           message: 'Tab key handling with preventDefault detected without Escape handler',
-          suggestion: 'Ensure users can exit the component using Escape key or other means'
+          suggestion: 'Ensure users can exit the component using Escape key or other means',
+          wcag: ['2.1.2']
         });
       }
     }
+
+    // NEW: Issue: Missing Escape handler in focus traps
+    // Enhance detection to find specific handlers missing Escape
+    this.detectMissingEscapeHandler();
+
+    // NEW: Issue: Incomplete activation keys (Enter without Space, or vice versa)
+    this.detectIncompleteActivationKeys();
+
+    // NEW: Issue: Touch events without click fallback
+    this.detectTouchWithoutClick(this.eventAnalyzerData);
 
     // Issue: Using deprecated keyCode instead of key
     const keyCodeChecks = this.keyChecks.filter(k => k.property === 'keyCode' || k.property === 'which');
@@ -900,6 +937,175 @@ class KeyboardAnalyzer {
     );
 
     return meaningfulModifiers.length > 0;
+  }
+
+  /**
+   * Detect focus traps that handle Tab but don't handle Escape
+   * WCAG 2.1.2 (No Keyboard Trap) - users must be able to exit focus traps
+   */
+  detectMissingEscapeHandler() {
+    // Find all keydown handlers that check for Tab key
+    const tabHandlers = this.keyboardHandlers.filter(handler =>
+      handler.eventType === 'keydown'
+    );
+
+    for (const handler of tabHandlers) {
+      // Check if this handler checks for Tab key
+      const handlerChecksTab = this.keyChecks.some(check =>
+        check.handlerFunctionId === handler.handlerActionId &&
+        (check.key === 'Tab' || check.key === 9)
+      );
+
+      if (!handlerChecksTab) continue;
+
+      // Check if preventDefault is called on Tab in this handler
+      const hasPreventDefault = this.preventDefaultCalls.some(pd =>
+        pd.handlerFunctionId === handler.handlerActionId
+      );
+
+      if (!hasPreventDefault) continue;
+
+      // This handler traps Tab - now check if it also handles Escape
+      const handlerChecksEscape = this.keyChecks.some(check =>
+        check.handlerFunctionId === handler.handlerActionId &&
+        (['Escape', 'Esc'].includes(check.key) || check.key === 27 || check.key === '27')
+      );
+
+      // Also check if ANY handler on the same element checks for Escape
+      const elementHasEscape = this.keyboardHandlers
+        .filter(h => h.elementRef === handler.elementRef && h.eventType === 'keydown')
+        .some(h => this.keyChecks.some(check =>
+          check.handlerFunctionId === h.handlerActionId &&
+          (['Escape', 'Esc'].includes(check.key) || check.key === 27 || check.key === '27')
+        ));
+
+      if (!handlerChecksEscape && !elementHasEscape) {
+        this.issues.push({
+          type: 'missing-escape-handler',
+          severity: 'warning',
+          message: `Focus trap detected on ${handler.elementRef} - Tab key is trapped but no Escape key handler found`,
+          element: handler.elementRef,
+          location: handler.location,
+          wcag: ['2.1.2'],
+          suggestion: 'Add Escape key handler to allow users to exit the focus trap: if (e.key === "Escape") { closeTrap(); }'
+        });
+      }
+    }
+  }
+
+  /**
+   * Detect incomplete activation keys for interactive elements
+   * Buttons need both Enter AND Space, links need Enter
+   * WCAG 2.1.1 (Keyboard) - all functionality must be keyboard accessible
+   */
+  detectIncompleteActivationKeys() {
+    // This requires cross-referencing with ARIA role data
+    // For now, we'll look for any keydown handlers that check Enter but not Space, or vice versa
+
+    // Group keydown handlers by element
+    const elementHandlers = new Map();
+    for (const handler of this.keyboardHandlers) {
+      if (handler.eventType !== 'keydown') continue;
+
+      if (!elementHandlers.has(handler.elementRef)) {
+        elementHandlers.set(handler.elementRef, []);
+      }
+      elementHandlers.get(handler.elementRef).push(handler);
+    }
+
+    // Check each element's handlers
+    for (const [elementRef, handlers] of elementHandlers) {
+      // Get all key checks for these handlers
+      const handlerFunctionIds = handlers.map(h => h.handlerActionId);
+      const elementKeyChecks = this.keyChecks.filter(check =>
+        handlerFunctionIds.includes(check.handlerFunctionId)
+      );
+
+      // Check if element handles Enter
+      const hasEnter = elementKeyChecks.some(check =>
+        check.key === 'Enter' || check.key === 13
+      );
+
+      // Check if element handles Space
+      const hasSpace = elementKeyChecks.some(check =>
+        check.key === ' ' || check.key === 'Space' || check.key === 32
+      );
+
+      // Flag incomplete patterns
+      if (hasEnter && !hasSpace) {
+        this.issues.push({
+          type: 'incomplete-activation-keys',
+          severity: 'warning',
+          message: `Element ${elementRef} handles Enter key but not Space - buttons should respond to both`,
+          element: elementRef,
+          missingKey: 'Space',
+          location: handlers[0].location,
+          wcag: ['2.1.1'],
+          suggestion: 'Add Space key handler: if (e.key === " " || e.key === "Space") { activate(); }'
+        });
+      } else if (hasSpace && !hasEnter) {
+        this.issues.push({
+          type: 'incomplete-activation-keys',
+          severity: 'warning',
+          message: `Element ${elementRef} handles Space key but not Enter - interactive elements should respond to both`,
+          element: elementRef,
+          missingKey: 'Enter',
+          location: handlers[0].location,
+          wcag: ['2.1.1'],
+          suggestion: 'Add Enter key handler: if (e.key === "Enter") { activate(); }'
+        });
+      }
+    }
+  }
+
+  /**
+   * Detect touch events without click fallback
+   * Touch-only interactions exclude mouse/keyboard users
+   * WCAG 2.5.2 (Pointer Cancellation) - support multiple input methods
+   *
+   * Note: This detection requires EventAnalyzer data integration.
+   * Implementation will be completed when EventAnalyzer data is passed to KeyboardAnalyzer.
+   *
+   * Detection logic:
+   * 1. Find elements with touchstart/touchend handlers (from EventAnalyzer)
+   * 2. Check if same elements have click handlers
+   * 3. Flag elements with touch but no click
+   */
+  detectTouchWithoutClick(eventAnalyzerData) {
+    // If EventAnalyzer data is not provided, skip this detection
+    if (!eventAnalyzerData || !eventAnalyzerData.handlers) {
+      return;
+    }
+
+    // Group handlers by element
+    const handlersByElement = new Map();
+    for (const handler of eventAnalyzerData.handlers) {
+      if (!handlersByElement.has(handler.elementRef)) {
+        handlersByElement.set(handler.elementRef, []);
+      }
+      handlersByElement.get(handler.elementRef).push(handler);
+    }
+
+    // Check each element
+    for (const [elementRef, handlers] of handlersByElement) {
+      const hasTouchStart = handlers.some(h => h.eventType === 'touchstart');
+      const hasTouchEnd = handlers.some(h => h.eventType === 'touchend');
+      const hasClick = handlers.some(h => h.eventType === 'click');
+
+      if ((hasTouchStart || hasTouchEnd) && !hasClick) {
+        this.issues.push({
+          type: 'touch-without-click',
+          severity: 'warning',
+          message: `Element ${elementRef} has touch event handler but no click handler - excludes mouse/keyboard users`,
+          element: elementRef,
+          touchEvents: handlers
+            .filter(h => h.eventType === 'touchstart' || h.eventType === 'touchend')
+            .map(h => h.eventType),
+          wcag: ['2.5.2'],
+          suggestion: 'Add a click event handler as fallback: element.addEventListener("click", handler);'
+        });
+      }
+    }
   }
 
   /**

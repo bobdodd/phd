@@ -372,9 +372,14 @@ function getWCAGUrl(criterion) {
     '2.1.1': 'keyboard',
     '2.1.2': 'no-keyboard-trap',
     '2.1.4': 'character-key-shortcuts',
+    '2.2.1': 'timing-adjustable',
+    '2.2.2': 'pause-stop-hide',
     '2.4.3': 'focus-order',
     '2.4.7': 'focus-visible',
+    '2.5.2': 'pointer-cancellation',
     '2.5.3': 'label-in-name',
+    '3.2.1': 'on-focus',
+    '3.2.2': 'on-input',
     '4.1.2': 'name-role-value',
     '4.1.3': 'status-messages'
   };
@@ -397,9 +402,14 @@ function getWCAGName(criterion) {
     '2.1.1': 'Keyboard',
     '2.1.2': 'No Keyboard Trap',
     '2.1.4': 'Character Key Shortcuts',
+    '2.2.1': 'Timing Adjustable',
+    '2.2.2': 'Pause, Stop, Hide',
     '2.4.3': 'Focus Order',
     '2.4.7': 'Focus Visible',
+    '2.5.2': 'Pointer Cancellation',
     '2.5.3': 'Label in Name',
+    '3.2.1': 'On Focus',
+    '3.2.2': 'On Input',
     '4.1.2': 'Name, Role, Value',
     '4.1.3': 'Status Messages'
   };
@@ -845,14 +855,14 @@ function generateWCAGHelpHTML(issueData) {
       title: 'Keyboard',
       definition: 'All functionality of the content is operable through a keyboard interface without requiring specific timings for individual keystrokes.',
       why: 'Many users cannot use a mouse and rely entirely on keyboard navigation.',
-      examples: ['Add keydown handler for Enter/Space keys', 'Ensure all interactive elements are keyboard accessible']
+      examples: ['Add keydown handler for Enter/Space keys', 'Ensure all interactive elements are keyboard accessible', 'Provide keyboard alternatives for touch-only gestures']
     },
     '2.1.2': {
       level: 'A',
       title: 'No Keyboard Trap',
       definition: 'If keyboard focus can be moved to a component, focus can be moved away from that component using only a keyboard interface.',
       why: 'Users must be able to navigate through all parts of a page without getting trapped.',
-      examples: ['Provide Escape key to exit modals', 'Ensure focus can move freely through all interactive elements']
+      examples: ['Provide Escape key to exit modals', 'Ensure focus can move freely through all interactive elements', 'Document any special key combinations needed']
     },
     '2.1.4': {
       level: 'A',
@@ -860,6 +870,20 @@ function generateWCAGHelpHTML(issueData) {
       definition: 'If a keyboard shortcut is implemented using only printable characters, it can be turned off, remapped, or is only active when the relevant component has focus.',
       why: 'Single-key shortcuts can conflict with screen reader commands and assistive technology.',
       examples: ['Avoid single-character shortcuts', 'Check for conflicts with JAWS, NVDA screen reader keys']
+    },
+    '2.2.1': {
+      level: 'A',
+      title: 'Timing Adjustable',
+      definition: 'For each time limit set by the content, users can turn off, adjust, or extend the time limit before encountering it.',
+      why: 'Users with disabilities may need more time to read content or complete tasks.',
+      examples: ['Provide controls to disable timeouts', 'Allow users to extend time limits', 'Warn users before time expires with option to extend']
+    },
+    '2.2.2': {
+      level: 'A',
+      title: 'Pause, Stop, Hide',
+      definition: 'For moving, blinking, scrolling, or auto-updating information, users can pause, stop, or hide it.',
+      why: 'Auto-playing or auto-refreshing content can be distracting and make it difficult for users to focus.',
+      examples: ['Provide pause button for auto-rotating carousels', 'Allow users to stop auto-refresh', 'Give control over animations and moving content']
     },
     '2.4.3': {
       level: 'A',
@@ -875,6 +899,13 @@ function generateWCAGHelpHTML(issueData) {
       why: 'Users need to see where keyboard focus is to know which element will respond to keyboard input.',
       examples: ['Ensure focus indicator remains visible', 'Move focus to another element before hiding/removing focused element', 'Don\'t set outline: none without providing alternative']
     },
+    '2.5.2': {
+      level: 'A',
+      title: 'Pointer Cancellation',
+      definition: 'For functionality that can be operated using a single pointer, at least one of the following is true: no down-event, abort/undo, up reversal, or essential.',
+      why: 'Users may accidentally trigger actions and need a way to prevent or undo them.',
+      examples: ['Use click events instead of mousedown/touchstart', 'Provide click handler as fallback for touch events', 'Allow users to cancel actions before completion']
+    },
     '2.5.3': {
       level: 'A',
       title: 'Label in Name',
@@ -882,12 +913,26 @@ function generateWCAGHelpHTML(issueData) {
       why: 'Voice input users need the accessible name to match the visible label to activate controls.',
       examples: ['Match accessible name to visible label', 'Include visible text in aria-label']
     },
+    '3.2.1': {
+      level: 'A',
+      title: 'On Focus',
+      definition: 'When any user interface component receives focus, it does not initiate a change of context.',
+      why: 'Unexpected context changes can be disorienting and confusing for users.',
+      examples: ['Don\'t trigger navigation or form submission on focus', 'Require explicit user action (click, Enter key) before changing context', 'Avoid auto-submitting forms when fields receive focus']
+    },
+    '3.2.2': {
+      level: 'A',
+      title: 'On Input',
+      definition: 'Changing the setting of any user interface component does not automatically cause a change of context unless the user has been advised of the behavior beforehand.',
+      why: 'Users need to be in control of context changes and understand when they will occur.',
+      examples: ['Don\'t auto-submit forms on input change', 'Don\'t navigate away on select/checkbox change', 'Provide submit button instead of auto-submitting']
+    },
     '4.1.2': {
       level: 'A',
       title: 'Name, Role, Value',
       definition: 'For all user interface components, the name and role can be programmatically determined; states, properties, and values can be programmatically set; and notification of changes is available to user agents, including assistive technologies.',
       why: 'Assistive technologies need semantic information to convey the purpose and state of UI components.',
-      examples: ['Add appropriate ARIA roles', 'Provide accessible names with aria-label or aria-labelledby', 'Update ARIA states when component state changes']
+      examples: ['Add appropriate ARIA roles', 'Provide accessible names with aria-label or aria-labelledby', 'Update ARIA states when component state changes', 'Use semantic HTML elements instead of ARIA roles when possible']
     },
     '4.1.3': {
       level: 'AA',
@@ -1129,6 +1174,592 @@ ${elementName}.style.display = 'none';`;
 <h3>Example Fix</h3>
 ${wrapCodeWithCopyButton(codeToFix, true)}`;
     }
+  } else if (message.includes('escape') && message.includes('trap')) {
+    // NEW: missing-escape-handler fix
+    const codeToFix = `// Add Escape key handler to exit focus trap
+modal.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') {
+    closeModal(); // Your modal close function
+    // Return focus to the element that opened the modal
+    if (previousFocusedElement) {
+      previousFocusedElement.focus();
+    }
+  }
+
+  // Existing Tab trap logic
+  if (event.key === 'Tab') {
+    // Your focus trap implementation...
+  }
+});`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>Add an Escape key handler to allow users to exit the focus trap:</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
+  } else if (message.includes('enter') || message.includes('space')) {
+    // NEW: incomplete-activation-keys fix
+    const missingKey = message.includes('space') ? 'Space' : 'Enter';
+    const codeToFix = `// Complete activation key support
+${elementName}.addEventListener('keydown', function(event) {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault(); // Prevent Space from scrolling
+    // Trigger your activation logic
+    activate();
+  }
+});`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>Support both Enter and Space keys for activation:</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
+  } else if (message.includes('touch') && message.includes('click')) {
+    // NEW: touch-without-click fix
+    const codeToFix = `// Provide click handler for non-touch devices
+${elementName}.addEventListener('touchstart', handleTouch);
+
+// Add click handler as fallback
+${elementName}.addEventListener('click', function(event) {
+  // Prevent double-firing on touch devices
+  if (event.detail === 0) return; // Touch already handled
+  handleTouch(event);
+});`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>Add a click handler as a fallback for touch events:</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
+  } else if (message.includes('aria') && (message.includes('pressed') || message.includes('checked') || message.includes('expanded') || message.includes('selected'))) {
+    // NEW: static-aria-state fix
+    const attribute = message.match(/(aria-\w+)/)?.[1] || 'aria-pressed';
+    const codeToFix = `// Initialize state
+${elementName}.setAttribute('${attribute}', 'false');
+
+// Update state when user interacts
+${elementName}.addEventListener('click', function() {
+  const currentState = ${elementName}.getAttribute('${attribute}') === 'true';
+  ${elementName}.setAttribute('${attribute}', (!currentState).toString());
+
+  // Update visual appearance to match state
+  ${elementName}.classList.toggle('active');
+});`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>Update the ${attribute} attribute when state changes:</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
+  } else if (message.includes('form') && message.includes('submit')) {
+    // NEW: unexpected-form-submit fix
+    const codeToFix = `// Move form submission to user-triggered action
+input.addEventListener('input', function(event) {
+  // Validate input but don't submit
+  validateField(this);
+});
+
+// Add explicit submit button
+submitButton.addEventListener('click', function(event) {
+  event.preventDefault();
+  // Now safe to submit after explicit user action
+  form.submit();
+});`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>Only submit forms on explicit user action (button click, Enter key):</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
+  } else if (message.includes('navigation') && (message.includes('input') || message.includes('focus'))) {
+    // NEW: unexpected-navigation fix
+    const codeToFix = `// Don't navigate on input/focus events
+input.addEventListener('input', function(event) {
+  // Process input but don't navigate
+  handleInputChange(this.value);
+});
+
+// Add explicit navigation with user action
+button.addEventListener('click', function() {
+  // Now safe to navigate after explicit user action
+  window.location.href = '/next-page';
+});`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>Only navigate on explicit user action (click, Enter key), not on input/focus:</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
+  } else if (message.includes('timeout') && message.includes('control')) {
+    // NEW: timeout-without-control fix
+    const codeToFix = `// Provide user control over timeout
+let timeoutId;
+let isPaused = false;
+
+function startTimeout() {
+  if (!isPaused) {
+    timeoutId = setTimeout(() => {
+      // Your timeout action
+      performAction();
+    }, 5000);
+  }
+}
+
+// Allow users to disable/extend timeout
+pauseButton.addEventListener('click', function() {
+  clearTimeout(timeoutId);
+  isPaused = true;
+  this.textContent = 'Resume';
+});
+
+// Or provide option to extend time
+extendButton.addEventListener('click', function() {
+  clearTimeout(timeoutId);
+  startTimeout(); // Restart with full time
+});`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>Give users control to pause, cancel, or extend timeouts:</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
+  } else if (message.includes('interval') || message.includes('auto-refresh')) {
+    // NEW: interval/auto-refresh fix
+    const codeToFix = `// Provide controls for auto-refresh
+let intervalId;
+let isRunning = true;
+
+function startAutoRefresh() {
+  intervalId = setInterval(() => {
+    if (isRunning) {
+      refreshContent();
+    }
+  }, 5000);
+}
+
+// Pause/Stop button
+pauseButton.addEventListener('click', function() {
+  isRunning = !isRunning;
+  this.textContent = isRunning ? 'Pause' : 'Resume';
+  this.setAttribute('aria-pressed', (!isRunning).toString());
+});
+
+// Stop button
+stopButton.addEventListener('click', function() {
+  clearInterval(intervalId);
+  isRunning = false;
+});
+
+startAutoRefresh();`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>Provide pause and stop controls for auto-refreshing content:</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
+  } else if (message.includes('role="button"') || message.includes('role="link"')) {
+    // NEW: non-semantic-button/link fix
+    const isButton = message.includes('button');
+    const semantic = isButton ? 'button' : 'a';
+    const currentElement = actualCode.match(/createElement\(['"](\w+)['"]\)/)?.[1] || 'div';
+
+    const codeToFix = `// Use semantic HTML instead of ARIA role
+// Before: div with role="${isButton ? 'button' : 'link'}"
+const ${currentElement} = document.createElement('${currentElement}');
+${currentElement}.setAttribute('role', '${isButton ? 'button' : 'link'}');
+
+// After: Use semantic element
+const ${semantic} = document.createElement('${semantic}');
+${isButton ? '// Buttons automatically support keyboard and have proper semantics' : 'link.href = "/path";'}
+${semantic}.textContent = 'Label';
+${semantic}.addEventListener('click', handleClick);`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>Use semantic HTML <code>&lt;${semantic}&gt;</code> instead of <code>role="${isButton ? 'button' : 'link'}"</code>:</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
+  } else if (message.includes('positive') && message.includes('tabindex')) {
+    // positive-tabindex fix
+    const codeToFix = `// Don't use positive tabindex values
+// Before: Forces unnatural tab order
+${elementName}.setAttribute('tabindex', '1'); // BAD
+
+// After: Use natural DOM order (tabindex="0" or omit)
+${elementName}.setAttribute('tabindex', '0'); // Adds to natural tab order
+
+// Better: Reorder DOM elements to create logical tab order
+// Then no tabindex needed at all!`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>Avoid positive tabindex values - they create confusing tab orders:</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
+  } else if (message.includes('standalone') && message.includes('blur')) {
+    // standalone-blur fix
+    const codeToFix = `// Don't blur without managing focus
+// Before: Removes focus indicator without replacement
+${elementName}.blur(); // BAD - focus goes to <body>
+
+// After: Move focus to a logical element
+const nextFocusable = document.querySelector('.next-button');
+if (nextFocusable) {
+  nextFocusable.focus();
+}
+
+// Or if closing UI, return to trigger
+if (triggerElement) {
+  triggerElement.focus();
+}`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>When removing focus, move it somewhere intentional:</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
+  } else if (message.includes('focusable') || message.includes('focus()')) {
+    // possibly-non-focusable fix
+    const codeToFix = `// Make element focusable before calling .focus()
+// Before: May not work on non-focusable elements
+${elementName}.focus(); // Fails if element can't receive focus
+
+// After: Ensure element is focusable
+if (!${elementName}.hasAttribute('tabindex')) {
+  ${elementName}.setAttribute('tabindex', '-1'); // Programmatically focusable
+}
+${elementName}.focus();
+
+// Use tabindex="0" if it should be in tab order
+// Use tabindex="-1" if only programmatically focusable`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>Ensure elements are focusable before calling .focus():</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
+  } else if (message.includes('keycode') || message.includes('deprecated')) {
+    // deprecated-keycode fix
+    const codeToFix = `// Use event.key instead of deprecated keyCode
+// Before: Deprecated properties
+if (event.keyCode === 13) { } // Deprecated
+if (event.which === 27) { }   // Deprecated
+
+// After: Use modern event.key
+if (event.key === 'Enter') { }
+if (event.key === 'Escape') { }
+if (event.key === ' ') { } // Space key
+
+// Common key names:
+// 'Enter', 'Escape', 'Tab', ' ' (Space)
+// 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'
+// 'Home', 'End', 'PageUp', 'PageDown'`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>Replace deprecated keyCode/which with event.key:</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
+  } else if (message.includes('screen reader') && message.includes('conflict')) {
+    // screen-reader-conflict fix
+    const codeToFix = `// Avoid single-key shortcuts that conflict with screen readers
+// Before: Single keys conflict with NVDA/JAWS
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'h') { } // Conflicts with heading navigation
+  if (e.key === 'b') { } // Conflicts with button navigation
+});
+
+// After: Require modifier keys
+document.addEventListener('keydown', (e) => {
+  // Use Ctrl/Cmd + key combinations
+  if (e.ctrlKey && e.key === 'h') {
+    e.preventDefault();
+    // Your action
+  }
+
+  // Or make shortcuts toggleable
+  if (shortcutsEnabled && e.key === 'h') {
+    // ...
+  }
+});
+
+// Provide way to disable shortcuts
+document.getElementById('toggle-shortcuts').addEventListener('click', () => {
+  shortcutsEnabled = !shortcutsEnabled;
+});`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>Use modifier keys or make shortcuts disableable:</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
+  } else if (message.includes('tab') && message.includes('shift')) {
+    // tab-without-shift fix
+    const codeToFix = `// Handle both Tab and Shift+Tab
+// Before: Only checks Tab, ignores Shift
+if (event.key === 'Tab') {
+  event.preventDefault();
+  // Only handles forward tabbing
+}
+
+// After: Check Shift modifier
+if (event.key === 'Tab') {
+  event.preventDefault();
+
+  if (event.shiftKey) {
+    // Shift+Tab: Move focus backward
+    focusPreviousElement();
+  } else {
+    // Tab: Move focus forward
+    focusNextElement();
+  }
+}`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>Always check event.shiftKey when handling Tab:</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
+  } else if (message.includes('invalid') && message.includes('role')) {
+    // invalid-role fix
+    const codeToFix = `// Use valid ARIA roles from the specification
+// Before: Invalid/made-up role
+${elementName}.setAttribute('role', 'banana'); // Invalid!
+
+// After: Use valid roles
+${elementName}.setAttribute('role', 'button');    // Interactive
+${elementName}.setAttribute('role', 'navigation'); // Landmark
+${elementName}.setAttribute('role', 'alert');     // Live region
+
+// Common valid roles:
+// Widgets: button, checkbox, radio, tab, tabpanel
+// Landmarks: navigation, main, complementary, contentinfo
+// Live regions: alert, status, log
+// See: https://www.w3.org/TR/wai-aria/#role_definitions`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>Only use valid ARIA roles from the specification:</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
+  } else if (message.includes('aria-hidden') && message.includes('true')) {
+    // aria-hidden-true fix
+    const codeToFix = `// Be careful with aria-hidden on interactive content
+// Before: Hides content from screen readers but still interactive
+${elementName}.setAttribute('aria-hidden', 'true');
+// Element is still keyboard-focusable and clickable!
+
+// After: Either remove from DOM or make truly hidden
+if (shouldHideFromEveryone) {
+  ${elementName}.style.display = 'none'; // Visual and AT
+} else if (shouldHideFromATOnly) {
+  // Rare! Only if decorative and not focusable
+  ${elementName}.setAttribute('aria-hidden', 'true');
+  ${elementName}.setAttribute('tabindex', '-1'); // Remove from tab order
+}
+
+// Never use aria-hidden on:
+// - Focusable elements
+// - Content users need to access`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>Use aria-hidden carefully - it doesn't prevent interaction:</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
+  } else if (message.includes('dialog') && message.includes('label')) {
+    // dialog-missing-label fix
+    const codeToFix = `// Give dialogs an accessible name
+// Before: Dialog without label
+dialog.setAttribute('role', 'dialog');
+
+// After: Add aria-labelledby or aria-label
+// Option 1: Reference visible heading
+dialog.setAttribute('aria-labelledby', 'dialog-title');
+// <h2 id="dialog-title">Confirm Delete</h2>
+
+// Option 2: Direct label
+dialog.setAttribute('aria-label', 'Confirm delete action');
+
+// Both provide same accessibility, choose based on design`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>All dialogs need an accessible name:</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
+  } else if (message.includes('assertive') && message.includes('live')) {
+    // assertive-live-region fix
+    const codeToFix = `// Use assertive live regions sparingly
+// Before: Overuse of assertive interrupts users
+statusDiv.setAttribute('aria-live', 'assertive'); // Interrupts everything!
+
+// After: Use polite for most announcements
+statusDiv.setAttribute('aria-live', 'polite'); // Waits for pause
+
+// Only use assertive for:
+errorDiv.setAttribute('aria-live', 'assertive'); // Urgent errors
+alertDiv.setAttribute('aria-live', 'assertive'); // Critical alerts
+
+// Most status updates should be polite:
+// - Form validation
+// - Progress updates
+// - Search results
+// - Content loaded`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>Prefer polite live regions, reserve assertive for emergencies:</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
+  } else if (message.includes('required') && message.includes('aria')) {
+    // missing-required-aria fix
+    const codeToFix = `// Add required ARIA attributes for the role
+// Sliders need value attributes:
+slider.setAttribute('role', 'slider');
+slider.setAttribute('aria-valuenow', '50');
+slider.setAttribute('aria-valuemin', '0');
+slider.setAttribute('aria-valuemax', '100');
+slider.setAttribute('aria-label', 'Volume');
+
+// Update aria-valuenow when value changes:
+function updateSlider(newValue) {
+  slider.setAttribute('aria-valuenow', newValue);
+  // Update visual state too
+}
+
+// Checkboxes need checked state:
+checkbox.setAttribute('role', 'checkbox');
+checkbox.setAttribute('aria-checked', 'false');`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>Each ARIA role has required attributes:</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
+  } else if (message.includes('dialog') || message.includes('modal')) {
+    // incomplete-dialog-pattern fix
+    const codeToFix = `// Complete dialog pattern with focus trap and Escape
+// Save previous focus
+let previousFocusedElement;
+
+function openDialog(dialog) {
+  previousFocusedElement = document.activeElement;
+
+  // Make visible
+  dialog.style.display = 'block';
+  dialog.setAttribute('aria-hidden', 'false');
+
+  // Focus first focusable element
+  const firstFocusable = dialog.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+  if (firstFocusable) {
+    firstFocusable.focus();
+  }
+
+  // Add focus trap
+  dialog.addEventListener('keydown', handleDialogKeydown);
+}
+
+function handleDialogKeydown(event) {
+  if (event.key === 'Escape') {
+    closeDialog();
+    return;
+  }
+
+  if (event.key === 'Tab') {
+    // Implement focus trap
+    trapFocus(event);
+  }
+}
+
+function closeDialog() {
+  dialog.style.display = 'none';
+  dialog.setAttribute('aria-hidden', 'true');
+  dialog.removeEventListener('keydown', handleDialogKeydown);
+
+  // Restore focus
+  if (previousFocusedElement) {
+    previousFocusedElement.focus();
+  }
+}`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>Complete accessible dialog pattern:</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
+  } else if (message.includes('tabs') || message.includes('tablist')) {
+    // incomplete-tabs-pattern fix
+    const codeToFix = `// Complete tabs pattern with keyboard navigation
+// Structure: tablist > tab (controls) > tabpanel
+tablist.setAttribute('role', 'tablist');
+
+tabs.forEach((tab, index) => {
+  tab.setAttribute('role', 'tab');
+  tab.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+  tab.setAttribute('aria-controls', \`panel-\${index}\`);
+  tab.setAttribute('tabindex', index === 0 ? '0' : '-1');
+
+  // Arrow key navigation
+  tab.addEventListener('keydown', (e) => {
+    let newIndex;
+
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      newIndex = (index + 1) % tabs.length;
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      newIndex = (index - 1 + tabs.length) % tabs.length;
+    } else if (e.key === 'Home') {
+      newIndex = 0;
+    } else if (e.key === 'End') {
+      newIndex = tabs.length - 1;
+    }
+
+    if (newIndex !== undefined) {
+      e.preventDefault();
+      selectTab(newIndex);
+    }
+  });
+});
+
+function selectTab(index) {
+  tabs.forEach((t, i) => {
+    t.setAttribute('aria-selected', i === index ? 'true' : 'false');
+    t.setAttribute('tabindex', i === index ? '0' : '-1');
+  });
+  tabs[index].focus();
+  // Show corresponding panel
+}`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>Complete accessible tabs with arrow navigation:</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
+  } else if (message.includes('accordion')) {
+    // incomplete-accordion-pattern fix
+    const codeToFix = `// Complete accordion pattern
+headers.forEach((header, index) => {
+  const button = header.querySelector('button');
+  const panel = panels[index];
+
+  // ARIA attributes
+  button.setAttribute('aria-expanded', 'false');
+  button.setAttribute('aria-controls', \`panel-\${index}\`);
+  panel.setAttribute('id', \`panel-\${index}\`);
+  panel.setAttribute('aria-labelledby', \`header-\${index}\`);
+  panel.setAttribute('role', 'region');
+  panel.style.display = 'none';
+
+  // Toggle on click
+  button.addEventListener('click', () => {
+    const isExpanded = button.getAttribute('aria-expanded') === 'true';
+    button.setAttribute('aria-expanded', !isExpanded);
+    panel.style.display = isExpanded ? 'none' : 'block';
+  });
+
+  // Keyboard navigation
+  button.addEventListener('keydown', (e) => {
+    let newIndex;
+
+    if (e.key === 'ArrowDown') {
+      newIndex = (index + 1) % headers.length;
+    } else if (e.key === 'ArrowUp') {
+      newIndex = (index - 1 + headers.length) % headers.length;
+    } else if (e.key === 'Home') {
+      newIndex = 0;
+    } else if (e.key === 'End') {
+      newIndex = headers.length - 1;
+    }
+
+    if (newIndex !== undefined) {
+      e.preventDefault();
+      headers[newIndex].querySelector('button').focus();
+    }
+  });
+});`;
+
+    fixExample = `
+<h3>Tailored Fix for Your Code</h3>
+<p>Complete accessible accordion with keyboard navigation:</p>
+${wrapCodeWithCopyButton(codeToFix, true)}`;
   }
 
   return `<!DOCTYPE html>

@@ -2,11 +2,12 @@
  * Inaccessible Focus Management Implementation
  * INTENTIONAL VIOLATIONS
  *
- * Issues:
- * - element.remove() without checking document.activeElement
- * - style.display = 'none' on potentially focused elements
- * - setAttribute('hidden') without focus management
- * - No check for element.contains(document.activeElement)
+ * Issues Demonstrated:
+ * - removal-without-focus-management: element.remove() without checking focus
+ * - hiding-without-focus-management: style.display = 'none' without focus check
+ * - hiding-class-without-focus-management: classList operations that may hide elements
+ * - positive-tabindex: Using tabindex > 0
+ * - standalone-blur: Calling .blur() without focus management
  */
 
 (function() {
@@ -123,6 +124,102 @@
       if (statusEl) {
         statusEl.textContent = 'Status: Items reset';
       }
+    }
+
+    // Additional focus issues
+    addPositiveTabIndexIssue();
+    addStandaloneBlurIssue();
+    addClassListHidingIssue();
+
+    // ISSUE: positive-tabindex
+    function addPositiveTabIndexIssue() {
+      const container = document.createElement('div');
+      container.style.cssText = 'margin: 20px 0; padding: 15px; border: 2px solid #dc2626;';
+      container.innerHTML = `
+        <h3>Positive tabindex Issue</h3>
+        <button tabindex="1">First (tabindex=1)</button>
+        <button tabindex="3">Third (tabindex=3)</button>
+        <button tabindex="2">Second (tabindex=2)</button>
+        <p style="color: #dc2626;">Issue: Positive tabindex disrupts natural tab order</p>
+      `;
+
+      // Find a place to append
+      const targetSection = document.querySelector('.example.bad');
+      if (targetSection) {
+        targetSection.appendChild(container);
+      }
+
+      // ISSUE: Setting positive tabindex programmatically
+      const buttons = container.querySelectorAll('button');
+      buttons.forEach((btn, idx) => {
+        // ISSUE: positive-tabindex
+        btn.tabIndex = idx + 1; // Setting to 1, 2, 3 (should use 0 or -1)
+      });
+    }
+
+    // ISSUE: standalone-blur
+    function addStandaloneBlurIssue() {
+      const container = document.createElement('div');
+      container.style.cssText = 'margin: 20px 0; padding: 15px; border: 2px solid #dc2626;';
+      container.innerHTML = `
+        <h3>Standalone .blur() Issue</h3>
+        <input type="text" id="blur-input" placeholder="Focus me, then click button">
+        <button id="blur-button">Call .blur() without focus management</button>
+        <p style="color: #dc2626;">Issue: .blur() removes focus without moving it anywhere</p>
+      `;
+
+      const targetSection = document.querySelector('.example.bad');
+      if (targetSection) {
+        targetSection.appendChild(container);
+      }
+
+      const input = container.querySelector('#blur-input');
+      const button = container.querySelector('#blur-button');
+
+      button.addEventListener('click', function() {
+        // ISSUE: standalone-blur - calling .blur() without focus management
+        input.blur(); // Should move focus to a specific element instead
+        console.log('Called .blur() - focus goes nowhere specific');
+      });
+    }
+
+    // ISSUE: hiding-class-without-focus-management
+    function addClassListHidingIssue() {
+      const container = document.createElement('div');
+      container.style.cssText = 'margin: 20px 0; padding: 15px; border: 2px solid #dc2626;';
+      container.innerHTML = `
+        <h3>classList Hiding Issue</h3>
+        <div id="hideable-section" class="visible">
+          <button>Focusable button in section</button>
+          <button>Another button</button>
+        </div>
+        <button id="toggle-class-button">Toggle visibility via classList</button>
+        <p style="color: #dc2626;">Issue: classList.remove() may hide element with focus</p>
+        <style>
+          .visible { display: block; }
+          .hidden { display: none; }
+        </style>
+      `;
+
+      const targetSection = document.querySelector('.example.bad');
+      if (targetSection) {
+        targetSection.appendChild(container);
+      }
+
+      const section = container.querySelector('#hideable-section');
+      const toggleBtn = container.querySelector('#toggle-class-button');
+
+      toggleBtn.addEventListener('click', function() {
+        // ISSUE: hiding-class-without-focus-management
+        if (section.classList.contains('visible')) {
+          section.classList.remove('visible');
+          section.classList.add('hidden');
+        } else {
+          section.classList.remove('hidden');
+          section.classList.add('visible');
+        }
+        // Missing: Check if section.contains(document.activeElement)
+      });
     }
 
     // Missing:

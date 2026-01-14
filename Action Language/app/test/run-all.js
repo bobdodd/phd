@@ -20,6 +20,12 @@ const testFiles = [
   'KeyboardAnalyzer.test.js',
   'WidgetPatternValidator.test.js',
   'AccessibilityReporter.test.js',
+  // Phase 1-3 Enhancement Tests
+  'analyzer/KeyboardAnalyzer-enhancements.test.js',
+  'analyzer/ARIAAnalyzer-enhancements.test.js',
+  'analyzer/ContextChangeAnalyzer.test.js',
+  'analyzer/TimingAnalyzer.test.js',
+  'analyzer/SemanticAnalyzer.test.js',
   'CLI.test.js',
   'fixtures.test.js'
 ];

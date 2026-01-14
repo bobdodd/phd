@@ -10,6 +10,9 @@ const ARIAAnalyzer = require('./ARIAAnalyzer');
 const KeyboardAnalyzer = require('./KeyboardAnalyzer');
 const WidgetPatternValidator = require('./WidgetPatternValidator');
 const AccessibilityReporter = require('./AccessibilityReporter');
+const ContextChangeAnalyzer = require('./ContextChangeAnalyzer');
+const TimingAnalyzer = require('./TimingAnalyzer');
+const SemanticAnalyzer = require('./SemanticAnalyzer');
 
 module.exports = {
   EventAnalyzer,
@@ -17,5 +20,8 @@ module.exports = {
   ARIAAnalyzer,
   KeyboardAnalyzer,
   WidgetPatternValidator,
-  AccessibilityReporter
+  AccessibilityReporter,
+  ContextChangeAnalyzer,
+  TimingAnalyzer,
+  SemanticAnalyzer
 };

@@ -14,6 +14,9 @@ const FocusAnalyzer = require('./FocusAnalyzer');
 const ARIAAnalyzer = require('./ARIAAnalyzer');
 const KeyboardAnalyzer = require('./KeyboardAnalyzer');
 const WidgetPatternValidator = require('./WidgetPatternValidator');
+const ContextChangeAnalyzer = require('./ContextChangeAnalyzer');
+const TimingAnalyzer = require('./TimingAnalyzer');
+const SemanticAnalyzer = require('./SemanticAnalyzer');
 
 class AccessibilityReporter {
   /**
@@ -27,6 +30,9 @@ class AccessibilityReporter {
       includeAriaAnalysis: options.includeAriaAnalysis ?? true,
       includeKeyboardAnalysis: options.includeKeyboardAnalysis ?? true,
       includeWidgetValidation: options.includeWidgetValidation ?? true,
+      includeContextChangeAnalysis: options.includeContextChangeAnalysis ?? true,
+      includeTimingAnalysis: options.includeTimingAnalysis ?? true,
+      includeSemanticAnalysis: options.includeSemanticAnalysis ?? true,
       strictMode: options.strictMode ?? false
     };
 
@@ -38,6 +44,11 @@ class AccessibilityReporter {
     this.widgetValidator = new WidgetPatternValidator({
       strictMode: this.options.strictMode
     });
+
+    // Phase 3: New analyzers
+    this.contextChangeAnalyzer = new ContextChangeAnalyzer();
+    this.timingAnalyzer = new TimingAnalyzer();
+    this.semanticAnalyzer = new SemanticAnalyzer();
 
     // Results storage
     this.results = null;
@@ -162,7 +173,21 @@ class AccessibilityReporter {
     }
 
     if (this.options.includeKeyboardAnalysis) {
-      analyzerResults.keyboard = this.keyboardAnalyzer.analyze(tree);
+      // Pass EventAnalyzer data to KeyboardAnalyzer for enhanced detections
+      analyzerResults.keyboard = this.keyboardAnalyzer.analyze(tree, analyzerResults.events);
+    }
+
+    // Phase 3: Run new analyzers
+    if (this.options.includeContextChangeAnalysis) {
+      analyzerResults.contextChange = this.contextChangeAnalyzer.analyze(tree, analyzerResults.events);
+    }
+
+    if (this.options.includeTimingAnalysis) {
+      analyzerResults.timing = this.timingAnalyzer.analyze(tree);
+    }
+
+    if (this.options.includeSemanticAnalysis) {
+      analyzerResults.semantic = this.semanticAnalyzer.analyze(tree, analyzerResults.events);
     }
 
     // Run widget validation

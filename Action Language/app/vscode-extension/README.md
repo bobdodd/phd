@@ -10,6 +10,9 @@ A VS Code extension that provides real-time accessibility analysis for JavaScrip
 - **Quick Fixes**: Code actions to fix common accessibility issues
 - **Detailed Reports**: Webview panel with comprehensive analysis results
 - **WCAG Links**: Direct links to relevant WCAG success criteria
+- **35+ Issue Types**: Detects keyboard, ARIA, focus, widget, context change, timing, and semantic issues
+- **9 Specialized Analyzers**: Comprehensive coverage across all accessibility categories
+- **19+ WCAG Criteria**: Maps issues to WCAG 2.1 success criteria (Levels A and AA)
 
 ## Installation
 
@@ -103,14 +106,54 @@ The extension scores code across four categories:
 
 ## Issues Detected
 
-The analyzer detects common accessibility issues including:
+The analyzer detects **35+ accessibility issues** across 9 specialized analyzers:
 
-- Click handlers without keyboard equivalents
-- Missing ARIA roles and attributes
-- Improper focus management
-- Screen reader navigation conflicts
-- Missing widget patterns (tabs, dialogs, etc.)
-- Improper use of aria-hidden
+### Keyboard Accessibility
+
+- Click handlers without keyboard equivalents (Enter/Space)
+- Missing Escape handlers in focus traps
+- Incomplete activation key support
+- Touch events without click fallbacks
+
+### ARIA Usage
+
+- Missing or incorrect ARIA roles
+- Static ARIA state attributes (set once, never updated)
+- Invalid ARIA attribute combinations
+- Missing required ARIA properties
+- ARIA reference validation
+- Missing live regions for dynamic content
+
+### Focus Management
+
+- Missing focus indicators
+- Focus trap issues
+- Tab order problems
+- Focus loss after DOM changes
+
+### Widget Patterns
+
+- Non-compliant modal dialogs
+- Incorrect tab patterns
+- Accordion implementation issues
+- Menu and combobox problems
+
+### Context Changes (NEW)
+
+- Unexpected form submissions in input/focus handlers
+- Navigation triggered by non-user actions
+
+### Timing Issues (NEW)
+
+- Timeouts without user control
+- Auto-refresh without pause mechanism
+- Intervals causing navigation
+- Time limits on interactions
+
+### Semantic HTML (NEW)
+
+- Non-semantic buttons (div/span with role="button")
+- Non-semantic links (elements with role="link")
 
 ## Development
 
@@ -135,7 +178,32 @@ vscode-extension/
 ## Requirements
 
 - VS Code 1.74.0 or later
+- Node.js 14.x or later
 - The extension requires the ActionLanguage analyzer to be available
+
+## What's New
+
+### Recent Enhancements (Phases 1-3)
+
+**Phase 1 - Keyboard Enhancements:**
+
+- Missing Escape handler detection in focus traps (WCAG 2.1.2)
+- Incomplete activation key support (Enter without Space, or vice versa) (WCAG 2.1.1)
+- Touch events without click fallback detection (WCAG 2.5.2)
+
+**Phase 2 - ARIA Enhancements:**
+
+- Static ARIA state attribute detection (aria-pressed, aria-checked, aria-expanded never updated) (WCAG 4.1.2)
+- ARIA reference validation for aria-labelledby, aria-describedby, etc. (WCAG 4.1.2)
+- Missing live region detection for dynamic content (WCAG 4.1.3)
+
+**Phase 3 - New Analyzers:**
+
+- **ContextChangeAnalyzer**: Detects unexpected form submissions and navigation (WCAG 3.2.1, 3.2.2)
+- **TimingAnalyzer**: Validates timing controls, auto-refresh, and time limits (WCAG 2.2.1, 2.2.2)
+- **SemanticAnalyzer**: Encourages semantic HTML over ARIA roles (WCAG 4.1.2)
+
+Total: **10 new accessibility detections** added across all phases.
 
 ## License
 

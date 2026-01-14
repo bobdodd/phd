@@ -781,6 +781,107 @@ class ARIAAnalyzer {
         suggestion: 'Prefer aria-live="polite" unless the announcement is time-sensitive or critical'
       });
     }
+
+    // NEW: Issue: Static ARIA state attributes (set once, never updated)
+    this.detectStaticAriaState();
+
+    // NEW: Issue: ARIA reference attributes pointing to non-existent IDs
+    // Note: Partially implemented - needs ID tracking infrastructure
+    this.detectAriaReferenceNotFound();
+
+    // NEW: Issue: Dynamic content updates without aria-live
+    // Note: Needs DOM operation tracking - placeholder for future implementation
+    this.detectMissingLiveRegion();
+  }
+
+  /**
+   * Detect ARIA state attributes that are set once but never updated
+   * WCAG 4.1.2 (Name, Role, Value) - dynamic states must reflect actual state
+   */
+  detectStaticAriaState() {
+    // Dynamic ARIA state attributes that should typically be updated
+    const dynamicStateAttributes = [
+      'aria-pressed', 'aria-checked', 'aria-selected', 'aria-expanded',
+      'aria-current', 'aria-busy', 'aria-disabled', 'aria-invalid'
+    ];
+
+    // Group ARIA attribute changes by element and attribute
+    const attributesByElement = new Map();
+    for (const attr of this.ariaAttributes) {
+      if (!dynamicStateAttributes.includes(attr.attribute)) continue;
+
+      const key = `${attr.elementRef}:${attr.attribute}`;
+      if (!attributesByElement.has(key)) {
+        attributesByElement.set(key, []);
+      }
+      attributesByElement.get(key).push(attr);
+    }
+
+    // Check for attributes set only once
+    for (const [key, changes] of attributesByElement) {
+      if (changes.length === 1) {
+        const change = changes[0];
+        this.issues.push({
+          type: 'static-aria-state',
+          severity: 'warning',
+          message: `${change.attribute} on "${change.elementRef}" is set but never updated - state may not reflect actual component state`,
+          element: change.elementRef,
+          attribute: change.attribute,
+          location: change.location,
+          actionId: change.actionId,
+          wcag: ['4.1.2'],
+          suggestion: `Ensure ${change.attribute} is updated when the component state changes. If it's static, consider if this attribute is necessary.`
+        });
+      }
+    }
+  }
+
+  /**
+   * Detect ARIA reference attributes pointing to IDs never mentioned in code
+   * WCAG 4.1.2 (Name, Role, Value) - relationships must be valid
+   */
+  detectAriaReferenceNotFound() {
+    // ARIA attributes that reference element IDs
+    const referenceAttributes = ['aria-labelledby', 'aria-describedby', 'aria-controls', 'aria-owns'];
+
+    // Collect all referenced IDs from ARIA attributes
+    const referencedIds = new Set();
+    for (const attr of this.ariaAttributes) {
+      if (referenceAttributes.includes(attr.attribute) && typeof attr.value === 'string') {
+        // ARIA reference attributes can have space-separated ID lists
+        const ids = attr.value.split(/\s+/).filter(id => id.length > 0);
+        for (const id of ids) {
+          referencedIds.add({ id, attr });
+        }
+      }
+    }
+
+    // TODO: This requires tracking all ID references in the codebase
+    // - getElementById calls
+    // - querySelector('#id') calls
+    // - createElement + setAttribute('id', 'xyz')
+    // For now, we'll note that this detection needs additional infrastructure
+
+    // Note: This is a placeholder for the complete implementation
+    // that would require tracking ID usage across all analyzers
+  }
+
+  /**
+   * Detect dynamic content updates without aria-live regions
+   * WCAG 4.1.3 (Status Messages) - dynamic content must be announced
+   */
+  detectMissingLiveRegion() {
+    // This requires tracking textContent/innerHTML assignments
+    // which are general DOM operations, not ARIA-specific
+
+    // TODO: This detection needs EventAnalyzer or DOMAnalyzer to track:
+    // - element.textContent = value
+    // - element.innerHTML = value
+    // - element.innerText = value
+    // Then check if those elements have aria-live set
+
+    // Note: This is a placeholder for the complete implementation
+    // that would require DOM operation tracking
   }
 
   /**

@@ -37,6 +37,19 @@
     cancel.addEventListener('click', closeModal);
     confirm.addEventListener('click', closeModal);
 
+    // Add keyboard handler for accessibility
+    confirm.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault(); // Prevent page scroll on Space
+        // Trigger the same action as your click handler
+        confirm.click(); // Or call your handler function directly
+      }
+    });
+
+    // Make element keyboard-focusable if needed
+    confirm.setAttribute('tabindex', '0');
+    confirm.setAttribute('role', 'button');
+
     // Backdrop click closes modal
     backdrop.addEventListener('click', (e) => {
       if (e.target === backdrop) {
