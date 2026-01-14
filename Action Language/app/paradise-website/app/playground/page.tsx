@@ -66,7 +66,7 @@ modal.addEventListener('keydown', function(event) {
       firstBtn.focus();
     }
   }
-  // Missing Escape key handler!
+  // No handler for the ESC key!
 });`,
     issues: ['missing-escape-handler']
   },
@@ -120,7 +120,7 @@ export default function Playground() {
       setActionLanguage(parsed);
 
       // READ: Analyze for issues
-      const detected = detectIssues(parsed);
+      const detected = detectIssues(parsed, sourceCode);
       setIssues(detected);
     } catch (error) {
       console.error('Analysis error:', error);
@@ -133,15 +133,30 @@ export default function Playground() {
     // Simplified parser - in production, use Acorn/Babel
     const nodes: any[] = [];
 
-    // Detect addEventListener
-    const addEventListenerRegex = /(\w+)\.addEventListener\(['"](\w+)['"]/g;
+    // Detect addEventListener with key checks in handler body
+    const addEventListenerRegex = /(\w+)\.addEventListener\(['"](\w+)['"],\s*function\([^)]*\)\s*\{([^}]+(?:\{[^}]*\}[^}]*)*)\}/g;
     let match;
     while ((match = addEventListenerRegex.exec(code)) !== null) {
+      const element = match[1];
+      const event = match[2];
+      const handlerBody = match[3];
+
+      // For keydown handlers, detect which keys are checked
+      const keysChecked: string[] = [];
+      if (event === 'keydown' || event === 'keypress') {
+        const keyCheckRegex = /event\.key\s*===\s*['"](\w+)['"]/g;
+        let keyMatch;
+        while ((keyMatch = keyCheckRegex.exec(handlerBody)) !== null) {
+          keysChecked.push(keyMatch[1]);
+        }
+      }
+
       nodes.push({
         id: `node-${nodes.length + 1}`,
         actionType: 'eventHandler',
-        event: match[2],
-        element: { binding: match[1] },
+        event: event,
+        element: { binding: element },
+        keysChecked: keysChecked.length > 0 ? keysChecked : undefined,
         location: { line: code.substring(0, match.index).split('\n').length, column: 0 }
       });
     }
@@ -173,7 +188,7 @@ export default function Playground() {
     return nodes;
   };
 
-  const detectIssues = (nodes: any[]) => {
+  const detectIssues = (nodes: any[], sourceCode: string) => {
     const detected: any[] = [];
 
     // Mouse-only click detection
@@ -231,19 +246,18 @@ export default function Playground() {
       }
     }
 
-    // Focus trap without escape
+    // Focus trap without escape - analyze ActionLanguage tree
     const keydownHandlers = nodes.filter(n => n.actionType === 'eventHandler' && n.event === 'keydown');
     for (const handler of keydownHandlers) {
-      // Simplified check - in production, analyze handler body
-      if (code.includes('Tab') && !code.includes('Escape')) {
+      // Check if this handler handles Tab but not Escape
+      if (handler.keysChecked && handler.keysChecked.includes('Tab') && !handler.keysChecked.includes('Escape')) {
         detected.push({
           type: 'missing-escape-handler',
           severity: 'error',
           wcag: ['2.1.2'],
-          message: `Focus trap on '${handler.element.binding}' without Escape key handler`,
+          message: `Focus trap on '${handler.element.binding}' handles Tab but missing Escape key handler`,
           node: handler
         });
-        break; // Only report once
       }
     }
 

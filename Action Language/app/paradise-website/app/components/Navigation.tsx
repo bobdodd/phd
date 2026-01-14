@@ -30,8 +30,11 @@ export default function Navigation() {
             <a href="/extension" className="text-gray-700 hover:text-paradise-blue font-medium transition-colors">
               Extension
             </a>
+            <a href="/faq" className="text-gray-700 hover:text-paradise-blue font-medium transition-colors">
+              FAQ
+            </a>
             <a
-              href="https://github.com"
+              href="https://github.com/bobdodd/phd"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-700 hover:text-paradise-blue font-medium transition-colors"
@@ -97,7 +100,14 @@ export default function Navigation() {
                 Extension
               </a>
               <a
-                href="https://github.com"
+                href="/faq"
+                className="text-gray-700 hover:text-paradise-blue font-medium transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                FAQ
+              </a>
+              <a
+                href="https://github.com/bobdodd/phd"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-700 hover:text-paradise-blue font-medium transition-colors"
