@@ -30,6 +30,9 @@ export default function Navigation() {
             <a href="/extension" className="text-gray-700 hover:text-paradise-blue font-medium transition-colors">
               Extension
             </a>
+            <a href="/api" className="text-gray-700 hover:text-paradise-blue font-medium transition-colors">
+              API
+            </a>
             <a href="/faq" className="text-gray-700 hover:text-paradise-blue font-medium transition-colors">
               FAQ
             </a>
@@ -98,6 +101,13 @@ export default function Navigation() {
                 onClick={() => setIsOpen(false)}
               >
                 Extension
+              </a>
+              <a
+                href="/api"
+                className="text-gray-700 hover:text-paradise-blue font-medium transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                API
               </a>
               <a
                 href="/faq"
