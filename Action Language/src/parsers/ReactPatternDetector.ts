@@ -94,6 +94,31 @@ export interface PortalUsage {
 }
 
 /**
+ * React context usage information.
+ * Context provides a way to pass data through the component tree without props.
+ */
+export interface ContextUsage {
+  /** Context variable name */
+  contextName: string;
+
+  /** Type of context usage */
+  type: 'provider' | 'consumer' | 'useContext';
+
+  /** Source location */
+  location: SourceLocation;
+
+  /** Additional metadata */
+  metadata?: {
+    /** For providers: the value being provided */
+    providedValue?: any;
+    /** For consumers: properties accessed from context */
+    accessedProperties?: string[];
+    /** Whether context appears to manage accessibility state */
+    isAccessibilityRelated?: boolean;
+  };
+}
+
+/**
  * React Pattern Detector
  *
  * Analyzes React code to detect patterns relevant to accessibility analysis.
@@ -104,6 +129,7 @@ export class ReactPatternDetector {
   private focusManagement: ActionLanguageNode[] = [];
   private syntheticEvents: SyntheticEventUsage[] = [];
   private portals: PortalUsage[] = [];
+  private contexts: ContextUsage[] = [];
 
   /**
    * Analyze React code and detect patterns.
@@ -117,6 +143,7 @@ export class ReactPatternDetector {
     this.focusManagement = [];
     this.syntheticEvents = [];
     this.portals = [];
+    this.contexts = [];
 
     traverseAST(ast, {
       // Detect hook calls: useState, useRef, useEffect, etc.
@@ -125,11 +152,17 @@ export class ReactPatternDetector {
         this.detectRefFocusManagement(path, sourceFile);
         this.detectPortal(path, sourceFile);
         this.detectForwardRef(path, sourceFile);
+        this.detectContext(path, sourceFile);
       },
 
       // Detect ref assignments in JSX: ref={buttonRef}
       JSXAttribute: (path: NodePath<t.JSXAttribute>) => {
         this.detectRefProp(path, sourceFile);
+      },
+
+      // Detect Context.Provider in JSX
+      JSXElement: (path: NodePath<t.JSXElement>) => {
+        this.detectContextProvider(path, sourceFile);
       },
 
       // Detect event handler functions to analyze synthetic event usage
@@ -620,6 +653,159 @@ export class ReactPatternDetector {
   }
 
   /**
+   * Detect useContext() hook for consuming context.
+   *
+   * Context is often used for managing global accessibility state like:
+   * - Theme preferences (dark mode, high contrast)
+   * - Focus management state
+   * - Announcement/notification state for screen readers
+   * - Keyboard navigation mode
+   *
+   * Example:
+   * const { theme, setTheme } = useContext(ThemeContext);
+   * const { announce } = useContext(AccessibilityContext);
+   */
+  private detectContext(path: NodePath<t.CallExpression>, sourceFile: string): void {
+    const node = path.node;
+    const callee = node.callee;
+
+    // Detect: useContext(SomeContext)
+    if (t.isIdentifier(callee) && callee.name === 'useContext') {
+      const args = node.arguments;
+      if (args.length === 0) return;
+
+      const contextArg = args[0];
+      let contextName: string | undefined;
+
+      if (t.isIdentifier(contextArg)) {
+        contextName = contextArg.name;
+      }
+
+      if (!contextName) return;
+
+      // Check if context name suggests accessibility usage
+      const isAccessibilityRelated = this.isAccessibilityRelatedContext(contextName);
+
+      // Try to extract accessed properties from parent destructuring
+      const accessedProperties: string[] = [];
+      const parent = path.parent;
+      if (t.isVariableDeclarator(parent)) {
+        if (t.isObjectPattern(parent.id)) {
+          // const { theme, setTheme } = useContext(ThemeContext)
+          for (const prop of parent.id.properties) {
+            if (t.isObjectProperty(prop) && t.isIdentifier(prop.key)) {
+              accessedProperties.push(prop.key.name);
+            }
+          }
+        }
+      }
+
+      this.contexts.push({
+        contextName,
+        type: 'useContext',
+        location: this.extractLocation(node, sourceFile),
+        metadata: {
+          accessedProperties: accessedProperties.length > 0 ? accessedProperties : undefined,
+          isAccessibilityRelated,
+        },
+      });
+    }
+  }
+
+  /**
+   * Detect Context.Provider in JSX.
+   *
+   * Providers supply context values to child components.
+   *
+   * Example:
+   * <ThemeContext.Provider value={{ theme: 'dark' }}>
+   *   <App />
+   * </ThemeContext.Provider>
+   */
+  private detectContextProvider(path: NodePath<t.JSXElement>, sourceFile: string): void {
+    const opening = path.node.openingElement;
+    const name = opening.name;
+
+    // Check for pattern: SomeContext.Provider
+    if (t.isJSXMemberExpression(name)) {
+      if (
+        t.isJSXIdentifier(name.object) &&
+        t.isJSXIdentifier(name.property) &&
+        name.property.name === 'Provider'
+      ) {
+        const contextName = name.object.name;
+        const isAccessibilityRelated = this.isAccessibilityRelatedContext(contextName);
+
+        // Try to extract the value prop
+        let providedValue: any;
+        for (const attr of opening.attributes) {
+          if (
+            t.isJSXAttribute(attr) &&
+            t.isJSXIdentifier(attr.name) &&
+            attr.name.name === 'value'
+          ) {
+            providedValue = attr.value;
+            break;
+          }
+        }
+
+        this.contexts.push({
+          contextName,
+          type: 'provider',
+          location: this.extractLocation(path.node, sourceFile),
+          metadata: {
+            providedValue,
+            isAccessibilityRelated,
+          },
+        });
+      }
+    }
+
+    // Also check for pattern: <SomeContext.Consumer>
+    if (t.isJSXMemberExpression(name)) {
+      if (
+        t.isJSXIdentifier(name.object) &&
+        t.isJSXIdentifier(name.property) &&
+        name.property.name === 'Consumer'
+      ) {
+        const contextName = name.object.name;
+        const isAccessibilityRelated = this.isAccessibilityRelatedContext(contextName);
+
+        this.contexts.push({
+          contextName,
+          type: 'consumer',
+          location: this.extractLocation(path.node, sourceFile),
+          metadata: {
+            isAccessibilityRelated,
+          },
+        });
+      }
+    }
+  }
+
+  /**
+   * Check if a context name suggests accessibility-related usage.
+   */
+  private isAccessibilityRelatedContext(contextName: string): boolean {
+    const a11yKeywords = [
+      'accessibility',
+      'a11y',
+      'theme',
+      'focus',
+      'keyboard',
+      'announce',
+      'notification',
+      'alert',
+      'aria',
+      'screen',
+      'reader',
+    ];
+
+    const lowerName = contextName.toLowerCase();
+    return a11yKeywords.some((keyword) => lowerName.includes(keyword));
+  }
+
+  /**
    * Get detected hooks.
    */
   getHooks(): HookUsage[] {
@@ -795,6 +981,48 @@ export class ReactPatternDetector {
   }
 
   /**
+   * Get detected contexts.
+   */
+  getContexts(): ContextUsage[] {
+    return this.contexts;
+  }
+
+  /**
+   * Get context providers.
+   */
+  getContextProviders(): ContextUsage[] {
+    return this.contexts.filter((c) => c.type === 'provider');
+  }
+
+  /**
+   * Get context consumers (useContext + Context.Consumer).
+   */
+  getContextConsumers(): ContextUsage[] {
+    return this.contexts.filter((c) => c.type === 'useContext' || c.type === 'consumer');
+  }
+
+  /**
+   * Get accessibility-related contexts.
+   */
+  getAccessibilityContexts(): ContextUsage[] {
+    return this.contexts.filter((c) => c.metadata?.isAccessibilityRelated);
+  }
+
+  /**
+   * Check if component uses context.
+   */
+  usesContext(): boolean {
+    return this.contexts.length > 0;
+  }
+
+  /**
+   * Check if component uses accessibility-related context.
+   */
+  usesAccessibilityContext(): boolean {
+    return this.contexts.some((c) => c.metadata?.isAccessibilityRelated);
+  }
+
+  /**
    * Extract source location from an AST node.
    */
   private extractLocation(node: t.Node, sourceFile: string): SourceLocation {
@@ -858,6 +1086,7 @@ export function analyzeReactComponent(
   focusManagement: ActionLanguageNode[];
   syntheticEvents: SyntheticEventUsage[];
   portals: PortalUsage[];
+  contexts: ContextUsage[];
 } {
   const { parseSource } = require('./BabelParser');
   const ast = parseSource(source, sourceFile);
@@ -870,5 +1099,6 @@ export function analyzeReactComponent(
     focusManagement: detector.getFocusManagement(),
     syntheticEvents: detector.getSyntheticEvents(),
     portals: detector.getPortals(),
+    contexts: detector.getContexts(),
   };
 }
