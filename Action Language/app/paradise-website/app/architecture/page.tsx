@@ -1,10 +1,6 @@
-import Navigation from '../components/Navigation';
-
 export default function ArchitecturePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-paradise-blue/5 to-paradise-purple/5">
-      <Navigation />
-
       <main className="container mx-auto px-6 py-12">
         {/* Hero Section */}
         <div className="max-w-4xl mx-auto text-center mb-16">
