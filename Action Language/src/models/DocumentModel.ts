@@ -19,6 +19,7 @@
 
 import { DOMModel, DOMElement } from './DOMModel';
 import { ActionLanguageModel, ActionLanguageNode } from './ActionLanguageModel';
+import { CSSModel } from './CSSModel';
 
 /**
  * Analysis scope determines what files are included.
@@ -68,13 +69,13 @@ export class DocumentModel {
   scope: AnalysisScope;
   dom?: DOMModel;
   javascript: ActionLanguageModel[];
-  css: any[]; // CSSModel[] (future)
+  css: CSSModel[];
 
   constructor(options: {
     scope: AnalysisScope;
     dom?: DOMModel;
     javascript: ActionLanguageModel[];
-    css?: any[];
+    css?: CSSModel[];
   }) {
     this.scope = options.scope;
     this.dom = options.dom;
@@ -85,12 +86,12 @@ export class DocumentModel {
   /**
    * Merge all models and resolve cross-references.
    * This is the key integration step that links JavaScript behaviors
-   * to DOM elements via CSS selectors.
+   * and CSS rules to DOM elements via CSS selectors.
    */
   merge(): void {
     if (!this.dom) return;
 
-    // For each DOM element, find matching JavaScript handlers
+    // For each DOM element, find matching JavaScript handlers and CSS rules
     for (const element of this.dom.getAllElements()) {
       // Build selectors for this element
       const selectors = this.buildSelectors(element);
@@ -101,8 +102,10 @@ export class DocumentModel {
           selectors.flatMap((selector) => jsModel.findBySelector(selector))
         );
 
-      // Future: Find CSS rules that apply to this element
-      // element.cssRules = this.css.flatMap(cssModel => cssModel.getMatchingRules(element));
+      // Find CSS rules that apply to this element
+      element.cssRules = this.css.flatMap((cssModel) =>
+        cssModel.getMatchingRules(element)
+      );
     }
   }
 
@@ -402,6 +405,7 @@ export class DocumentModelBuilder {
     // Import parsers (avoiding circular dependencies)
     const { extractJSXDOM } = require('../parsers/JSXDOMExtractor');
     const { JavaScriptParser } = require('../parsers/JavaScriptParser');
+    const { CSSParser } = require('../parsers/CSSParser');
 
     // Parse DOM (from HTML or JSX)
     let domModel: DOMModel | undefined;
@@ -416,27 +420,33 @@ export class DocumentModelBuilder {
     }
 
     // Parse JavaScript files
-    const parser = new JavaScriptParser();
+    const jsParser = new JavaScriptParser();
     const jsModels = sources.javascript.map((js, i) =>
-      parser.parse(js, sources.sourceFiles.javascript[i])
+      jsParser.parse(js, sources.sourceFiles.javascript[i])
     );
 
     // If we have JSX/TSX source, also parse it for event handlers
     // This extracts inline event handlers like onClick={handler}
     if (sources.html && sources.sourceFiles.html &&
         (sources.sourceFiles.html.endsWith('.jsx') || sources.sourceFiles.html.endsWith('.tsx'))) {
-      const jsxActionModel = parser.parse(sources.html, sources.sourceFiles.html);
+      const jsxActionModel = jsParser.parse(sources.html, sources.sourceFiles.html);
       if (jsxActionModel.nodes.length > 0) {
         jsModels.push(jsxActionModel);
       }
     }
+
+    // Parse CSS files
+    const cssParser = new CSSParser();
+    const cssModels = sources.css.map((css, i) =>
+      cssParser.parse(css, sources.sourceFiles.css[i])
+    );
 
     // Create document model
     const documentModel = new DocumentModel({
       scope,
       dom: domModel,
       javascript: jsModels,
-      css: [], // Future: Parse CSS files
+      css: cssModels,
     });
 
     // Merge models to resolve cross-references

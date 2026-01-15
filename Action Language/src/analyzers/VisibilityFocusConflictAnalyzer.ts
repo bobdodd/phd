@@ -104,18 +104,33 @@ export class VisibilityFocusConflictAnalyzer extends BaseAnalyzer {
         );
       }
 
-      // Future: Check 3: CSS display:none or visibility:hidden but focusable
-      // This requires CSSModel to be implemented
-      // if (elementContext.cssRules) {
-      //   const isHidden = elementContext.cssRules.some(rule =>
-      //     rule.properties.display === 'none' ||
-      //     rule.properties.visibility === 'hidden' ||
-      //     rule.properties.opacity === '0'
-      //   );
-      //   if (isHidden) {
-      //     // Report issue
-      //   }
-      // }
+      // Check 3: CSS display:none or visibility:hidden but focusable
+      if (elementContext.cssRules && elementContext.cssRules.length > 0) {
+        const hidingRule = this.findHidingRule(elementContext.cssRules);
+
+        if (hidingRule) {
+          const message = this.createCSSHiddenMessage(
+            element.tagName,
+            element.attributes.id,
+            elementContext,
+            hidingRule
+          );
+
+          issues.push(
+            this.createIssue(
+              'css-hidden-focusable',
+              'error',
+              message,
+              element.location,
+              ['2.4.7'], // WCAG 2.4.7: Focus Visible
+              {
+                elementContext,
+                relatedLocations: [hidingRule.location],
+              }
+            )
+          );
+        }
+      }
     }
 
     return issues;
@@ -164,5 +179,75 @@ export class VisibilityFocusConflictAnalyzer extends BaseAnalyzer {
     }
 
     return 'is focusable';
+  }
+
+  /**
+   * Find CSS rule that hides the element.
+   */
+  private findHidingRule(cssRules: any[]): any | null {
+    for (const rule of cssRules) {
+      const { properties } = rule;
+
+      // Check for display: none
+      if (properties.display === 'none') return rule;
+
+      // Check for visibility: hidden
+      if (properties.visibility === 'hidden') return rule;
+
+      // Check for opacity: 0
+      if (properties.opacity === '0' || properties.opacity === 0) return rule;
+
+      // Check for clip/clip-path hiding
+      if (properties.clip === 'rect(0, 0, 0, 0)') return rule;
+      if (properties['clip-path'] === 'inset(50%)') return rule;
+
+      // Check for position off-screen
+      if (
+        (properties.position === 'absolute' || properties.position === 'fixed') &&
+        (properties.left === '-9999px' ||
+         properties.left === '-10000px' ||
+         properties.top === '-9999px')
+      ) {
+        return rule;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Create message for CSS-hidden focusable element.
+   */
+  private createCSSHiddenMessage(
+    tagName: string,
+    elementId: string | undefined,
+    elementContext: ElementContext,
+    hidingRule: any
+  ): string {
+    const elementDesc = elementId
+      ? `<${tagName}> element with id="${elementId}"`
+      : `<${tagName}> element`;
+
+    const focusReason = this.getFocusReason(elementContext);
+
+    // Identify which CSS property hides the element
+    const { properties } = hidingRule;
+    let hidingProperty = 'CSS';
+
+    if (properties.display === 'none') {
+      hidingProperty = 'display: none';
+    } else if (properties.visibility === 'hidden') {
+      hidingProperty = 'visibility: hidden';
+    } else if (properties.opacity === '0' || properties.opacity === 0) {
+      hidingProperty = 'opacity: 0';
+    } else if (properties.clip) {
+      hidingProperty = 'clip';
+    } else if (properties['clip-path']) {
+      hidingProperty = 'clip-path';
+    } else if (properties.position && properties.left) {
+      hidingProperty = 'off-screen positioning';
+    }
+
+    return `${elementDesc} is focusable (${focusReason}) but is hidden by CSS (${hidingProperty} in ${hidingRule.selector}). Hidden elements should not be focusable. Add tabindex="-1" to remove from tab order, or make the element visible when it receives focus (WCAG 2.4.7).`;
   }
 }
