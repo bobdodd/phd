@@ -1054,7 +1054,7 @@ export default function Examples() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-white to-gray-50">
       {/* Hero */}
-      <section className="bg-gradient-to-r from-paradise-green to-paradise-blue text-white py-20">
+      <section className="bg-gradient-to-r from-paradise-purple to-paradise-blue text-white py-20">
         <div className="container mx-auto px-6">
           <h1 className="text-5xl font-bold mb-6">
             Real-World Examples

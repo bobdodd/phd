@@ -1,20 +1,22 @@
 export default function ArchitecturePage() {
   return (
-    <div className="min-h-screen bg-white">
-      <main className="container mx-auto px-6 py-12">
-        {/* Title */}
-        <div className="max-w-5xl mx-auto mb-12">
-          <h1 className="text-5xl font-bold mb-6 text-gray-900">
+    <main className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+      <section className="bg-gradient-to-r from-paradise-purple to-paradise-blue text-white py-20">
+        <div className="container mx-auto px-6">
+          <h1 className="text-5xl font-bold mb-6">
             Paradise Architecture
           </h1>
-          <p className="text-xl text-gray-700 leading-relaxed">
+          <p className="text-2xl mb-4 max-w-3xl">
             Complete technical documentation of Paradise's multi-model architecture,
             from ActionLanguage intermediate representation to cross-file analysis.
           </p>
         </div>
+      </section>
 
+      <section className="container mx-auto px-6 py-16">
+        <div className="max-w-5xl mx-auto">
         {/* Table of Contents */}
-        <div className="max-w-5xl mx-auto mb-12 bg-gray-50 rounded-lg p-6 border border-gray-200">
+        <div className="mb-12 bg-gray-50 rounded-lg p-6 border border-gray-200">
           <h2 className="text-2xl font-bold mb-4 text-gray-900">Contents</h2>
           <div className="grid md:grid-cols-2 gap-3">
             <a href="#actionlanguage" className="text-paradise-blue hover:underline">1. ActionLanguage Model</a>
@@ -1489,7 +1491,7 @@ function mergeSwiftUIModel(doc: DocumentModel): void {
             </div>
           </section>
         </div>
-      </main>
-    </div>
+      </section>
+    </main>
   );
 }
