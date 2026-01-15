@@ -1,256 +1,428 @@
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      {/* Hero Section - Two Column Layout */}
-      <section className="container mx-auto px-6 py-12">
-        <div className="grid md:grid-cols-2 gap-12 items-center mb-12">
-          {/* Left Column - Main Message */}
-          <div>
-            <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-paradise-blue to-paradise-purple bg-clip-text text-transparent">
-              Paradise
-            </h1>
-            <p className="text-2xl text-gray-700 mb-4 font-semibold">
-              Universal Accessibility Analysis Through ActionLanguage
-            </p>
-            <p className="text-lg text-gray-600 mb-6">
-              One intermediate representation, infinite possibilities. Parse any UI framework to ActionLanguage, analyze with universal patterns, generate tailored fixes.
-            </p>
-
-            {/* Quick Stats */}
-            <div className="grid grid-cols-3 gap-4 mb-6">
-              <div className="text-center p-3 bg-white rounded-lg shadow-sm">
-                <div className="text-2xl font-bold text-paradise-blue">13+</div>
-                <div className="text-xs text-gray-600">Analyzers</div>
-              </div>
-              <div className="text-center p-3 bg-white rounded-lg shadow-sm">
-                <div className="text-2xl font-bold text-paradise-green">React</div>
-                <div className="text-xs text-gray-600">Full Support</div>
-              </div>
-              <div className="text-center p-3 bg-white rounded-lg shadow-sm">
-                <div className="text-2xl font-bold text-paradise-purple">WCAG</div>
-                <div className="text-xs text-gray-600">Compliant</div>
-              </div>
+    <main className="min-h-screen bg-white">
+      {/* Hero Section - Friendly & Informational */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-white via-paradise-blue/5 to-paradise-purple/10">
+        <div className="container mx-auto px-6 py-20 md:py-32">
+          <div className="max-w-4xl mx-auto text-center">
+            {/* Social Proof Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-paradise-blue/20 mb-8 shadow-sm">
+              <svg className="w-5 h-5 text-paradise-blue" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+              </svg>
+              <span className="text-sm font-medium text-gray-700">Open source on GitHub</span>
             </div>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-wrap gap-3">
+            {/* Hero Headline - Clear & Friendly */}
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight">
+              <span className="bg-gradient-to-r from-paradise-blue via-paradise-purple to-paradise-green bg-clip-text text-transparent">
+                Accessibility analysis
+              </span>
+              <br />
+              <span className="text-gray-900">that works everywhere</span>
+            </h1>
+
+            {/* Subheading - Informational */}
+            <p className="text-lg md:text-xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
+              Paradise analyzes JavaScript, TypeScript, React, Vue, and Angular code for accessibility issues.
+              It uses an intermediate representation called <span className="font-semibold text-paradise-green">ActionLanguage</span> to
+              detect patterns that work across all frameworks.
+            </p>
+
+            {/* CTA - Friendly */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
               <a
                 href="/playground"
-                className="bg-gradient-to-r from-paradise-blue to-paradise-purple text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all"
+                className="px-8 py-3 bg-gradient-to-r from-paradise-blue to-paradise-purple text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all"
               >
-                Try Playground →
+                Try the playground
               </a>
               <a
                 href="/learn-actionlanguage"
-                className="bg-white text-paradise-blue px-6 py-3 rounded-lg font-semibold border-2 border-paradise-blue hover:bg-paradise-blue/5 transition-colors"
+                className="px-8 py-3 bg-white text-gray-700 rounded-lg font-medium border-2 border-gray-200 hover:border-paradise-blue transition-colors"
               >
-                Learn More
-              </a>
-              <a
-                href="/extension"
-                className="bg-gray-800 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors"
-              >
-                Get Extension
+                Learn how it works
               </a>
             </div>
-          </div>
 
-          {/* Right Column - Visual Diagram */}
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-            <h3 className="text-lg font-semibold mb-4 text-center text-gray-700">How Paradise Works</h3>
-
-            {/* Input Sources */}
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center gap-2 text-sm">
-                <div className="w-24 text-right text-gray-600">JavaScript</div>
-                <div className="flex-1 h-1 bg-gradient-to-r from-gray-300 to-paradise-green rounded"></div>
+            {/* Trust Indicators - Subtle */}
+            <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-gray-500">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-paradise-green rounded-full"></div>
+                <span>13+ built-in analyzers</span>
               </div>
-              <div className="flex items-center gap-2 text-sm">
-                <div className="w-24 text-right text-gray-600">TypeScript</div>
-                <div className="flex-1 h-1 bg-gradient-to-r from-gray-300 to-paradise-green rounded"></div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-paradise-blue rounded-full"></div>
+                <span>Full React support</span>
               </div>
-              <div className="flex items-center gap-2 text-sm">
-                <div className="w-24 text-right text-gray-600">React/JSX</div>
-                <div className="flex-1 h-1 bg-gradient-to-r from-gray-300 to-paradise-green rounded"></div>
-              </div>
-            </div>
-
-            {/* ActionLanguage Core */}
-            <div className="bg-gradient-to-r from-paradise-green/20 to-paradise-blue/20 rounded-lg p-4 mb-4 border-2 border-paradise-green">
-              <div className="text-center">
-                <div className="text-lg font-bold text-paradise-green mb-1">ActionLanguage</div>
-                <div className="text-xs text-gray-600">Intermediate Representation</div>
-              </div>
-            </div>
-
-            {/* Output Results */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm">
-                <div className="flex-1 h-1 bg-gradient-to-r from-paradise-blue to-gray-300 rounded"></div>
-                <div className="w-32 text-gray-600">VS Code Diagnostics</div>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <div className="flex-1 h-1 bg-gradient-to-r from-paradise-blue to-gray-300 rounded"></div>
-                <div className="w-32 text-gray-600">Auto Fixes</div>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <div className="flex-1 h-1 bg-gradient-to-r from-paradise-blue to-gray-300 rounded"></div>
-                <div className="w-32 text-gray-600">WCAG Reports</div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-paradise-purple rounded-full"></div>
+                <span>WCAG 2.1 coverage</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* CRUD Operations - Compact */}
-        <div className="bg-gradient-to-r from-paradise-blue/10 to-paradise-purple/10 rounded-lg p-6 border border-paradise-blue/20">
-          <h2 className="text-xl font-semibold mb-4 text-paradise-blue text-center">
-            CRUD Operations on ActionLanguage
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white rounded p-3 shadow-sm text-center">
-              <div className="text-2xl mb-1">✨</div>
-              <div className="font-semibold text-paradise-green text-sm">CREATE</div>
-              <div className="text-xs text-gray-600">Parse source</div>
-            </div>
-            <div className="bg-white rounded p-3 shadow-sm text-center">
-              <div className="text-2xl mb-1">🔍</div>
-              <div className="font-semibold text-paradise-blue text-sm">READ</div>
-              <div className="text-xs text-gray-600">Analyze patterns</div>
-            </div>
-            <div className="bg-white rounded p-3 shadow-sm text-center">
-              <div className="text-2xl mb-1">🔧</div>
-              <div className="font-semibold text-paradise-orange text-sm">UPDATE</div>
-              <div className="text-xs text-gray-600">Generate fixes</div>
-            </div>
-            <div className="bg-white rounded p-3 shadow-sm text-center">
-              <div className="text-2xl mb-1">🗑️</div>
-              <div className="font-semibold text-paradise-purple text-sm">DELETE</div>
-              <div className="text-xs text-gray-600">Optimize code</div>
-            </div>
-          </div>
-        </div>
+        {/* Decorative gradient orbs */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-paradise-blue/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-paradise-purple/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
       </section>
 
-      {/* Key Features - Above Fold */}
-      <section className="bg-white py-12">
+      {/* Code Example Section - Educational */}
+      <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-8">Why Paradise?</h2>
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            <div className="bg-gradient-to-br from-paradise-blue/5 to-paradise-blue/10 rounded-lg p-6 border border-paradise-blue/20">
-              <div className="text-3xl mb-3">🎯</div>
-              <h3 className="font-semibold text-lg mb-2 text-paradise-blue">Deterministic Analysis</h3>
-              <p className="text-gray-600 text-sm">
-                No AI guesswork. Pattern matching through AST traversal ensures accurate, reproducible results every time.
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                How it helps
+              </h2>
+              <p className="text-lg text-gray-600">
+                Paradise spots common accessibility issues and suggests fixes
               </p>
             </div>
-            <div className="bg-gradient-to-br from-paradise-green/5 to-paradise-green/10 rounded-lg p-6 border border-paradise-green/20">
-              <div className="text-3xl mb-3">🌍</div>
-              <h3 className="font-semibold text-lg mb-2 text-paradise-green">Universal Framework Support</h3>
-              <p className="text-gray-600 text-sm">
-                One set of analyzers works for React, Vue, Angular, and vanilla JS via ActionLanguage intermediate representation.
-              </p>
-            </div>
-            <div className="bg-gradient-to-br from-paradise-purple/5 to-paradise-purple/10 rounded-lg p-6 border border-paradise-purple/20">
-              <div className="text-3xl mb-3">🔬</div>
-              <h3 className="font-semibold text-lg mb-2 text-paradise-purple">Transparent & Extensible</h3>
-              <p className="text-gray-600 text-sm">
-                Every detection, every fix is traceable. Add custom analyzers easily with full documentation and examples.
-              </p>
+
+            {/* Code Example with Issue Detection */}
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Before - With Issue */}
+              <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">
+                <div className="bg-gray-900 px-6 py-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                  </div>
+                  <span className="text-sm text-gray-400 font-mono">Button.tsx</span>
+                </div>
+                <div className="p-6 font-mono text-sm">
+                  <div className="text-gray-500">1</div>
+                  <div className="text-gray-500">2</div>
+                  <div className="text-gray-800">
+                    3  <span className="text-blue-600">&lt;div</span>
+                  </div>
+                  <div className="text-gray-800 bg-red-50 border-l-4 border-red-500 pl-2">
+                    4    <span className="text-purple-600">onClick</span>=<span className="text-green-600">{`{handleClick}`}</span>
+                    <span className="ml-4 text-red-600 text-xs">← Issue here</span>
+                  </div>
+                  <div className="text-gray-800">
+                    5    <span className="text-purple-600">className</span>=<span className="text-green-600">"button"</span>
+                  </div>
+                  <div className="text-gray-800">
+                    6  <span className="text-blue-600">&gt;</span>
+                  </div>
+                  <div className="text-gray-800">
+                    7    Click me
+                  </div>
+                  <div className="text-gray-800">
+                    8  <span className="text-blue-600">&lt;/div&gt;</span>
+                  </div>
+                </div>
+                <div className="bg-red-50 border-t border-red-200 px-6 py-3">
+                  <div className="flex items-start gap-2">
+                    <svg className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"/>
+                    </svg>
+                    <div>
+                      <p className="font-medium text-red-900 text-sm">Missing keyboard support</p>
+                      <p className="text-red-700 text-xs mt-1">This clickable element can only be used with a mouse. Keyboard users won't be able to interact with it.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* After - Fixed */}
+              <div className="bg-white rounded-xl shadow-md overflow-hidden border border-green-200">
+                <div className="bg-gray-900 px-6 py-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                  </div>
+                  <span className="text-sm text-gray-400 font-mono">Button.tsx</span>
+                </div>
+                <div className="p-6 font-mono text-sm">
+                  <div className="text-gray-500">1</div>
+                  <div className="text-gray-500">2</div>
+                  <div className="text-gray-800">
+                    3  <span className="text-blue-600">&lt;button</span>
+                  </div>
+                  <div className="text-gray-800">
+                    4    <span className="text-purple-600">onClick</span>=<span className="text-green-600">{`{handleClick}`}</span>
+                  </div>
+                  <div className="text-gray-800 bg-green-50 border-l-4 border-green-500 pl-2">
+                    5    <span className="text-purple-600">onKeyDown</span>=<span className="text-green-600">{`{handleKeyPress}`}</span>
+                    <span className="ml-4 text-green-600 text-xs">← Fixed</span>
+                  </div>
+                  <div className="text-gray-800">
+                    6    <span className="text-purple-600">className</span>=<span className="text-green-600">"button"</span>
+                  </div>
+                  <div className="text-gray-800">
+                    7  <span className="text-blue-600">&gt;</span>
+                  </div>
+                  <div className="text-gray-800">
+                    8    Click me
+                  </div>
+                  <div className="text-gray-800">
+                    9  <span className="text-blue-600">&lt;/button&gt;</span>
+                  </div>
+                </div>
+                <div className="bg-green-50 border-t border-green-200 px-6 py-3">
+                  <div className="flex items-start gap-2">
+                    <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                    </svg>
+                    <div>
+                      <p className="font-medium text-green-900 text-sm">Now accessible</p>
+                      <p className="text-green-700 text-xs mt-1">Using a semantic button element with keyboard support. Works for everyone.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* The Mailhub Story - Simplified */}
-      <section className="py-12 bg-gray-50">
+      {/* How It Works - Simple Explanation */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                How Paradise works
+              </h2>
+              <p className="text-lg text-gray-600">
+                A simple three-step process
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {/* Step 1 */}
+              <div className="relative">
+                <div className="bg-gradient-to-br from-paradise-green/10 to-paradise-green/5 rounded-xl p-8 border border-paradise-green/20 h-full">
+                  <div className="inline-flex items-center justify-center w-10 h-10 bg-paradise-green text-white rounded-lg font-bold text-lg mb-6">
+                    1
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">Parse</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Your code (JavaScript, TypeScript, React, etc.) gets converted to <span className="font-medium text-paradise-green">ActionLanguage</span>—a common format that describes what your UI does.
+                  </p>
+                </div>
+                {/* Arrow */}
+                <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 translate-x-full">
+                  <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Step 2 */}
+              <div className="relative">
+                <div className="bg-gradient-to-br from-paradise-blue/10 to-paradise-blue/5 rounded-xl p-8 border border-paradise-blue/20 h-full">
+                  <div className="inline-flex items-center justify-center w-10 h-10 bg-paradise-blue text-white rounded-lg font-bold text-lg mb-6">
+                    2
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">Analyze</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Built-in analyzers check for common accessibility issues using pattern matching. No AI or guesswork—just reliable detection.
+                  </p>
+                </div>
+                {/* Arrow */}
+                <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 translate-x-full">
+                  <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Step 3 */}
+              <div>
+                <div className="bg-gradient-to-br from-paradise-purple/10 to-paradise-purple/5 rounded-xl p-8 border border-paradise-purple/20 h-full">
+                  <div className="inline-flex items-center justify-center w-10 h-10 bg-paradise-purple text-white rounded-lg font-bold text-lg mb-6">
+                    3
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">Fix</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Get suggestions in your editor with one-click fixes. The fixes match your framework and coding style.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Key Features - Informational Cards */}
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                What makes it different
+              </h2>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* Feature 1 */}
+              <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+                <div className="w-12 h-12 bg-paradise-blue/10 rounded-lg flex items-center justify-center mb-6">
+                  <svg className="w-6 h-6 text-paradise-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-3">Deterministic</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Uses pattern matching on your code's structure. Same code always produces the same results.
+                </p>
+              </div>
+
+              {/* Feature 2 */}
+              <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+                <div className="w-12 h-12 bg-paradise-green/10 rounded-lg flex items-center justify-center mb-6">
+                  <svg className="w-6 h-6 text-paradise-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-3">Framework agnostic</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Write analyzers once, use them everywhere. Works with React, Vue, Angular, and vanilla JavaScript.
+                </p>
+              </div>
+
+              {/* Feature 3 */}
+              <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+                <div className="w-12 h-12 bg-paradise-purple/10 rounded-lg flex items-center justify-center mb-6">
+                  <svg className="w-6 h-6 text-paradise-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-3">Extensible</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Built with TypeScript. Add your own analyzers with full type support and documentation.
+                </p>
+              </div>
+
+              {/* Feature 4 */}
+              <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+                <div className="w-12 h-12 bg-paradise-orange/10 rounded-lg flex items-center justify-center mb-6">
+                  <svg className="w-6 h-6 text-paradise-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-3">Real-time feedback</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  See issues as you type in your editor. No separate build step or waiting.
+                </p>
+              </div>
+
+              {/* Feature 5 */}
+              <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+                <div className="w-12 h-12 bg-paradise-blue/10 rounded-lg flex items-center justify-center mb-6">
+                  <svg className="w-6 h-6 text-paradise-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-3">WCAG focused</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Checks align with WCAG 2.1 Level A and AA success criteria for web accessibility.
+                </p>
+              </div>
+
+              {/* Feature 6 */}
+              <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+                <div className="w-12 h-12 bg-paradise-green/10 rounded-lg flex items-center justify-center mb-6">
+                  <svg className="w-6 h-6 text-paradise-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-3">Auto-fix suggestions</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Many issues come with one-click fixes that preserve your code formatting and style.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Origin Story - The Mailhub Pattern */}
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-6">Origin: The Mailhub Pattern</h2>
-
-            <div className="bg-white rounded-lg p-6 mb-6 border-l-4 border-paradise-blue shadow-sm">
-              <p className="text-gray-700 leading-relaxed mb-4">
-                <strong>Paradise</strong> is named after a 1990s system that solved email interoperability: the <strong>Control Data Mailhub</strong>. It converted all mail formats to <strong>X.400</strong> (intermediate representation), applied rules, then converted back to target formats.
-              </p>
-              <p className="text-gray-700 leading-relaxed">
-                Paradise applies the same pattern to UI accessibility: convert all frameworks to <strong>ActionLanguage</strong>, analyze universally, generate framework-specific fixes.
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Where the idea came from
+              </h2>
+              <p className="text-lg text-gray-600">
+                Paradise is inspired by a 1990s email system
               </p>
             </div>
 
-            {/* Compact Comparison */}
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="bg-gray-100 rounded-lg p-4">
-                <div className="text-xs font-semibold text-gray-500 mb-2">MAILHUB (1990s)</div>
-                <div className="text-sm space-y-1 text-gray-700">
-                  <div>Multiple mail formats</div>
-                  <div className="text-paradise-blue font-semibold">→ X.400 (intermediate)</div>
-                  <div>→ Universal rules</div>
-                  <div>→ Target formats</div>
-                </div>
-              </div>
-              <div className="bg-gradient-to-r from-paradise-blue/10 to-paradise-purple/10 rounded-lg p-4 border border-paradise-blue/30">
-                <div className="text-xs font-semibold text-paradise-blue mb-2">PARADISE (2020s)</div>
-                <div className="text-sm space-y-1 text-gray-700">
-                  <div>Multiple UI frameworks</div>
-                  <div className="text-paradise-green font-semibold">→ ActionLanguage (intermediate)</div>
-                  <div>→ Universal analyzers</div>
-                  <div>→ Framework-specific fixes</div>
-                </div>
-              </div>
-            </div>
+            <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-8 border border-gray-200">
+              <p className="text-gray-700 leading-relaxed mb-6">
+                In the 1990s, the <strong>Control Data Mailhub</strong> solved email interoperability by converting all mail formats
+                to <strong>X.400</strong> (an intermediate representation), applying universal rules, then converting back to target formats.
+              </p>
+              <p className="text-gray-700 leading-relaxed mb-8">
+                Paradise applies the same pattern to UI accessibility: convert all frameworks to <strong>ActionLanguage</strong>,
+                analyze with universal patterns, generate framework-specific fixes.
+              </p>
 
-            <div className="text-center mt-6">
-              <a href="/background" className="text-paradise-blue hover:text-paradise-purple font-semibold transition-colors">
-                Read the full story →
-              </a>
+              {/* Comparison */}
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-white rounded-lg p-6 border border-gray-200">
+                  <div className="text-xs font-semibold text-gray-500 mb-3">MAILHUB (1990s)</div>
+                  <div className="text-sm space-y-2 text-gray-700">
+                    <div>Multiple mail formats</div>
+                    <div className="text-paradise-blue font-medium">→ X.400 (intermediate)</div>
+                    <div>→ Universal rules</div>
+                    <div>→ Target formats</div>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-paradise-blue/5 to-paradise-purple/5 rounded-lg p-6 border border-paradise-blue/20">
+                  <div className="text-xs font-semibold text-paradise-blue mb-3">PARADISE (today)</div>
+                  <div className="text-sm space-y-2 text-gray-700">
+                    <div>Multiple UI frameworks</div>
+                    <div className="text-paradise-green font-medium">→ ActionLanguage (intermediate)</div>
+                    <div>→ Universal analyzers</div>
+                    <div>→ Framework-specific fixes</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-center mt-8">
+                <a href="/background" className="text-paradise-blue hover:text-paradise-purple font-medium transition-colors inline-flex items-center gap-2">
+                  Read the full story
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Quick Links Section */}
-      <section className="py-12 bg-white">
-        <div className="container mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-8">Get Started</h2>
-          <div className="grid md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-            <a href="/playground" className="group bg-gradient-to-br from-paradise-green/10 to-paradise-green/5 rounded-lg p-6 hover:shadow-lg transition-all border border-paradise-green/20">
-              <div className="text-3xl mb-2">🎮</div>
-              <h3 className="font-semibold mb-2 text-paradise-green group-hover:text-paradise-blue transition-colors">Playground</h3>
-              <p className="text-sm text-gray-600">Try Paradise live with interactive examples</p>
-            </a>
-            <a href="/learn-actionlanguage" className="group bg-gradient-to-br from-paradise-blue/10 to-paradise-blue/5 rounded-lg p-6 hover:shadow-lg transition-all border border-paradise-blue/20">
-              <div className="text-3xl mb-2">📚</div>
-              <h3 className="font-semibold mb-2 text-paradise-blue group-hover:text-paradise-purple transition-colors">Learn</h3>
-              <p className="text-sm text-gray-600">Understand ActionLanguage fundamentals</p>
-            </a>
-            <a href="/frameworks" className="group bg-gradient-to-br from-paradise-purple/10 to-paradise-purple/5 rounded-lg p-6 hover:shadow-lg transition-all border border-paradise-purple/20">
-              <div className="text-3xl mb-2">⚛️</div>
-              <h3 className="font-semibold mb-2 text-paradise-purple group-hover:text-paradise-blue transition-colors">Frameworks</h3>
-              <p className="text-sm text-gray-600">React, Vue, Angular support details</p>
-            </a>
-            <a href="/extension" className="group bg-gradient-to-br from-gray-700/10 to-gray-700/5 rounded-lg p-6 hover:shadow-lg transition-all border border-gray-300">
-              <div className="text-3xl mb-2">🔌</div>
-              <h3 className="font-semibold mb-2 text-gray-700 group-hover:text-paradise-blue transition-colors">VS Code</h3>
-              <p className="text-sm text-gray-600">Install the Paradise extension</p>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer CTA */}
-      <section className="bg-gradient-to-r from-paradise-blue to-paradise-purple text-white py-12">
+      {/* CTA Section - Gentle */}
+      <section className="py-20 bg-gradient-to-br from-paradise-blue/10 via-paradise-purple/10 to-paradise-green/10">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-3">
-            Ready to Build Accessible UIs?
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Want to try it out?
           </h2>
-          <p className="text-lg text-white/90 mb-6 max-w-2xl mx-auto">
-            Join the developers using Paradise to catch accessibility issues before they reach production
+          <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+            Explore the interactive playground or install the VS Code extension
           </p>
-          <div className="flex justify-center gap-4">
-            <a href="/playground" className="bg-white text-paradise-blue px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors shadow-lg">
-              Try Playground
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a
+              href="/playground"
+              className="px-8 py-3 bg-gradient-to-r from-paradise-blue to-paradise-purple text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all"
+            >
+              Try playground
             </a>
-            <a href="/extension" className="bg-gray-900 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors">
-              Install Extension
+            <a
+              href="/extension"
+              className="px-8 py-3 bg-white text-gray-700 rounded-lg font-medium shadow-md hover:shadow-lg transition-all"
+            >
+              Get VS Code extension
             </a>
           </div>
         </div>
