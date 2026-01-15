@@ -64,21 +64,31 @@ export interface ElementContext {
  *
  * Merges DOMModel, ActionLanguageModel, and CSSModel to enable
  * comprehensive accessibility analysis.
+ *
+ * UPDATED: Now supports multiple DOM fragments for confidence scoring.
+ * - dom?: DOMModel[] (was dom?: DOMModel) - supports disconnected fragments
+ * - Tracks tree completeness for confidence scoring
+ * - Handles incomplete/sparse trees during development
  */
 export class DocumentModel {
   scope: AnalysisScope;
-  dom?: DOMModel;
+  dom?: DOMModel[];  // CHANGED: Support multiple fragments (was single DOMModel)
   javascript: ActionLanguageModel[];
   css: CSSModel[];
 
   constructor(options: {
     scope: AnalysisScope;
-    dom?: DOMModel;
+    dom?: DOMModel | DOMModel[];  // Accept single or array for backward compatibility
     javascript: ActionLanguageModel[];
     css?: CSSModel[];
   }) {
     this.scope = options.scope;
-    this.dom = options.dom;
+    // Normalize to array
+    this.dom = options.dom
+      ? Array.isArray(options.dom)
+        ? options.dom
+        : [options.dom]
+      : undefined;
     this.javascript = options.javascript;
     this.css = options.css || [];
   }
@@ -87,25 +97,30 @@ export class DocumentModel {
    * Merge all models and resolve cross-references.
    * This is the key integration step that links JavaScript behaviors
    * and CSS rules to DOM elements via CSS selectors.
+   *
+   * UPDATED: Now iterates over all DOM fragments.
    */
   merge(): void {
-    if (!this.dom) return;
+    if (!this.dom || this.dom.length === 0) return;
 
-    // For each DOM element, find matching JavaScript handlers and CSS rules
-    for (const element of this.dom.getAllElements()) {
-      // Build selectors for this element
-      const selectors = this.buildSelectors(element);
+    // Iterate over all DOM fragments
+    for (const domFragment of this.dom) {
+      // For each element in this fragment, find matching JavaScript handlers and CSS rules
+      for (const element of domFragment.getAllElements()) {
+        // Build selectors for this element
+        const selectors = this.buildSelectors(element);
 
-      // Find JavaScript handlers that reference this element
-      element.jsHandlers = this.javascript
-        .flatMap((jsModel) =>
-          selectors.flatMap((selector) => jsModel.findBySelector(selector))
+        // Find JavaScript handlers that reference this element
+        element.jsHandlers = this.javascript
+          .flatMap((jsModel) =>
+            selectors.flatMap((selector) => jsModel.findBySelector(selector))
+          );
+
+        // Find CSS rules that apply to this element
+        element.cssRules = this.css.flatMap((cssModel) =>
+          cssModel.getMatchingRules(element)
         );
-
-      // Find CSS rules that apply to this element
-      element.cssRules = this.css.flatMap((cssModel) =>
-        cssModel.getMatchingRules(element)
-      );
+      }
     }
   }
 
@@ -307,12 +322,15 @@ export class DocumentModel {
 
   /**
    * Get all interactive elements in the document.
+   * UPDATED: Works with multiple fragments.
    */
   getInteractiveElements(): ElementContext[] {
     if (!this.dom) return [];
 
-    const elements = this.dom.getAllElements();
-    return elements
+    // Get all elements from all fragments
+    const allElements = this.dom.flatMap((fragment) => fragment.getAllElements());
+
+    return allElements
       .map((el) => this.getElementContext(el))
       .filter((ctx) => ctx.interactive);
   }
@@ -324,8 +342,10 @@ export class DocumentModel {
   getElementsWithIssues(): ElementContext[] {
     if (!this.dom) return [];
 
-    const elements = this.dom.getAllElements();
-    return elements
+    // Get all elements from all fragments
+    const allElements = this.dom.flatMap((fragment) => fragment.getAllElements());
+
+    return allElements
       .map((el) => this.getElementContext(el))
       .filter((ctx) => {
         // Has click handler but no keyboard handler
@@ -344,6 +364,121 @@ export class DocumentModel {
 
         return false;
       });
+  }
+
+  /**
+   * NEW: Get the number of DOM fragments.
+   * Used for confidence scoring - more fragments means lower confidence.
+   */
+  getFragmentCount(): number {
+    return this.dom?.length || 0;
+  }
+
+  /**
+   * NEW: Calculate tree completeness score (0.0 to 1.0).
+   *
+   * Completeness heuristics:
+   * - Single fragment: Higher completeness (0.7 base)
+   * - Multiple fragments: Lower completeness (0.3 base)
+   * - Resolved references: Increase completeness
+   * - Unresolved references: Decrease completeness
+   *
+   * Returns:
+   * - 1.0: Complete single tree with all references resolved
+   * - 0.5-0.9: Partial tree or some fragments
+   * - 0.0-0.5: Many disconnected fragments
+   */
+  getTreeCompleteness(): number {
+    if (!this.dom || this.dom.length === 0) {
+      return 0.0;
+    }
+
+    const fragmentCount = this.dom.length;
+
+    // Base completeness depends on fragment count
+    let completeness = fragmentCount === 1 ? 0.7 : Math.max(0.3, 1.0 - (fragmentCount * 0.1));
+
+    // Count total elements and resolved/unresolved references
+    let totalElements = 0;
+    let resolvedReferences = 0;
+    let unresolvedReferences = 0;
+
+    for (const fragment of this.dom) {
+      const elements = fragment.getAllElements();
+      totalElements += elements.length;
+
+      for (const element of elements) {
+        // Check JavaScript handler references
+        const handlers = element.jsHandlers || [];
+        if (handlers.length > 0) {
+          resolvedReferences += handlers.length;
+        }
+
+        // Check ARIA references (aria-labelledby, aria-describedby, aria-controls)
+        const ariaRefs = [
+          element.attributes['aria-labelledby'],
+          element.attributes['aria-describedby'],
+          element.attributes['aria-controls'],
+        ].filter((ref) => ref);
+
+        for (const refId of ariaRefs) {
+          // Check if referenced element exists in any fragment
+          const found = this.dom.some((frag) => frag.getElementById(refId) !== null);
+          if (found) {
+            resolvedReferences++;
+          } else {
+            unresolvedReferences++;
+          }
+        }
+      }
+    }
+
+    // Adjust completeness based on reference resolution rate
+    if (resolvedReferences + unresolvedReferences > 0) {
+      const resolutionRate = resolvedReferences / (resolvedReferences + unresolvedReferences);
+      // Boost completeness by resolution rate (max +0.3)
+      completeness += resolutionRate * 0.3;
+    }
+
+    // Cap at 1.0
+    return Math.min(1.0, completeness);
+  }
+
+  /**
+   * NEW: Check if a specific fragment is complete.
+   * A fragment is considered complete if it has a clear root element
+   * and all internal references resolve within the fragment.
+   *
+   * @param fragmentId - Index of the fragment to check
+   * @returns true if fragment appears complete
+   */
+  isFragmentComplete(fragmentId: string): boolean {
+    if (!this.dom) return false;
+
+    const index = parseInt(fragmentId);
+    if (isNaN(index) || index < 0 || index >= this.dom.length) {
+      return false;
+    }
+
+    const fragment = this.dom[index];
+    const elements = fragment.getAllElements();
+
+    // Check if all ARIA references resolve within this fragment
+    for (const element of elements) {
+      const ariaRefs = [
+        element.attributes['aria-labelledby'],
+        element.attributes['aria-describedby'],
+        element.attributes['aria-controls'],
+      ].filter((ref) => ref);
+
+      for (const refId of ariaRefs) {
+        if (!fragment.getElementById(refId)) {
+          return false;  // Reference doesn't resolve within fragment
+        }
+      }
+    }
+
+    return true;
   }
 }
 

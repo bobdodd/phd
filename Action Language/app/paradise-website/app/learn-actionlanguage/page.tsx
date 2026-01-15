@@ -11,7 +11,8 @@ export default function LearnActionLanguage() {
             The universal intermediate representation that makes accessibility analysis possible across all UI languages
           </p>
           <p className="text-xl text-white/90 max-w-3xl">
-            A self-paced journey through the core concepts, CRUD operations, and practical applications
+            A self-paced journey through the core concepts, multi-model architecture, fragment-aware analysis,
+            confidence scoring, CRUD operations, and practical applications
           </p>
         </div>
       </section>
@@ -30,10 +31,11 @@ export default function LearnActionLanguage() {
               <div>
                 <h3 className="text-2xl font-semibold mb-2 text-paradise-blue">What is ActionLanguage?</h3>
                 <p className="text-gray-700 mb-2">
-                  Start here. Learn what ActionLanguage is, why it exists, and how it enables universal accessibility analysis.
+                  Start here. Learn what ActionLanguage is, why it exists, how it integrates with the multi-model
+                  architecture, and how fragment-aware analysis with confidence scoring enables real-world development workflows.
                 </p>
                 <p className="text-sm text-gray-600">
-                  <strong>Time:</strong> 15-20 minutes • <strong>Level:</strong> Beginner
+                  <strong>Time:</strong> 25-30 minutes • <strong>Level:</strong> Beginner
                 </p>
               </div>
             </div>
@@ -155,7 +157,85 @@ export default function LearnActionLanguage() {
                 </p>
               </div>
 
-              <h3 className="text-3xl font-bold mt-12 mb-4">The Problem: Many Languages, One Goal</h3>
+              {/* Table of Contents - Colored Tiles */}
+              <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-8 border border-gray-200 shadow-sm my-12 not-prose">
+                <h3 className="text-2xl font-bold mb-6 text-gray-800">In This Module</h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <a href="#problem" className="group block bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-5 border-2 border-red-200 hover:border-red-400 hover:shadow-md transition-all">
+                    <div className="flex items-start gap-3">
+                      <div className="bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
+                        1
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-lg text-red-900 group-hover:text-red-700 transition-colors">The Problem</h4>
+                        <p className="text-sm text-red-700">Many languages, one accessibility goal</p>
+                      </div>
+                    </div>
+                  </a>
+
+                  <a href="#solution" className="group block bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-5 border-2 border-green-200 hover:border-green-400 hover:shadow-md transition-all">
+                    <div className="flex items-start gap-3">
+                      <div className="bg-green-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
+                        2
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-lg text-green-900 group-hover:text-green-700 transition-colors">The Solution</h4>
+                        <p className="text-sm text-green-700">Intermediate representation pattern</p>
+                      </div>
+                    </div>
+                  </a>
+
+                  <a href="#multi-model" className="group block bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-5 border-2 border-blue-200 hover:border-blue-400 hover:shadow-md transition-all">
+                    <div className="flex items-start gap-3">
+                      <div className="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
+                        3
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-lg text-blue-900 group-hover:text-blue-700 transition-colors">Multi-Model Architecture</h4>
+                        <p className="text-sm text-blue-700">DOM, ActionLanguage, and CSS integration</p>
+                      </div>
+                    </div>
+                  </a>
+
+                  <a href="#fragments" className="group block bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-5 border-2 border-purple-200 hover:border-purple-400 hover:shadow-md transition-all">
+                    <div className="flex items-start gap-3">
+                      <div className="bg-purple-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
+                        4
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-lg text-purple-900 group-hover:text-purple-700 transition-colors">Fragment-Aware Analysis</h4>
+                        <p className="text-sm text-purple-700">Real-world incremental development</p>
+                      </div>
+                    </div>
+                  </a>
+
+                  <a href="#example" className="group block bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-5 border-2 border-orange-200 hover:border-orange-400 hover:shadow-md transition-all">
+                    <div className="flex items-start gap-3">
+                      <div className="bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
+                        5
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-lg text-orange-900 group-hover:text-orange-700 transition-colors">Simple Example</h4>
+                        <p className="text-sm text-orange-700">JavaScript → ActionLanguage transformation</p>
+                      </div>
+                    </div>
+                  </a>
+
+                  <a href="#analyzers" className="group block bg-gradient-to-br from-teal-50 to-teal-100 rounded-lg p-5 border-2 border-teal-200 hover:border-teal-400 hover:shadow-md transition-all">
+                    <div className="flex items-start gap-3">
+                      <div className="bg-teal-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
+                        6
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-lg text-teal-900 group-hover:text-teal-700 transition-colors">How Analyzers Work</h4>
+                        <p className="text-sm text-teal-700">Pattern detection with confidence scoring</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+
+              <h3 id="problem" className="text-3xl font-bold mt-12 mb-4">The Problem: Many Languages, One Goal</h3>
               <p className="text-gray-700 leading-relaxed">
                 Imagine you're building an accessibility analyzer. You want to detect issues like:
               </p>
@@ -217,7 +297,7 @@ export default function LearnActionLanguage() {
                 </p>
               </div>
 
-              <h3 className="text-3xl font-bold mt-12 mb-4">The Solution: Intermediate Representation</h3>
+              <h3 id="solution" className="text-3xl font-bold mt-12 mb-4">The Solution: Intermediate Representation</h3>
 
               <p className="text-gray-700 leading-relaxed">
                 This is where <strong className="text-paradise-blue">ActionLanguage</strong> comes in.
@@ -282,7 +362,179 @@ export default function LearnActionLanguage() {
                 </div>
               </div>
 
-              <h3 className="text-3xl font-bold mt-12 mb-4">A Simple Example</h3>
+              <h3 id="multi-model" className="text-3xl font-bold mt-12 mb-4">ActionLanguage Within the Multi-Model Architecture</h3>
+
+              <p className="text-gray-700 leading-relaxed mb-6">
+                ActionLanguage doesn't work in isolation. Paradise uses a <strong>multi-model architecture</strong> where
+                ActionLanguage integrates with other models to enable comprehensive accessibility analysis:
+              </p>
+
+              <div className="grid md:grid-cols-3 gap-6 my-8 not-prose">
+                <div className="bg-white rounded-lg p-6 shadow-sm border-2 border-paradise-green">
+                  <div className="text-3xl mb-3">🌳</div>
+                  <h4 className="font-semibold text-lg mb-2 text-paradise-green">DOMModel</h4>
+                  <p className="text-sm text-gray-600 mb-3">
+                    Represents HTML/JSX structure, elements, and attributes extracted from markup or React components.
+                  </p>
+                  <p className="text-xs text-gray-500 italic">
+                    Role: Defines what elements exist on the page
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-lg p-6 shadow-sm border-2 border-paradise-blue">
+                  <div className="text-3xl mb-3">⚡</div>
+                  <h4 className="font-semibold text-lg mb-2 text-paradise-blue">ActionLanguage</h4>
+                  <p className="text-sm text-gray-600 mb-3">
+                    Represents user interactions, event handlers, and behavioral patterns extracted from JavaScript/TypeScript.
+                  </p>
+                  <p className="text-xs text-gray-500 italic">
+                    Role: Defines how elements behave
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-lg p-6 shadow-sm border-2 border-paradise-purple">
+                  <div className="text-3xl mb-3">🎨</div>
+                  <h4 className="font-semibold text-lg mb-2 text-paradise-purple">CSSModel</h4>
+                  <p className="text-sm text-gray-600 mb-3">
+                    Represents styling rules that affect accessibility: focus indicators, visibility, contrast, and interaction states.
+                  </p>
+                  <p className="text-xs text-gray-500 italic">
+                    Role: Defines how elements appear and respond
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-paradise-blue/10 border-l-4 border-paradise-blue p-6 rounded-r-lg my-8">
+                <p className="text-lg font-semibold text-paradise-blue mb-2">Integration is Key</p>
+                <p className="text-gray-700 mb-0">
+                  These models are merged via the <strong>DocumentModel</strong> integration layer. Paradise attaches
+                  ActionLanguage handlers to DOMModel elements based on selectors (IDs, classes, tags). This enables
+                  cross-file analysis: a click handler in <code className="bg-gray-100 px-2 py-1 rounded">handlers.js</code> can
+                  be linked to a button in <code className="bg-gray-100 px-2 py-1 rounded">Button.tsx</code>, eliminating false positives.
+                </p>
+              </div>
+
+              <h3 id="fragments" className="text-3xl font-bold mt-12 mb-4">Fragment-Aware Analysis: Real-World Development</h3>
+
+              <p className="text-gray-700 leading-relaxed mb-6">
+                Here's a crucial insight about how developers actually work: <strong>you don't start with complete, integrated pages</strong>.
+                You start with disconnected component fragments that get integrated later. Paradise's multi-model architecture handles this reality.
+              </p>
+
+              <div className="grid md:grid-cols-3 gap-6 my-8 not-prose">
+                <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-6 border border-red-200">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">
+                      1
+                    </div>
+                    <h4 className="font-semibold text-lg">Early Stage</h4>
+                  </div>
+                  <p className="text-sm text-gray-700 mb-3">
+                    Many disconnected components being developed in parallel. No parent pages yet.
+                  </p>
+                  <div className="bg-white rounded p-3 text-xs font-mono text-gray-600 mb-3">
+                    Button.tsx<br/>
+                    Modal.tsx<br/>
+                    Form.tsx<br/>
+                    Header.tsx
+                  </div>
+                  <p className="text-xs text-red-700 font-semibold">
+                    Paradise: LOW confidence (0.0-0.5)
+                  </p>
+                </div>
+
+                <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg p-6 border border-yellow-200">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="bg-yellow-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">
+                      2
+                    </div>
+                    <h4 className="font-semibold text-lg">Integration Stage</h4>
+                  </div>
+                  <p className="text-sm text-gray-700 mb-3">
+                    Components being composed into pages. Some ARIA references resolve across fragments.
+                  </p>
+                  <div className="bg-white rounded p-3 text-xs font-mono text-gray-600 mb-3">
+                    Dashboard.tsx<br/>
+                    ├─ Header.tsx<br/>
+                    ├─ Sidebar.tsx<br/>
+                    └─ Button.tsx
+                  </div>
+                  <p className="text-xs text-yellow-700 font-semibold">
+                    Paradise: MEDIUM confidence (0.5-0.9)
+                  </p>
+                </div>
+
+                <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-6 border border-green-200">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="bg-green-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">
+                      3
+                    </div>
+                    <h4 className="font-semibold text-lg">Complete Stage</h4>
+                  </div>
+                  <p className="text-sm text-gray-700 mb-3">
+                    Fully integrated application. All components connected, all ARIA references resolve.
+                  </p>
+                  <div className="bg-white rounded p-3 text-xs font-mono text-gray-600 mb-3">
+                    App.tsx<br/>
+                    └─ Routes<br/>
+                      ├─ Dashboard<br/>
+                      └─ Settings
+                  </div>
+                  <p className="text-xs text-green-700 font-semibold">
+                    Paradise: HIGH confidence (0.9-1.0)
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-gray-700 leading-relaxed mt-6 mb-6">
+                Paradise handles all three stages through <strong>fragment-aware analysis</strong>. The DocumentModel
+                can contain multiple <code className="bg-gray-100 px-2 py-1 rounded">DOMModel[]</code> fragments
+                (not just a single DOM tree). Paradise calculates <strong>tree completeness</strong> based on:
+              </p>
+
+              <div className="bg-gray-50 rounded-lg p-6 border border-gray-200 my-6">
+                <h4 className="font-semibold text-gray-700 mb-4">Tree Completeness Algorithm</h4>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="bg-paradise-blue text-white w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 mt-1">
+                      1
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-700">Fragment Count Factor</p>
+                      <p className="text-sm text-gray-600">
+                        1 fragment = 0.7 base score • Multiple fragments = lower base (max 0.3 floor)
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="bg-paradise-green text-white w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 mt-1">
+                      2
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-700">Reference Resolution Factor</p>
+                      <p className="text-sm text-gray-600">
+                        ARIA references (aria-labelledby, aria-controls) + event handler connections • Resolved refs boost score up to +0.3
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4 pt-4 border-t border-gray-300">
+                  <p className="text-sm text-gray-600">
+                    <strong>Final Score</strong> = min(1.0, base + boost) → Maps to HIGH/MEDIUM/LOW confidence
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-paradise-green/10 border-l-4 border-paradise-green p-6 rounded-r-lg my-8">
+                <p className="text-lg font-semibold text-paradise-green mb-2">Progressive Enhancement</p>
+                <p className="text-gray-700 mb-0">
+                  As you integrate components, Paradise's confidence improves automatically. Issues reported with
+                  LOW confidence during early development become HIGH confidence once components are integrated.
+                  This matches your workflow: start with fragments, integrate gradually, get more accurate analysis over time.
+                </p>
+              </div>
+
+              <h3 id="example" className="text-3xl font-bold mt-12 mb-4">A Simple Example</h3>
 
               <p className="text-gray-700 leading-relaxed mb-6">
                 Let's see how JavaScript gets transformed into ActionLanguage:
@@ -347,46 +599,82 @@ button.addEventListener('click', function() {
                 </p>
               </div>
 
-              <h3 className="text-3xl font-bold mt-12 mb-4">How Analyzers Use ActionLanguage</h3>
+              <h3 id="analyzers" className="text-3xl font-bold mt-12 mb-4">How Analyzers Use ActionLanguage with Confidence Scoring</h3>
 
               <p className="text-gray-700 leading-relaxed mb-6">
-                Once we have ActionLanguage, accessibility analyzers can look for patterns:
+                Once we have ActionLanguage integrated with the DocumentModel, analyzers can look for patterns
+                while transparently reporting confidence based on tree completeness:
               </p>
 
               <div className="bg-gray-50 rounded-lg p-6 border border-gray-200 my-6">
-                <p className="font-semibold text-gray-700 mb-3">Analyzer Logic (Pseudocode):</p>
-                <pre className="text-sm bg-white p-4 rounded border border-gray-200 overflow-x-auto mb-0"><code>{`// Find all click event handlers
-const clickHandlers = actionTree.filter(
-  action => action.actionType === 'eventHandler' &&
-            action.event === 'click'
-);
+                <p className="font-semibold text-gray-700 mb-3">Analyzer Logic (Pseudocode with Confidence):</p>
+                <pre className="text-sm bg-white p-4 rounded border border-gray-200 overflow-x-auto mb-0"><code>{`// For each DOM element, check its attached handlers
+for (const element of documentModel.dom.getAllElements()) {
+  const context = documentModel.getElementContext(element);
 
-// For each click handler, check if there's a keyboard handler
-for (const clickHandler of clickHandlers) {
-  const element = clickHandler.element;
+  // Check if element has click handler but no keyboard handler
+  if (context.hasClickHandler && !context.hasKeyboardHandler) {
 
-  const hasKeyboard = actionTree.find(
-    action => action.actionType === 'eventHandler' &&
-              action.element === element &&
-              (action.event === 'keydown' || action.event === 'keypress')
-  );
+    // Calculate confidence based on tree completeness
+    const fragmentCount = documentModel.getFragmentCount();
+    const completeness = documentModel.getTreeCompleteness();
 
-  if (!hasKeyboard) {
-    // Issue detected!
+    let confidence;
+    if (fragmentCount > 1) {
+      // Multiple fragments: keyboard handler might be in another fragment
+      confidence = {
+        level: 'LOW',
+        reason: 'Element analyzed, but multiple disconnected fragments exist',
+        treeCompleteness: completeness
+      };
+    } else if (completeness > 0.9) {
+      // Single complete tree: definitely missing keyboard handler
+      confidence = {
+        level: 'HIGH',
+        reason: 'Element verified in complete tree',
+        treeCompleteness: 1.0
+      };
+    } else {
+      // Single incomplete tree: medium confidence
+      confidence = {
+        level: 'MEDIUM',
+        reason: 'Element verified in partial tree',
+        treeCompleteness: completeness
+      };
+    }
+
+    // Report issue with confidence
     issues.push({
       type: 'mouse-only-click',
       severity: 'warning',
       wcag: ['2.1.1'],
-      element: element
+      element: element,
+      confidence: confidence  // NEW: Transparent confidence reporting
     });
   }
 }`}</code></pre>
               </div>
 
-              <p className="text-gray-700 leading-relaxed">
-                This analyzer works on ActionLanguage, so it automatically works for JavaScript, TypeScript,
-                React, Vue, and in the future, Objective-C, Kotlin, Swift, and any other language we add parsers for.
+              <p className="text-gray-700 leading-relaxed mb-6">
+                This analyzer works on ActionLanguage integrated with DOMModel, so it:
               </p>
+
+              <ul className="text-gray-700 space-y-2 mb-6">
+                <li>✅ <strong>Automatically works</strong> for JavaScript, TypeScript, React, Vue, and future languages</li>
+                <li>✅ <strong>Eliminates false positives</strong> through cross-file analysis via DocumentModel</li>
+                <li>✅ <strong>Reports confidence transparently</strong> based on fragment count and tree completeness</li>
+                <li>✅ <strong>Improves progressively</strong> as components integrate (LOW → MEDIUM → HIGH confidence)</li>
+              </ul>
+
+              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-r-lg my-8">
+                <p className="text-lg font-semibold text-yellow-800 mb-2">Why Confidence Matters</p>
+                <p className="text-gray-700 mb-0">
+                  Without confidence scoring, Paradise would report "missing keyboard handler" with the same
+                  certainty whether analyzing a single complete page (definitely missing) or 10 disconnected
+                  components (might be in another file). Confidence scoring prevents false confidence and
+                  matches the reality of incremental development.
+                </p>
+              </div>
 
               <h3 className="text-3xl font-bold mt-12 mb-4">The Complete Pipeline</h3>
 
@@ -466,15 +754,16 @@ for (const clickHandler of clickHandlers) {
               <h3 className="text-3xl font-bold mt-12 mb-4">What's Next?</h3>
 
               <p className="text-gray-700 leading-relaxed">
-                Now that you understand <em>what</em> ActionLanguage is and <em>why</em> it exists,
-                you're ready to dive deeper:
+                Now that you understand <em>what</em> ActionLanguage is, <em>why</em> it exists, and
+                <em>how</em> it integrates with the multi-model architecture, you're ready to dive deeper:
               </p>
 
               <ul className="text-gray-700 space-y-2">
                 <li><strong>Module 2</strong> will teach you the ActionLanguage schema in detail—every node type, every property</li>
                 <li><strong>Module 3</strong> (⭐ THE KEY SECTION) will show you how CRUD operations enable universal adaptivity</li>
                 <li><strong>Module 4</strong> will demonstrate how the same analyzers work across JavaScript, Objective-C, and Kotlin</li>
-                <li><strong>Module 5</strong> will teach you to write your own custom analyzers</li>
+                <li><strong>Module 5</strong> will teach you to write your own custom analyzers with multi-model context and confidence scoring</li>
+                <li><strong>Architecture Page</strong> has deep-dive sections on the multi-model architecture and fragment-aware analysis</li>
               </ul>
             </div>
 
@@ -482,12 +771,17 @@ for (const clickHandler of clickHandlers) {
             <div className="bg-gradient-to-r from-paradise-green to-paradise-blue text-white rounded-lg p-8 mt-12">
               <h3 className="text-2xl font-bold mb-3">Module 1 Complete! 🎉</h3>
               <p className="text-lg mb-6">
-                You now understand what ActionLanguage is and how it enables universal accessibility analysis
-                through an intermediate representation pattern.
+                You now understand what ActionLanguage is, how it enables universal accessibility analysis
+                through an intermediate representation pattern, and how it integrates with the multi-model
+                architecture (DOMModel, ActionLanguage, CSSModel) to support fragment-aware analysis with
+                confidence scoring.
               </p>
-              <div className="flex gap-4">
+              <div className="flex flex-wrap gap-4">
                 <a href="/playground" className="bg-white text-paradise-blue px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
                   Try It in Playground
+                </a>
+                <a href="/architecture" className="bg-white/20 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/30 transition-colors">
+                  Explore Architecture
                 </a>
                 <a href="/" className="bg-paradise-purple text-white px-6 py-3 rounded-lg font-semibold hover:bg-paradise-purple/90 transition-colors">
                   Back to Home

@@ -174,3 +174,56 @@ export class ValidationFailedError extends Error {
     this.name = 'ValidationFailedError';
   }
 }
+
+/**
+ * Confidence scoring for issues found in incomplete/fragmented trees.
+ *
+ * NEW in Sprint 4: Addresses the tree completeness assumption problem.
+ * When analyzing sparsely populated trees or disconnected component fragments,
+ * Paradise reports confidence levels to avoid false sense of certainty.
+ *
+ * Confidence Levels:
+ * - HIGH (0.9+): Single complete tree, definitive issue
+ * - MEDIUM (0.5-0.9): Partial tree or some fragments, likely issue
+ * - LOW (0.0-0.5): Many disconnected fragments, uncertain
+ */
+export interface IssueConfidence {
+  /** Confidence level for this issue */
+  level: 'HIGH' | 'MEDIUM' | 'LOW';
+
+  /** Human-readable reason for the confidence level */
+  reason: string;
+
+  /** Estimated tree completeness (0.0 = empty, 1.0 = complete) */
+  treeCompleteness: number;
+}
+
+/**
+ * Issue structure for analyzer results.
+ * Represents a detected accessibility problem with location and confidence info.
+ */
+export interface Issue {
+  /** Issue type identifier (e.g., 'mouse-only-click', 'missing-aria-label') */
+  type: string;
+
+  /** Issue severity */
+  severity: 'error' | 'warning' | 'info';
+
+  /** Human-readable issue description */
+  message: string;
+
+  /** Confidence in this issue (NEW: Sprint 4 confidence scoring) */
+  confidence: IssueConfidence;
+
+  /** All relevant source locations (element + handlers) */
+  locations: SourceLocation[];
+
+  /** The DOM element involved (if applicable) */
+  element?: any;  // Will be typed as DOMElement in DocumentModel
+
+  /** WCAG success criteria this violates */
+  wcagCriteria?: string[];
+
+  /** Suggested fix (if available) */
+  fix?: any;  // Will be properly typed later
+}

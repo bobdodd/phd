@@ -61,8 +61,14 @@ export default function ArchitecturePage() {
                 <div className="text-sm opacity-90 mt-2">Detection pipeline</div>
               </a>
 
-              <a href="#extensibility" className="group relative overflow-hidden bg-gradient-to-br from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+              <a href="#fragments" className="group relative overflow-hidden bg-gradient-to-br from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                 <div className="text-4xl font-bold mb-2">8</div>
+                <div className="text-lg font-semibold">Fragment-Aware Analysis</div>
+                <div className="text-sm opacity-90 mt-2">Incremental development support</div>
+              </a>
+
+              <a href="#extensibility" className="group relative overflow-hidden bg-gradient-to-br from-fuchsia-500 to-fuchsia-600 hover:from-fuchsia-600 hover:to-fuchsia-700 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                <div className="text-4xl font-bold mb-2">9</div>
                 <div className="text-lg font-semibold">Extensibility</div>
                 <div className="text-sm opacity-90 mt-2">Platform expansion</div>
               </a>
@@ -1303,9 +1309,448 @@ interface Issue {
             </div>
           </section>
 
-          {/* 8. Extensibility */}
+          {/* 8. Fragment-Aware Analysis */}
+          <section id="fragments" className="scroll-mt-8">
+            <h2 className="text-4xl font-bold mb-6 text-violet-600">8. Fragment-Aware Analysis</h2>
+
+            <div className="prose prose-lg max-w-none">
+              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-r-lg mb-8">
+                <p className="text-lg font-semibold text-yellow-900 mb-2">The Reality of Development</p>
+                <p className="text-gray-700">
+                  Developers don't build complete, unified applications in one step. They work incrementally:
+                  creating components in isolation, building features separately, and gradually integrating
+                  everything together. Paradise must work at <strong>every stage</strong> of this process.
+                </p>
+              </div>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">The Problem: Tree Completeness Assumption</h3>
+
+              <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                Traditional accessibility tools assume they're analyzing a <strong>complete, unified tree</strong>:
+                one connected DOM with all components integrated. This assumption breaks down during real development.
+              </p>
+
+              <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
+                <h4 className="text-xl font-bold text-red-900 mb-3">What Traditional Tools Assume</h4>
+                <ul className="space-y-2 text-gray-700">
+                  <li>✗ Single complete page exists</li>
+                  <li>✗ All components are integrated</li>
+                  <li>✗ All ARIA references resolve</li>
+                  <li>✗ Complete element hierarchy available</li>
+                  <li>✗ Analysis happens after build/integration</li>
+                </ul>
+              </div>
+
+              <div className="bg-paradise-blue/10 border border-paradise-blue/30 rounded-lg p-6 mb-8">
+                <h4 className="text-xl font-bold text-paradise-blue mb-3">What Actually Happens</h4>
+                <ul className="space-y-2 text-gray-700">
+                  <li>✓ Multiple <strong>disconnected component fragments</strong></li>
+                  <li>✓ Components built <strong>before</strong> pages exist</li>
+                  <li>✓ ARIA references span <strong>separate files</strong></li>
+                  <li>✓ Event handlers in <strong>different fragments</strong></li>
+                  <li>✓ Analysis needed <strong>during development</strong></li>
+                </ul>
+              </div>
+
+              <h3 className="text-2xl font-bold mt-12 mb-4 text-gray-900">Development Stages</h3>
+
+              <div className="space-y-6 mb-8">
+                <div className="bg-gradient-to-r from-red-50 to-orange-50 border-l-4 border-red-400 p-6 rounded-r-lg">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="text-2xl font-bold text-red-600">Stage 1</div>
+                    <h4 className="text-xl font-bold text-gray-900">Early Development: Many Fragments</h4>
+                  </div>
+                  <p className="text-gray-700 mb-3">
+                    Developer creates individual component files, not yet connected to any page.
+                  </p>
+                  <div className="bg-white rounded p-4 text-sm font-mono mb-3">
+                    {`// ButtonComponent.tsx (isolated)
+export function Button() {
+  return <button onClick={handleClick}>Submit</button>;
+}
+
+// DialogComponent.tsx (isolated)
+export function Dialog() {
+  return <dialog>...</dialog>;
+}
+
+// FormComponent.tsx (isolated)
+export function Form() {
+  return <form>...</form>;
+}`}
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    <strong>Paradise sees:</strong> 3 disconnected fragments<br />
+                    <strong>Tree completeness:</strong> 0.3 (LOW)<br />
+                    <strong>Confidence:</strong> LOW - Many unconnected components
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border-l-4 border-orange-400 p-6 rounded-r-lg">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="text-2xl font-bold text-orange-600">Stage 2</div>
+                    <h4 className="text-xl font-bold text-gray-900">Partial Integration: Some Connections</h4>
+                  </div>
+                  <p className="text-gray-700 mb-3">
+                    Developer starts connecting components, some references resolve.
+                  </p>
+                  <div className="bg-white rounded p-4 text-sm font-mono mb-3">
+                    {`// Page.tsx (partial)
+export function Page() {
+  return (
+    <div>
+      <Button />  {/* Connected! */}
+      {/* Dialog and Form not imported yet */}
+    </div>
+  );
+}`}
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    <strong>Paradise sees:</strong> 2 fragments (Page+Button, Dialog, Form)<br />
+                    <strong>Tree completeness:</strong> 0.7 (MEDIUM)<br />
+                    <strong>Confidence:</strong> MEDIUM - Partial tree with some connections
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-400 p-6 rounded-r-lg">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="text-2xl font-bold text-green-600">Stage 3</div>
+                    <h4 className="text-xl font-bold text-gray-900">Complete Integration: Single Tree</h4>
+                  </div>
+                  <p className="text-gray-700 mb-3">
+                    All components integrated into complete page tree.
+                  </p>
+                  <div className="bg-white rounded p-4 text-sm font-mono mb-3">
+                    {`// Page.tsx (complete)
+export function Page() {
+  return (
+    <div>
+      <Button />   {/* Connected */}
+      <Dialog />   {/* Connected */}
+      <Form />     {/* Connected */}
+    </div>
+  );
+}`}
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    <strong>Paradise sees:</strong> 1 complete tree<br />
+                    <strong>Tree completeness:</strong> 1.0 (HIGH)<br />
+                    <strong>Confidence:</strong> HIGH - Definitive analysis possible
+                  </div>
+                </div>
+              </div>
+
+              <h3 className="text-2xl font-bold mt-12 mb-4 text-gray-900">Paradise's Solution: Multiple DOMModel Fragments</h3>
+
+              <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                Instead of requiring a single complete tree, Paradise's DocumentModel supports
+                an <strong>array of DOM fragments</strong>, each representing an independent component tree.
+              </p>
+
+              <div className="bg-gray-900 text-gray-100 rounded-lg p-6 mb-8">
+                <pre className="text-sm overflow-x-auto">{`// Before: Single tree assumption
+export class DocumentModel {
+  dom?: DOMModel;  // ❌ Only one tree allowed
+}
+
+// After: Fragment-aware architecture
+export class DocumentModel {
+  dom?: DOMModel[];  // ✅ Multiple fragments supported
+
+  getFragmentCount(): number {
+    return this.dom?.length || 0;
+  }
+
+  getTreeCompleteness(): number {
+    // Calculate 0.0-1.0 completeness score
+    // Based on fragment count + reference resolution
+  }
+
+  isFragmentComplete(fragmentId: string): boolean {
+    // Check if fragment is self-contained
+  }
+}`}</pre>
+              </div>
+
+              <h3 className="text-2xl font-bold mt-12 mb-4 text-gray-900">Tree Completeness Algorithm</h3>
+
+              <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                Paradise calculates a <strong>completeness score</strong> (0.0 to 1.0) based on two factors:
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-6 mb-8">
+                <div className="bg-white border-2 border-paradise-blue rounded-lg p-6">
+                  <h4 className="text-lg font-bold text-paradise-blue mb-3">Factor 1: Fragment Count</h4>
+                  <p className="text-gray-700 text-sm mb-3">
+                    Fewer fragments = more complete tree
+                  </p>
+                  <div className="bg-gray-50 rounded p-3 text-xs font-mono">
+{`base = fragments === 1
+  ? 0.7   // Single tree
+  : max(0.3, 1.0 - (fragments * 0.1))
+
+Examples:
+• 1 fragment:  0.7
+• 2 fragments: 0.8
+• 3 fragments: 0.7
+• 5 fragments: 0.5
+• 8+ fragments: 0.3 (floor)`}
+                  </div>
+                </div>
+
+                <div className="bg-white border-2 border-paradise-green rounded-lg p-6">
+                  <h4 className="text-lg font-bold text-paradise-green mb-3">Factor 2: Reference Resolution</h4>
+                  <p className="text-gray-700 text-sm mb-3">
+                    More resolved references = higher confidence
+                  </p>
+                  <div className="bg-gray-50 rounded p-3 text-xs font-mono">
+{`rate = resolved / (resolved + unresolved)
+boost = rate * 0.3  // Max +0.3
+
+Examples:
+• All resolved:  +0.3
+• Half resolved: +0.15
+• None resolved: +0.0
+
+Final = min(1.0, base + boost)`}
+                  </div>
+                </div>
+              </div>
+
+              <h3 className="text-2xl font-bold mt-12 mb-4 text-gray-900">Confidence Scoring</h3>
+
+              <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                Paradise reports <strong>confidence levels</strong> for every issue, based on tree completeness.
+              </p>
+
+              <div className="space-y-4 mb-8">
+                <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 p-6 rounded-r-lg">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="text-3xl">✅</div>
+                    <h4 className="text-xl font-bold text-green-800">HIGH Confidence (0.9-1.0)</h4>
+                  </div>
+                  <p className="text-gray-700 mb-2">
+                    Single complete tree, all references resolve. Issues are <strong>definitive</strong>.
+                  </p>
+                  <div className="bg-white rounded p-3 text-sm">
+                    <strong>Example:</strong> "Button missing keyboard handler"<br />
+                    <span className="text-gray-600">Reason: Element verified in complete tree</span>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-r from-yellow-50 to-amber-50 border-l-4 border-yellow-500 p-6 rounded-r-lg">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="text-3xl">⚠️</div>
+                    <h4 className="text-xl font-bold text-yellow-800">MEDIUM Confidence (0.5-0.9)</h4>
+                  </div>
+                  <p className="text-gray-700 mb-2">
+                    Partial tree or some fragments. Issues are <strong>likely</strong>.
+                  </p>
+                  <div className="bg-white rounded p-3 text-sm">
+                    <strong>Example:</strong> "Possible orphaned handler"<br />
+                    <span className="text-gray-600">Reason: Partial tree analysis (70% complete)</span>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-6 rounded-r-lg">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="text-3xl">ℹ️</div>
+                    <h4 className="text-xl font-bold text-blue-800">LOW Confidence (0.0-0.5)</h4>
+                  </div>
+                  <p className="text-gray-700 mb-2">
+                    Many disconnected fragments. Issues are <strong>uncertain</strong>.
+                  </p>
+                  <div className="bg-white rounded p-3 text-sm">
+                    <strong>Example:</strong> "Possible missing label"<br />
+                    <span className="text-gray-600">Reason: Multiple disconnected fragments (30% complete)<br />
+                    Consider integrating components for definitive analysis</span>
+                  </div>
+                </div>
+              </div>
+
+              <h3 className="text-2xl font-bold mt-12 mb-4 text-gray-900">How Analyzers Use Fragments</h3>
+
+              <div className="bg-gray-900 text-gray-100 rounded-lg p-6 mb-8">
+                <pre className="text-sm overflow-x-auto">{`export class MouseOnlyClickAnalyzer {
+  analyze(documentModel: DocumentModel): Issue[] {
+    const issues: Issue[] = [];
+
+    // Get all interactive elements from ALL fragments
+    const interactive = documentModel.getInteractiveElements();
+
+    for (const element of interactive) {
+      if (element.hasClickHandler && !element.hasKeyboardHandler) {
+        // Calculate confidence based on tree completeness
+        const completeness = documentModel.getTreeCompleteness();
+        const fragmentCount = documentModel.getFragmentCount();
+
+        let confidence: IssueConfidence;
+
+        if (completeness >= 0.9) {
+          // Definitive: Single complete tree
+          confidence = {
+            level: 'HIGH',
+            reason: 'Element verified in complete tree',
+            treeCompleteness: completeness
+          };
+        } else if (fragmentCount === 1) {
+          // Likely: Single incomplete tree
+          confidence = {
+            level: 'MEDIUM',
+            reason: \`Partial tree analysis (\${Math.round(completeness * 100)}% complete)\`,
+            treeCompleteness: completeness
+          };
+        } else {
+          // Uncertain: Multiple fragments
+          confidence = {
+            level: 'LOW',
+            reason: \`Multiple fragments (\${fragmentCount} disconnected)\`,
+            treeCompleteness: completeness
+          };
+        }
+
+        issues.push({
+          type: 'mouse-only-click',
+          severity: 'warning',
+          message: 'Button has click handler but no keyboard handler',
+          confidence,  // Include confidence in result
+          locations: [element.location],
+          wcagCriteria: ['2.1.1']
+        });
+      }
+    }
+
+    return issues;
+  }
+}`}</pre>
+              </div>
+
+              <h3 className="text-2xl font-bold mt-12 mb-4 text-gray-900">Cross-Fragment References</h3>
+
+              <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                Paradise can resolve references <strong>across fragments</strong>, enabling analysis
+                even when components are in separate files.
+              </p>
+
+              <div className="bg-white border border-gray-200 rounded-lg p-6 mb-8">
+                <h4 className="text-lg font-bold mb-3">Example: ARIA References Across Fragments</h4>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm font-semibold text-gray-700 mb-2">Fragment 1: Label Component</p>
+                    <div className="bg-gray-50 rounded p-3 text-xs font-mono">
+{`// Label.tsx
+<span id="submit-label">
+  Submit Form
+</span>`}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-700 mb-2">Fragment 2: Button Component</p>
+                    <div className="bg-gray-50 rounded p-3 text-xs font-mono">
+{`// Button.tsx
+<button
+  aria-labelledby="submit-label"
+>
+  Submit
+</button>`}
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded text-sm text-gray-700">
+                  ✓ Paradise searches ALL fragments for "submit-label"<br />
+                  ✓ Reference resolves across fragments<br />
+                  ✓ Completeness score boosted by resolved reference<br />
+                  ✓ Confidence level increases
+                </div>
+              </div>
+
+              <h3 className="text-2xl font-bold mt-12 mb-4 text-gray-900">Progressive Enhancement</h3>
+
+              <div className="bg-gradient-to-r from-paradise-blue/10 to-paradise-purple/10 border-2 border-paradise-blue/30 rounded-xl p-8">
+                <h4 className="text-2xl font-bold mb-4 text-gray-900">Analysis Improves Naturally</h4>
+                <p className="text-lg text-gray-700 mb-6">
+                  As developers integrate components, Paradise's analysis becomes more accurate <strong>automatically</strong>.
+                  No configuration changes needed - confidence scores naturally improve as the tree becomes complete.
+                </p>
+
+                <div className="grid md:grid-cols-3 gap-4 text-center">
+                  <div className="bg-white rounded-lg p-4 border border-gray-200">
+                    <div className="text-3xl mb-2">📦</div>
+                    <div className="font-bold text-gray-900">Early Dev</div>
+                    <div className="text-sm text-gray-600 mt-1">Many fragments</div>
+                    <div className="text-sm text-blue-600 font-semibold mt-2">LOW confidence</div>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 border border-gray-200">
+                    <div className="text-3xl mb-2">🔗</div>
+                    <div className="font-bold text-gray-900">Integration</div>
+                    <div className="text-sm text-gray-600 mt-1">Partial connections</div>
+                    <div className="text-sm text-yellow-600 font-semibold mt-2">MEDIUM confidence</div>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 border border-gray-200">
+                    <div className="text-3xl mb-2">✅</div>
+                    <div className="font-bold text-gray-900">Complete</div>
+                    <div className="text-sm text-gray-600 mt-1">Unified tree</div>
+                    <div className="text-sm text-green-600 font-semibold mt-2">HIGH confidence</div>
+                  </div>
+                </div>
+              </div>
+
+              <h3 className="text-2xl font-bold mt-12 mb-4 text-gray-900">Benefits</h3>
+
+              <div className="grid md:grid-cols-2 gap-6 mb-8">
+                <div className="space-y-3">
+                  <div className="flex gap-3">
+                    <div className="text-2xl">✅</div>
+                    <div>
+                      <div className="font-semibold text-gray-900">Works at Any Stage</div>
+                      <div className="text-sm text-gray-600">From single file to complete application</div>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="text-2xl">✅</div>
+                    <div>
+                      <div className="font-semibold text-gray-900">Transparent Confidence</div>
+                      <div className="text-sm text-gray-600">No false sense of certainty</div>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="text-2xl">✅</div>
+                    <div>
+                      <div className="font-semibold text-gray-900">Zero Configuration</div>
+                      <div className="text-sm text-gray-600">No manual annotation required</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex gap-3">
+                    <div className="text-2xl">✅</div>
+                    <div>
+                      <div className="font-semibold text-gray-900">Progressive Enhancement</div>
+                      <div className="text-sm text-gray-600">Analysis improves as code integrates</div>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="text-2xl">✅</div>
+                    <div>
+                      <div className="font-semibold text-gray-900">Real-Time Feedback</div>
+                      <div className="text-sm text-gray-600">Immediate analysis during development</div>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="text-2xl">✅</div>
+                    <div>
+                      <div className="font-semibold text-gray-900">Backward Compatible</div>
+                      <div className="text-sm text-gray-600">Works with existing single-file analysis</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* 9. Extensibility */}
           <section id="extensibility" className="scroll-mt-8">
-            <h2 className="text-4xl font-bold mb-6 text-violet-600">8. Extensibility</h2>
+            <h2 className="text-4xl font-bold mb-6 text-fuchsia-600">9. Extensibility</h2>
 
             <div className="prose prose-lg max-w-none">
               <p className="text-lg text-gray-700 leading-relaxed mb-6">
