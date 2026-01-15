@@ -291,6 +291,299 @@ function handleSubmit(event) {
       css: []
     },
     issues: []
+  },
+  'react-portal-issue': {
+    title: 'React Portal with stopPropagation',
+    description: 'Portal + stopPropagation = multiple a11y issues',
+    category: 'react',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'Modal.tsx',
+          content: `import React from 'react';
+import ReactDOM from 'react-dom';
+
+function Modal({ isOpen, onClose }) {
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      onClose();
+    }
+    // ISSUE: stopPropagation blocks AT
+    e.stopPropagation();
+  };
+
+  if (!isOpen) return null;
+
+  // ISSUE: Portal breaks focus management
+  return ReactDOM.createPortal(
+    <div
+      role="dialog"
+      aria-modal="true"
+      onKeyDown={handleKeyDown}
+    >
+      <h2>Modal Title</h2>
+      <button onClick={onClose}>Close</button>
+    </div>,
+    document.getElementById('modal-root')
+  );
+}`
+        }
+      ],
+      css: []
+    },
+    issues: ['react-portal-accessibility', 'react-stop-propagation']
+  },
+  'react-ref-forwarding': {
+    title: 'React forwardRef + useImperativeHandle',
+    description: 'Proper ref forwarding for focus management',
+    category: 'react',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'FocusableInput.tsx',
+          content: `import React, { useRef, useImperativeHandle } from 'react';
+
+const FocusableInput = React.forwardRef((props, ref) => {
+  const inputRef = useRef();
+
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      inputRef.current.focus();
+    },
+    blur: () => {
+      inputRef.current.blur();
+    },
+    select: () => {
+      inputRef.current.select();
+    }
+  }));
+
+  return (
+    <input
+      ref={inputRef}
+      type="text"
+      aria-label={props.label}
+      placeholder={props.placeholder}
+    />
+  );
+});
+
+export default FocusableInput;`
+        }
+      ],
+      css: []
+    },
+    issues: []
+  },
+  'react-context-a11y': {
+    title: 'React Context for Accessibility State',
+    description: 'Managing theme and announcements via Context',
+    category: 'react',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'AccessibilityProvider.tsx',
+          content: `import React, { useState, useContext } from 'react';
+
+// Context for theme (dark mode affects a11y)
+const ThemeContext = React.createContext();
+
+function ThemeProvider({ children }) {
+  const [theme, setTheme] = useState('light');
+
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+// Context for screen reader announcements
+const AnnouncementContext = React.createContext();
+
+function AccessibilityProvider({ children }) {
+  const announce = (message) => {
+    // Announce to screen readers
+    const liveRegion = document.getElementById('sr-announcements');
+    if (liveRegion) {
+      liveRegion.textContent = message;
+    }
+  };
+
+  return (
+    <AnnouncementContext.Provider value={{ announce }}>
+      {children}
+    </AnnouncementContext.Provider>
+  );
+}
+
+// Component using both contexts
+function ThemedButton() {
+  const { theme, setTheme } = useContext(ThemeContext);
+  const { announce } = useContext(AnnouncementContext);
+
+  const handleToggle = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    announce(\`Theme changed to \${newTheme} mode\`);
+  };
+
+  return (
+    <button
+      onClick={handleToggle}
+      aria-label={\`Toggle theme, current: \${theme}\`}
+    >
+      Toggle Theme
+    </button>
+  );
+}`
+        }
+      ],
+      css: []
+    },
+    issues: []
+  },
+  'react-focus-trap': {
+    title: 'React Dialog with Focus Trap',
+    description: 'Proper focus management in modal dialog',
+    category: 'react',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'Dialog.tsx',
+          content: `import React, { useEffect, useRef, useContext } from 'react';
+
+function Dialog({ isOpen, onClose, title, children }) {
+  const dialogRef = useRef();
+  const closeButtonRef = useRef();
+  const { trapFocus, releaseFocus } = useContext(FocusContext);
+
+  useEffect(() => {
+    if (isOpen) {
+      // Store previously focused element
+      const previouslyFocused = document.activeElement;
+
+      // Focus the close button
+      closeButtonRef.current?.focus();
+
+      // Trap focus within dialog
+      trapFocus(dialogRef.current);
+
+      return () => {
+        // Release focus trap
+        releaseFocus();
+
+        // Return focus to trigger
+        previouslyFocused?.focus();
+      };
+    }
+  }, [isOpen, trapFocus, releaseFocus]);
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      onClose();
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="dialog-title"
+      onKeyDown={handleKeyDown}
+      tabIndex={-1}
+    >
+      <h2 id="dialog-title">{title}</h2>
+      <div>{children}</div>
+      <button ref={closeButtonRef} onClick={onClose}>
+        Close
+      </button>
+    </div>
+  );
+}`
+        }
+      ],
+      css: []
+    },
+    issues: []
+  },
+  'react-hooks-combo': {
+    title: 'React Hooks Combination',
+    description: 'useState, useEffect, useCallback, useMemo',
+    category: 'react',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'AccessibleForm.tsx',
+          content: `import React, { useState, useCallback, useMemo, useRef } from 'react';
+
+function AccessibleForm({ onSubmit }) {
+  const [formData, setFormData] = useState({ name: '', email: '' });
+  const [errors, setErrors] = useState({});
+  const firstErrorRef = useRef();
+
+  // useCallback: Memoize validation function
+  const validateForm = useCallback(() => {
+    const newErrors = {};
+    if (!formData.name) newErrors.name = 'Name required';
+    if (!formData.email) newErrors.email = 'Email required';
+    return newErrors;
+  }, [formData]);
+
+  // useMemo: Compute derived state
+  const hasErrors = useMemo(() => {
+    return Object.keys(errors).length > 0;
+  }, [errors]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      // Focus first error field
+      firstErrorRef.current?.focus();
+    } else {
+      onSubmit(formData);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} aria-label="Contact form">
+      <div>
+        <label htmlFor="name">Name</label>
+        <input
+          id="name"
+          ref={errors.name ? firstErrorRef : null}
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          aria-invalid={!!errors.name}
+          aria-describedby={errors.name ? 'name-error' : undefined}
+        />
+        {errors.name && (
+          <span id="name-error" role="alert">{errors.name}</span>
+        )}
+      </div>
+      <button type="submit" disabled={hasErrors}>
+        Submit
+      </button>
+    </form>
+  );
+}`
+        }
+      ],
+      css: []
+    },
+    issues: []
   }
 };
 
@@ -1085,6 +1378,13 @@ export default function Playground() {
                 <optgroup label="Multi-Model Examples (HTML + JS + CSS)">
                   {Object.entries(EXAMPLES)
                     .filter(([_, ex]) => ex.category === 'multi-model')
+                    .map(([key, ex]) => (
+                      <option key={key} value={key}>{ex.title}</option>
+                    ))}
+                </optgroup>
+                <optgroup label="React Examples (JSX/TSX)">
+                  {Object.entries(EXAMPLES)
+                    .filter(([_, ex]) => ex.category === 'react')
                     .map(([key, ex]) => (
                       <option key={key} value={key}>{ex.title}</option>
                     ))}
