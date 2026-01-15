@@ -36,6 +36,9 @@ export default function Navigation() {
             <a href="/playground" className="text-gray-700 hover:text-paradise-blue font-medium transition-colors">
               Playground
             </a>
+            <a href="/background" className="text-gray-700 hover:text-paradise-blue font-medium transition-colors">
+              Background
+            </a>
             <a href="/extension" className="text-gray-700 hover:text-paradise-blue font-medium transition-colors">
               Extension
             </a>
@@ -124,6 +127,13 @@ export default function Navigation() {
                 onClick={() => setIsOpen(false)}
               >
                 Playground
+              </a>
+              <a
+                href="/background"
+                className="text-gray-700 hover:text-paradise-blue font-medium transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                Background
               </a>
               <a
                 href="/extension"
