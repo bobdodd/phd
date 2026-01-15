@@ -24,6 +24,12 @@ export default function Navigation() {
             <a href="/theory" className="text-gray-700 hover:text-paradise-blue font-medium transition-colors">
               Theory
             </a>
+            <a href="/architecture" className="text-gray-700 hover:text-paradise-blue font-medium transition-colors">
+              Architecture
+            </a>
+            <a href="/analyzers" className="text-gray-700 hover:text-paradise-blue font-medium transition-colors">
+              Analyzers
+            </a>
             <a href="/examples" className="text-gray-700 hover:text-paradise-blue font-medium transition-colors">
               Examples
             </a>
@@ -90,6 +96,20 @@ export default function Navigation() {
                 onClick={() => setIsOpen(false)}
               >
                 Theory
+              </a>
+              <a
+                href="/architecture"
+                className="text-gray-700 hover:text-paradise-blue font-medium transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                Architecture
+              </a>
+              <a
+                href="/analyzers"
+                className="text-gray-700 hover:text-paradise-blue font-medium transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                Analyzers
               </a>
               <a
                 href="/examples"

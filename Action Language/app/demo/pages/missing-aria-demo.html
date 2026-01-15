@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Missing ARIA Connection Demo - Paradise</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    header p {
+      font-size: 1.1rem;
+      opacity: 0.95;
+    }
+
+    .nav-back {
+      display: inline-block;
+      margin-bottom: 1rem;
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      background: rgba(255,255,255,0.2);
+      border-radius: 6px;
+      transition: background 0.3s;
+    }
+
+    .nav-back:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .content {
+      padding: 2rem;
+    }
+
+    .section {
+      margin-bottom: 3rem;
+    }
+
+    .section h2 {
+      color: #fa709a;
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      border-bottom: 3px solid #fa709a;
+      padding-bottom: 0.5rem;
+    }
+
+    .section h3 {
+      color: #fee140;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+      font-size: 1.3rem;
+      margin: 1.5rem 0 1rem;
+    }
+
+    .code-block {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+
+    .code-header {
+      background: #fa709a;
+      color: white;
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .code-content {
+      padding: 1rem;
+      overflow-x: auto;
+    }
+
+    pre {
+      margin: 0;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .error-line {
+      background: #fff5f5;
+      border-left: 3px solid #e53e3e;
+      padding-left: 0.5rem;
+      margin-left: -0.5rem;
+    }
+
+    .demo-section {
+      background: #f8f9fa;
+      border: 2px solid #fa709a;
+      border-radius: 8px;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .demo-controls {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .btn-primary {
+      background: #fa709a;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #e85d87;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(250, 112, 154, 0.4);
+    }
+
+    .results {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      min-height: 150px;
+    }
+
+    .result-item {
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+      border-left: 4px solid;
+    }
+
+    .result-item.error {
+      background: #fff5f5;
+      border-color: #e53e3e;
+    }
+
+    .result-item.warning {
+      background: #fffaf0;
+      border-color: #dd6b20;
+    }
+
+    .result-item h4 {
+      margin-bottom: 0.5rem;
+      color: inherit;
+    }
+
+    .result-item p {
+      margin-bottom: 0.5rem;
+      line-height: 1.5;
+    }
+
+    .result-item .location {
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.85rem;
+      color: #666;
+      background: #f8f9fa;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      display: inline-block;
+      margin-top: 0.5rem;
+    }
+
+    .aria-relationships {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .aria-card {
+      background: white;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+
+    .aria-card h4 {
+      color: #fa709a;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid #fa709a;
+    }
+
+    .aria-card .attribute {
+      font-family: 'Monaco', 'Courier New', monospace;
+      background: #f8f9fa;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      color: #fa709a;
+      font-weight: 600;
+    }
+
+    .highlight {
+      background: #fef5e7;
+      padding: 0.125rem 0.25rem;
+      border-radius: 3px;
+      font-weight: 600;
+      font-family: 'Monaco', 'Courier New', monospace;
+    }
+
+    .broken-link {
+      background: #fff5f5;
+      color: #e53e3e;
+      padding: 0.125rem 0.25rem;
+      border-radius: 3px;
+      font-weight: 600;
+      font-family: 'Monaco', 'Courier New', monospace;
+      text-decoration: line-through;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 2rem 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .comparison-table th {
+      background: #fa709a;
+      color: white;
+      font-weight: 600;
+    }
+
+    .comparison-table tr:hover {
+      background: #f8f9fa;
+    }
+
+    .comparison-table code {
+      background: #f8f9fa;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .aria-relationships {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="../index.html" class="nav-back">← Back to Demo Home</a>
+      <h1>Missing ARIA Connection Demo</h1>
+      <p>Detecting Broken ARIA Relationships</p>
+    </header>
+
+    <div class="content">
+      <!-- Introduction -->
+      <div class="section">
+        <h2>The Problem: Broken ARIA Relationships</h2>
+        <p>
+          ARIA (Accessible Rich Internet Applications) uses special attributes to create semantic relationships
+          between elements. Attributes like <code>aria-labelledby</code>, <code>aria-describedby</code>,
+          <code>aria-controls</code>, and <code>aria-owns</code> reference other elements by ID.
+        </p>
+        <p style="margin-top: 1rem;">
+          When these referenced IDs don't exist, assistive technologies can't establish the relationship,
+          breaking accessibility. Paradise's <strong>MissingAriaConnectionAnalyzer</strong> validates that
+          all ARIA references point to actual elements.
+        </p>
+      </div>
+
+      <!-- Example -->
+      <div class="section">
+        <h2>Example: Broken Label Relationship</h2>
+        <p>
+          A button references a label element that doesn't exist, breaking screen reader announcements.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">Broken ARIA Implementation</div>
+          <div class="code-content">
+            <pre>&lt;!-- The button references 'submitLabel' --&gt;
+<span class="error-line">&lt;button aria-labelledby="<span class="broken-link">submitLabel</span>"&gt;</span>
+  Submit
+&lt;/button&gt;
+
+&lt;!-- But no element with id="submitLabel" exists! --&gt;
+&lt;!-- Expected: &lt;span id="submitLabel"&gt;Submit the form&lt;/span&gt; --&gt;</pre>
+          </div>
+        </div>
+
+        <div style="background: #fff5f5; border: 2px solid #e53e3e; border-radius: 8px; padding: 1.5rem; margin-top: 1rem;">
+          <h4 style="color: #e53e3e; margin-bottom: 0.5rem;">💔 Broken Relationship</h4>
+          <p>
+            <strong>Screen reader hears:</strong> "Submit, button" (generic, unhelpful)<br>
+            <strong>Should hear:</strong> "Submit the form, button" (descriptive, helpful)
+          </p>
+          <p style="margin-top: 0.5rem;">
+            The <code>aria-labelledby</code> attribute creates no connection because the target ID doesn't exist.
+            Screen reader users get minimal context about the button's purpose.
+          </p>
+        </div>
+      </div>
+
+      <!-- Interactive Demo -->
+      <div class="section">
+        <h2>Interactive Demo</h2>
+        <div class="demo-section">
+          <div class="demo-controls">
+            <button class="btn btn-primary" onclick="runAnalysis()">
+              Run Paradise Analysis
+            </button>
+          </div>
+          <div class="results" id="results">
+            <p style="color: #666; text-align: center;">Click the button above to detect broken ARIA connections</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ARIA Relationships -->
+      <div class="section">
+        <h2>ARIA Relationship Attributes</h2>
+        <p>Paradise validates all ARIA attributes that reference other elements:</p>
+
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Attribute</th>
+              <th>Purpose</th>
+              <th>Example</th>
+              <th>Impact if Broken</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>aria-labelledby</code></td>
+              <td>Identifies labeling element(s)</td>
+              <td><code>aria-labelledby="title"</code></td>
+              <td>Screen readers can't announce proper label</td>
+            </tr>
+            <tr>
+              <td><code>aria-describedby</code></td>
+              <td>Identifies describing element(s)</td>
+              <td><code>aria-describedby="help"</code></td>
+              <td>Users miss important context/instructions</td>
+            </tr>
+            <tr>
+              <td><code>aria-controls</code></td>
+              <td>Identifies controlled element(s)</td>
+              <td><code>aria-controls="menu"</code></td>
+              <td>Relationship between trigger and content lost</td>
+            </tr>
+            <tr>
+              <td><code>aria-owns</code></td>
+              <td>Defines parent-child relationship</td>
+              <td><code>aria-owns="item1 item2"</code></td>
+              <td>DOM structure misrepresented to AT</td>
+            </tr>
+            <tr>
+              <td><code>aria-activedescendant</code></td>
+              <td>Identifies active element in composite</td>
+              <td><code>aria-activedescendant="opt1"</code></td>
+              <td>Focus management broken for keyboard users</td>
+            </tr>
+            <tr>
+              <td><code>aria-flowto</code></td>
+              <td>Defines reading order override</td>
+              <td><code>aria-flowto="next"</code></td>
+              <td>Custom navigation paths don't work</td>
+            </tr>
+            <tr>
+              <td><code>aria-errormessage</code></td>
+              <td>Identifies error message element</td>
+              <td><code>aria-errormessage="error1"</code></td>
+              <td>Users don't hear validation errors</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Real Examples -->
+      <div class="section">
+        <h2>Real-World Examples</h2>
+        <div class="aria-relationships">
+          <div class="aria-card">
+            <h4>1. Dialog with Missing Title</h4>
+            <div class="code-content">
+              <pre style="font-size: 0.85rem;">&lt;div role="dialog"
+<span class="error-line">     aria-labelledby="<span class="broken-link">dialogTitle</span>"&gt;</span>
+  &lt;p&gt;Are you sure?&lt;/p&gt;
+  &lt;button&gt;Yes&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;!-- Missing: id="dialogTitle" --&gt;</pre>
+            </div>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">
+              <strong>Paradise detects:</strong> <code>aria-labelledby</code> references non-existent <code>dialogTitle</code>
+            </p>
+          </div>
+
+          <div class="aria-card">
+            <h4>2. Tabs with Missing Panel</h4>
+            <div class="code-content">
+              <pre style="font-size: 0.85rem;">&lt;button role="tab"
+<span class="error-line">        aria-controls="<span class="broken-link">panel1</span>"&gt;</span>
+  Settings
+&lt;/button&gt;
+
+&lt;!-- Missing: id="panel1" --&gt;</pre>
+            </div>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">
+              <strong>Paradise detects:</strong> Tab controls non-existent panel
+            </p>
+          </div>
+
+          <div class="aria-card">
+            <h4>3. Input with Missing Error</h4>
+            <div class="code-content">
+              <pre style="font-size: 0.85rem;">&lt;input
+  aria-invalid="true"
+<span class="error-line">  aria-errormessage="<span class="broken-link">emailError</span>"&gt;</span>
+
+&lt;!-- Missing: id="emailError" --&gt;</pre>
+            </div>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">
+              <strong>Paradise detects:</strong> Error message reference is broken
+            </p>
+          </div>
+
+          <div class="aria-card">
+            <h4>4. Combobox with Missing List</h4>
+            <div class="code-content">
+              <pre style="font-size: 0.85rem;">&lt;input role="combobox"
+<span class="error-line">       aria-controls="<span class="broken-link">suggestions</span>"</span>
+       aria-expanded="false"&gt;
+
+&lt;!-- Missing: id="suggestions" --&gt;</pre>
+            </div>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">
+              <strong>Paradise detects:</strong> Combobox can't control non-existent list
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- How It Works -->
+      <div class="section">
+        <h2>How Paradise Validates ARIA Connections</h2>
+
+        <h3>Step 1: Parse HTML and Extract ARIA Attributes</h3>
+        <div class="code-content" style="background: #f8f9fa; padding: 1rem; border-radius: 6px; margin: 1rem 0;">
+          <pre style="font-size: 0.85rem;">DOMModel {
+  elements: [
+    {
+      tagName: 'button',
+      attributes: {
+        'aria-labelledby': 'submitLabel',
+        'aria-describedby': 'submitHelp'
+      }
+    }
+  ],
+  idIndex: {
+    // List of all elements with IDs
+    'submitButton': Element,
+    'cancelButton': Element
+    // 'submitLabel' is missing!
+    // 'submitHelp' is missing!
+  }
+}</pre>
+        </div>
+
+        <h3>Step 2: Validate Each ARIA Reference</h3>
+        <div class="code-content" style="background: #f8f9fa; padding: 1rem; border-radius: 6px; margin: 1rem 0;">
+          <pre style="font-size: 0.85rem;">For each ARIA attribute:
+  1. Extract referenced ID(s)
+     - aria-labelledby="submitLabel" → ['submitLabel']
+     - aria-describedby="help1 help2" → ['help1', 'help2']
+
+  2. Check if ID exists in DOM
+     - 'submitLabel' in idIndex? NO ❌
+
+  3. Report broken connection
+     - Element: button
+     - Attribute: aria-labelledby
+     - Missing ID: 'submitLabel'
+     - Location: index.html:15:10</pre>
+        </div>
+
+        <h3>Step 3: Suggest Fixes</h3>
+        <p>Paradise analyzes the context to suggest likely fixes:</p>
+        <ul style="margin-left: 2rem; margin-top: 1rem;">
+          <li style="margin-bottom: 1rem;">
+            <strong>Similar IDs:</strong> Check for typos in existing IDs (edit distance algorithm)
+          </li>
+          <li style="margin-bottom: 1rem;">
+            <strong>Missing elements:</strong> Suggest creating the referenced element
+          </li>
+          <li style="margin-bottom: 1rem;">
+            <strong>Wrong attribute:</strong> Check if relationship should use different ARIA attribute
+          </li>
+        </ul>
+      </div>
+
+      <!-- WCAG Compliance -->
+      <div class="section">
+        <h2>WCAG 2.1 Compliance</h2>
+        <p>Broken ARIA connections violate multiple WCAG criteria:</p>
+        <ul style="margin-left: 2rem; margin-top: 1rem;">
+          <li style="margin-bottom: 1rem;">
+            <strong>1.3.1 Info and Relationships (Level A):</strong> Information, structure, and relationships
+            must be programmatically determinable. Broken ARIA breaks this.
+          </li>
+          <li style="margin-bottom: 1rem;">
+            <strong>4.1.2 Name, Role, Value (Level A):</strong> All UI components must have correct name and role.
+            Missing labels break this requirement.
+          </li>
+          <li style="margin-bottom: 1rem;">
+            <strong>2.4.6 Headings and Labels (Level AA):</strong> Labels must describe purpose.
+            Broken aria-labelledby prevents this.
+          </li>
+          <li style="margin-bottom: 1rem;">
+            <strong>3.3.2 Labels or Instructions (Level A):</strong> Labels must be provided when input is required.
+            Broken aria-describedby breaks instructional context.
+          </li>
+        </ul>
+      </div>
+
+      <!-- Real-World Impact -->
+      <div class="section">
+        <h2>Real-World Impact</h2>
+        <div class="result-item warning">
+          <h4>Case Study: Healthcare Portal</h4>
+          <p>
+            A patient portal used <code>aria-describedby</code> to link medication instructions to input fields.
+            During refactoring, instruction IDs were changed but ARIA references weren't updated.
+          </p>
+          <p style="margin-top: 0.5rem;">
+            <strong>Result:</strong> Screen reader users couldn't hear critical dosage instructions<br>
+            <strong>Risk:</strong> Potential medication errors due to missing context<br>
+            <strong>Paradise:</strong> Immediately flagged 23 broken ARIA connections
+          </p>
+          <p style="margin-top: 1rem; color: #dd6b20; font-weight: 600;">
+            Catching this before production prevented potential health risks to users
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function runAnalysis() {
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = `
+        <div style="margin-bottom: 1rem; padding: 1rem; background: #ebf8ff; border-radius: 6px;">
+          <strong>Analyzing:</strong> DOM structure and ARIA relationships
+        </div>
+
+        <div class="result-item error">
+          <h4>❌ Missing ARIA Connection (WCAG 1.3.1, 4.1.2)</h4>
+          <p>
+            Button has <code>aria-labelledby="submitLabel"</code> but no element with ID
+            <code class="broken-link">submitLabel</code> exists in the DOM.
+          </p>
+          <p style="margin-top: 0.5rem;">
+            <strong>Severity:</strong> Error<br>
+            <strong>Impact:</strong> Screen readers can't announce proper label<br>
+            <strong>Element:</strong> &lt;button aria-labelledby="submitLabel"&gt;
+          </p>
+          <div class="location">index.html:15:10 - aria-labelledby="submitLabel"</div>
+        </div>
+
+        <div class="result-item warning">
+          <h4>🔧 Suggested Fixes</h4>
+          <p><strong>Option 1: Create the missing element</strong></p>
+          <div style="background: #f8f9fa; padding: 0.75rem; border-radius: 4px; margin: 0.5rem 0; font-family: monospace; font-size: 0.85rem;">
+&lt;span id="submitLabel" class="sr-only"&gt;<br>
+&nbsp;&nbsp;Submit the form<br>
+&lt;/span&gt;
+          </div>
+
+          <p style="margin-top: 1rem;"><strong>Option 2: Remove broken attribute and use visible text</strong></p>
+          <div style="background: #f8f9fa; padding: 0.75rem; border-radius: 4px; margin: 0.5rem 0; font-family: monospace; font-size: 0.85rem;">
+&lt;button&gt;Submit the form&lt;/button&gt;
+          </div>
+
+          <p style="margin-top: 1rem;"><strong>Option 3: Use aria-label instead</strong></p>
+          <div style="background: #f8f9fa; padding: 0.75rem; border-radius: 4px; margin: 0.5rem 0; font-family: monospace; font-size: 0.85rem;">
+&lt;button aria-label="Submit the form"&gt;Submit&lt;/button&gt;
+          </div>
+        </div>
+
+        <div style="margin-top: 1rem; padding: 1rem; background: #fffaf0; border-radius: 6px; border-left: 4px solid #dd6b20;">
+          <strong>Accessibility Impact:</strong><br>
+          • Screen reader users hear "Submit, button" (minimal context)<br>
+          • Should hear "Submit the form, button" (clear purpose)<br>
+          • Users may not understand what they're submitting
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

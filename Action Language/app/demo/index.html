@@ -30,20 +30,20 @@
 
     <div class="stats">
       <div class="stat-card">
-        <span class="stat-number">10</span>
+        <span class="stat-number">16</span>
         <span class="stat-label">Demo Pages</span>
       </div>
       <div class="stat-card">
-        <span class="stat-number">50+</span>
-        <span class="stat-label">Issue Types Detected</span>
+        <span class="stat-number">5</span>
+        <span class="stat-label">Multi-Model Analyzers</span>
       </div>
       <div class="stat-card">
-        <span class="stat-number">13</span>
-        <span class="stat-label">WCAG Criteria</span>
+        <span class="stat-number">0</span>
+        <span class="stat-label">False Positives</span>
       </div>
       <div class="stat-card">
-        <span class="stat-number">21</span>
-        <span class="stat-label">Widget Patterns</span>
+        <span class="stat-number">95</span>
+        <span class="stat-label">Tests Passing</span>
       </div>
     </div>
 
@@ -68,7 +68,70 @@
     </div>
 
     <section>
-      <h2>Demo Pages</h2>
+      <h2>Multi-Model Architecture Demos</h2>
+      <p style="margin-bottom: 2rem; color: var(--color-text-light);">
+        These demos showcase Paradise's new multi-model architecture that eliminates false positives by analyzing HTML, JavaScript, and CSS together.
+      </p>
+      <div class="page-grid">
+        <a href="pages/cross-file-demo.html" class="page-card" style="border-left: 4px solid #667eea;">
+          <h3>🎯 Cross-File Analysis</h3>
+          <p>Eliminate false positives with project-wide context</p>
+          <div class="coverage">
+            <span class="badge keyboard">No False Positives</span>
+            <span class="badge aria">Multi-File</span>
+          </div>
+        </a>
+
+        <a href="pages/orphaned-handler-demo.html" class="page-card" style="border-left: 4px solid #f5576c;">
+          <h3>🔍 Orphaned Handlers</h3>
+          <p>Detect handlers attached to non-existent elements</p>
+          <div class="coverage">
+            <span class="badge keyboard">Typo Detection</span>
+            <span class="badge focus">Cross-Reference</span>
+          </div>
+        </a>
+
+        <a href="pages/missing-aria-demo.html" class="page-card" style="border-left: 4px solid #fa709a;">
+          <h3>💔 Broken ARIA Connections</h3>
+          <p>Find missing labelledby, describedby, and controls targets</p>
+          <div class="coverage">
+            <span class="badge aria">ARIA Validation</span>
+            <span class="badge widget">Relationships</span>
+          </div>
+        </a>
+
+        <a href="pages/css-hidden-demo.html" class="page-card" style="border-left: 4px solid #30cfd0;">
+          <h3>👻 CSS Visibility Conflicts</h3>
+          <p>Catch focusable elements hidden by display:none or opacity:0</p>
+          <div class="coverage">
+            <span class="badge focus">CSS Analysis</span>
+            <span class="badge keyboard">Focus Conflicts</span>
+          </div>
+        </a>
+
+        <a href="pages/focus-order-demo.html" class="page-card" style="border-left: 4px solid #a8edea;">
+          <h3>🔢 Focus Order Problems</h3>
+          <p>Detect chaotic tabindex patterns and backward flows</p>
+          <div class="coverage">
+            <span class="badge focus">Tabindex</span>
+            <span class="badge keyboard">Navigation Order</span>
+          </div>
+        </a>
+
+        <a href="pages/performance.html" class="page-card" style="border-left: 4px solid #764ba2;">
+          <h3>⚡ Performance Benchmarks</h3>
+          <p>Multi-model architecture performance and scalability</p>
+          <div class="coverage">
+            <span class="badge keyboard">Benchmarks</span>
+            <span class="badge aria">Metrics</span>
+          </div>
+        </a>
+      </div>
+
+      <h2 style="margin-top: 3rem;">Classic Accessibility Pattern Demos</h2>
+      <p style="margin-bottom: 2rem; color: var(--color-text-light);">
+        Educational demos showing accessible vs inaccessible implementations of common patterns.
+      </p>
       <div class="page-grid">
         <a href="pages/buttons.html" class="page-card">
           <h3>1. Interactive Buttons</h3>

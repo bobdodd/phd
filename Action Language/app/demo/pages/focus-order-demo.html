@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Focus Order Conflicts Demo - Paradise</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    header p {
+      font-size: 1.1rem;
+      opacity: 0.95;
+    }
+
+    .nav-back {
+      display: inline-block;
+      margin-bottom: 1rem;
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      background: rgba(255,255,255,0.2);
+      border-radius: 6px;
+      transition: background 0.3s;
+    }
+
+    .nav-back:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .content {
+      padding: 2rem;
+    }
+
+    .section {
+      margin-bottom: 3rem;
+    }
+
+    .section h2 {
+      color: #fed6e3;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      border-bottom: 3px solid #a8edea;
+      padding-bottom: 0.5rem;
+    }
+
+    .section h3 {
+      color: #a8edea;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+      font-size: 1.3rem;
+      margin: 1.5rem 0 1rem;
+    }
+
+    .code-block {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+
+    .code-header {
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      color: white;
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .code-content {
+      padding: 1rem;
+      overflow-x: auto;
+    }
+
+    pre {
+      margin: 0;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .problem-line {
+      background: #fff5f5;
+      border-left: 3px solid #e53e3e;
+      padding-left: 0.5rem;
+      margin-left: -0.5rem;
+    }
+
+    .demo-section {
+      background: #f8f9fa;
+      border: 2px solid #a8edea;
+      border-radius: 8px;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      color: white;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(168, 237, 234, 0.4);
+    }
+
+    .results {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      min-height: 150px;
+      margin-top: 1.5rem;
+    }
+
+    .result-item {
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+      border-left: 4px solid;
+    }
+
+    .result-item.error {
+      background: #fff5f5;
+      border-color: #e53e3e;
+    }
+
+    .result-item.warning {
+      background: #fffaf0;
+      border-color: #dd6b20;
+    }
+
+    .result-item h4 {
+      margin-bottom: 0.5rem;
+      color: inherit;
+    }
+
+    .result-item p {
+      margin-bottom: 0.5rem;
+      line-height: 1.5;
+    }
+
+    .result-item .location {
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.85rem;
+      color: #666;
+      background: #f8f9fa;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      display: inline-block;
+      margin-top: 0.5rem;
+    }
+
+    .visual-demo {
+      background: white;
+      border: 2px solid #a8edea;
+      border-radius: 8px;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .visual-demo h4 {
+      color: #333;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .demo-form {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #dee2e6;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #a8edea;
+      box-shadow: 0 0 0 3px rgba(168, 237, 234, 0.2);
+    }
+
+    .tabindex-label {
+      position: absolute;
+      top: -0.5rem;
+      right: 0;
+      background: #fed6e3;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .focus-flow {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 2rem 0;
+      padding: 1.5rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .focus-item {
+      padding: 1rem 1.5rem;
+      background: white;
+      border: 2px solid #a8edea;
+      border-radius: 6px;
+      font-weight: 600;
+      text-align: center;
+      min-width: 100px;
+    }
+
+    .focus-arrow {
+      font-size: 1.5rem;
+      color: #a8edea;
+    }
+
+    .focus-item.problem {
+      border-color: #e53e3e;
+      background: #fff5f5;
+      color: #e53e3e;
+    }
+
+    .highlight {
+      background: #fef5e7;
+      padding: 0.125rem 0.25rem;
+      border-radius: 3px;
+      font-weight: 600;
+      font-family: 'Monaco', 'Courier New', monospace;
+    }
+
+    .problems-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .problem-card {
+      background: white;
+      border: 2px solid #e53e3e;
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+
+    .problem-card h4 {
+      color: #e53e3e;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid #e53e3e;
+    }
+
+    @media (max-width: 768px) {
+      .problems-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .focus-flow {
+        flex-direction: column;
+      }
+
+      .focus-arrow {
+        transform: rotate(90deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="../index.html" class="nav-back">← Back to Demo Home</a>
+      <h1>Focus Order Conflicts Demo</h1>
+      <p>Detecting Problematic Tabindex Patterns</p>
+    </header>
+
+    <div class="content">
+      <!-- Introduction -->
+      <div class="section">
+        <h2>The Problem: Chaotic Tab Order</h2>
+        <p>
+          The <code>tabindex</code> attribute controls keyboard navigation order. When used incorrectly,
+          it creates confusing, illogical focus flows that disorient keyboard users. Paradise's
+          <strong>FocusOrderConflictAnalyzer</strong> detects common problematic patterns.
+        </p>
+        <p style="margin-top: 1rem;">
+          WCAG requires focus order to be meaningful and predictable. Arbitrary positive tabindex values,
+          duplicate values, and extreme jumps all violate this requirement.
+        </p>
+      </div>
+
+      <!-- Example -->
+      <div class="section">
+        <h2>Example: Backward Focus Flow</h2>
+        <p>
+          A form with tabindex values that send focus backward, confusing users:
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">Problematic Tabindex Values</div>
+          <div class="code-content">
+            <pre>&lt;form&gt;
+  &lt;input placeholder="Name" tabindex="1"&gt;
+  <span class="problem-line">&lt;input placeholder="Email" tabindex="3"&gt; &lt;!-- Jumps ahead --&gt;</span>
+  <span class="problem-line">&lt;input placeholder="Phone" tabindex="2"&gt; &lt;!-- Goes backward! --&gt;</span>
+  &lt;button tabindex="4"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</pre>
+          </div>
+        </div>
+
+        <div class="focus-flow">
+          <div class="focus-item">1. Name</div>
+          <div class="focus-arrow">→</div>
+          <div class="focus-item problem">3. Email</div>
+          <div class="focus-arrow">→</div>
+          <div class="focus-item problem">2. Phone<br>(backward!)</div>
+          <div class="focus-arrow">→</div>
+          <div class="focus-item">4. Submit</div>
+        </div>
+
+        <div style="background: #fff5f5; border: 2px solid #e53e3e; border-radius: 8px; padding: 1.5rem; margin-top: 1rem;">
+          <h4 style="color: #e53e3e; margin-bottom: 0.5rem;">💢 Confusing Experience</h4>
+          <p>
+            <strong>User tabs through form:</strong> Name → Email → Wait, now Phone? → Submit<br>
+            <strong>User thinks:</strong> "Did I skip something? Is the page broken?"
+          </p>
+          <p style="margin-top: 0.5rem;">
+            Visual layout shows Name → Email → Phone, but keyboard navigation goes Name → Email → Phone (backward).
+            This violates user expectations and WCAG 2.4.3 Focus Order.
+          </p>
+        </div>
+      </div>
+
+      <!-- Interactive Demo -->
+      <div class="section">
+        <h2>Interactive Demo</h2>
+        <div class="demo-section">
+          <button class="btn" onclick="runAnalysis()">
+            Run Paradise Analysis
+          </button>
+          <div class="results" id="results">
+            <p style="color: #666; text-align: center;">Click the button above to detect focus order conflicts</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visual Demonstration -->
+      <div class="section">
+        <h2>Try It Yourself: Broken Focus Order</h2>
+        <div class="visual-demo">
+          <h4>Use Tab key to navigate this form (notice the chaotic order)</h4>
+
+          <form class="demo-form" onsubmit="return false;">
+            <div class="form-group">
+              <span class="tabindex-label">tabindex="1"</span>
+              <label for="name">Name</label>
+              <input type="text" id="name" placeholder="Enter your name" tabindex="1">
+            </div>
+
+            <div class="form-group">
+              <span class="tabindex-label">tabindex="3"</span>
+              <label for="email">Email</label>
+              <input type="email" id="email" placeholder="Enter your email" tabindex="3">
+            </div>
+
+            <div class="form-group">
+              <span class="tabindex-label">tabindex="2"</span>
+              <label for="phone">Phone</label>
+              <input type="tel" id="phone" placeholder="Enter your phone" tabindex="2">
+            </div>
+
+            <div class="form-group">
+              <span class="tabindex-label">tabindex="5"</span>
+              <label for="company">Company</label>
+              <input type="text" id="company" placeholder="Enter company" tabindex="5">
+            </div>
+
+            <div class="form-group">
+              <span class="tabindex-label">tabindex="4"</span>
+              <label for="job">Job Title</label>
+              <input type="text" id="job" placeholder="Enter job title" tabindex="4">
+            </div>
+
+            <button type="submit" tabindex="6" style="width: 100%; padding: 1rem; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">
+              Submit
+            </button>
+          </form>
+
+          <div style="background: #fff5f5; padding: 1rem; border-radius: 6px; margin-top: 2rem; border-left: 3px solid #e53e3e;">
+            <strong>What you should experience:</strong><br>
+            • Tab order: Name (1) → Phone (2) → Email (3) → Job (4) → Company (5) → Submit (6)<br>
+            • This order makes NO SENSE visually!<br>
+            • Users expect: Name → Email → Phone → Company → Job → Submit
+          </div>
+        </div>
+      </div>
+
+      <!-- Common Problems -->
+      <div class="section">
+        <h2>Common Focus Order Problems</h2>
+        <div class="problems-grid">
+          <div class="problem-card">
+            <h4>1. Duplicate Tabindex Values</h4>
+            <div class="code-content">
+              <pre style="font-size: 0.85rem;"><span class="problem-line">&lt;input tabindex="1"&gt;
+&lt;input tabindex="1"&gt; &lt;!-- Same! --&gt;</span>
+&lt;input tabindex="2"&gt;</pre>
+            </div>
+            <p style="margin-top: 1rem; font-size: 0.9rem; color: #e53e3e;">
+              <strong>Issue:</strong> Unpredictable order when multiple elements share same tabindex
+            </p>
+          </div>
+
+          <div class="problem-card">
+            <h4>2. Large Gaps in Sequence</h4>
+            <div class="code-content">
+              <pre style="font-size: 0.85rem;">&lt;input tabindex="1"&gt;
+<span class="problem-line">&lt;input tabindex="100"&gt; &lt;!-- Jump! --&gt;</span>
+&lt;input tabindex="101"&gt;</pre>
+            </div>
+            <p style="margin-top: 1rem; font-size: 0.9rem; color: #e53e3e;">
+              <strong>Issue:</strong> Large gaps suggest maintenance problem, potential missing elements
+            </p>
+          </div>
+
+          <div class="problem-card">
+            <h4>3. Non-Sequential Values</h4>
+            <div class="code-content">
+              <pre style="font-size: 0.85rem;">&lt;input tabindex="1"&gt;
+<span class="problem-line">&lt;input tabindex="3"&gt; &lt;!-- Skips 2 --&gt;</span>
+&lt;input tabindex="5"&gt; &lt;!-- Skips 4 --&gt;</pre>
+            </div>
+            <p style="margin-top: 1rem; font-size: 0.9rem; color: #e53e3e;">
+              <strong>Issue:</strong> Gaps in sequence create confusion, may indicate deleted elements
+            </p>
+          </div>
+
+          <div class="problem-card">
+            <h4>4. Reverse Order</h4>
+            <div class="code-content">
+              <pre style="font-size: 0.85rem;"><span class="problem-line">&lt;input tabindex="3"&gt; &lt;!-- Backward! --&gt;
+&lt;input tabindex="2"&gt;
+&lt;input tabindex="1"&gt;</span></pre>
+            </div>
+            <p style="margin-top: 1rem; font-size: 0.9rem; color: #e53e3e;">
+              <strong>Issue:</strong> Focus flows opposite to visual/logical order
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- How It Works -->
+      <div class="section">
+        <h2>How Paradise Detects Focus Order Conflicts</h2>
+
+        <h3>Step 1: Collect All Focusable Elements</h3>
+        <div class="code-content" style="background: #f8f9fa; padding: 1rem; border-radius: 6px; margin: 1rem 0;">
+          <pre style="font-size: 0.85rem;">Elements with explicit tabindex:
+  input#name: tabindex="1"
+  input#email: tabindex="3"
+  input#phone: tabindex="2"
+  input#company: tabindex="5"
+  input#job: tabindex="4"
+  button: tabindex="6"</pre>
+        </div>
+
+        <h3>Step 2: Analyze Sequence</h3>
+        <div class="code-content" style="background: #f8f9fa; padding: 1rem; border-radius: 6px; margin: 1rem 0;">
+          <pre style="font-size: 0.85rem;">Sort by tabindex: [1, 2, 3, 4, 5, 6]
+Sort by DOM order: [1, 3, 2, 5, 4, 6]
+
+Compare sequences:
+  Position 2: tabindex=3 comes before tabindex=2 ❌ (non-sequential)
+  Position 4: tabindex=5 comes before tabindex=4 ❌ (non-sequential)
+
+Issues found:
+  • email (tabindex=3) appears before phone (tabindex=2)
+  • company (tabindex=5) appears before job (tabindex=4)</pre>
+        </div>
+
+        <h3>Step 3: Check for Other Problems</h3>
+        <ul style="margin-left: 2rem; margin-top: 1rem;">
+          <li style="margin-bottom: 1rem;">
+            <strong>Duplicates:</strong> Multiple elements with same positive tabindex
+          </li>
+          <li style="margin-bottom: 1rem;">
+            <strong>Gaps:</strong> Sequence jumps (1 → 3 → 5 instead of 1 → 2 → 3)
+          </li>
+          <li style="margin-bottom: 1rem;">
+            <strong>Large values:</strong> Extreme tabindex values (> 100) suggest problems
+          </li>
+          <li style="margin-bottom: 1rem;">
+            <strong>Visual mismatch:</strong> Keyboard order doesn't match visual layout
+          </li>
+        </ul>
+      </div>
+
+      <!-- Best Practices -->
+      <div class="section">
+        <h2>Best Practices</h2>
+        <div class="result-item warning" style="border-color: #38a169; background: #f0fff4;">
+          <h4>✅ Recommended: Don't Use Positive Tabindex</h4>
+          <p>
+            The best solution is to <strong>avoid positive tabindex values entirely</strong>. Use DOM order
+            for focus flow, which is predictable and maintainable.
+          </p>
+          <div style="margin-top: 1rem; background: white; padding: 1rem; border-radius: 6px; font-family: monospace; font-size: 0.85rem;">
+&lt;!-- Good: Natural DOM order --&gt;<br>
+&lt;input placeholder="Name"&gt;<br>
+&lt;input placeholder="Email"&gt;<br>
+&lt;input placeholder="Phone"&gt;<br>
+&lt;button&gt;Submit&lt;/button&gt;
+          </div>
+          <p style="margin-top: 1rem;">
+            <strong>When you need custom order:</strong> Restructure your HTML instead of using tabindex.
+            Focus order should match visual order, which should match DOM order.
+          </p>
+        </div>
+
+        <h3 style="margin-top: 2rem;">Valid Uses of Tabindex</h3>
+        <ul style="margin-left: 2rem; margin-top: 1rem;">
+          <li style="margin-bottom: 1rem;">
+            <strong>tabindex="0":</strong> Add element to natural tab order (for custom widgets)
+          </li>
+          <li style="margin-bottom: 1rem;">
+            <strong>tabindex="-1":</strong> Remove from tab order but allow programmatic focus (for skip links, modals)
+          </li>
+          <li style="margin-bottom: 1rem;">
+            <strong>Positive values:</strong> Only if absolutely necessary, use sequential values (1, 2, 3...)
+          </li>
+        </ul>
+      </div>
+
+      <!-- WCAG Compliance -->
+      <div class="section">
+        <h2>WCAG 2.1 Compliance</h2>
+        <p>Focus order problems violate:</p>
+        <ul style="margin-left: 2rem; margin-top: 1rem;">
+          <li style="margin-bottom: 1rem;">
+            <strong>2.4.3 Focus Order (Level A):</strong> Navigation sequence must preserve meaning and operability.
+            Chaotic tabindex breaks this.
+          </li>
+          <li style="margin-bottom: 1rem;">
+            <strong>2.4.7 Focus Visible (Level AA):</strong> Focus must be visible and predictable.
+            Unexpected jumps violate predictability.
+          </li>
+          <li style="margin-bottom: 1rem;">
+            <strong>3.2.1 On Focus (Level A):</strong> Focusing an element shouldn't cause unexpected changes.
+            Backward focus feels unexpected.
+          </li>
+        </ul>
+      </div>
+
+      <!-- Real-World Impact -->
+      <div class="section">
+        <h2>Real-World Impact</h2>
+        <div class="result-item warning">
+          <h4>Case Study: Government Form</h4>
+          <p>
+            A tax filing form used arbitrary tabindex values: 10, 20, 30, 40... Developer later added fields
+            without updating all values. Result: Field at position 3 had tabindex="25", field at position 4
+            had tabindex="40", but field at position 5 had tabindex="35".
+          </p>
+          <p style="margin-top: 0.5rem;">
+            <strong>User experience:</strong> Tab through form, jump backward unexpectedly<br>
+            <strong>User reaction:</strong> "Is my tax data being submitted correctly?"<br>
+            <strong>Paradise detected:</strong> 8 non-sequential focus order conflicts
+          </p>
+          <p style="margin-top: 1rem; color: #dd6b20; font-weight: 600;">
+            Result: Refactored to use natural DOM order, eliminating all tabindex attributes
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function runAnalysis() {
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = `
+        <div style="margin-bottom: 1rem; padding: 1rem; background: #ebf8ff; border-radius: 6px;">
+          <strong>Analyzing:</strong> Focus order and tabindex values
+        </div>
+
+        <div class="result-item error">
+          <h4>❌ Non-Sequential Focus Order (WCAG 2.4.3)</h4>
+          <p>
+            Elements with tabindex appear in non-sequential order. Keyboard navigation jumps unexpectedly.
+          </p>
+          <p style="margin-top: 0.5rem;">
+            <strong>Severity:</strong> Error<br>
+            <strong>Expected order:</strong> 1 → 2 → 3 → 4 → 5 → 6<br>
+            <strong>Actual DOM order:</strong> 1 → 3 → 2 → 5 → 4 → 6
+          </p>
+          <div class="location">index.html:15 - input#email (tabindex="3" before tabindex="2")</div>
+          <div class="location">index.html:20 - input#phone (tabindex="2" after tabindex="3")</div>
+          <div class="location">index.html:30 - input#company (tabindex="5" before tabindex="4")</div>
+          <div class="location">index.html:25 - input#job (tabindex="4" after tabindex="5")</div>
+        </div>
+
+        <div class="result-item warning">
+          <h4>⚠️ Gaps in Tabindex Sequence</h4>
+          <p>
+            Sequence has gaps that may indicate deleted elements or maintenance issues.
+          </p>
+          <p style="margin-top: 0.5rem;">
+            <strong>Found values:</strong> [1, 2, 3, 4, 5, 6]<br>
+            <strong>No gaps detected</strong> (but order is still wrong!)
+          </p>
+        </div>
+
+        <div class="result-item warning">
+          <h4>🔧 Recommended Solution</h4>
+          <p><strong>Remove all positive tabindex values</strong></p>
+          <p style="margin-top: 0.5rem;">
+            Restructure your HTML so DOM order matches desired focus order. This is more maintainable
+            and predictable.
+          </p>
+          <div style="background: #f0fff4; padding: 0.75rem; border-radius: 4px; margin-top: 1rem; border-left: 3px solid #38a169;">
+            <strong>✅ Better approach:</strong> Reorder elements in HTML to match visual layout,
+            then remove all tabindex attributes. Let natural DOM order control focus.
+          </div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
