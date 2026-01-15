@@ -16,24 +16,63 @@ export default function ArchitecturePage() {
       <section className="container mx-auto px-6 py-16">
         <div className="max-w-5xl mx-auto">
           {/* Table of Contents */}
-          <div className="mb-12 bg-gray-50 rounded-lg p-6 border border-gray-200">
-            <h2 className="text-2xl font-bold mb-4 text-gray-900">Contents</h2>
-            <div className="grid md:grid-cols-2 gap-3">
-              <a href="#actionlanguage" className="text-paradise-blue hover:underline">1. ActionLanguage Model</a>
-              <a href="#dommodel" className="text-paradise-blue hover:underline">2. DOMModel</a>
-              <a href="#cssmodel" className="text-paradise-blue hover:underline">3. CSSModel</a>
-              <a href="#documentmodel" className="text-paradise-blue hover:underline">4. DocumentModel (Integration Layer)</a>
-              <a href="#nested-trees" className="text-paradise-blue hover:underline">5. Nested Tree Structure</a>
-              <a href="#merge-process" className="text-paradise-blue hover:underline">6. Model Merge Process</a>
-              <a href="#analysis-flow" className="text-paradise-blue hover:underline">7. Analysis Flow</a>
-              <a href="#extensibility" className="text-paradise-blue hover:underline">8. Extensibility</a>
+          <div className="mb-16">
+            <h2 className="text-3xl font-bold mb-8 text-gray-900 text-center">Architecture Components</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <a href="#actionlanguage" className="group relative overflow-hidden bg-gradient-to-br from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                <div className="text-4xl font-bold mb-2">1</div>
+                <div className="text-lg font-semibold">ActionLanguage Model</div>
+                <div className="text-sm opacity-90 mt-2">Intermediate representation</div>
+              </a>
+
+              <a href="#dommodel" className="group relative overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                <div className="text-4xl font-bold mb-2">2</div>
+                <div className="text-lg font-semibold">DOMModel</div>
+                <div className="text-sm opacity-90 mt-2">HTML structure</div>
+              </a>
+
+              <a href="#cssmodel" className="group relative overflow-hidden bg-gradient-to-br from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                <div className="text-4xl font-bold mb-2">3</div>
+                <div className="text-lg font-semibold">CSSModel</div>
+                <div className="text-sm opacity-90 mt-2">Stylesheet representation</div>
+              </a>
+
+              <a href="#documentmodel" className="group relative overflow-hidden bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                <div className="text-4xl font-bold mb-2">4</div>
+                <div className="text-lg font-semibold">DocumentModel</div>
+                <div className="text-sm opacity-90 mt-2">Integration layer</div>
+              </a>
+
+              <a href="#nested-trees" className="group relative overflow-hidden bg-gradient-to-br from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                <div className="text-4xl font-bold mb-2">5</div>
+                <div className="text-lg font-semibold">Nested Tree Structure</div>
+                <div className="text-sm opacity-90 mt-2">Hierarchical organization</div>
+              </a>
+
+              <a href="#merge-process" className="group relative overflow-hidden bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                <div className="text-4xl font-bold mb-2">6</div>
+                <div className="text-lg font-semibold">Model Merge Process</div>
+                <div className="text-sm opacity-90 mt-2">Cross-reference resolution</div>
+              </a>
+
+              <a href="#analysis-flow" className="group relative overflow-hidden bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                <div className="text-4xl font-bold mb-2">7</div>
+                <div className="text-lg font-semibold">Analysis Flow</div>
+                <div className="text-sm opacity-90 mt-2">Detection pipeline</div>
+              </a>
+
+              <a href="#extensibility" className="group relative overflow-hidden bg-gradient-to-br from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                <div className="text-4xl font-bold mb-2">8</div>
+                <div className="text-lg font-semibold">Extensibility</div>
+                <div className="text-sm opacity-90 mt-2">Platform expansion</div>
+              </a>
             </div>
           </div>
 
           <div className="space-y-16">
           {/* 1. ActionLanguage Model */}
           <section id="actionlanguage" className="scroll-mt-8">
-            <h2 className="text-4xl font-bold mb-6 text-gray-900">1. ActionLanguage Model</h2>
+            <h2 className="text-4xl font-bold mb-6 text-indigo-600">1. ActionLanguage Model</h2>
 
             <div className="prose prose-lg max-w-none">
               <p className="text-lg text-gray-700 leading-relaxed mb-6">
@@ -288,7 +327,7 @@ function openModal() {
 
           {/* 2. DOMModel */}
           <section id="dommodel" className="scroll-mt-8">
-            <h2 className="text-4xl font-bold mb-6 text-gray-900">2. DOMModel</h2>
+            <h2 className="text-4xl font-bold mb-6 text-blue-600">2. DOMModel</h2>
 
             <div className="prose prose-lg max-w-none">
               <p className="text-lg text-gray-700 leading-relaxed mb-6">
@@ -453,7 +492,7 @@ function openModal() {
 
           {/* 3. CSSModel */}
           <section id="cssmodel" className="scroll-mt-8">
-            <h2 className="text-4xl font-bold mb-6 text-gray-900">3. CSSModel</h2>
+            <h2 className="text-4xl font-bold mb-6 text-cyan-600">3. CSSModel</h2>
 
             <div className="prose prose-lg max-w-none">
               <p className="text-lg text-gray-700 leading-relaxed mb-6">
@@ -590,7 +629,7 @@ Examples:
 
           {/* 4. DocumentModel */}
           <section id="documentmodel" className="scroll-mt-8">
-            <h2 className="text-4xl font-bold mb-6 text-gray-900">4. DocumentModel (Integration Layer)</h2>
+            <h2 className="text-4xl font-bold mb-6 text-purple-600">4. DocumentModel (Integration Layer)</h2>
 
             <div className="prose prose-lg max-w-none">
               <p className="text-lg text-gray-700 leading-relaxed mb-6">
@@ -679,7 +718,7 @@ Examples:
 
           {/* 5. Nested Tree Structure */}
           <section id="nested-trees" className="scroll-mt-8">
-            <h2 className="text-4xl font-bold mb-6 text-gray-900">5. Nested Tree Structure</h2>
+            <h2 className="text-4xl font-bold mb-6 text-pink-600">5. Nested Tree Structure</h2>
 
             <div className="prose prose-lg max-w-none">
               <p className="text-lg text-gray-700 leading-relaxed mb-6">
@@ -827,7 +866,7 @@ CSSRule (#submit:focus) {
 
           {/* 6. Merge Process */}
           <section id="merge-process" className="scroll-mt-8">
-            <h2 className="text-4xl font-bold mb-6 text-gray-900">6. Model Merge Process</h2>
+            <h2 className="text-4xl font-bold mb-6 text-orange-600">6. Model Merge Process</h2>
 
             <div className="prose prose-lg max-w-none">
               <p className="text-lg text-gray-700 leading-relaxed mb-6">
@@ -1026,7 +1065,7 @@ CSSRule (#submit:focus) {
 
           {/* 7. Analysis Flow */}
           <section id="analysis-flow" className="scroll-mt-8">
-            <h2 className="text-4xl font-bold mb-6 text-gray-900">7. Analysis Flow</h2>
+            <h2 className="text-4xl font-bold mb-6 text-emerald-600">7. Analysis Flow</h2>
 
             <div className="prose prose-lg max-w-none">
               <p className="text-lg text-gray-700 leading-relaxed mb-6">
@@ -1266,7 +1305,7 @@ interface Issue {
 
           {/* 8. Extensibility */}
           <section id="extensibility" className="scroll-mt-8">
-            <h2 className="text-4xl font-bold mb-6 text-gray-900">8. Extensibility</h2>
+            <h2 className="text-4xl font-bold mb-6 text-violet-600">8. Extensibility</h2>
 
             <div className="prose prose-lg max-w-none">
               <p className="text-lg text-gray-700 leading-relaxed mb-6">
