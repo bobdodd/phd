@@ -943,6 +943,70 @@ export default function Playground() {
     }));
   };
 
+  const addFile = (fileType: 'html' | 'javascript' | 'css') => {
+    setFiles(prev => {
+      const fileCount = prev[fileType].length + 1;
+      let defaultName = '';
+      let defaultContent = '';
+
+      switch (fileType) {
+        case 'html':
+          defaultName = `page${fileCount}.html`;
+          defaultContent = `<!-- New HTML file -->\n<div id="element${fileCount}">Content</div>`;
+          break;
+        case 'javascript':
+          defaultName = `script${fileCount}.js`;
+          defaultContent = `// New JavaScript file\nconst element${fileCount} = document.getElementById('element${fileCount}');\n\nelement${fileCount}.addEventListener('click', function() {\n  console.log('Clicked');\n});`;
+          break;
+        case 'css':
+          defaultName = `styles${fileCount}.css`;
+          defaultContent = `/* New CSS file */\n.element${fileCount} {\n  padding: 10px;\n}`;
+          break;
+      }
+
+      const newFiles = {
+        ...prev,
+        [fileType]: [...prev[fileType], { name: defaultName, content: defaultContent }]
+      };
+
+      // Switch to the new file
+      setActiveFileIndex(idx => ({ ...idx, [fileType]: newFiles[fileType].length - 1 }));
+
+      return newFiles;
+    });
+  };
+
+  const removeFile = (fileType: 'html' | 'javascript' | 'css', index: number) => {
+    setFiles(prev => {
+      // Don't allow removing if it's the only file of this type
+      if (prev[fileType].length <= 1) {
+        return prev;
+      }
+
+      const newFiles = {
+        ...prev,
+        [fileType]: prev[fileType].filter((_, i) => i !== index)
+      };
+
+      // Adjust active index if needed
+      setActiveFileIndex(idx => ({
+        ...idx,
+        [fileType]: Math.min(idx[fileType], newFiles[fileType].length - 1)
+      }));
+
+      return newFiles;
+    });
+  };
+
+  const renameFile = (fileType: 'html' | 'javascript' | 'css', index: number, newName: string) => {
+    setFiles(prev => ({
+      ...prev,
+      [fileType]: prev[fileType].map((file, i) =>
+        i === index ? { ...file, name: newName } : file
+      )
+    }));
+  };
+
   // Helper: Levenshtein distance for typo detection
   const levenshteinDistance = (str1: string, str2: string): number => {
     const matrix: number[][] = [];
@@ -1010,7 +1074,7 @@ export default function Playground() {
       <section className="container mx-auto px-6 py-8">
         {/* Example Selector */}
         <div className="mb-6 bg-white rounded-lg shadow-lg p-6">
-          <div className="flex flex-col md:flex-row md:items-center gap-4">
+          <div className="flex flex-col md:flex-row md:items-start gap-4">
             <div className="flex-1">
               <label className="block text-sm font-semibold mb-2">Load Example:</label>
               <select
@@ -1043,6 +1107,23 @@ export default function Playground() {
                 </span>
               )}
             </div>
+            <div className="flex flex-col gap-2">
+              <div className="text-sm font-semibold mb-2">Actions:</div>
+              <button
+                onClick={() => {
+                  setFiles({ html: [], javascript: [], css: [] });
+                  setActiveFileTab('javascript');
+                }}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-semibold"
+                title="Clear all files and start fresh"
+              >
+                🗑️ Clear All
+              </button>
+              <div className="text-xs text-gray-500 bg-blue-50 p-3 rounded border border-blue-200">
+                <div className="font-semibold mb-1">💡 Tip:</div>
+                Click file type tabs to add files. Hover over file tabs to remove them.
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1054,40 +1135,64 @@ export default function Playground() {
               <div className="border-b border-gray-200 bg-gray-50">
                 <div className="flex">
                   <button
-                    onClick={() => setActiveFileTab('html')}
+                    onClick={() => {
+                      if (files.html.length === 0) {
+                        addFile('html');
+                      }
+                      setActiveFileTab('html');
+                    }}
                     className={`px-6 py-3 font-semibold text-sm transition-colors border-r border-gray-200 ${
                       activeFileTab === 'html'
                         ? 'bg-white text-paradise-blue border-b-2 border-paradise-blue'
                         : 'text-gray-600 hover:text-paradise-blue hover:bg-gray-100'
                     }`}
-                    disabled={files.html.length === 0}
                   >
                     📄 HTML
-                    {files.html.length > 0 && <span className="ml-2 text-xs">({files.html.length} file{files.html.length > 1 ? 's' : ''})</span>}
+                    {files.html.length > 0 ? (
+                      <span className="ml-2 text-xs">({files.html.length} file{files.html.length > 1 ? 's' : ''})</span>
+                    ) : (
+                      <span className="ml-2 text-xs text-gray-400">(click to add)</span>
+                    )}
                   </button>
                   <button
-                    onClick={() => setActiveFileTab('javascript')}
+                    onClick={() => {
+                      if (files.javascript.length === 0) {
+                        addFile('javascript');
+                      }
+                      setActiveFileTab('javascript');
+                    }}
                     className={`px-6 py-3 font-semibold text-sm transition-colors border-r border-gray-200 ${
                       activeFileTab === 'javascript'
                         ? 'bg-white text-paradise-blue border-b-2 border-paradise-blue'
                         : 'text-gray-600 hover:text-paradise-blue hover:bg-gray-100'
                     }`}
-                    disabled={files.javascript.length === 0}
                   >
                     ⚡ JavaScript
-                    {files.javascript.length > 0 && <span className="ml-2 text-xs">({files.javascript.length} file{files.javascript.length > 1 ? 's' : ''})</span>}
+                    {files.javascript.length > 0 ? (
+                      <span className="ml-2 text-xs">({files.javascript.length} file{files.javascript.length > 1 ? 's' : ''})</span>
+                    ) : (
+                      <span className="ml-2 text-xs text-gray-400">(click to add)</span>
+                    )}
                   </button>
                   <button
-                    onClick={() => setActiveFileTab('css')}
+                    onClick={() => {
+                      if (files.css.length === 0) {
+                        addFile('css');
+                      }
+                      setActiveFileTab('css');
+                    }}
                     className={`px-6 py-3 font-semibold text-sm transition-colors ${
                       activeFileTab === 'css'
                         ? 'bg-white text-paradise-blue border-b-2 border-paradise-blue'
                         : 'text-gray-600 hover:text-paradise-blue hover:bg-gray-100'
                     }`}
-                    disabled={files.css.length === 0}
                   >
                     🎨 CSS
-                    {files.css.length > 0 && <span className="ml-2 text-xs">({files.css.length} file{files.css.length > 1 ? 's' : ''})</span>}
+                    {files.css.length > 0 ? (
+                      <span className="ml-2 text-xs">({files.css.length} file{files.css.length > 1 ? 's' : ''})</span>
+                    ) : (
+                      <span className="ml-2 text-xs text-gray-400">(click to add)</span>
+                    )}
                   </button>
                   {isAnalyzing && (
                     <div className="ml-auto px-4 py-3 text-sm text-paradise-blue animate-pulse">
@@ -1097,32 +1202,58 @@ export default function Playground() {
                 </div>
               </div>
 
-              {/* Individual File Tabs (if multiple files of this type) */}
-              {currentFileArray.length > 1 && (
+              {/* Individual File Tabs with Add/Remove */}
+              {currentFileArray.length > 0 && (
                 <div className="border-b border-gray-200 bg-gray-100">
-                  <div className="flex overflow-x-auto">
+                  <div className="flex overflow-x-auto items-center">
                     {currentFileArray.map((file, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setActiveFileIndex(prev => ({ ...prev, [activeFileTab]: index }))}
-                        className={`px-4 py-2 text-sm font-mono whitespace-nowrap transition-colors ${
-                          activeFileIndex[activeFileTab] === index
-                            ? 'bg-white text-paradise-blue border-b-2 border-paradise-blue'
-                            : 'text-gray-600 hover:text-paradise-blue hover:bg-gray-50'
-                        }`}
-                      >
-                        {file.name}
-                      </button>
+                      <div key={index} className="flex items-center group">
+                        <button
+                          onClick={() => setActiveFileIndex(prev => ({ ...prev, [activeFileTab]: index }))}
+                          className={`px-4 py-2 text-sm font-mono whitespace-nowrap transition-colors ${
+                            activeFileIndex[activeFileTab] === index
+                              ? 'bg-white text-paradise-blue border-b-2 border-paradise-blue'
+                              : 'text-gray-600 hover:text-paradise-blue hover:bg-gray-50'
+                          }`}
+                        >
+                          {file.name}
+                        </button>
+                        {currentFileArray.length > 1 && (
+                          <button
+                            onClick={() => removeFile(activeFileTab, index)}
+                            className="px-2 py-2 text-xs text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                            title="Remove file"
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
                     ))}
+                    <button
+                      onClick={() => addFile(activeFileTab)}
+                      className="px-4 py-2 text-sm text-paradise-blue hover:bg-white/50 transition-colors ml-2 font-semibold"
+                      title="Add new file"
+                    >
+                      + Add File
+                    </button>
                   </div>
                 </div>
               )}
 
               {/* Monaco Editor */}
-              {currentFile && (
+              {currentFile ? (
                 <div className="bg-white">
-                  <div className="px-4 py-2 bg-gray-50 border-b border-gray-200 text-xs text-gray-600 font-mono">
-                    {currentFile.name}
+                  <div className="px-4 py-2 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+                    <input
+                      type="text"
+                      value={currentFile.name}
+                      onChange={(e) => renameFile(activeFileTab, activeFileIndex[activeFileTab], e.target.value)}
+                      className="text-xs text-gray-600 font-mono bg-transparent border-none focus:outline-none focus:ring-2 focus:ring-paradise-blue rounded px-2 py-1"
+                      style={{ width: `${Math.max(currentFile.name.length, 10)}ch` }}
+                    />
+                    <div className="text-xs text-gray-400">
+                      {getLanguageForTab(activeFileTab).toUpperCase()}
+                    </div>
                   </div>
                   <MonacoEditor
                     height="500px"
@@ -1140,6 +1271,16 @@ export default function Playground() {
                       readOnly: false
                     }}
                   />
+                </div>
+              ) : (
+                <div className="bg-white p-12 text-center text-gray-500">
+                  <p className="text-lg mb-4">No files yet</p>
+                  <button
+                    onClick={() => addFile(activeFileTab)}
+                    className="px-6 py-3 bg-paradise-blue text-white rounded-lg hover:bg-opacity-90 transition-colors font-semibold"
+                  >
+                    + Add {activeFileTab.toUpperCase()} File
+                  </button>
                 </div>
               )}
             </div>
