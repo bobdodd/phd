@@ -41,10 +41,18 @@ export interface RefUsage {
   refName: string;
 
   /** Type of ref usage (creation, assignment, access) */
-  type: 'creation' | 'prop' | 'current';
+  type: 'creation' | 'prop' | 'current' | 'forwarded' | 'imperative';
 
   /** Source location */
   location: SourceLocation;
+
+  /** Additional metadata */
+  metadata?: {
+    /** For forwarded refs: the component name */
+    componentName?: string;
+    /** For imperative handle: exposed methods */
+    exposedMethods?: string[];
+  };
 }
 
 /**
@@ -116,6 +124,7 @@ export class ReactPatternDetector {
         this.detectHook(path, sourceFile);
         this.detectRefFocusManagement(path, sourceFile);
         this.detectPortal(path, sourceFile);
+        this.detectForwardRef(path, sourceFile);
       },
 
       // Detect ref assignments in JSX: ref={buttonRef}
@@ -479,6 +488,138 @@ export class ReactPatternDetector {
   }
 
   /**
+   * Detect React.forwardRef() for ref forwarding between components.
+   *
+   * forwardRef allows parent components to pass refs to child components,
+   * which is important for accessibility patterns like focus management.
+   *
+   * Example:
+   * const Button = React.forwardRef((props, ref) => (
+   *   <button ref={ref}>Click</button>
+   * ));
+   */
+  private detectForwardRef(path: NodePath<t.CallExpression>, sourceFile: string): void {
+    const node = path.node;
+    const callee = node.callee;
+
+    // Detect: React.forwardRef(...) or forwardRef(...)
+    const isForwardRef =
+      (t.isMemberExpression(callee) &&
+        t.isIdentifier(callee.object) &&
+        callee.object.name === 'React' &&
+        t.isIdentifier(callee.property) &&
+        callee.property.name === 'forwardRef') ||
+      (t.isIdentifier(callee) && callee.name === 'forwardRef');
+
+    if (!isForwardRef) return;
+
+    const args = node.arguments;
+    if (args.length === 0) return;
+
+    const componentArg = args[0];
+
+    // Extract component name from parent declaration
+    let componentName: string | undefined;
+    const parent = path.parent;
+    if (t.isVariableDeclarator(parent) && t.isIdentifier(parent.id)) {
+      componentName = parent.id.name;
+    }
+
+    // Check if the forwarded component function has a ref parameter
+    if (
+      t.isArrowFunctionExpression(componentArg) ||
+      t.isFunctionExpression(componentArg)
+    ) {
+      const params = componentArg.params;
+      if (params.length >= 2) {
+        const refParam = params[1];
+        if (t.isIdentifier(refParam)) {
+          this.refs.push({
+            refName: refParam.name,
+            type: 'forwarded',
+            location: this.extractLocation(node, sourceFile),
+            metadata: {
+              componentName,
+            },
+          });
+
+          // Also check for useImperativeHandle inside the component
+          this.detectUseImperativeHandle(componentArg, refParam.name, sourceFile);
+        }
+      }
+    }
+  }
+
+  /**
+   * Detect useImperativeHandle hook for customizing ref behavior.
+   *
+   * useImperativeHandle allows components to customize what values are exposed
+   * to parent components via refs, which is important for encapsulating focus
+   * management and other accessibility behaviors.
+   *
+   * Example:
+   * useImperativeHandle(ref, () => ({
+   *   focus: () => inputRef.current.focus(),
+   *   blur: () => inputRef.current.blur()
+   * }));
+   */
+  private detectUseImperativeHandle(
+    component: t.ArrowFunctionExpression | t.FunctionExpression,
+    refParamName: string,
+    sourceFile: string
+  ): void {
+    // Traverse the component function body to find useImperativeHandle calls
+    if (!t.isBlockStatement(component.body)) return;
+
+    for (const statement of component.body.body) {
+      if (
+        t.isExpressionStatement(statement) &&
+        t.isCallExpression(statement.expression)
+      ) {
+        const call = statement.expression;
+        const callee = call.callee;
+
+        if (t.isIdentifier(callee) && callee.name === 'useImperativeHandle') {
+          const args = call.arguments;
+          if (args.length >= 2) {
+            // First arg should be the ref
+            const refArg = args[0];
+            if (t.isIdentifier(refArg) && refArg.name === refParamName) {
+              // Second arg is the function that returns exposed methods
+              const methodsArg = args[1];
+              const exposedMethods: string[] = [];
+
+              // Try to extract method names from arrow function
+              if (t.isArrowFunctionExpression(methodsArg)) {
+                const returnValue = methodsArg.body;
+                if (t.isObjectExpression(returnValue)) {
+                  for (const prop of returnValue.properties) {
+                    if (
+                      t.isObjectProperty(prop) &&
+                      t.isIdentifier(prop.key)
+                    ) {
+                      exposedMethods.push(prop.key.name);
+                    }
+                  }
+                }
+              }
+
+              this.refs.push({
+                refName: refParamName,
+                type: 'imperative',
+                location: this.extractLocation(call, sourceFile),
+                metadata: {
+                  exposedMethods: exposedMethods.length > 0 ? exposedMethods : undefined,
+                },
+              });
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * Get detected hooks.
    */
   getHooks(): HookUsage[] {
@@ -490,6 +631,34 @@ export class ReactPatternDetector {
    */
   getRefs(): RefUsage[] {
     return this.refs;
+  }
+
+  /**
+   * Get forwarded refs (from forwardRef).
+   */
+  getForwardedRefs(): RefUsage[] {
+    return this.refs.filter((r) => r.type === 'forwarded');
+  }
+
+  /**
+   * Get imperative handle refs (from useImperativeHandle).
+   */
+  getImperativeRefs(): RefUsage[] {
+    return this.refs.filter((r) => r.type === 'imperative');
+  }
+
+  /**
+   * Check if component uses ref forwarding.
+   */
+  usesRefForwarding(): boolean {
+    return this.refs.some((r) => r.type === 'forwarded');
+  }
+
+  /**
+   * Check if component uses useImperativeHandle.
+   */
+  usesImperativeHandle(): boolean {
+    return this.refs.some((r) => r.type === 'imperative');
   }
 
   /**
