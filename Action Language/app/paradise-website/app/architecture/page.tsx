@@ -15,22 +15,22 @@ export default function ArchitecturePage() {
 
       <section className="container mx-auto px-6 py-16">
         <div className="max-w-5xl mx-auto">
-        {/* Table of Contents */}
-        <div className="mb-12 bg-gray-50 rounded-lg p-6 border border-gray-200">
-          <h2 className="text-2xl font-bold mb-4 text-gray-900">Contents</h2>
-          <div className="grid md:grid-cols-2 gap-3">
-            <a href="#actionlanguage" className="text-paradise-blue hover:underline">1. ActionLanguage Model</a>
-            <a href="#dommodel" className="text-paradise-blue hover:underline">2. DOMModel</a>
-            <a href="#cssmodel" className="text-paradise-blue hover:underline">3. CSSModel</a>
-            <a href="#documentmodel" className="text-paradise-blue hover:underline">4. DocumentModel (Integration Layer)</a>
-            <a href="#nested-trees" className="text-paradise-blue hover:underline">5. Nested Tree Structure</a>
-            <a href="#merge-process" className="text-paradise-blue hover:underline">6. Model Merge Process</a>
-            <a href="#analysis-flow" className="text-paradise-blue hover:underline">7. Analysis Flow</a>
-            <a href="#extensibility" className="text-paradise-blue hover:underline">8. Extensibility</a>
+          {/* Table of Contents */}
+          <div className="mb-12 bg-gray-50 rounded-lg p-6 border border-gray-200">
+            <h2 className="text-2xl font-bold mb-4 text-gray-900">Contents</h2>
+            <div className="grid md:grid-cols-2 gap-3">
+              <a href="#actionlanguage" className="text-paradise-blue hover:underline">1. ActionLanguage Model</a>
+              <a href="#dommodel" className="text-paradise-blue hover:underline">2. DOMModel</a>
+              <a href="#cssmodel" className="text-paradise-blue hover:underline">3. CSSModel</a>
+              <a href="#documentmodel" className="text-paradise-blue hover:underline">4. DocumentModel (Integration Layer)</a>
+              <a href="#nested-trees" className="text-paradise-blue hover:underline">5. Nested Tree Structure</a>
+              <a href="#merge-process" className="text-paradise-blue hover:underline">6. Model Merge Process</a>
+              <a href="#analysis-flow" className="text-paradise-blue hover:underline">7. Analysis Flow</a>
+              <a href="#extensibility" className="text-paradise-blue hover:underline">8. Extensibility</a>
+            </div>
           </div>
-        </div>
 
-        <div className="max-w-5xl mx-auto space-y-16">
+          <div className="space-y-16">
           {/* 1. ActionLanguage Model */}
           <section id="actionlanguage" className="scroll-mt-8">
             <h2 className="text-4xl font-bold mb-6 text-gray-900">1. ActionLanguage Model</h2>
@@ -1490,6 +1490,7 @@ function mergeSwiftUIModel(doc: DocumentModel): void {
               </div>
             </div>
           </section>
+          </div>
         </div>
       </section>
     </main>
