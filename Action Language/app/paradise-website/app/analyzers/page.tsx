@@ -1,20 +1,23 @@
 export default function AnalyzersPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-paradise-blue/5 to-paradise-purple/5">
-      <main className="container mx-auto px-6 py-12">
-        {/* Hero Section */}
-        <div className="max-w-4xl mx-auto text-center mb-16">
-          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-paradise-blue to-paradise-purple bg-clip-text text-transparent">
+    <main className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+      <section className="bg-gradient-to-r from-paradise-purple to-paradise-blue text-white py-20">
+        <div className="container mx-auto px-6">
+          <h1 className="text-5xl font-bold mb-6">
             Paradise Analyzers
           </h1>
-          <p className="text-xl text-gray-700 leading-relaxed">
+          <p className="text-2xl mb-4 max-w-3xl">
             From JavaScript-only analysis to multi-model architecture: The complete evolution of
             accessibility detection in Paradise.
           </p>
         </div>
+      </section>
+
+      <section className="container mx-auto px-6 py-16">
+        <div className="max-w-5xl mx-auto">
 
         {/* Stats */}
-        <div className="max-w-5xl mx-auto mb-16">
+        <div className="mb-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="bg-white rounded-xl shadow-lg p-6 text-center border-2 border-paradise-blue/20">
               <div className="text-4xl font-bold text-paradise-blue mb-2">13</div>
@@ -636,7 +639,8 @@ btn.addEventListener('click', handler);
             </div>
           </div>
         </div>
-      </main>
-    </div>
+        </div>
+      </section>
+    </main>
   );
 }
