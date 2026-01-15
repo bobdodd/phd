@@ -1,348 +1,1493 @@
 export default function ArchitecturePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-paradise-blue/5 to-paradise-purple/5">
+    <div className="min-h-screen bg-white">
       <main className="container mx-auto px-6 py-12">
-        {/* Hero Section */}
-        <div className="max-w-4xl mx-auto text-center mb-16">
-          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-paradise-blue to-paradise-purple bg-clip-text text-transparent">
-            Multi-Model Architecture
+        {/* Title */}
+        <div className="max-w-5xl mx-auto mb-12">
+          <h1 className="text-5xl font-bold mb-6 text-gray-900">
+            Paradise Architecture
           </h1>
           <p className="text-xl text-gray-700 leading-relaxed">
-            Paradise analyzes HTML, JavaScript, and CSS together to eliminate false positives
-            and provide accurate, context-aware accessibility analysis.
+            Complete technical documentation of Paradise's multi-model architecture,
+            from ActionLanguage intermediate representation to cross-file analysis.
           </p>
         </div>
 
-        {/* Overview */}
-        <div className="max-w-6xl mx-auto mb-16">
-          <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Architecture Overview</h2>
-            <p className="text-lg text-gray-700 leading-relaxed mb-6">
-              Traditional accessibility analyzers examine JavaScript files in isolation, leading to false positives
-              when event handlers are split across multiple files. Paradise solves this with a <strong>multi-model
-              architecture</strong> that understands your entire codebase.
-            </p>
-
-            <div className="grid md:grid-cols-2 gap-6 mt-8">
-              <div className="bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-300 rounded-lg p-6">
-                <h3 className="text-xl font-bold text-red-900 mb-3">❌ Traditional Approach</h3>
-                <ul className="space-y-2 text-red-800">
-                  <li>• Analyzes one file at a time</li>
-                  <li>• Cannot see cross-file relationships</li>
-                  <li>• Produces false positives</li>
-                  <li>• Misses HTML-side issues</li>
-                </ul>
-              </div>
-
-              <div className="bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-300 rounded-lg p-6">
-                <h3 className="text-xl font-bold text-green-900 mb-3">✅ Paradise Approach</h3>
-                <ul className="space-y-2 text-green-800">
-                  <li>• Analyzes all related files together</li>
-                  <li>• Understands cross-file relationships</li>
-                  <li>• Zero false positives</li>
-                  <li>• Detects HTML + CSS + JS issues</li>
-                </ul>
-              </div>
-            </div>
+        {/* Table of Contents */}
+        <div className="max-w-5xl mx-auto mb-12 bg-gray-50 rounded-lg p-6 border border-gray-200">
+          <h2 className="text-2xl font-bold mb-4 text-gray-900">Contents</h2>
+          <div className="grid md:grid-cols-2 gap-3">
+            <a href="#actionlanguage" className="text-paradise-blue hover:underline">1. ActionLanguage Model</a>
+            <a href="#dommodel" className="text-paradise-blue hover:underline">2. DOMModel</a>
+            <a href="#cssmodel" className="text-paradise-blue hover:underline">3. CSSModel</a>
+            <a href="#documentmodel" className="text-paradise-blue hover:underline">4. DocumentModel (Integration Layer)</a>
+            <a href="#nested-trees" className="text-paradise-blue hover:underline">5. Nested Tree Structure</a>
+            <a href="#merge-process" className="text-paradise-blue hover:underline">6. Model Merge Process</a>
+            <a href="#analysis-flow" className="text-paradise-blue hover:underline">7. Analysis Flow</a>
+            <a href="#extensibility" className="text-paradise-blue hover:underline">8. Extensibility</a>
           </div>
         </div>
 
-        {/* Three Models */}
-        <div className="max-w-6xl mx-auto mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">The Three Models</h2>
+        <div className="max-w-5xl mx-auto space-y-16">
+          {/* 1. ActionLanguage Model */}
+          <section id="actionlanguage" className="scroll-mt-8">
+            <h2 className="text-4xl font-bold mb-6 text-gray-900">1. ActionLanguage Model</h2>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* DOMModel */}
-            <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-paradise-blue/30 hover:border-paradise-blue hover:shadow-xl transition-all">
-              <div className="w-12 h-12 bg-paradise-blue rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">DOMModel</h3>
+            <div className="prose prose-lg max-w-none">
+              <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                ActionLanguage is an <strong>intermediate representation (IR)</strong> that captures UI interactions
+                and accessibility-relevant behaviors from any programming language. It serves as the foundation
+                of Paradise's analysis system.
+              </p>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Core Concept</h3>
               <p className="text-gray-700 mb-4">
-                Parses HTML to create a complete DOM tree with all elements, attributes, IDs, classes, and ARIA relationships.
+                ActionLanguage transforms imperative UI code (JavaScript, Swift, Kotlin, etc.) into a declarative
+                tree structure that describes <em>what</em> accessibility actions occur, not <em>how</em> they're implemented.
+                This abstraction enables universal analysis across all platforms.
               </p>
-              <div className="bg-gray-50 rounded p-3 text-sm font-mono text-gray-700">
-                &lt;button id="submit"<br />
-                &nbsp;&nbsp;aria-label="Submit"&gt;<br />
-                &nbsp;&nbsp;Submit<br />
-                &lt;/button&gt;
-              </div>
-            </div>
 
-            {/* ActionLanguageModel */}
-            <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-paradise-purple/30 hover:border-paradise-purple hover:shadow-xl transition-all">
-              <div className="w-12 h-12 bg-paradise-purple rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Node Types</h3>
+
+              <div className="space-y-6 mb-6">
+                <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg">
+                  <h4 className="text-xl font-bold mb-3 text-blue-900">EventHandler</h4>
+                  <p className="text-gray-800 mb-3">
+                    Represents event listeners attached to UI elements. Captures the event type, target element,
+                    and handler function for accessibility analysis.
+                  </p>
+                  <pre className="bg-white p-4 rounded border border-blue-200 overflow-x-auto text-sm">
+{`{
+  id: "node-1",
+  nodeType: "eventHandler",
+  actionType: "eventHandler",
+  event: "click",
+  element: {
+    selector: "#submitButton",
+    binding: "button"
+  },
+  handler: {
+    body: "submitForm();",
+    calls: ["submitForm"],
+    hasPreventDefault: false
+  },
+  timing: {
+    synchronous: true,
+    async: false
+  },
+  location: {
+    file: "handlers.js",
+    line: 42,
+    column: 5
+  }
+}`}
+                  </pre>
+                </div>
+
+                <div className="bg-green-50 border-l-4 border-green-500 p-6 rounded-r-lg">
+                  <h4 className="text-xl font-bold mb-3 text-green-900">FocusChange</h4>
+                  <p className="text-gray-800 mb-3">
+                    Captures focus management operations. Critical for keyboard navigation, modals,
+                    and dynamic content updates.
+                  </p>
+                  <pre className="bg-white p-4 rounded border border-green-200 overflow-x-auto text-sm">
+{`{
+  id: "node-2",
+  nodeType: "focusChange",
+  actionType: "focusChange",
+  targetElement: {
+    selector: "#errorMessage",
+    binding: "errorMsg"
+  },
+  timing: "immediate",  // or "delayed", "onEvent"
+  condition: {
+    type: "conditional",
+    expression: "hasError"
+  },
+  restorePrevious: false,
+  location: {
+    file: "validation.js",
+    line: 89,
+    column: 7
+  }
+}`}
+                  </pre>
+                </div>
+
+                <div className="bg-purple-50 border-l-4 border-purple-500 p-6 rounded-r-lg">
+                  <h4 className="text-xl font-bold mb-3 text-purple-900">AriaStateChange</h4>
+                  <p className="text-gray-800 mb-3">
+                    Tracks ARIA attribute updates. Essential for detecting static ARIA (set once, never updated)
+                    and incomplete state management.
+                  </p>
+                  <pre className="bg-white p-4 rounded border border-purple-200 overflow-x-auto text-sm">
+{`{
+  id: "node-3",
+  nodeType: "ariaStateChange",
+  actionType: "ariaStateChange",
+  element: {
+    selector: "[role='tabpanel']",
+    binding: "panel"
+  },
+  attribute: "aria-hidden",
+  newValue: "true",
+  oldValue: "false",
+  updateCount: 1,  // Tracked across file
+  location: {
+    file: "tabs.js",
+    line: 156,
+    column: 3
+  }
+}`}
+                  </pre>
+                </div>
+
+                <div className="bg-orange-50 border-l-4 border-orange-500 p-6 rounded-r-lg">
+                  <h4 className="text-xl font-bold mb-3 text-orange-900">DomManipulation</h4>
+                  <p className="text-gray-800 mb-3">
+                    Represents DOM changes that affect accessibility tree (add/remove elements, attribute changes).
+                    Used to detect focus loss when elements are removed.
+                  </p>
+                  <pre className="bg-white p-4 rounded border border-orange-200 overflow-x-auto text-sm">
+{`{
+  id: "node-4",
+  nodeType: "domManipulation",
+  actionType: "domManipulation",
+  operation: "remove",  // or "add", "setAttribute"
+  targetElement: {
+    selector: ".modal",
+    binding: "modal"
+  },
+  affectsFocus: true,
+  focusRestored: false,
+  location: {
+    file: "modal.js",
+    line: 203,
+    column: 10
+  }
+}`}
+                  </pre>
+                </div>
+
+                <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded-r-lg">
+                  <h4 className="text-xl font-bold mb-3 text-red-900">TabIndexChange</h4>
+                  <p className="text-gray-800 mb-3">
+                    Captures programmatic tabindex modifications. Detects positive tabindex values
+                    that disrupt natural tab order.
+                  </p>
+                  <pre className="bg-white p-4 rounded border border-red-200 overflow-x-auto text-sm">
+{`{
+  id: "node-5",
+  nodeType: "tabIndexChange",
+  actionType: "tabIndexChange",
+  element: {
+    selector: "#dynamicElement",
+    binding: "element"
+  },
+  newValue: 5,  // Positive = warning
+  oldValue: 0,
+  reason: "dynamic-focus",
+  location: {
+    file: "focus-manager.js",
+    line: 67,
+    column: 15
+  }
+}`}
+                  </pre>
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">ActionLanguageModel</h3>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Tree Structure</h3>
               <p className="text-gray-700 mb-4">
-                Parses JavaScript to extract event handlers, ARIA updates, focus changes, and DOM manipulations.
+                ActionLanguage nodes form a <strong>tree structure</strong> where parent-child relationships
+                represent code structure (function scope, conditionals, loops). This preserves context
+                necessary for accurate analysis.
               </p>
-              <div className="bg-gray-50 rounded p-3 text-sm font-mono text-gray-700">
-                document<br />
-                &nbsp;&nbsp;.getElementById('submit')<br />
-                &nbsp;&nbsp;.addEventListener(<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;'click', handler<br />
-                &nbsp;&nbsp;);
-              </div>
-            </div>
 
-            {/* CSSModel */}
-            <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-teal-400/30 hover:border-teal-400 hover:shadow-xl transition-all">
-              <div className="w-12 h-12 bg-teal-400 rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-                </svg>
+              <div className="bg-gray-50 border border-gray-300 rounded-lg p-6 mb-6">
+                <h4 className="text-lg font-bold mb-3 text-gray-900">Example: Modal with Focus Trap</h4>
+                <pre className="bg-white p-4 rounded border border-gray-300 overflow-x-auto text-sm">
+{`// JavaScript source
+function openModal() {
+  modal.style.display = 'block';
+  firstButton.focus();
+
+  modal.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      // trap focus
+    }
+  });
+}
+
+// ActionLanguage tree
+{
+  type: "functionDeclaration",
+  name: "openModal",
+  children: [
+    {
+      type: "domManipulation",
+      operation: "setAttribute",
+      element: { binding: "modal" }
+    },
+    {
+      type: "focusChange",
+      targetElement: { binding: "firstButton" },
+      timing: "immediate"
+    },
+    {
+      type: "eventHandler",
+      event: "keydown",
+      element: { binding: "modal" },
+      children: [
+        {
+          type: "conditionalStatement",
+          condition: "e.key === 'Tab'",
+          children: [
+            { type: "focusTrap" }
+          ]
+        }
+      ]
+    }
+  ]
+}`}
+                </pre>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">CSSModel</h3>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Element References</h3>
               <p className="text-gray-700 mb-4">
-                Parses CSS to detect styles affecting visibility, focus indicators, contrast, and interaction.
+                Every ActionLanguage node that interacts with UI elements includes an <code>element</code> reference
+                with two components:
               </p>
-              <div className="bg-gray-50 rounded p-3 text-sm font-mono text-gray-700">
-                .hidden {'{'}<br />
-                &nbsp;&nbsp;display: none;<br />
-                {'}'}<br />
-                button:focus {'{'}<br />
-                &nbsp;&nbsp;outline: 2px solid;<br />
-                {'}'}
+              <ul className="list-disc pl-6 space-y-2 text-gray-700 mb-6">
+                <li><strong>binding</strong>: Variable name in source code (e.g., <code>"button"</code>)</li>
+                <li><strong>selector</strong>: CSS selector for element (e.g., <code>"#submitButton"</code>)</li>
+              </ul>
+              <p className="text-gray-700 mb-4">
+                Selectors are extracted from:
+              </p>
+              <ul className="list-disc pl-6 space-y-2 text-gray-700 mb-6">
+                <li><code>document.getElementById('foo')</code> → <code>#foo</code></li>
+                <li><code>document.querySelector('.bar')</code> → <code>.bar</code></li>
+                <li><code>document.querySelectorAll('[role="button"]')</code> → <code>[role="button"]</code></li>
+              </ul>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Metadata</h3>
+              <p className="text-gray-700 mb-4">
+                All nodes include rich metadata for analysis and reporting:
+              </p>
+              <ul className="list-disc pl-6 space-y-2 text-gray-700 mb-6">
+                <li><strong>location</strong>: Source file, line number, column for precise error reporting</li>
+                <li><strong>timing</strong>: When action occurs (immediate, delayed, async, on-event)</li>
+                <li><strong>scope</strong>: Function/block scope for context-aware analysis</li>
+                <li><strong>dependencies</strong>: Other nodes this depends on (for ordering analysis)</li>
+              </ul>
+            </div>
+          </section>
+
+          {/* 2. DOMModel */}
+          <section id="dommodel" className="scroll-mt-8">
+            <h2 className="text-4xl font-bold mb-6 text-gray-900">2. DOMModel</h2>
+
+            <div className="prose prose-lg max-w-none">
+              <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                DOMModel is a complete representation of HTML structure, parsed from source files or built
+                output. It provides the "ground truth" of what elements exist and their accessibility-relevant
+                attributes.
+              </p>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Parser</h3>
+              <p className="text-gray-700 mb-4">
+                Paradise uses <strong>parse5</strong>, a spec-compliant HTML parser used by jsdom and TypeScript.
+                It handles malformed HTML gracefully and provides precise source locations.
+              </p>
+
+              <div className="bg-gray-50 border border-gray-300 rounded-lg p-6 mb-6">
+                <h4 className="text-lg font-bold mb-3 text-gray-900">Example: DOMElement Node</h4>
+                <pre className="bg-white p-4 rounded border border-gray-300 overflow-x-auto text-sm">
+{`{
+  id: "dom-1",
+  nodeType: "element",
+  tagName: "button",
+  attributes: {
+    id: "submitButton",
+    class: "primary-btn",
+    type: "submit",
+    "aria-label": "Submit form",
+    tabindex: "0"
+  },
+  children: [
+    {
+      nodeType: "text",
+      content: "Submit"
+    }
+  ],
+  parent: { /* reference to parent element */ },
+
+  // Attached after merge
+  jsHandlers: [
+    { event: "click", file: "handlers.js", line: 42 },
+    { event: "keydown", file: "keyboard.js", line: 18 }
+  ],
+  cssRules: [
+    { selector: ".primary-btn", property: "outline", file: "styles.css" }
+  ],
+
+  // Computed properties
+  focusable: true,
+  interactive: true,
+  hasSemanticRole: true,
+
+  location: {
+    file: "index.html",
+    line: 45,
+    column: 8,
+    startOffset: 1203,
+    endOffset: 1287
+  }
+}`}
+                </pre>
+              </div>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Accessibility-Relevant Attributes</h3>
+              <p className="text-gray-700 mb-4">
+                DOMModel extracts and indexes all attributes that affect accessibility:
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="font-bold text-blue-900 mb-2">Identifiers</h4>
+                  <ul className="text-sm text-gray-700 space-y-1">
+                    <li>• <code>id</code> - Element identifier</li>
+                    <li>• <code>class</code> - CSS class list</li>
+                    <li>• <code>name</code> - Form element name</li>
+                  </ul>
+                </div>
+
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <h4 className="font-bold text-green-900 mb-2">ARIA Attributes</h4>
+                  <ul className="text-sm text-gray-700 space-y-1">
+                    <li>• <code>role</code> - ARIA role</li>
+                    <li>• <code>aria-label</code> - Accessible name</li>
+                    <li>• <code>aria-labelledby</code> - Label reference</li>
+                    <li>• <code>aria-describedby</code> - Description reference</li>
+                    <li>• <code>aria-controls</code> - Controlled element</li>
+                    <li>• <code>aria-expanded</code> - Expansion state</li>
+                    <li>• <code>aria-hidden</code> - Hidden from AT</li>
+                    <li>• All other <code>aria-*</code> attributes</li>
+                  </ul>
+                </div>
+
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                  <h4 className="font-bold text-purple-900 mb-2">Focus Management</h4>
+                  <ul className="text-sm text-gray-700 space-y-1">
+                    <li>• <code>tabindex</code> - Tab order</li>
+                    <li>• <code>autofocus</code> - Initial focus</li>
+                    <li>• <code>disabled</code> - Not focusable</li>
+                  </ul>
+                </div>
+
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                  <h4 className="font-bold text-orange-900 mb-2">Form Elements</h4>
+                  <ul className="text-sm text-gray-700 space-y-1">
+                    <li>• <code>for</code> - Label association</li>
+                    <li>• <code>required</code> - Required field</li>
+                    <li>• <code>placeholder</code> - Placeholder text</li>
+                    <li>• <code>alt</code> - Image alternative text</li>
+                  </ul>
+                </div>
+              </div>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Semantic Analysis</h3>
+              <p className="text-gray-700 mb-4">
+                DOMModel computes semantic properties for each element:
+              </p>
+
+              <div className="bg-gray-50 border border-gray-300 rounded-lg p-6 mb-6">
+                <pre className="bg-white p-4 rounded border border-gray-300 overflow-x-auto text-sm">
+{`{
+  // Computed during model build
+  focusable: boolean,           // Can receive keyboard focus
+  interactive: boolean,         // Has click/keyboard handlers
+  hasSemanticRole: boolean,     // Role matches tag (button, link, etc.)
+  naturallyFocusable: boolean,  // Focusable without tabindex
+
+  // ARIA role resolution
+  implicitRole: "button",       // From tag name
+  explicitRole: null,           // From role attribute
+  effectiveRole: "button",      // Final computed role
+
+  // Name computation (per accname spec)
+  accessibleName: "Submit form",
+  nameFrom: "aria-label",       // or "content", "alt", "labelledby"
+
+  // Relationship tracking
+  labelledBy: ["label-1"],      // IDs from aria-labelledby
+  describedBy: ["help-text"],   // IDs from aria-describedby
+  controls: ["panel-1"],        // IDs from aria-controls
+  owns: [],                     // IDs from aria-owns
+
+  // Tree relationships
+  parent: DOMElement,
+  children: DOMElement[],
+  nextSibling: DOMElement,
+  previousSibling: DOMElement
+}`}
+                </pre>
+              </div>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Selector Queries</h3>
+              <p className="text-gray-700 mb-4">
+                DOMModel provides efficient selector queries for cross-referencing with ActionLanguage:
+              </p>
+              <ul className="list-disc pl-6 space-y-2 text-gray-700 mb-6">
+                <li><code>getElementById(id)</code> - O(1) lookup via internal index</li>
+                <li><code>querySelector(selector)</code> - Returns first match</li>
+                <li><code>querySelectorAll(selector)</code> - Returns all matches</li>
+                <li><code>getElementsByRole(role)</code> - All elements with ARIA role</li>
+                <li><code>getAllFocusableElements()</code> - All keyboard-focusable elements</li>
+              </ul>
+            </div>
+          </section>
+
+          {/* 3. CSSModel */}
+          <section id="cssmodel" className="scroll-mt-8">
+            <h2 className="text-4xl font-bold mb-6 text-gray-900">3. CSSModel</h2>
+
+            <div className="prose prose-lg max-w-none">
+              <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                CSSModel represents stylesheets and identifies CSS rules that affect accessibility.
+                It detects visibility conflicts, focus styling issues, and other CSS-related problems.
+              </p>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Parser</h3>
+              <p className="text-gray-700 mb-4">
+                Paradise uses <strong>css-tree</strong>, a fast CSS parser that produces an AST used by
+                PostCSS and other CSS tools. It preserves source locations and handles CSS at-rules.
+              </p>
+
+              <div className="bg-gray-50 border border-gray-300 rounded-lg p-6 mb-6">
+                <h4 className="text-lg font-bold mb-3 text-gray-900">Example: CSSRule Node</h4>
+                <pre className="bg-white p-4 rounded border border-gray-300 overflow-x-auto text-sm">
+{`{
+  id: "css-1",
+  nodeType: "rule",
+  selector: ".primary-btn:focus",
+  specificity: [0, 2, 0],  // [id, class+attribute, type]
+
+  properties: {
+    outline: "2px solid blue",
+    "outline-offset": "2px",
+    "background-color": "#4f46e5"
+  },
+
+  // Accessibility impact flags
+  affectsFocus: true,          // Has :focus or outline
+  affectsVisibility: false,    // No display/visibility/opacity
+  affectsContrast: true,       // Changes color/background
+  affectsInteraction: false,   // No pointer-events
+
+  // Computed impact
+  accessibilityImpact: "positive",  // or "negative", "neutral"
+  issues: [],
+
+  location: {
+    file: "styles.css",
+    line: 42,
+    column: 1,
+    startOffset: 1203,
+    endOffset: 1287
+  }
+}`}
+                </pre>
+              </div>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Accessibility-Affecting Properties</h3>
+              <p className="text-gray-700 mb-4">
+                CSSModel tracks properties that impact accessibility:
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                  <h4 className="font-bold text-red-900 mb-2">Visibility (High Priority)</h4>
+                  <ul className="text-sm text-gray-700 space-y-1">
+                    <li>• <code>display: none</code> - Removes from accessibility tree</li>
+                    <li>• <code>visibility: hidden</code> - Hidden but occupies space</li>
+                    <li>• <code>opacity: 0</code> - Invisible but focusable</li>
+                    <li>• <code>clip: rect(0,0,0,0)</code> - Visually hidden technique</li>
+                  </ul>
+                </div>
+
+                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                  <h4 className="font-bold text-blue-900 mb-2">Focus Indicators</h4>
+                  <ul className="text-sm text-gray-700 space-y-1">
+                    <li>• <code>outline</code> - Focus ring</li>
+                    <li>• <code>outline-offset</code> - Focus ring spacing</li>
+                    <li>• <code>box-shadow</code> - Alternative focus indicator</li>
+                    <li>• <code>border</code> - Focus border change</li>
+                  </ul>
+                </div>
+
+                <div className="bg-purple-50 border-l-4 border-purple-500 p-4 rounded-r-lg">
+                  <h4 className="font-bold text-purple-900 mb-2">Color Contrast</h4>
+                  <ul className="text-sm text-gray-700 space-y-1">
+                    <li>• <code>color</code> - Text color</li>
+                    <li>• <code>background-color</code> - Background color</li>
+                    <li>• <code>background</code> - Background (includes color)</li>
+                  </ul>
+                </div>
+
+                <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
+                  <h4 className="font-bold text-green-900 mb-2">Interaction</h4>
+                  <ul className="text-sm text-gray-700 space-y-1">
+                    <li>• <code>pointer-events: none</code> - Not clickable</li>
+                    <li>• <code>cursor</code> - Visual affordance</li>
+                    <li>• <code>user-select: none</code> - Text selection</li>
+                  </ul>
+                </div>
+              </div>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Selector Matching</h3>
+              <p className="text-gray-700 mb-4">
+                CSSModel implements CSS selector matching to determine which rules apply to elements:
+              </p>
+
+              <div className="bg-gray-50 border border-gray-300 rounded-lg p-6 mb-6">
+                <pre className="bg-white p-4 rounded border border-gray-300 overflow-x-auto text-sm">
+{`// Supported selectors
+#id                    // ID selector
+.class                 // Class selector
+element                // Type selector
+[attribute]            // Attribute selector
+[attribute="value"]    // Attribute with value
+
+// Combinators
+element.class          // Combined
+parent > child         // Direct child
+ancestor descendant    // Descendant
+prev + next           // Adjacent sibling
+
+// Pseudo-classes
+:focus                 // Focus state
+:hover                 // Hover state
+:disabled              // Disabled state
+:not(selector)         // Negation
+
+// Specificity calculation
+[id, class+attr, type] = [0, 0, 0]
+Examples:
+  #button              = [1, 0, 0]
+  .btn.primary         = [0, 2, 0]
+  button:focus         = [0, 1, 1]
+  #submit.btn:focus    = [1, 2, 1]
+
+// Rules applied in specificity order (highest wins)`}
+                </pre>
               </div>
             </div>
-          </div>
-        </div>
+          </section>
 
-        {/* How It Works */}
-        <div className="max-w-6xl mx-auto mb-16">
-          <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">How Models Merge</h2>
+          {/* 4. DocumentModel */}
+          <section id="documentmodel" className="scroll-mt-8">
+            <h2 className="text-4xl font-bold mb-6 text-gray-900">4. DocumentModel (Integration Layer)</h2>
 
-            <div className="space-y-8">
-              {/* Step 1 */}
-              <div className="flex gap-6 items-start">
-                <div className="flex-shrink-0 w-12 h-12 bg-paradise-blue text-white rounded-full flex items-center justify-center font-bold text-lg">
-                  1
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Parse Each Source File</h3>
-                  <p className="text-gray-700 mb-4">
-                    Paradise parses HTML, JavaScript, and CSS files separately using specialized parsers:
-                    parse5 for HTML, Acorn for JavaScript, css-tree for CSS.
+            <div className="prose prose-lg max-w-none">
+              <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                DocumentModel is the <strong>integration layer</strong> that merges DOMModel, ActionLanguageModel,
+                and CSSModel into a unified representation. This is where cross-file analysis becomes possible.
+              </p>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Structure</h3>
+              <div className="bg-gray-50 border border-gray-300 rounded-lg p-6 mb-6">
+                <pre className="bg-white p-4 rounded border border-gray-300 overflow-x-auto text-sm">
+{`{
+  scope: "page",  // or "workspace", "file"
+
+  models: {
+    dom: DOMModel,                      // HTML structure
+    javascript: ActionLanguageModel[],  // Array for multiple JS files
+    css: CSSModel[]                     // Array for multiple CSS files
+  },
+
+  // Cross-reference indexes (built during merge)
+  elementsBySelector: Map<string, DOMElement[]>,
+  handlersByElement: Map<DOMElement, ActionLanguageNode[]>,
+  rulesByElement: Map<DOMElement, CSSRule[]>,
+
+  // ARIA relationship graph
+  ariaRelationships: {
+    labelledBy: Map<DOMElement, DOMElement[]>,
+    describedBy: Map<DOMElement, DOMElement[]>,
+    controls: Map<DOMElement, DOMElement[]>,
+    owns: Map<DOMElement, DOMElement[]>
+  },
+
+  // Validation results
+  validationErrors: ValidationError[],
+  validationWarnings: ValidationWarning[]
+}`}
+                </pre>
+              </div>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Element Context</h3>
+              <p className="text-gray-700 mb-4">
+                For each DOM element, DocumentModel provides a complete <code>ElementContext</code> with
+                all accessibility-relevant information:
+              </p>
+
+              <div className="bg-gray-50 border border-gray-300 rounded-lg p-6 mb-6">
+                <pre className="bg-white p-4 rounded border border-gray-300 overflow-x-auto text-sm">
+{`interface ElementContext {
+  // Core element
+  element: DOMElement,
+
+  // Attached behaviors (from ActionLanguage)
+  jsHandlers: {
+    click: ActionLanguageNode[],
+    keydown: ActionLanguageNode[],
+    focus: ActionLanguageNode[],
+    blur: ActionLanguageNode[],
+    // ... other events
+  },
+
+  // Attached styles (from CSSModel)
+  cssRules: CSSRule[],
+  computedStyles: {
+    display: string,
+    visibility: string,
+    opacity: string,
+    outline: string,
+    // ... other relevant properties
+  },
+
+  // Computed accessibility properties
+  focusable: boolean,
+  interactive: boolean,
+  hasClickHandler: boolean,
+  hasKeyboardHandler: boolean,
+  hasAriaUpdates: boolean,
+
+  // Validation results
+  issues: Issue[],
+  warnings: Warning[]
+}`}
+                </pre>
+              </div>
+            </div>
+          </section>
+
+          {/* 5. Nested Tree Structure */}
+          <section id="nested-trees" className="scroll-mt-8">
+            <h2 className="text-4xl font-bold mb-6 text-gray-900">5. Nested Tree Structure</h2>
+
+            <div className="prose prose-lg max-w-none">
+              <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                Paradise's architecture uses <strong>nested trees</strong> where models form hierarchical
+                structures, and cross-references create connections between trees.
+              </p>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Tree Hierarchy</h3>
+
+              <div className="bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200 rounded-xl p-8 mb-6">
+                <pre className="bg-white p-6 rounded-lg border border-blue-300 overflow-x-auto text-sm font-mono">
+{`DocumentModel (root)
+├── DOMModel
+│   ├── <html>
+│   │   ├── <head>
+│   │   │   ├── <title>
+│   │   │   └── <link rel="stylesheet">
+│   │   └── <body>
+│   │       ├── <header>
+│   │       │   └── <nav>
+│   │       │       └── <button id="menu">
+│   │       └── <main>
+│   │           ├── <form>
+│   │           │   ├── <input id="email">
+│   │           │   └── <button id="submit">
+│   │           └── <div role="dialog">
+│   │
+│   ├── ActionLanguageModel[]
+│   │   ├── File: handlers.js
+│   │   │   ├── EventHandler (click on #submit)
+│   │   │   │   └── FunctionCall (validateForm)
+│   │   │   └── EventHandler (click on #menu)
+│   │   │       ├── DomManipulation (show nav)
+│   │   │       └── FocusChange (focus first link)
+│   │   │
+│   │   └── File: validation.js
+│   │       ├── FunctionDeclaration (validateForm)
+│   │       │   ├── ConditionalStatement
+│   │       │   │   ├── AriaStateChange (aria-invalid)
+│   │       │   │   └── FocusChange (focus error)
+│   │       │   └── EventHandler (keydown on #email)
+│   │       │       └── KeyCheck (Enter key)
+│   │       │
+│   │       └── File: keyboard.js
+│   │           └── EventHandler (keydown on #submit)
+│   │               ├── KeyCheck (Enter key)
+│   │               └── KeyCheck (Space key)
+│   │
+│   └── CSSModel[]
+│       ├── File: styles.css
+│       │   ├── Rule: #submit
+│       │   │   ├── Property: background-color
+│       │   │   └── Property: border
+│       │   ├── Rule: #submit:focus
+│       │   │   └── Property: outline
+│       │   └── Rule: [aria-invalid="true"]
+│       │       └── Property: border-color (red)
+│       │
+│       └── File: responsive.css
+│           └── MediaQuery: @media (max-width: 768px)
+│               └── Rule: #menu
+│                   └── Property: display`}
+                </pre>
+              </div>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Cross-Tree References</h3>
+              <p className="text-gray-700 mb-4">
+                References between trees are established via <strong>CSS selectors</strong>:
+              </p>
+
+              <div className="bg-gray-50 border border-gray-300 rounded-lg p-6 mb-6">
+                <pre className="bg-white p-4 rounded border border-gray-300 overflow-x-auto text-sm">
+{`// Example: Button element with cross-references
+
+DOMElement {
+  id: "#submit",
+  tagName: "button",
+
+  // References to ActionLanguage nodes
+  jsHandlers: [
+    → ActionLanguageNode (click handler in handlers.js:42)
+    → ActionLanguageNode (keydown handler in keyboard.js:18)
+  ],
+
+  // References to CSS rules
+  cssRules: [
+    → CSSRule (#submit in styles.css:15)
+    → CSSRule (#submit:focus in styles.css:20)
+  ]
+}
+
+// These references are bi-directional:
+ActionLanguageNode (click handler) {
+  element: {
+    selector: "#submit",
+    resolvedElement: → DOMElement (#submit)
+  }
+}
+
+CSSRule (#submit:focus) {
+  selector: "#submit:focus",
+  matchedElements: [
+    → DOMElement (#submit)
+  ]
+}`}
+                </pre>
+              </div>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Why Nested Trees?</h3>
+              <div className="space-y-4 mb-6">
+                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                  <h4 className="font-bold text-blue-900 mb-2">1. Preserves Source Structure</h4>
+                  <p className="text-gray-700 text-sm">
+                    Each tree maintains its original structure (HTML hierarchy, JavaScript scope, CSS cascade),
+                    making analysis more accurate and error messages more useful.
                   </p>
-                  <div className="bg-gray-50 rounded p-4 border border-gray-200">
-                    <pre className="text-sm font-mono text-gray-700 overflow-x-auto">
-HTML: index.html → DOMModel (150 elements)<br />
-JS: handlers.js → ActionLanguageModel (23 event handlers)<br />
-CSS: styles.css → CSSModel (412 rules)
-                    </pre>
+                </div>
+
+                <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
+                  <h4 className="font-bold text-green-900 mb-2">2. Enables Independent Updates</h4>
+                  <p className="text-gray-700 text-sm">
+                    When a file changes, only its tree is re-parsed. Cross-references are quickly rebuilt
+                    without re-parsing other files.
+                  </p>
+                </div>
+
+                <div className="bg-purple-50 border-l-4 border-purple-500 p-4 rounded-r-lg">
+                  <h4 className="font-bold text-purple-900 mb-2">3. Supports Multiple Files</h4>
+                  <p className="text-gray-700 text-sm">
+                    Arrays of ActionLanguageModel and CSSModel allow analyzing projects with hundreds of
+                    JavaScript and CSS files without flattening structure.
+                  </p>
+                </div>
+
+                <div className="bg-orange-50 border-l-4 border-orange-500 p-4 rounded-r-lg">
+                  <h4 className="font-bold text-orange-900 mb-2">4. Facilitates Extensibility</h4>
+                  <p className="text-gray-700 text-sm">
+                    Adding new model types (SwiftUIModel, AndroidLayoutModel) follows the same pattern:
+                    create tree, establish selectors, build cross-references.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* 6. Merge Process */}
+          <section id="merge-process" className="scroll-mt-8">
+            <h2 className="text-4xl font-bold mb-6 text-gray-900">6. Model Merge Process</h2>
+
+            <div className="prose prose-lg max-w-none">
+              <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                The merge process connects trees by resolving selectors to elements and attaching
+                behaviors/styles. This is where the magic happens.
+              </p>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Algorithm</h3>
+              <div className="bg-gray-50 border border-gray-300 rounded-lg p-6 mb-6">
+                <pre className="bg-white p-4 rounded border border-gray-300 overflow-x-auto text-sm">
+{`function mergeModels(documentModel: DocumentModel): void {
+  // Step 1: Build element index by selector
+  const elementsBySelector = new Map<string, DOMElement[]>();
+
+  for (const element of documentModel.models.dom.getAllElements()) {
+    // Index by ID
+    if (element.attributes.id) {
+      const selector = \`#\${element.attributes.id}\`;
+      elementsBySelector.set(selector, [element]);
+    }
+
+    // Index by classes
+    if (element.attributes.class) {
+      const classes = element.attributes.class.split(/\\s+/);
+      for (const cls of classes) {
+        const selector = \`.\${cls}\`;
+        if (!elementsBySelector.has(selector)) {
+          elementsBySelector.set(selector, []);
+        }
+        elementsBySelector.get(selector)!.push(element);
+      }
+    }
+
+    // Index by tag name
+    const tagSelector = element.tagName;
+    if (!elementsBySelector.has(tagSelector)) {
+      elementsBySelector.set(tagSelector, []);
+    }
+    elementsBySelector.get(tagSelector)!.push(element);
+
+    // Index by role
+    if (element.attributes.role) {
+      const roleSelector = \`[role="\${element.attributes.role}"]\`;
+      if (!elementsBySelector.has(roleSelector)) {
+        elementsBySelector.set(roleSelector, []);
+      }
+      elementsBySelector.get(roleSelector)!.push(element);
+    }
+  }
+
+  // Step 2: Attach JavaScript handlers to elements
+  for (const jsModel of documentModel.models.javascript) {
+    for (const node of jsModel.nodes) {
+      if (node.element && node.element.selector) {
+        const elements = elementsBySelector.get(node.element.selector) || [];
+
+        for (const element of elements) {
+          if (!element.jsHandlers) {
+            element.jsHandlers = [];
+          }
+          element.jsHandlers.push(node);
+
+          // Bi-directional reference
+          node.element.resolvedElement = element;
+        }
+
+        // Warning if no elements matched
+        if (elements.length === 0) {
+          documentModel.validationWarnings.push({
+            type: 'orphaned-handler',
+            message: \`Handler for '\${node.element.selector}' has no matching elements\`,
+            location: node.location,
+            suggestions: findSimilarSelectors(node.element.selector, elementsBySelector)
+          });
+        }
+      }
+    }
+  }
+
+  // Step 3: Attach CSS rules to elements
+  for (const cssModel of documentModel.models.css) {
+    for (const rule of cssModel.rules) {
+      const elements = querySelectorAll(rule.selector, documentModel.models.dom);
+
+      for (const element of elements) {
+        if (!element.cssRules) {
+          element.cssRules = [];
+        }
+        element.cssRules.push(rule);
+
+        // Sort by specificity (highest first)
+        element.cssRules.sort((a, b) =>
+          compareSpecificity(b.specificity, a.specificity)
+        );
+      }
+
+      // Track matched elements
+      rule.matchedElements = elements;
+    }
+  }
+
+  // Step 4: Build ARIA relationship graph
+  for (const element of documentModel.models.dom.getAllElements()) {
+    // aria-labelledby
+    if (element.attributes['aria-labelledby']) {
+      const ids = element.attributes['aria-labelledby'].split(/\\s+/);
+      for (const id of ids) {
+        const target = documentModel.models.dom.getElementById(id);
+        if (target) {
+          documentModel.ariaRelationships.labelledBy.set(element,
+            [...(documentModel.ariaRelationships.labelledBy.get(element) || []), target]
+          );
+        } else {
+          documentModel.validationErrors.push({
+            type: 'missing-aria-target',
+            message: \`aria-labelledby references non-existent element '\${id}'\`,
+            location: element.location
+          });
+        }
+      }
+    }
+
+    // aria-describedby, aria-controls, aria-owns (same pattern)
+    // ...
+  }
+
+  // Step 5: Compute accessibility properties for each element
+  for (const element of documentModel.models.dom.getAllElements()) {
+    const context = computeElementContext(element, documentModel);
+
+    element.focusable = context.focusable;
+    element.interactive = context.interactive;
+    element.hasClickHandler = context.hasClickHandler;
+    element.hasKeyboardHandler = context.hasKeyboardHandler;
+  }
+}`}
+                </pre>
+              </div>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Performance Optimizations</h3>
+              <ul className="list-disc pl-6 space-y-2 text-gray-700 mb-6">
+                <li><strong>Indexing</strong>: Build selector → element maps once (O(n) elements)</li>
+                <li><strong>Lazy evaluation</strong>: ElementContext computed on-demand</li>
+                <li><strong>Incremental updates</strong>: Only re-merge changed files</li>
+                <li><strong>Selector caching</strong>: Cache querySelectorAll results</li>
+              </ul>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Validation During Merge</h3>
+              <p className="text-gray-700 mb-4">
+                The merge process detects several issue types automatically:
+              </p>
+
+              <div className="space-y-3 mb-6">
+                <div className="flex items-start gap-3 bg-red-50 p-3 rounded-lg">
+                  <span className="text-red-500 font-bold text-lg">❌</span>
+                  <div>
+                    <strong className="text-red-900">Orphaned Handlers:</strong>
+                    <span className="text-gray-700 text-sm ml-2">
+                      JavaScript references element that doesn't exist in HTML
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 bg-red-50 p-3 rounded-lg">
+                  <span className="text-red-500 font-bold text-lg">❌</span>
+                  <div>
+                    <strong className="text-red-900">Missing ARIA Targets:</strong>
+                    <span className="text-gray-700 text-sm ml-2">
+                      aria-labelledby/describedby/controls points to non-existent ID
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 bg-orange-50 p-3 rounded-lg">
+                  <span className="text-orange-500 font-bold text-lg">⚠️</span>
+                  <div>
+                    <strong className="text-orange-900">Visibility Conflicts:</strong>
+                    <span className="text-gray-700 text-sm ml-2">
+                      Element is focusable but hidden by CSS (display:none, opacity:0)
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 bg-orange-50 p-3 rounded-lg">
+                  <span className="text-orange-500 font-bold text-lg">⚠️</span>
+                  <div>
+                    <strong className="text-orange-900">Focus Order Chaos:</strong>
+                    <span className="text-gray-700 text-sm ml-2">
+                      Multiple positive tabindex values in non-sequential order
+                    </span>
                   </div>
                 </div>
               </div>
+            </div>
+          </section>
 
-              {/* Step 2 */}
-              <div className="flex gap-6 items-start">
-                <div className="flex-shrink-0 w-12 h-12 bg-paradise-blue text-white rounded-full flex items-center justify-center font-bold text-lg">
-                  2
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Build Selector Index</h3>
-                  <p className="text-gray-700 mb-4">
-                    Create an index of all element IDs, classes, and selectors for fast O(1) lookup.
-                  </p>
-                  <div className="bg-gray-50 rounded p-4 border border-gray-200">
-                    <pre className="text-sm font-mono text-gray-700 overflow-x-auto">
-Index: {'{'}<br />
-&nbsp;&nbsp;'#submit': DOMElement(button),<br />
-&nbsp;&nbsp;'.nav-item': [DOMElement(a), DOMElement(a), ...],<br />
-&nbsp;&nbsp;'button': [DOMElement(button), DOMElement(button), ...]<br />
-{'}'}
-                    </pre>
+          {/* 7. Analysis Flow */}
+          <section id="analysis-flow" className="scroll-mt-8">
+            <h2 className="text-4xl font-bold mb-6 text-gray-900">7. Analysis Flow</h2>
+
+            <div className="prose prose-lg max-w-none">
+              <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                With models merged, analyzers query the DocumentModel to detect accessibility issues.
+                Analyzers have complete context: HTML structure, JavaScript behaviors, and CSS styles.
+              </p>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Analyzer Interface</h3>
+              <div className="bg-gray-50 border border-gray-300 rounded-lg p-6 mb-6">
+                <pre className="bg-white p-4 rounded border border-gray-300 overflow-x-auto text-sm">
+{`interface Analyzer {
+  name: string;
+  wcagCriteria: string[];  // e.g., ["2.1.1", "4.1.2"]
+  severity: "error" | "warning" | "info";
+
+  // Main analysis method
+  analyze(context: AnalyzerContext): Issue[];
+
+  // Optional: suggest fixes
+  suggestFix?(issue: Issue): Fix | null;
+}
+
+interface AnalyzerContext {
+  // Multi-model context (preferred)
+  documentModel?: DocumentModel;
+
+  // File-scope fallback (backward compatibility)
+  actionLanguageModel?: ActionLanguageModel;
+
+  // Analysis scope
+  scope: "file" | "workspace" | "page";
+}
+
+interface Issue {
+  type: string;              // e.g., "mouse-only-click"
+  severity: "error" | "warning" | "info";
+  wcag: string[];            // WCAG criteria violated
+  message: string;           // Human-readable description
+  element?: DOMElement;      // Primary element (if applicable)
+  locations: SourceLocation[];  // All relevant code locations
+  relatedNodes?: {           // Cross-file context
+    handlers: ActionLanguageNode[];
+    rules: CSSRule[];
+  };
+  fix?: Fix;                 // Suggested fix (optional)
+}`}
+                </pre>
+              </div>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Example: MouseOnlyClickAnalyzer</h3>
+              <p className="text-gray-700 mb-4">
+                This analyzer demonstrates the power of multi-model context:
+              </p>
+
+              <div className="bg-gray-50 border border-gray-300 rounded-lg p-6 mb-6">
+                <pre className="bg-white p-4 rounded border border-gray-300 overflow-x-auto text-sm">
+{`class MouseOnlyClickAnalyzer implements Analyzer {
+  name = "MouseOnlyClickAnalyzer";
+  wcagCriteria = ["2.1.1"];
+  severity = "error";
+
+  analyze(context: AnalyzerContext): Issue[] {
+    // Prefer document model (zero false positives)
+    if (context.documentModel?.models.dom) {
+      return this.analyzeWithDocumentModel(context.documentModel);
+    }
+
+    // Fall back to file-scope (may have false positives)
+    if (context.actionLanguageModel) {
+      return this.analyzeFileScope(context.actionLanguageModel);
+    }
+
+    return [];
+  }
+
+  private analyzeWithDocumentModel(doc: DocumentModel): Issue[] {
+    const issues: Issue[] = [];
+
+    // Iterate all DOM elements
+    for (const element of doc.models.dom.getAllElements()) {
+      // Get complete element context
+      const context = doc.getElementContext(element);
+
+      // Check: has click handler but no keyboard handler
+      const hasClick = context.jsHandlers.some(h =>
+        h.actionType === 'eventHandler' && h.event === 'click'
+      );
+
+      const hasKeyboard = context.jsHandlers.some(h =>
+        h.actionType === 'eventHandler' &&
+        (h.event === 'keydown' || h.event === 'keypress')
+      );
+
+      if (hasClick && !hasKeyboard) {
+        // Get all locations: HTML element + JS handlers
+        const locations = [
+          element.location,
+          ...context.jsHandlers
+            .filter(h => h.event === 'click')
+            .map(h => h.location)
+        ];
+
+        issues.push({
+          type: 'mouse-only-click',
+          severity: 'error',
+          wcag: ['2.1.1'],
+          message: \`Element <\${element.tagName}> has click handler but no keyboard handler\`,
+          element: element,
+          locations: locations,
+          relatedNodes: {
+            handlers: context.jsHandlers,
+            rules: context.cssRules
+          },
+          fix: this.generateFix(element, context)
+        });
+      }
+    }
+
+    return issues;
+  }
+
+  private analyzeFileScope(model: ActionLanguageModel): Issue[] {
+    // File-scope analysis (legacy, may have false positives)
+    // Only sees handlers in current file
+    const issues: Issue[] = [];
+
+    const clickHandlers = model.nodes.filter(n =>
+      n.actionType === 'eventHandler' && n.event === 'click'
+    );
+
+    for (const click of clickHandlers) {
+      const hasKeyboard = model.nodes.some(n =>
+        n.actionType === 'eventHandler' &&
+        n.element.binding === click.element.binding &&
+        (n.event === 'keydown' || n.event === 'keypress')
+      );
+
+      if (!hasKeyboard) {
+        // FALSE POSITIVE if keyboard handler is in another file!
+        issues.push({
+          type: 'mouse-only-click',
+          severity: 'warning',  // Lower severity for file-scope
+          wcag: ['2.1.1'],
+          message: \`Click handler without keyboard handler (file-scope analysis)\`,
+          locations: [click.location]
+        });
+      }
+    }
+
+    return issues;
+  }
+
+  private generateFix(element: DOMElement, context: ElementContext): Fix {
+    // Generate keyboard handler for element
+    const clickHandler = context.jsHandlers.find(h => h.event === 'click');
+
+    return {
+      type: 'add-keyboard-handler',
+      description: 'Add keyboard handler for Enter and Space keys',
+      changes: [{
+        file: clickHandler?.location.file || 'unknown',
+        insertAfter: clickHandler?.location.line || 0,
+        code: \`
+\${element.element.binding}.addEventListener('keydown', function(event) {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    // Trigger same action as click handler
+  }
+});\`
+      }]
+    };
+  }
+}`}
+                </pre>
+              </div>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Analysis Pipeline</h3>
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 rounded-xl p-6 mb-6">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="bg-blue-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">1</div>
+                    <div className="flex-1">
+                      <div className="font-bold text-gray-900">Parse Files</div>
+                      <div className="text-sm text-gray-600">
+                        HTML → DOMModel, JavaScript → ActionLanguageModel, CSS → CSSModel
+                      </div>
+                    </div>
+                    <div className="text-sm text-gray-500">~31ms</div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className="bg-green-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">2</div>
+                    <div className="flex-1">
+                      <div className="font-bold text-gray-900">Build DocumentModel</div>
+                      <div className="text-sm text-gray-600">
+                        Merge models, resolve selectors, build indexes
+                      </div>
+                    </div>
+                    <div className="text-sm text-gray-500">~3ms</div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className="bg-purple-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">3</div>
+                    <div className="flex-1">
+                      <div className="font-bold text-gray-900">Run Analyzers</div>
+                      <div className="text-sm text-gray-600">
+                        Each analyzer queries DocumentModel (13 analyzers in parallel)
+                      </div>
+                    </div>
+                    <div className="text-sm text-gray-500">~100ms</div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className="bg-orange-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">4</div>
+                    <div className="flex-1">
+                      <div className="font-bold text-gray-900">Report Results</div>
+                      <div className="text-sm text-gray-600">
+                        Format issues with all locations, suggest fixes, output diagnostics
+                      </div>
+                    </div>
+                    <div className="text-sm text-gray-500">~5ms</div>
+                  </div>
+
+                  <div className="mt-6 pt-6 border-t-2 border-blue-200">
+                    <div className="flex items-center justify-between">
+                      <div className="font-bold text-gray-900 text-lg">Total Analysis Time</div>
+                      <div className="font-bold text-blue-600 text-2xl">~140ms</div>
+                    </div>
+                    <div className="text-sm text-gray-600 mt-2">
+                      For typical page (100-line HTML, 300-line JS, 50-rule CSS)
+                    </div>
                   </div>
                 </div>
               </div>
-
-              {/* Step 3 */}
-              <div className="flex gap-6 items-start">
-                <div className="flex-shrink-0 w-12 h-12 bg-paradise-blue text-white rounded-full flex items-center justify-center font-bold text-lg">
-                  3
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Cross-Reference via Selectors</h3>
-                  <p className="text-gray-700 mb-4">
-                    For each DOM element, find all JavaScript handlers and CSS rules that target it.
-                  </p>
-                  <div className="bg-gray-50 rounded p-4 border border-gray-200">
-                    <pre className="text-sm font-mono text-gray-700 overflow-x-auto">
-Button#submit:<br />
-&nbsp;&nbsp;jsHandlers: [<br />
-&nbsp;&nbsp;&nbsp;&nbsp;{'{'} event: 'click', file: 'click-handlers.js:42' {'}'},<br />
-&nbsp;&nbsp;&nbsp;&nbsp;{'{'} event: 'keydown', file: 'keyboard-handlers.js:18' {'}'}<br />
-&nbsp;&nbsp;],<br />
-&nbsp;&nbsp;cssRules: [<br />
-&nbsp;&nbsp;&nbsp;&nbsp;{'{'} selector: 'button:focus', properties: {'{'} outline: '2px solid' {'}'} {'}'}<br />
-&nbsp;&nbsp;]
-                    </pre>
-                  </div>
-                </div>
-              </div>
-
-              {/* Step 4 */}
-              <div className="flex gap-6 items-start">
-                <div className="flex-shrink-0 w-12 h-12 bg-paradise-blue text-white rounded-full flex items-center justify-center font-bold text-lg">
-                  4
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Generate Element Context</h3>
-                  <p className="text-gray-700 mb-4">
-                    Create a unified view of each element with all its related behaviors and styles.
-                  </p>
-                  <div className="bg-gray-50 rounded p-4 border border-gray-200">
-                    <pre className="text-sm font-mono text-gray-700 overflow-x-auto">
-ElementContext {'{'}<br />
-&nbsp;&nbsp;focusable: true,<br />
-&nbsp;&nbsp;interactive: true,<br />
-&nbsp;&nbsp;hasClickHandler: true,<br />
-&nbsp;&nbsp;hasKeyboardHandler: true,<br />
-&nbsp;&nbsp;hasFocusStyles: true,<br />
-&nbsp;&nbsp;cssHidden: false<br />
-{'}'}
-                    </pre>
-                  </div>
-                </div>
-              </div>
             </div>
-          </div>
-        </div>
+          </section>
 
-        {/* Benefits */}
-        <div className="max-w-6xl mx-auto mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Architecture Benefits</h2>
+          {/* 8. Extensibility */}
+          <section id="extensibility" className="scroll-mt-8">
+            <h2 className="text-4xl font-bold mb-6 text-gray-900">8. Extensibility</h2>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">
-                  ✓
-                </div>
-                <h3 className="text-xl font-bold text-gray-900">Zero False Positives</h3>
-              </div>
-              <p className="text-gray-700">
-                By analyzing all files together, Paradise sees the complete picture. Handlers split across files
-                are correctly recognized, eliminating false positives that plague traditional analyzers.
+            <div className="prose prose-lg max-w-none">
+              <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                Paradise's architecture is designed for extensibility. Adding support for new platforms
+                or languages follows a clear pattern.
               </p>
-            </div>
 
-            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
-                  🔍
-                </div>
-                <h3 className="text-xl font-bold text-gray-900">Deeper Detection</h3>
-              </div>
-              <p className="text-gray-700">
-                Multi-model analysis enables detection of issues impossible with single-file analysis: orphaned
-                handlers, broken ARIA connections, CSS visibility conflicts.
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Adding a New Model Type</h3>
+              <p className="text-gray-700 mb-4">
+                To add support for a new platform (e.g., SwiftUI, Android XML), create a model that
+                implements the <code>Model</code> interface:
               </p>
-            </div>
 
-            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-                  ⚡
-                </div>
-                <h3 className="text-xl font-bold text-gray-900">Fast Performance</h3>
+              <div className="bg-gray-50 border border-gray-300 rounded-lg p-6 mb-6">
+                <pre className="bg-white p-4 rounded border border-gray-300 overflow-x-auto text-sm">
+{`// Example: SwiftUIModel for iOS accessibility
+
+class SwiftUIModel implements Model {
+  type: ModelType = 'SwiftUI';
+  version = '1.0.0';
+  sourceFile: string;
+
+  elements: SwiftUIElement[] = [];
+
+  parse(source: string): SwiftUIElement[] {
+    // Parse Swift source with Swift parser
+    // Extract View hierarchy, modifiers, actions
+
+    const ast = parseSwift(source);
+    const elements = this.transformAST(ast);
+
+    return elements;
+  }
+
+  validate(): ValidationResult {
+    // Validate SwiftUI-specific patterns
+    const errors: ValidationError[] = [];
+
+    for (const element of this.elements) {
+      // Check for .accessibilityLabel()
+      if (!element.hasAccessibilityLabel && element.isInteractive) {
+        errors.push({
+          message: 'Interactive element missing .accessibilityLabel()',
+          location: element.location,
+          code: 'missing-accessibility-label'
+        });
+      }
+
+      // Check for .accessibilityAction()
+      // Check for .accessibilityHidden()
+      // ... other SwiftUI-specific checks
+    }
+
+    return { valid: errors.length === 0, errors, warnings: [] };
+  }
+
+  serialize(): string {
+    return JSON.stringify(this.elements, null, 2);
+  }
+}
+
+// SwiftUI element structure
+interface SwiftUIElement extends ModelNode {
+  viewType: string;  // Button, Text, Image, etc.
+  modifiers: SwiftUIModifier[];
+  actions: SwiftUIAction[];
+  children: SwiftUIElement[];
+
+  // Accessibility-specific
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
+  accessibilityTraits: AccessibilityTrait[];
+  isAccessibilityElement: boolean;
+
+  // For cross-reference
+  identifier?: string;  // SwiftUI .id() modifier
+  accessibilityIdentifier?: string;
+}`}
+                </pre>
               </div>
-              <p className="text-gray-700">
-                Intelligent caching and incremental parsing keep analysis fast. Small projects analyze in &lt;100ms,
-                large projects in &lt;2s with background processing.
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Integration with DocumentModel</h3>
+              <p className="text-gray-700 mb-4">
+                Once the model is created, integrate it with DocumentModel:
               </p>
-            </div>
 
-            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-teal-500 rounded-full flex items-center justify-center text-white font-bold">
-                  📈
+              <div className="bg-gray-50 border border-gray-300 rounded-lg p-6 mb-6">
+                <pre className="bg-white p-4 rounded border border-gray-300 overflow-x-auto text-sm">
+{`// Extend DocumentModel to support SwiftUI
+interface DocumentModel {
+  scope: AnalysisScope;
+
+  models: {
+    dom?: DOMModel;              // HTML (web)
+    swiftui?: SwiftUIModel;      // iOS
+    android?: AndroidLayoutModel; // Android
+    javascript: ActionLanguageModel[];
+    css: CSSModel[];
+  };
+
+  // ... rest of DocumentModel
+}
+
+// Merge process for SwiftUI
+function mergeSwiftUIModel(doc: DocumentModel): void {
+  if (!doc.models.swiftui) return;
+
+  // Build element index by identifier
+  const elementsById = new Map<string, SwiftUIElement>();
+
+  for (const element of doc.models.swiftui.elements) {
+    if (element.identifier || element.accessibilityIdentifier) {
+      const id = element.identifier || element.accessibilityIdentifier;
+      elementsById.set(id, element);
+    }
+  }
+
+  // Attach ActionLanguage nodes (from Swift actions)
+  for (const swiftModel of doc.models.swiftui.elements) {
+    for (const action of swiftModel.actions) {
+      // Convert Swift action to ActionLanguage node
+      const alNode = convertSwiftActionToActionLanguage(action);
+
+      if (!swiftModel.jsHandlers) {
+        swiftModel.jsHandlers = [];
+      }
+      swiftModel.jsHandlers.push(alNode);
+    }
+  }
+
+  // Validate accessibility
+  for (const element of doc.models.swiftui.elements) {
+    if (element.isInteractive && !element.accessibilityLabel) {
+      doc.validationErrors.push({
+        type: 'missing-accessibility-label',
+        message: \`\${element.viewType} missing .accessibilityLabel()\`,
+        location: element.location
+      });
+    }
+  }
+}`}
+                </pre>
+              </div>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Future Model Types</h3>
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-300 rounded-lg p-6">
+                  <h4 className="text-xl font-bold text-blue-900 mb-3">🍎 SwiftUIModel</h4>
+                  <p className="text-gray-700 text-sm mb-3">iOS and macOS accessibility analysis</p>
+                  <ul className="text-xs text-gray-700 space-y-1">
+                    <li>• Parse SwiftUI View hierarchies</li>
+                    <li>• Validate .accessibilityLabel() and traits</li>
+                    <li>• Check VoiceOver compatibility</li>
+                    <li>• Verify Dynamic Type support</li>
+                  </ul>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900">Scalable</h3>
+
+                <div className="bg-gradient-to-br from-green-50 to-green-100 border border-green-300 rounded-lg p-6">
+                  <h4 className="text-xl font-bold text-green-900 mb-3">🤖 AndroidLayoutModel</h4>
+                  <p className="text-gray-700 text-sm mb-3">Android XML layout analysis</p>
+                  <ul className="text-xs text-gray-700 space-y-1">
+                    <li>• Parse XML layout files</li>
+                    <li>• Validate contentDescription</li>
+                    <li>• Check TalkBack compatibility</li>
+                    <li>• Verify touch target sizes</li>
+                  </ul>
+                </div>
+
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-300 rounded-lg p-6">
+                  <h4 className="text-xl font-bold text-purple-900 mb-3">☕ KotlinModel</h4>
+                  <p className="text-gray-700 text-sm mb-3">Kotlin Jetpack Compose analysis</p>
+                  <ul className="text-xs text-gray-700 space-y-1">
+                    <li>• Parse @Composable functions</li>
+                    <li>• Validate Modifier.semantics</li>
+                    <li>• Check state management</li>
+                    <li>• Verify focus handling</li>
+                  </ul>
+                </div>
+
+                <div className="bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-300 rounded-lg p-6">
+                  <h4 className="text-xl font-bold text-orange-900 mb-3">⚛️ ARIAModel</h4>
+                  <p className="text-gray-700 text-sm mb-3">Dedicated ARIA relationship graph</p>
+                  <ul className="text-xs text-gray-700 space-y-1">
+                    <li>• Track all ARIA relationships</li>
+                    <li>• Validate role hierarchies</li>
+                    <li>• Detect circular references</li>
+                    <li>• Verify live region updates</li>
+                  </ul>
+                </div>
               </div>
-              <p className="text-gray-700">
-                Designed for real-world projects. Handles codebases from 10 files to 1000+ files efficiently.
-                Incremental updates keep subsequent analyses fast.
-              </p>
-            </div>
-          </div>
-        </div>
 
-        {/* Technical Specs */}
-        <div className="max-w-6xl mx-auto mb-16">
-          <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Technical Specifications</h2>
+              <h3 className="text-2xl font-bold mt-8 mb-4 text-gray-900">Pattern for Extension</h3>
+              <ol className="list-decimal pl-6 space-y-3 text-gray-700 mb-6">
+                <li>
+                  <strong>Create Model Interface</strong> - Implement <code>Model</code> interface with platform-specific node types
+                </li>
+                <li>
+                  <strong>Build Parser</strong> - Parse source files to AST, extract accessibility-relevant information
+                </li>
+                <li>
+                  <strong>Define Selectors</strong> - Establish how elements are identified (IDs, identifiers, accessibility IDs)
+                </li>
+                <li>
+                  <strong>Integrate with DocumentModel</strong> - Add model type to DocumentModel, implement merge logic
+                </li>
+                <li>
+                  <strong>Create Analyzers</strong> - Write platform-specific analyzers that query the new model
+                </li>
+                <li>
+                  <strong>Test Thoroughly</strong> - Unit tests, integration tests, real-world examples
+                </li>
+              </ol>
 
-            <div className="grid md:grid-cols-2 gap-8">
-              <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Parsers Used</h3>
-                <ul className="space-y-2 text-gray-700">
-                  <li className="flex items-center gap-2">
-                    <span className="text-paradise-blue">▸</span>
-                    <strong>HTML:</strong> parse5 (complete HTML5 support)
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-paradise-blue">▸</span>
-                    <strong>JavaScript:</strong> Acorn (fast ES2020+ parser)
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-paradise-blue">▸</span>
-                    <strong>CSS:</strong> css-tree (full CSS3 support)
-                  </li>
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Performance Targets</h3>
-                <ul className="space-y-2 text-gray-700">
-                  <li className="flex items-center gap-2">
-                    <span className="text-paradise-blue">▸</span>
-                    <strong>Small projects:</strong> &lt;100ms (real-time)
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-paradise-blue">▸</span>
-                    <strong>Medium projects:</strong> &lt;500ms (responsive)
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-paradise-blue">▸</span>
-                    <strong>Large projects:</strong> &lt;2s (background)
-                  </li>
-                </ul>
+              <div className="bg-gradient-to-r from-paradise-blue/10 to-paradise-purple/10 border-2 border-paradise-blue/30 rounded-xl p-8 mt-8">
+                <h3 className="text-2xl font-bold mb-4 text-gray-900">Universal Accessibility</h3>
+                <p className="text-lg text-gray-700 leading-relaxed">
+                  By following this architecture, Paradise can analyze accessibility across <strong>any platform</strong>:
+                  web, iOS, Android, desktop, VR/AR, and future platforms. The nested tree structure with
+                  cross-references provides a universal pattern for accessibility analysis.
+                </p>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* CTA */}
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="bg-gradient-to-r from-paradise-blue to-paradise-purple rounded-2xl shadow-2xl p-12 text-white">
-            <h2 className="text-3xl font-bold mb-4">Experience the Difference</h2>
-            <p className="text-lg opacity-95 mb-8">
-              Try Paradise's multi-model architecture and see how it eliminates false positives while
-              catching issues other analyzers miss.
-            </p>
-            <div className="flex gap-4 justify-center flex-wrap">
-              <a
-                href="/playground"
-                className="bg-white text-paradise-blue px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-              >
-                Try Interactive Playground
-              </a>
-              <a
-                href="/examples"
-                className="bg-white/20 backdrop-blur text-white border-2 border-white px-8 py-3 rounded-lg font-semibold hover:bg-white/30 transition-colors"
-              >
-                View Examples
-              </a>
-            </div>
-          </div>
+          </section>
         </div>
       </main>
     </div>
