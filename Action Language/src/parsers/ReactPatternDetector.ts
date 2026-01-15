@@ -429,6 +429,14 @@ export class ReactPatternDetector {
         container = containerArg.name;
       } else if (t.isStringLiteral(containerArg)) {
         container = containerArg.value;
+      } else if (t.isMemberExpression(containerArg)) {
+        // Handle: document.body, document.documentElement, etc.
+        if (
+          t.isIdentifier(containerArg.object) &&
+          t.isIdentifier(containerArg.property)
+        ) {
+          container = `${containerArg.object.name}.${containerArg.property.name}`;
+        }
       } else if (
         t.isCallExpression(containerArg) &&
         t.isMemberExpression(containerArg.callee) &&
@@ -482,6 +490,14 @@ export class ReactPatternDetector {
         container = containerArg.name;
       } else if (t.isStringLiteral(containerArg)) {
         container = containerArg.value;
+      } else if (t.isMemberExpression(containerArg)) {
+        // Handle: document.body, document.documentElement, etc.
+        if (
+          t.isIdentifier(containerArg.object) &&
+          t.isIdentifier(containerArg.property)
+        ) {
+          container = `${containerArg.object.name}.${containerArg.property.name}`;
+        }
       } else if (
         t.isCallExpression(containerArg) &&
         t.isMemberExpression(containerArg.callee) &&
