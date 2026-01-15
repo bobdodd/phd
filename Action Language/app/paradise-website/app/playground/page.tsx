@@ -2,46 +2,76 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import { parse, ParserOptions } from '@babel/parser';
+import traverse from '@babel/traverse';
+import * as t from '@babel/types';
 
 // Dynamically import Monaco to avoid SSR issues
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
 
+// File structure for multi-file support
+interface CodeFile {
+  name: string;
+  content: string;
+}
+
+interface ExampleFiles {
+  html: CodeFile[];
+  javascript: CodeFile[];
+  css: CodeFile[];
+}
+
 // Example code snippets - now with multi-file support
-const EXAMPLES = {
+const EXAMPLES: Record<string, {
+  title: string;
+  description: string;
+  category: string;
+  files: ExampleFiles;
+  issues: string[];
+}> = {
   'cross-file-handlers': {
     title: 'Cross-File Handlers (Multi-Model)',
     description: 'Handlers split across files - eliminates false positives',
     category: 'multi-model',
     files: {
-      html: `<button id="submitButton" class="primary-btn">
-  Submit Form
-</button>`,
-      javascript: `// click-handlers.js
+      html: [
+        {
+          name: 'index.html',
+          content: `<!-- Native button: keyboard accessible without explicit handler -->
+<button id="submitButton">Submit Form</button>
+
+<!-- Custom div: requires explicit keyboard handler -->
+<div id="customButton" role="button" tabindex="0">Custom Button</div>`
+        }
+      ],
+      javascript: [
+        {
+          name: 'click-handlers.js',
+          content: `// Native button: OK with just click handler
 document.getElementById('submitButton')
   .addEventListener('click', function() {
     submitForm();
   });
 
-// keyboard-handlers.js (separate file)
-document.getElementById('submitButton')
+// Custom div: needs keyboard handler too
+document.getElementById('customButton')
+  .addEventListener('click', function() {
+    customAction();
+  });`
+        },
+        {
+          name: 'keyboard-handlers.js',
+          content: `// Keyboard handler for custom div button
+document.getElementById('customButton')
   .addEventListener('keydown', function(e) {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      submitForm();
+      customAction();
     }
-  });`,
-      css: `.primary-btn {
-  padding: 10px 20px;
-  background: #4f46e5;
-  color: white;
-  border: none;
-  border-radius: 5px;
-}
-
-.primary-btn:focus {
-  outline: 2px solid #818cf8;
-  outline-offset: 2px;
-}`
+  });`
+        }
+      ],
+      css: []
     },
     issues: []
   },
@@ -50,9 +80,17 @@ document.getElementById('submitButton')
     description: 'Handler attached to non-existent element (typo)',
     category: 'multi-model',
     files: {
-      html: `<button id="submitButton">Submit</button>
-<button id="cancelButton">Cancel</button>`,
-      javascript: `// Typo: "sumbit" instead of "submit"
+      html: [
+        {
+          name: 'index.html',
+          content: `<button id="submitButton">Submit</button>
+<button id="cancelButton">Cancel</button>`
+        }
+      ],
+      javascript: [
+        {
+          name: 'handlers.js',
+          content: `// Typo: "sumbit" instead of "submit"
 document.getElementById('sumbitButton')
   .addEventListener('click', function() {
     console.log('Submit clicked');
@@ -62,8 +100,10 @@ document.getElementById('sumbitButton')
 document.getElementById('cancelButton')
   .addEventListener('click', function() {
     console.log('Cancel clicked');
-  });`,
-      css: ''
+  });`
+        }
+      ],
+      css: []
     },
     issues: ['orphaned-handler']
   },
@@ -72,13 +112,18 @@ document.getElementById('cancelButton')
     description: 'aria-labelledby points to non-existent element',
     category: 'multi-model',
     files: {
-      html: `<button aria-labelledby="submitLabel">
+      html: [
+        {
+          name: 'index.html',
+          content: `<button aria-labelledby="submitLabel">
   Submit
 </button>
 
-<!-- Missing element with id="submitLabel" -->`,
-      javascript: '',
-      css: ''
+<!-- Missing element with id="submitLabel" -->`
+        }
+      ],
+      javascript: [],
+      css: []
     },
     issues: ['missing-aria-connection']
   },
@@ -87,75 +132,105 @@ document.getElementById('cancelButton')
     description: 'Focusable element hidden by CSS',
     category: 'multi-model',
     files: {
-      html: `<button id="hiddenButton" tabindex="0">
+      html: [
+        {
+          name: 'index.html',
+          content: `<button id="hiddenButton" tabindex="0">
   Click me
-</button>`,
-      javascript: `document.getElementById('hiddenButton')
+</button>`
+        }
+      ],
+      javascript: [
+        {
+          name: 'handlers.js',
+          content: `document.getElementById('hiddenButton')
   .addEventListener('click', function() {
     alert('Clicked!');
-  });`,
-      css: `#hiddenButton {
+  });`
+        }
+      ],
+      css: [
+        {
+          name: 'styles.css',
+          content: `#hiddenButton {
   display: none;  /* Hidden but still focusable! */
-}
-
-/* Alternative conflicts: */
-/* visibility: hidden; */
-/* opacity: 0; */`
+}`
+        }
+      ]
     },
     issues: ['visibility-focus-conflict']
   },
-  'focus-order-chaos': {
-    title: 'Chaotic Focus Order',
-    description: 'Positive tabindex disrupts natural flow',
+  'focus-order-conflict': {
+    title: 'Focus Order Conflict',
+    description: 'Chaotic tabindex disrupts natural flow',
     category: 'multi-model',
     files: {
-      html: `<form>
-  <input type="text" placeholder="Name" />
-  <button tabindex="10">Submit</button>
-  <input type="email" placeholder="Email" tabindex="5" />
-  <input type="tel" placeholder="Phone" tabindex="3" />
-</form>`,
-      javascript: '',
-      css: `form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}`
+      html: [
+        {
+          name: 'index.html',
+          content: `<button tabindex="3">First</button>
+<button tabindex="1">Second</button>
+<button tabindex="2">Third</button>`
+        }
+      ],
+      javascript: [],
+      css: []
     },
     issues: ['focus-order-conflict']
   },
   'mouse-only-click': {
-    title: 'Mouse-Only Click Handler (JS-Only)',
-    description: 'Click handler without keyboard support (WCAG 2.1.1)',
-    category: 'js-only',
+    title: 'Mouse-Only Click Handler (Non-Interactive Element)',
+    description: 'Div with click handler needs keyboard support',
+    category: 'multi-model',
     files: {
-      html: '',
-      javascript: `const button = document.getElementById('submit');
+      html: [
+        {
+          name: 'index.html',
+          content: `<!-- Non-interactive element used as button - BAD! -->
+<div id="customButton">Click Me</div>
 
-button.addEventListener('click', function() {
-  console.log('Form submitted');
-  submitForm();
+<!-- Should use <button> or add keyboard handler + ARIA -->`
+        }
+      ],
+      javascript: [
+        {
+          name: 'handlers.js',
+          content: `const customBtn = document.getElementById('customButton');
+
+// Only mouse support - no keyboard!
+// Flagged as error because <div> is not natively interactive
+customBtn.addEventListener('click', function() {
+  console.log('Clicked');
 });
 
-// Missing keyboard handler!`,
-      css: ''
+// CORRECT approach would be:
+// 1. Use <button> instead of <div>, OR
+// 2. Add keyboard handler + role="button" + tabindex="0"`
+        }
+      ],
+      css: []
     },
     issues: ['mouse-only-click']
   },
   'positive-tabindex': {
     title: 'Positive tabIndex (JS-Only)',
-    description: 'Positive tabIndex disrupts natural tab order (WCAG 2.4.3)',
+    description: 'Positive tabIndex disrupts natural tab order',
     category: 'js-only',
     files: {
-      html: '',
-      javascript: `const modal = document.getElementById('modal');
+      html: [],
+      javascript: [
+        {
+          name: 'app.js',
+          content: `const modal = document.getElementById('modal');
 
 // Bad: positive tabIndex
 modal.tabIndex = 5;
 
 const closeBtn = modal.querySelector('.close');
-closeBtn.tabIndex = 6;`,
-      css: ''
+closeBtn.tabIndex = 6;`
+        }
+      ],
+      css: []
     },
     issues: ['positive-tabindex']
   },
@@ -164,8 +239,11 @@ closeBtn.tabIndex = 6;`,
     description: 'ARIA state never updated (WCAG 4.1.2)',
     category: 'js-only',
     files: {
-      html: '',
-      javascript: `const accordion = document.getElementById('accordion');
+      html: [],
+      javascript: [
+        {
+          name: 'accordion.js',
+          content: `const accordion = document.getElementById('accordion');
 const button = accordion.querySelector('button');
 
 // Set aria-expanded but never update it
@@ -175,8 +253,10 @@ button.addEventListener('click', function() {
   const panel = accordion.querySelector('.panel');
   panel.hidden = !panel.hidden;
   // Forgot to update aria-expanded!
-});`,
-      css: ''
+});`
+        }
+      ],
+      css: []
     },
     issues: ['static-aria-state']
   },
@@ -185,8 +265,11 @@ button.addEventListener('click', function() {
     description: 'Proper button with keyboard and mouse support',
     category: 'js-only',
     files: {
-      html: '',
-      javascript: `const button = document.getElementById('submit');
+      html: [],
+      javascript: [
+        {
+          name: 'button.js',
+          content: `const button = document.getElementById('submit');
 
 // Mouse support
 button.addEventListener('click', handleSubmit);
@@ -202,8 +285,10 @@ button.addEventListener('keydown', function(event) {
 function handleSubmit(event) {
   console.log('Form submitted');
   submitForm();
-}`,
-      css: ''
+}`
+        }
+      ],
+      css: []
     },
     issues: []
   }
@@ -211,8 +296,13 @@ function handleSubmit(event) {
 
 export default function Playground() {
   const [selectedExample, setSelectedExample] = useState('cross-file-handlers');
-  const [files, setFiles] = useState(EXAMPLES['cross-file-handlers'].files);
-  const [activeFileTab, setActiveFileTab] = useState<'html' | 'javascript' | 'css'>('html');
+  const [files, setFiles] = useState<ExampleFiles>(EXAMPLES['cross-file-handlers'].files);
+  const [activeFileTab, setActiveFileTab] = useState<'html' | 'javascript' | 'css'>('javascript');
+  const [activeFileIndex, setActiveFileIndex] = useState<Record<'html' | 'javascript' | 'css', number>>({
+    html: 0,
+    javascript: 0,
+    css: 0
+  });
   const [actionLanguage, setActionLanguage] = useState<any[]>([]);
   const [issues, setIssues] = useState<any[]>([]);
   const [activeResultTab, setActiveResultTab] = useState<'issues' | 'actionlanguage' | 'models'>('issues');
@@ -227,16 +317,22 @@ export default function Playground() {
     return () => clearTimeout(timer);
   }, [files]);
 
-  const analyzeFiles = (currentFiles: typeof files) => {
+  const analyzeFiles = (currentFiles: ExampleFiles) => {
     setIsAnalyzing(true);
 
     try {
-      // CREATE: Parse JavaScript to ActionLanguage
-      const parsed = parseToActionLanguage(currentFiles.javascript);
-      setActionLanguage(parsed);
+      // Parse each JavaScript file separately (preserves file names for better error reporting)
+      const allParsedNodes: any[] = [];
 
-      // READ: Analyze for issues (multi-model aware)
-      const detected = detectIssues(parsed, currentFiles);
+      for (const jsFile of currentFiles.javascript) {
+        const parsed = parseToActionLanguage(jsFile.content, jsFile.name);
+        allParsedNodes.push(...parsed);
+      }
+
+      setActionLanguage(allParsedNodes);
+
+      // READ: Analyze for issues across all files (multi-model aware)
+      const detected = detectIssues(allParsedNodes, currentFiles);
       setIssues(detected);
     } catch (error) {
       console.error('Analysis error:', error);
@@ -245,102 +341,426 @@ export default function Playground() {
     }
   };
 
-  const parseToActionLanguage = (code: string) => {
-    // Simplified parser - in production, use Acorn/Babel
+  /**
+   * Real Babel-based parser for ActionLanguage extraction
+   * This uses proper AST traversal instead of regex patterns
+   */
+  const parseToActionLanguage = (code: string, filename: string = 'playground.js') => {
     const nodes: any[] = [];
+    const variableBindings = new Map<string, { selector: string; binding: string }>();
+    let nodeCounter = 0;
 
-    // Detect addEventListener with key checks in handler body
-    const addEventListenerRegex = /(\w+)\.addEventListener\(['"](\w+)['"],\s*function\([^)]*\)\s*\{([^}]+(?:\{[^}]*\}[^}]*)*)\}/g;
-    let match;
-    while ((match = addEventListenerRegex.exec(code)) !== null) {
-      const element = match[1];
-      const event = match[2];
-      const handlerBody = match[3];
+    const BABEL_CONFIG: ParserOptions = {
+      sourceType: 'module',
+      plugins: [
+        'jsx',
+        'typescript',
+        ['decorators', { decoratorsBeforeExport: true }],
+        'classProperties',
+        'objectRestSpread',
+        'optionalChaining',
+        'nullishCoalescingOperator',
+      ],
+      ranges: true,
+      tokens: false,
+    };
 
-      // For keydown handlers, detect which keys are checked
+    try {
+      const ast = parse(code, {
+        ...BABEL_CONFIG,
+        sourceFilename: filename,
+      });
+
+      // First pass: collect variable bindings to element selectors
+      // Example: const button = document.getElementById('submit');
+      traverse(ast, {
+        VariableDeclarator(path: any) {
+          const node = path.node;
+          const id = node.id;
+          const init = node.init;
+
+          if (t.isIdentifier(id) && init) {
+            const variableName = id.name;
+            const elementRef = extractElementReferenceFromExpression(init);
+            if (elementRef) {
+              variableBindings.set(variableName, elementRef);
+            }
+          }
+        }
+      });
+
+      // Second pass: extract action patterns
+      traverse(ast, {
+        CallExpression(path: any) {
+          const node = path.node;
+
+          // Extract addEventListener calls
+          if (isAddEventListener(node)) {
+            const eventNode = extractEventHandler(node);
+            if (eventNode) nodes.push(eventNode);
+          }
+
+          // Extract setAttribute with ARIA
+          if (isSetAttribute(node)) {
+            const ariaNode = extractAriaUpdate(node);
+            if (ariaNode) nodes.push(ariaNode);
+          }
+
+          // Extract focus/blur calls
+          if (isFocusChange(node)) {
+            const focusNode = extractFocusChange(node);
+            if (focusNode) nodes.push(focusNode);
+          }
+        },
+
+        JSXAttribute(path: any) {
+          const node = path.node;
+          if (isJSXEventHandler(node)) {
+            const eventNode = extractJSXEventHandler(path, node);
+            if (eventNode) nodes.push(eventNode);
+          }
+        }
+      });
+
+    } catch (error: any) {
+      console.error(`Parse error in ${filename}:`, error);
+      console.error('Error message:', error.message);
+      console.error('Error location:', error.loc);
+      console.error('Code that failed to parse:', code);
+      // Return empty nodes on parse error
+      return [];
+    }
+
+    console.log(`Parsed ${nodes.length} nodes from ${filename}`);
+    return nodes;
+
+    // Helper functions for AST analysis
+
+    function isAddEventListener(node: any): boolean {
+      const callee = node.callee;
+      return (
+        t.isMemberExpression(callee) &&
+        t.isIdentifier(callee.property) &&
+        callee.property.name === 'addEventListener'
+      );
+    }
+
+    function isJSXEventHandler(node: any): boolean {
+      const name = node.name;
+      if (t.isJSXIdentifier(name)) {
+        return name.name.startsWith('on') && name.name.length > 2;
+      }
+      return false;
+    }
+
+    function isSetAttribute(node: any): boolean {
+      const callee = node.callee;
+      return (
+        t.isMemberExpression(callee) &&
+        t.isIdentifier(callee.property) &&
+        callee.property.name === 'setAttribute'
+      );
+    }
+
+    function isFocusChange(node: any): boolean {
+      const callee = node.callee;
+      if (t.isMemberExpression(callee) && t.isIdentifier(callee.property)) {
+        const methodName = callee.property.name;
+        return methodName === 'focus' || methodName === 'blur';
+      }
+      return false;
+    }
+
+    function extractEventHandler(node: any): any {
+      const args = node.arguments;
+      if (args.length < 2) return null;
+
+      // Extract event type
+      const eventArg = args[0];
+      let eventType: string | undefined;
+      if (t.isStringLiteral(eventArg)) {
+        eventType = eventArg.value;
+      }
+      if (!eventType) return null;
+
+      // Extract element reference
+      const callee = node.callee;
+      const elementRef = extractElementReference(callee.object);
+      if (!elementRef) {
+        console.warn('Failed to extract element reference from addEventListener:', callee.object);
+        return null;
+      }
+
+      // Extract keys checked in handler for keyboard events
+      // TODO: Re-enable key detection after fixing traverse nesting issue
       const keysChecked: string[] = [];
-      if (event === 'keydown' || event === 'keypress') {
-        const keyCheckRegex = /event\.key\s*===\s*['"](\w+)['"]/g;
-        let keyMatch;
-        while ((keyMatch = keyCheckRegex.exec(handlerBody)) !== null) {
-          keysChecked.push(keyMatch[1]);
+      // if (eventType === 'keydown' || eventType === 'keypress' || eventType === 'keyup') {
+      //   const handler = args[1];
+      //   if (t.isFunctionExpression(handler) || t.isArrowFunctionExpression(handler)) {
+      //     traverse(handler, {
+      //       BinaryExpression(keyPath: any) {
+      //         const keyNode = keyPath.node;
+      //         // Detect: e.key === 'Enter' or event.key === 'Space'
+      //         if (
+      //           (keyNode.operator === '===' || keyNode.operator === '==') &&
+      //           t.isMemberExpression(keyNode.left) &&
+      //           t.isIdentifier(keyNode.left.property) &&
+      //           keyNode.left.property.name === 'key' &&
+      //           t.isStringLiteral(keyNode.right)
+      //         ) {
+      //           keysChecked.push(keyNode.right.value);
+      //         }
+      //       }
+      //     });
+      //   }
+      // }
+
+      return {
+        id: `action_${++nodeCounter}`,
+        actionType: 'eventHandler',
+        event: eventType,
+        element: elementRef,
+        keysChecked: keysChecked.length > 0 ? keysChecked : undefined,
+        location: {
+          file: filename,
+          line: node.loc?.start.line || 0,
+          column: node.loc?.start.column || 0
+        },
+        metadata: {
+          framework: 'vanilla',
+          synthetic: false
+        }
+      };
+    }
+
+    function extractJSXEventHandler(path: any, node: any): any {
+      const name = node.name;
+      if (!t.isJSXIdentifier(name)) return null;
+
+      // Convert React event name to standard: onClick -> click
+      const eventType = name.name.slice(2).toLowerCase();
+
+      // Find parent JSX element
+      let jsxElement: any = null;
+      path.findParent((p: any) => {
+        if (p.isJSXElement()) {
+          jsxElement = p.node;
+          return true;
+        }
+        return false;
+      });
+
+      if (!jsxElement) return null;
+
+      const tagName = getJSXTagName(jsxElement);
+
+      return {
+        id: `action_${++nodeCounter}`,
+        actionType: 'eventHandler',
+        event: eventType,
+        element: {
+          selector: tagName,
+          binding: tagName
+        },
+        location: {
+          file: filename,
+          line: node.loc?.start.line || 0,
+          column: node.loc?.start.column || 0
+        },
+        metadata: {
+          framework: 'react',
+          synthetic: true
+        }
+      };
+    }
+
+    function extractAriaUpdate(node: any): any {
+      const args = node.arguments;
+      if (args.length < 2) return null;
+
+      const attrArg = args[0];
+      if (!t.isStringLiteral(attrArg)) return null;
+      if (!attrArg.value.startsWith('aria-')) return null;
+
+      const callee = node.callee;
+      const elementRef = extractElementReference(callee.object);
+      if (!elementRef) return null;
+
+      return {
+        id: `action_${++nodeCounter}`,
+        actionType: 'ariaStateChange',
+        element: elementRef,
+        attribute: attrArg.value,
+        location: {
+          file: filename,
+          line: node.loc?.start.line || 0,
+          column: node.loc?.start.column || 0
+        }
+      };
+    }
+
+    function extractFocusChange(node: any): any {
+      const callee = node.callee;
+      const methodName = callee.property.name;
+      const elementRef = extractElementReference(callee.object);
+      if (!elementRef) return null;
+
+      return {
+        id: `action_${++nodeCounter}`,
+        actionType: 'focusChange',
+        element: elementRef,
+        timing: 'immediate',
+        location: {
+          file: filename,
+          line: node.loc?.start.line || 0,
+          column: node.loc?.start.column || 0
+        },
+        metadata: { method: methodName }
+      };
+    }
+
+    function extractElementReference(node: any): { selector: string; binding: string } | null {
+      // Handle variable reference: button.addEventListener(...)
+      if (t.isIdentifier(node)) {
+        const binding = variableBindings.get(node.name);
+        if (binding) {
+          return binding;
+        }
+        return {
+          selector: node.name,
+          binding: node.name
+        };
+      }
+
+      return extractElementReferenceFromExpression(node);
+    }
+
+    function extractElementReferenceFromExpression(node: any): { selector: string; binding: string } | null {
+      // Handle ref.current: buttonRef.current.focus()
+      if (
+        t.isMemberExpression(node) &&
+        t.isIdentifier(node.property) &&
+        node.property.name === 'current' &&
+        t.isIdentifier(node.object)
+      ) {
+        return {
+          selector: `[ref="${node.object.name}"]`,
+          binding: node.object.name
+        };
+      }
+
+      // Handle document.getElementById('id')
+      if (t.isCallExpression(node)) {
+        const callee = node.callee;
+        if (
+          t.isMemberExpression(callee) &&
+          t.isIdentifier(callee.property) &&
+          callee.property.name === 'getElementById'
+        ) {
+          const arg = node.arguments[0];
+          if (t.isStringLiteral(arg)) {
+            return {
+              selector: `#${arg.value}`,
+              binding: arg.value
+            };
+          }
+        }
+
+        // Handle document.querySelector('.class')
+        if (
+          t.isMemberExpression(callee) &&
+          t.isIdentifier(callee.property) &&
+          callee.property.name === 'querySelector'
+        ) {
+          const arg = node.arguments[0];
+          if (t.isStringLiteral(arg)) {
+            return {
+              selector: arg.value,
+              binding: arg.value
+            };
+          }
         }
       }
 
-      nodes.push({
-        id: `node-${nodes.length + 1}`,
-        actionType: 'eventHandler',
-        event: event,
-        element: { binding: element },
-        keysChecked: keysChecked.length > 0 ? keysChecked : undefined,
-        location: { line: code.substring(0, match.index).split('\n').length, column: 0 }
-      });
+      return null;
     }
 
-    // Detect tabIndex
-    const tabIndexRegex = /(\w+)\.tabIndex\s*=\s*(\d+)/g;
-    while ((match = tabIndexRegex.exec(code)) !== null) {
-      nodes.push({
-        id: `node-${nodes.length + 1}`,
-        actionType: 'tabIndexChange',
-        element: { binding: match[1] },
-        newValue: parseInt(match[2]),
-        location: { line: code.substring(0, match.index).split('\n').length, column: 0 }
-      });
+    function getJSXTagName(element: any): string {
+      const opening = element.openingElement;
+      const name = opening.name;
+
+      if (t.isJSXIdentifier(name)) {
+        return name.name;
+      }
+
+      if (t.isJSXMemberExpression(name)) {
+        return getJSXMemberExpressionName(name);
+      }
+
+      return 'unknown';
     }
 
-    // Detect setAttribute('aria-*')
-    const ariaRegex = /(\w+)\.setAttribute\(['"]aria-(\w+)['"]/g;
-    while ((match = ariaRegex.exec(code)) !== null) {
-      nodes.push({
-        id: `node-${nodes.length + 1}`,
-        actionType: 'ariaStateChange',
-        element: { binding: match[1] },
-        attribute: `aria-${match[2]}`,
-        location: { line: code.substring(0, match.index).split('\n').length, column: 0 }
-      });
-    }
+    function getJSXMemberExpressionName(expr: any): string {
+      const parts: string[] = [];
+      let current = expr;
 
-    return nodes;
+      while (t.isJSXMemberExpression(current)) {
+        if (t.isJSXIdentifier(current.property)) {
+          parts.unshift(current.property.name);
+        }
+        current = current.object;
+      }
+
+      if (t.isJSXIdentifier(current)) {
+        parts.unshift(current.name);
+      }
+
+      return parts.join('.');
+    }
   };
 
-  const detectIssues = (nodes: any[], currentFiles: typeof files) => {
+  const detectIssues = (nodes: any[], currentFiles: ExampleFiles) => {
     const detected: any[] = [];
 
     // Extract element IDs from HTML
     const htmlElementIds = new Set<string>();
-    if (currentFiles.html) {
-      const idMatches = currentFiles.html.matchAll(/id=["']([^"']+)["']/g);
+    const allHtml = currentFiles.html.map(f => f.content).join('\n');
+    if (allHtml) {
+      const idMatches = allHtml.matchAll(/id=["']([^"']+)["']/g);
       for (const match of idMatches) {
         htmlElementIds.add(match[1]);
       }
     }
 
     // Orphaned handler detection (Multi-Model)
-    if (currentFiles.html && currentFiles.javascript) {
-      const getElementMatches = currentFiles.javascript.matchAll(/getElementById\(['"]([^'"]+)['"]\)/g);
-      for (const match of getElementMatches) {
-        const targetId = match[1];
-        if (!htmlElementIds.has(targetId)) {
-          // Check for typos
-          const suggestions = Array.from(htmlElementIds).filter(id =>
-            levenshteinDistance(id, targetId) <= 2
-          );
+    // Check if any handlers reference non-existent elements
+    for (const node of nodes) {
+      if (node.actionType === 'eventHandler' && node.element) {
+        const selector = node.element.selector;
+        // Check if it's an ID selector
+        if (selector.startsWith('#')) {
+          const targetId = selector.slice(1);
+          if (!htmlElementIds.has(targetId)) {
+            // Check for typos
+            const suggestions = Array.from(htmlElementIds).filter(id =>
+              levenshteinDistance(id, targetId) <= 2
+            );
 
-          detected.push({
-            type: 'orphaned-handler',
-            severity: 'error',
-            wcag: ['4.1.2'],
-            message: `Handler attached to non-existent element '${targetId}'${suggestions.length > 0 ? `. Did you mean: ${suggestions.join(', ')}?` : ''}`,
-            location: 'JavaScript'
-          });
+            detected.push({
+              type: 'orphaned-handler',
+              severity: 'error',
+              wcag: ['4.1.2'],
+              message: `Handler attached to non-existent element '${targetId}'${suggestions.length > 0 ? `. Did you mean: ${suggestions.join(', ')}?` : ''}`,
+              location: 'JavaScript'
+            });
+          }
         }
       }
     }
 
     // Missing ARIA connection detection (Multi-Model)
-    if (currentFiles.html) {
-      const ariaMatches = currentFiles.html.matchAll(/aria-(labelledby|describedby|controls)=["']([^"']+)["']/g);
+    if (allHtml) {
+      const ariaMatches = allHtml.matchAll(/aria-(labelledby|describedby|controls)=["']([^"']+)["']/g);
       for (const match of ariaMatches) {
         const attr = match[1];
         const targetIds = match[2].split(/\s+/);
@@ -359,9 +779,10 @@ export default function Playground() {
     }
 
     // CSS visibility conflict detection (Multi-Model)
-    if (currentFiles.css && currentFiles.html) {
+    const allCss = currentFiles.css.map(f => f.content).join('\n');
+    if (allCss && allHtml) {
       const hiddenSelectors: string[] = [];
-      const cssHiddenMatches = currentFiles.css.matchAll(/(#[\w-]+|\.[\w-]+|\w+)\s*\{[^}]*(?:display:\s*none|visibility:\s*hidden|opacity:\s*0)[^}]*\}/g);
+      const cssHiddenMatches = allCss.matchAll(/(#[\w-]+|\.[\w-]+|\w+)\s*\{[^}]*(?:display:\s*none|visibility:\s*hidden|opacity:\s*0)[^}]*\}/g);
       for (const match of cssHiddenMatches) {
         hiddenSelectors.push(match[1]);
       }
@@ -369,7 +790,7 @@ export default function Playground() {
       for (const selector of hiddenSelectors) {
         if (selector.startsWith('#')) {
           const id = selector.slice(1);
-          const focusableMatch = currentFiles.html.match(new RegExp(`id=["']${id}["'][^>]*(?:tabindex=|<button|<a|<input)`));
+          const focusableMatch = allHtml.match(new RegExp(`id=["']${id}["'][^>]*(?:tabindex=|<button|<a|<input)`));
           if (focusableMatch) {
             detected.push({
               type: 'visibility-focus-conflict',
@@ -384,8 +805,8 @@ export default function Playground() {
     }
 
     // Focus order conflict detection (Multi-Model)
-    if (currentFiles.html) {
-      const tabindexMatches = Array.from(currentFiles.html.matchAll(/tabindex=["'](\d+)["']/g));
+    if (allHtml) {
+      const tabindexMatches = Array.from(allHtml.matchAll(/tabindex=["'](\d+)["']/g));
       const positiveTabindices = tabindexMatches
         .map(m => parseInt(m[1]))
         .filter(val => val > 0);
@@ -408,20 +829,49 @@ export default function Playground() {
     }
 
     // Mouse-only click detection (works with or without HTML)
+    // This uses proper selector matching to handle cross-file analysis
+    // Native interactive elements (<button>, <a>, etc.) don't need explicit keyboard handlers
     const clickHandlers = nodes.filter(n => n.actionType === 'eventHandler' && n.event === 'click');
+
+    // Extract element tags from HTML for tag-aware detection
+    const elementTags = new Map<string, string>();
+    if (allHtml) {
+      // Match elements with id attributes and capture their tag names
+      const tagMatches = allHtml.matchAll(/<(\w+)[^>]*id=["']([^"']+)["']/g);
+      for (const match of tagMatches) {
+        const tagName = match[1].toLowerCase();
+        const id = match[2];
+        elementTags.set(`#${id}`, tagName);
+      }
+    }
+
+    // Elements that are natively keyboard accessible
+    const nativelyInteractive = new Set(['button', 'a', 'input', 'select', 'textarea', 'summary']);
+
     for (const click of clickHandlers) {
-      const hasKeyboard = nodes.some(n =>
+      // Match handlers by selector (e.g., #submitButton)
+      // This correctly handles getElementById calls across multiple files
+      const keyboardHandlers = nodes.filter(n =>
         n.actionType === 'eventHandler' &&
-        n.element.binding === click.element.binding &&
-        (n.event === 'keydown' || n.event === 'keypress')
+        n.element.selector === click.element.selector &&
+        (n.event === 'keydown' || n.event === 'keypress' || n.event === 'keyup')
       );
 
-      if (!hasKeyboard) {
+      const hasKeyboard = keyboardHandlers.length > 0;
+
+      // Check if this is a natively interactive element
+      const elementTag = elementTags.get(click.element.selector);
+      const isNativelyInteractive = elementTag && nativelyInteractive.has(elementTag);
+
+      // Only flag non-interactive elements that lack keyboard handlers
+      if (!hasKeyboard && !isNativelyInteractive) {
         detected.push({
           type: 'mouse-only-click',
           severity: 'warning',
           wcag: ['2.1.1'],
-          message: `Click handler on '${click.element.binding}' without keyboard equivalent`,
+          message: elementTag
+            ? `Click handler on <${elementTag}> element '${click.element.selector}' without keyboard equivalent. Use <button> or add keyboard handler + role="button" + tabindex="0"`
+            : `Click handler on '${click.element.selector}' without keyboard equivalent`,
           location: 'JavaScript'
         });
       }
@@ -470,16 +920,26 @@ export default function Playground() {
     setFiles(example.files);
     setSelectedExample(exampleKey);
 
-    // Set active tab based on which file has content
-    if (example.files.html) setActiveFileTab('html');
-    else if (example.files.javascript) setActiveFileTab('javascript');
-    else if (example.files.css) setActiveFileTab('css');
+    // Set active tab based on which file type has content
+    if (example.files.html.length > 0) setActiveFileTab('html');
+    else if (example.files.javascript.length > 0) setActiveFileTab('javascript');
+    else if (example.files.css.length > 0) setActiveFileTab('css');
+
+    // Reset file indices
+    setActiveFileIndex({
+      html: 0,
+      javascript: 0,
+      css: 0
+    });
   };
 
   const updateFile = (fileType: 'html' | 'javascript' | 'css', content: string) => {
+    const index = activeFileIndex[fileType];
     setFiles(prev => ({
       ...prev,
-      [fileType]: content
+      [fileType]: prev[fileType].map((file, i) =>
+        i === index ? { ...file, content } : file
+      )
     }));
   };
 
@@ -520,8 +980,10 @@ export default function Playground() {
     }
   };
 
-  const hasMultipleFiles = files.html || files.css;
+  const hasMultipleFiles = files.html.length > 0 || files.css.length > 0;
   const currentExample = EXAMPLES[selectedExample as keyof typeof EXAMPLES];
+  const currentFileArray = files[activeFileTab];
+  const currentFile = currentFileArray[activeFileIndex[activeFileTab]];
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-white to-gray-50">
@@ -588,7 +1050,7 @@ export default function Playground() {
           {/* Left: Multi-File Editor */}
           <div className="space-y-4">
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              {/* File Tabs */}
+              {/* File Type Tabs */}
               <div className="border-b border-gray-200 bg-gray-50">
                 <div className="flex">
                   <button
@@ -598,9 +1060,10 @@ export default function Playground() {
                         ? 'bg-white text-paradise-blue border-b-2 border-paradise-blue'
                         : 'text-gray-600 hover:text-paradise-blue hover:bg-gray-100'
                     }`}
+                    disabled={files.html.length === 0}
                   >
-                    📄 index.html
-                    {files.html && <span className="ml-2 text-xs">({files.html.split('\n').length} lines)</span>}
+                    📄 HTML
+                    {files.html.length > 0 && <span className="ml-2 text-xs">({files.html.length} file{files.html.length > 1 ? 's' : ''})</span>}
                   </button>
                   <button
                     onClick={() => setActiveFileTab('javascript')}
@@ -609,9 +1072,10 @@ export default function Playground() {
                         ? 'bg-white text-paradise-blue border-b-2 border-paradise-blue'
                         : 'text-gray-600 hover:text-paradise-blue hover:bg-gray-100'
                     }`}
+                    disabled={files.javascript.length === 0}
                   >
-                    ⚡ script.js
-                    {files.javascript && <span className="ml-2 text-xs">({files.javascript.split('\n').length} lines)</span>}
+                    ⚡ JavaScript
+                    {files.javascript.length > 0 && <span className="ml-2 text-xs">({files.javascript.length} file{files.javascript.length > 1 ? 's' : ''})</span>}
                   </button>
                   <button
                     onClick={() => setActiveFileTab('css')}
@@ -620,9 +1084,10 @@ export default function Playground() {
                         ? 'bg-white text-paradise-blue border-b-2 border-paradise-blue'
                         : 'text-gray-600 hover:text-paradise-blue hover:bg-gray-100'
                     }`}
+                    disabled={files.css.length === 0}
                   >
-                    🎨 styles.css
-                    {files.css && <span className="ml-2 text-xs">({files.css.split('\n').length} lines)</span>}
+                    🎨 CSS
+                    {files.css.length > 0 && <span className="ml-2 text-xs">({files.css.length} file{files.css.length > 1 ? 's' : ''})</span>}
                   </button>
                   {isAnalyzing && (
                     <div className="ml-auto px-4 py-3 text-sm text-paradise-blue animate-pulse">
@@ -632,25 +1097,51 @@ export default function Playground() {
                 </div>
               </div>
 
+              {/* Individual File Tabs (if multiple files of this type) */}
+              {currentFileArray.length > 1 && (
+                <div className="border-b border-gray-200 bg-gray-100">
+                  <div className="flex overflow-x-auto">
+                    {currentFileArray.map((file, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setActiveFileIndex(prev => ({ ...prev, [activeFileTab]: index }))}
+                        className={`px-4 py-2 text-sm font-mono whitespace-nowrap transition-colors ${
+                          activeFileIndex[activeFileTab] === index
+                            ? 'bg-white text-paradise-blue border-b-2 border-paradise-blue'
+                            : 'text-gray-600 hover:text-paradise-blue hover:bg-gray-50'
+                        }`}
+                      >
+                        {file.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Monaco Editor */}
-              <div className="bg-white">
-                <MonacoEditor
-                  height="500px"
-                  language={getLanguageForTab(activeFileTab)}
-                  value={files[activeFileTab]}
-                  onChange={(value) => updateFile(activeFileTab, value || '')}
-                  theme="vs-light"
-                  options={{
-                    minimap: { enabled: false },
-                    fontSize: 14,
-                    lineNumbers: 'on',
-                    scrollBeyondLastLine: false,
-                    automaticLayout: true,
-                    wordWrap: 'on',
-                    readOnly: false
-                  }}
-                />
-              </div>
+              {currentFile && (
+                <div className="bg-white">
+                  <div className="px-4 py-2 bg-gray-50 border-b border-gray-200 text-xs text-gray-600 font-mono">
+                    {currentFile.name}
+                  </div>
+                  <MonacoEditor
+                    height="500px"
+                    language={getLanguageForTab(activeFileTab)}
+                    value={currentFile.content}
+                    onChange={(value) => updateFile(activeFileTab, value || '')}
+                    theme="vs-light"
+                    options={{
+                      minimap: { enabled: false },
+                      fontSize: 14,
+                      lineNumbers: 'on',
+                      scrollBeyondLastLine: false,
+                      automaticLayout: true,
+                      wordWrap: 'on',
+                      readOnly: false
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
             {/* Model Visualization */}
@@ -661,46 +1152,52 @@ export default function Playground() {
                   Multi-Model Integration
                 </h3>
                 <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-orange-500 text-white w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm">
-                      DOM
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-semibold text-sm">DOMModel (HTML)</div>
-                      <div className="text-xs text-gray-600">
-                        Elements: {(files.html.match(/<[a-z]+/gi) || []).length}
+                  {files.html.length > 0 && (
+                    <div className="flex items-center gap-3">
+                      <div className="bg-orange-500 text-white w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm">
+                        DOM
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-semibold text-sm">DOMModel (HTML)</div>
+                        <div className="text-xs text-gray-600">
+                          {files.html.length} file{files.html.length > 1 ? 's' : ''} • Elements: {files.html.reduce((acc, f) => acc + (f.content.match(/<[a-z]+/gi) || []).length, 0)}
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
 
-                  <div className="flex items-center gap-3">
-                    <div className="bg-paradise-blue text-white w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm">
-                      JS
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-semibold text-sm">ActionLanguage (JavaScript)</div>
-                      <div className="text-xs text-gray-600">
-                        Actions: {actionLanguage.length} nodes
+                  {files.javascript.length > 0 && (
+                    <div className="flex items-center gap-3">
+                      <div className="bg-paradise-blue text-white w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm">
+                        JS
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-semibold text-sm">ActionLanguage (JavaScript)</div>
+                        <div className="text-xs text-gray-600">
+                          {files.javascript.length} file{files.javascript.length > 1 ? 's' : ''} • Actions: {actionLanguage.length} nodes
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
 
-                  <div className="flex items-center gap-3">
-                    <div className="bg-purple-500 text-white w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm">
-                      CSS
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-semibold text-sm">CSSModel (Styles)</div>
-                      <div className="text-xs text-gray-600">
-                        Rules: {(files.css.match(/\{/g) || []).length}
+                  {files.css.length > 0 && (
+                    <div className="flex items-center gap-3">
+                      <div className="bg-purple-500 text-white w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm">
+                        CSS
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-semibold text-sm">CSSModel (Styles)</div>
+                        <div className="text-xs text-gray-600">
+                          {files.css.length} file{files.css.length > 1 ? 's' : ''} • Rules: {files.css.reduce((acc, f) => acc + (f.content.match(/\{/g) || []).length, 0)}
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
 
                   <div className="mt-4 pt-4 border-t border-green-300">
                     <div className="text-sm font-semibold text-green-800 flex items-center gap-2">
                       <span>→</span>
-                      <span>Merged DocumentModel enables zero false positives</span>
+                      <span>Merged DocumentModel enables cross-file analysis</span>
                     </div>
                   </div>
                 </div>
@@ -850,15 +1347,20 @@ export default function Playground() {
                   <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-6 border border-blue-200">
                     <div className="space-y-4">
                       {/* HTML Elements */}
-                      {files.html && (
+                      {files.html.length > 0 && (
                         <div className="bg-white rounded-lg p-4 shadow-sm">
-                          <div className="font-bold text-sm mb-2 text-orange-600">HTML Elements</div>
+                          <div className="font-bold text-sm mb-2 text-orange-600">HTML Elements ({files.html.length} file{files.html.length > 1 ? 's' : ''})</div>
                           <div className="text-xs space-y-1">
-                            {Array.from(files.html.matchAll(/<([a-z]+)[^>]*id=["']([^"']+)["']/gi)).map((match, i) => (
-                              <div key={i} className="flex items-center gap-2">
-                                <span className="bg-orange-100 px-2 py-1 rounded font-mono">
-                                  {match[1]}#{match[2]}
-                                </span>
+                            {files.html.map((file, i) => (
+                              <div key={i}>
+                                <div className="font-mono text-xs text-gray-500 mb-1">{file.name}:</div>
+                                {Array.from(file.content.matchAll(/<([a-z]+)[^>]*id=["']([^"']+)["']/gi)).map((match, j) => (
+                                  <div key={j} className="flex items-center gap-2 ml-4">
+                                    <span className="bg-orange-100 px-2 py-1 rounded font-mono">
+                                      {match[1]}#{match[2]}
+                                    </span>
+                                  </div>
+                                ))}
                               </div>
                             ))}
                           </div>
@@ -868,7 +1370,7 @@ export default function Playground() {
                       {/* JavaScript Actions */}
                       {actionLanguage.length > 0 && (
                         <div className="bg-white rounded-lg p-4 shadow-sm">
-                          <div className="font-bold text-sm mb-2 text-blue-600">JavaScript Actions</div>
+                          <div className="font-bold text-sm mb-2 text-blue-600">JavaScript Actions ({files.javascript.length} file{files.javascript.length > 1 ? 's' : ''})</div>
                           <div className="text-xs space-y-1">
                             {actionLanguage.map((node, i) => (
                               <div key={i} className="flex items-center gap-2">
@@ -883,15 +1385,20 @@ export default function Playground() {
                       )}
 
                       {/* CSS Rules */}
-                      {files.css && (
+                      {files.css.length > 0 && (
                         <div className="bg-white rounded-lg p-4 shadow-sm">
-                          <div className="font-bold text-sm mb-2 text-purple-600">CSS Rules</div>
+                          <div className="font-bold text-sm mb-2 text-purple-600">CSS Rules ({files.css.length} file{files.css.length > 1 ? 's' : ''})</div>
                           <div className="text-xs space-y-1">
-                            {Array.from(files.css.matchAll(/(#[\w-]+|\.[\w-]+|\w+)\s*\{/g)).map((match, i) => (
-                              <div key={i} className="flex items-center gap-2">
-                                <span className="bg-purple-100 px-2 py-1 rounded font-mono">
-                                  {match[1]}
-                                </span>
+                            {files.css.map((file, i) => (
+                              <div key={i}>
+                                <div className="font-mono text-xs text-gray-500 mb-1">{file.name}:</div>
+                                {Array.from(file.content.matchAll(/(#[\w-]+|\.[\w-]+|\w+)\s*\{/g)).map((match, j) => (
+                                  <div key={j} className="flex items-center gap-2 ml-4">
+                                    <span className="bg-purple-100 px-2 py-1 rounded font-mono">
+                                      {match[1]}
+                                    </span>
+                                  </div>
+                                ))}
                               </div>
                             ))}
                           </div>
