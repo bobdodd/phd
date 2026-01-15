@@ -53,7 +53,7 @@ export class FocusOrderConflictAnalyzer extends BaseAnalyzer {
     if (!documentModel.dom) return issues;
 
     // Get all focusable elements
-    const focusableElements = documentModel.dom.getFocusableElements();
+    const focusableElements = documentModel.dom.flatMap((fragment) => fragment.getFocusableElements());
 
     // Check for positive tabindex values (anti-pattern)
     for (const element of focusableElements) {

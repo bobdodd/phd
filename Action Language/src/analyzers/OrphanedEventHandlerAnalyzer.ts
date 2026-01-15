@@ -88,32 +88,30 @@ export class OrphanedEventHandlerAnalyzer extends BaseAnalyzer {
    */
   private elementExistsInDOM(
     selector: string,
-    documentModel: { dom?: { getElementById: (id: string) => any; querySelector: (s: string) => any; querySelectorAll: (s: string) => any[] } }
+    documentModel: { getElementById: (id: string) => any; querySelector: (s: string) => any; querySelectorAll: (s: string) => any[] }
   ): boolean {
-    if (!documentModel.dom) return false;
-
     // Try different selector types
     if (selector.startsWith('#')) {
       // ID selector
       const id = selector.slice(1);
-      const element = documentModel.dom.getElementById(id);
+      const element = documentModel.getElementById(id);
       return element !== null;
     }
 
     if (selector.startsWith('.')) {
       // Class selector
-      const elements = documentModel.dom.querySelectorAll(selector);
+      const elements = documentModel.querySelectorAll(selector);
       return elements.length > 0;
     }
 
     if (selector.startsWith('[')) {
       // Attribute selector
-      const elements = documentModel.dom.querySelectorAll(selector);
+      const elements = documentModel.querySelectorAll(selector);
       return elements.length > 0;
     }
 
     // Tag selector
-    const elements = documentModel.dom.querySelectorAll(selector);
+    const elements = documentModel.querySelectorAll(selector);
     return elements.length > 0;
   }
 }

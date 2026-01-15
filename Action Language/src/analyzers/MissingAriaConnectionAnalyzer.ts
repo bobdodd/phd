@@ -56,7 +56,7 @@ export class MissingAriaConnectionAnalyzer extends BaseAnalyzer {
     if (!documentModel.dom) return issues;
 
     // Check all elements for ARIA reference attributes
-    const allElements = documentModel.dom.getAllElements();
+    const allElements = documentModel.getAllElements();
 
     for (const element of allElements) {
       for (const ariaAttr of this.ARIA_REFERENCE_ATTRIBUTES) {
@@ -64,11 +64,11 @@ export class MissingAriaConnectionAnalyzer extends BaseAnalyzer {
 
         if (value) {
           // ARIA reference attributes can contain multiple IDs separated by spaces
-          const referencedIds = value.split(/\s+/).filter((id) => id);
+          const referencedIds = value.split(/\s+/).filter((id: string) => id);
 
           for (const referencedId of referencedIds) {
             // Check if referenced element exists
-            const referencedElement = documentModel.dom.getElementById(referencedId);
+            const referencedElement = documentModel.getElementById(referencedId);
 
             if (!referencedElement) {
               const message = this.createMessage(

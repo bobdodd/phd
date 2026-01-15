@@ -37,7 +37,7 @@ describe('DocumentModel Integration', () => {
       const model = builder.build(sources, 'file');
 
       expect(model.dom).toBeDefined();
-      const submitButton = model.dom!.getElementById('submit');
+      const submitButton = model.getElementById('submit');
       expect(submitButton).toBeDefined();
       expect(submitButton!.tagName).toBe('button');
       expect(submitButton!.attributes.id).toBe('submit');
@@ -74,11 +74,11 @@ describe('DocumentModel Integration', () => {
 
       const model = builder.build(sources, 'file');
 
-      const modal = model.dom!.getElementById('modal');
+      const modal = model.getElementById('modal');
       expect(modal).toBeDefined();
       expect(modal!.children).toHaveLength(3); // header, main, footer
 
-      const closeButton = model.dom!.getElementById('close');
+      const closeButton = model.getElementById('close');
       expect(closeButton).toBeDefined();
       expect(closeButton!.tagName).toBe('button');
     });
@@ -133,7 +133,7 @@ describe('DocumentModel Integration', () => {
 
       const model = builder.build(sources, 'page');
 
-      const submitButton = model.dom!.getElementById('submit');
+      const submitButton = model.getElementById('submit');
       expect(submitButton).toBeDefined();
       expect(submitButton!.jsHandlers).toBeDefined();
       expect(submitButton!.jsHandlers).toHaveLength(2);
@@ -164,7 +164,7 @@ describe('DocumentModel Integration', () => {
 
       const model = builder.build(sources, 'page');
 
-      const submitButton = model.dom!.getElementById('submit');
+      const submitButton = model.getElementById('submit');
       expect(submitButton!.jsHandlers).toHaveLength(2);
 
       // This is the key test: handlers from different files are merged
@@ -197,7 +197,7 @@ describe('DocumentModel Integration', () => {
 
       const model = builder.build(sources, 'page');
 
-      const navItems = model.dom!.querySelectorAll('.nav-item');
+      const navItems = model.querySelectorAll('.nav-item');
       expect(navItems).toHaveLength(1);
       expect(navItems[0].jsHandlers).toHaveLength(1);
       expect(navItems[0].jsHandlers![0].event).toBe('focus');
@@ -221,7 +221,7 @@ describe('DocumentModel Integration', () => {
 
       const model = builder.build(sources, 'page');
 
-      const buttons = model.dom!.querySelectorAll('button');
+      const buttons = model.querySelectorAll('button');
       expect(buttons).toHaveLength(1);
       expect(buttons[0].jsHandlers).toHaveLength(2);
       expect(buttons[0].jsHandlers!.map((h) => h.event)).toEqual([
@@ -261,7 +261,7 @@ describe('DocumentModel Integration', () => {
 
       const model = builder.build(sources, 'page');
 
-      const submitButton = model.dom!.getElementById('submit');
+      const submitButton = model.getElementById('submit');
       const submitContext = model.getElementContext(submitButton!);
 
       expect(submitContext.interactive).toBe(true);
@@ -269,7 +269,7 @@ describe('DocumentModel Integration', () => {
       expect(submitContext.hasKeyboardHandler).toBe(true);
       expect(submitContext.focusable).toBe(true); // button is naturally focusable
 
-      const cancelButton = model.dom!.getElementById('cancel');
+      const cancelButton = model.getElementById('cancel');
       const cancelContext = model.getElementContext(cancelButton!);
 
       expect(cancelContext.hasClickHandler).toBe(true);
@@ -301,16 +301,16 @@ describe('DocumentModel Integration', () => {
 
       const model = builder.build(sources, 'file');
 
-      const nameInput = model.dom!.getElementById('name');
+      const nameInput = model.getElementById('name');
       expect(model.getElementContext(nameInput!).focusable).toBe(true);
 
-      const submitButton = model.dom!.getElementById('submit');
+      const submitButton = model.getElementById('submit');
       expect(model.getElementContext(submitButton!).focusable).toBe(true);
 
-      const customDiv = model.dom!.getElementById('custom');
+      const customDiv = model.getElementById('custom');
       expect(model.getElementContext(customDiv!).focusable).toBe(true);
 
-      const nonFocusableDiv = model.dom!.getElementById('non-focusable');
+      const nonFocusableDiv = model.getElementById('non-focusable');
       expect(model.getElementContext(nonFocusableDiv!).focusable).toBe(false);
     });
   });
@@ -427,22 +427,22 @@ describe('DocumentModel Integration', () => {
       const model = builder.build(sources, 'page');
 
       // Verify form structure
-      const form = model.dom!.getElementById('login-form');
+      const form = model.getElementById('login-form');
       expect(form).toBeDefined();
 
       // Verify inputs are focusable
-      const emailInput = model.dom!.getElementById('email');
-      const passwordInput = model.dom!.getElementById('password');
+      const emailInput = model.getElementById('email');
+      const passwordInput = model.getElementById('password');
       expect(model.getElementContext(emailInput!).focusable).toBe(true);
       expect(model.getElementContext(passwordInput!).focusable).toBe(true);
 
       // Verify submit button has keyboard support
-      const submitButton = model.dom!.getElementById('submit');
+      const submitButton = model.getElementById('submit');
       const submitContext = model.getElementContext(submitButton!);
       expect(submitContext.hasKeyboardHandler).toBe(true);
 
       // Verify cancel button is missing keyboard support
-      const cancelButton = model.dom!.getElementById('cancel');
+      const cancelButton = model.getElementById('cancel');
       const cancelContext = model.getElementContext(cancelButton!);
       expect(cancelContext.hasClickHandler).toBe(true);
       expect(cancelContext.hasKeyboardHandler).toBe(false);

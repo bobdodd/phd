@@ -54,7 +54,7 @@ export class VisibilityFocusConflictAnalyzer extends BaseAnalyzer {
     if (!documentModel.dom) return issues;
 
     // Get all focusable elements
-    const focusableElements = documentModel.dom.getFocusableElements();
+    const focusableElements = documentModel.dom.flatMap((fragment) => fragment.getFocusableElements());
 
     for (const element of focusableElements) {
       const elementContext = documentModel.getElementContext(element);

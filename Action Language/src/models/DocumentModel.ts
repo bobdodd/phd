@@ -445,6 +445,67 @@ export class DocumentModel {
   }
 
   /**
+   * Query element by ID across all fragments.
+   * Convenience method for backward compatibility and easier testing.
+   *
+   * @param id - Element ID to search for
+   * @returns First matching element or null
+   */
+  getElementById(id: string): DOMElement | null {
+    if (!this.dom) return null;
+
+    for (const fragment of this.dom) {
+      const element = fragment.getElementById(id);
+      if (element) return element;
+    }
+
+    return null;
+  }
+
+  /**
+   * Query first matching element by selector across all fragments.
+   * Matches DOM API: returns single element or null.
+   *
+   * @param selector - CSS selector
+   * @returns First matching element or null
+   */
+  querySelector(selector: string): DOMElement | null {
+    if (!this.dom) return null;
+
+    for (const fragment of this.dom) {
+      const element = fragment.querySelector(selector);
+      if (element) return element;
+    }
+
+    return null;
+  }
+
+  /**
+   * Query all matching elements by selector across all fragments.
+   * Matches DOM API: returns array of all matching elements.
+   *
+   * @param selector - CSS selector
+   * @returns Array of matching elements
+   */
+  querySelectorAll(selector: string): DOMElement[] {
+    if (!this.dom) return [];
+
+    return this.dom.flatMap((fragment) => fragment.querySelectorAll(selector));
+  }
+
+  /**
+   * Get all elements across all fragments.
+   * Convenience method for analyzers.
+   *
+   * @returns Array of all elements
+   */
+  getAllElements(): DOMElement[] {
+    if (!this.dom) return [];
+
+    return this.dom.flatMap((fragment) => fragment.getAllElements());
+  }
+
+  /**
    * NEW: Check if a specific fragment is complete.
    * A fragment is considered complete if it has a clear root element
    * and all internal references resolve within the fragment.
