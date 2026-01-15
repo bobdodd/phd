@@ -86,7 +86,6 @@ export default function Navigation() {
                 { href: '/learn-actionlanguage', label: 'ActionLanguage' },
                 { href: '/theory', label: 'Theory' },
                 { href: '/examples', label: 'Examples' },
-                { href: '/playground', label: 'Playground' },
                 { href: '/background', label: 'Background' },
               ]}
             />
@@ -101,6 +100,14 @@ export default function Navigation() {
                 { href: '/api', label: 'API Reference' },
               ]}
             />
+
+            {/* Playground - Featured */}
+            <a
+              href="/playground"
+              className="px-4 py-2 rounded-lg font-semibold text-white bg-gradient-to-r from-paradise-blue to-paradise-purple hover:from-paradise-blue/90 hover:to-paradise-purple/90 transition-all shadow-sm hover:shadow-md"
+            >
+              Playground
+            </a>
 
             {/* Standalone Links */}
             <a
@@ -198,13 +205,6 @@ export default function Navigation() {
                       Examples
                     </a>
                     <a
-                      href="/playground"
-                      className="text-gray-600 hover:text-paradise-blue transition-colors py-1"
-                      onClick={() => setIsMobileOpen(false)}
-                    >
-                      Playground
-                    </a>
-                    <a
                       href="/background"
                       className="text-gray-600 hover:text-paradise-blue transition-colors py-1"
                       onClick={() => setIsMobileOpen(false)}
@@ -268,6 +268,15 @@ export default function Navigation() {
                   </div>
                 )}
               </div>
+
+              {/* Playground - Featured */}
+              <a
+                href="/playground"
+                className="mx-4 my-2 px-4 py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-paradise-blue to-paradise-purple text-center shadow-sm"
+                onClick={() => setIsMobileOpen(false)}
+              >
+                🎮 Try Playground
+              </a>
 
               {/* Standalone Links */}
               <a
