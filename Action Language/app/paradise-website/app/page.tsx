@@ -16,17 +16,17 @@ export default function Home() {
             {/* Hero Headline - Clear & Friendly */}
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight">
               <span className="bg-gradient-to-r from-paradise-blue via-paradise-purple to-paradise-green bg-clip-text text-transparent">
-                Accessibility analysis
+                Catch accessibility issues
               </span>
               <br />
-              <span className="text-gray-900">that works everywhere</span>
+              <span className="text-gray-900">while you code</span>
             </h1>
 
             {/* Subheading - Informational */}
             <p className="text-lg md:text-xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Paradise analyzes JavaScript, TypeScript, React, Vue, and Angular code for accessibility issues.
-              It uses an intermediate representation called <span className="font-semibold text-paradise-green">ActionLanguage</span> to
-              detect patterns that work across all frameworks.
+              Paradise analyzes your source code as you write it—JavaScript, TypeScript, React, Vue, Angular—and finds accessibility
+              issues before you build or deploy. Using <span className="font-semibold text-paradise-green">ActionLanguage</span>, it works
+              across frameworks and catches problems early in development.
             </p>
 
             {/* CTA - Friendly */}
@@ -74,10 +74,10 @@ export default function Home() {
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                How it helps
+                Analyze source code, not final builds
               </h2>
               <p className="text-lg text-gray-600">
-                Paradise spots common accessibility issues and suggests fixes
+                Paradise reads your JSX, TypeScript, and JavaScript files directly—catching issues before you even save the file
               </p>
             </div>
 
@@ -191,7 +191,7 @@ export default function Home() {
                 How Paradise works
               </h2>
               <p className="text-lg text-gray-600">
-                A simple three-step process
+                Source code analysis in three steps—no build required
               </p>
             </div>
 
@@ -202,9 +202,9 @@ export default function Home() {
                   <div className="inline-flex items-center justify-center w-10 h-10 bg-paradise-green text-white rounded-lg font-bold text-lg mb-6">
                     1
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">Parse</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">Parse source files</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Your code (JavaScript, TypeScript, React, etc.) gets converted to <span className="font-medium text-paradise-green">ActionLanguage</span>—a common format that describes what your UI does.
+                    Paradise reads your source files directly—.tsx, .jsx, .ts, .js—and converts them to <span className="font-medium text-paradise-green">ActionLanguage</span>, a common format that works across all frameworks.
                   </p>
                 </div>
                 {/* Arrow */}
@@ -221,9 +221,9 @@ export default function Home() {
                   <div className="inline-flex items-center justify-center w-10 h-10 bg-paradise-blue text-white rounded-lg font-bold text-lg mb-6">
                     2
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">Analyze</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">Analyze patterns</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Built-in analyzers check for common accessibility issues using pattern matching. No AI or guesswork—just reliable detection.
+                    Built-in analyzers check for accessibility issues by examining code structure. Catches problems early in development—even in incomplete components.
                   </p>
                 </div>
                 {/* Arrow */}
@@ -259,6 +259,9 @@ export default function Home() {
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                 What makes it different
               </h2>
+              <p className="text-lg text-gray-600">
+                Source-level analysis across languages and frameworks
+              </p>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -282,9 +285,9 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-3">Framework agnostic</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-3">Multi-language support</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Write analyzers once, use them everywhere. Works with React, Vue, Angular, and vanilla JavaScript.
+                  Analyzes JavaScript, TypeScript, React, Vue, and Angular source files. Write analyzers once, use everywhere.
                 </p>
               </div>
 
@@ -308,9 +311,9 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-3">Real-time feedback</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-3">Real-time in editor</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  See issues as you type in your editor. No separate build step or waiting.
+                  See issues as you type—directly in VS Code. No build step, no deploy, no waiting.
                 </p>
               </div>
 
@@ -406,10 +409,10 @@ export default function Home() {
       <section className="py-20 bg-gradient-to-br from-paradise-blue/10 via-paradise-purple/10 to-paradise-green/10">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Want to try it out?
+            Ready to catch issues earlier?
           </h2>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Explore the interactive playground or install the VS Code extension
+            Start analyzing your source code with the playground or VS Code extension
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
