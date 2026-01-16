@@ -9,9 +9,8 @@ export class ParadiseHelpProvider {
   private docsPath: string;
 
   constructor(extensionPath: string) {
-    // Help docs are in the project root, not in the extension
-    // We need to find the project root by going up from the extension
-    this.docsPath = path.join(extensionPath, '..', '..', 'docs', 'issues');
+    // Help docs are packaged with the extension
+    this.docsPath = path.join(extensionPath, 'docs', 'issues');
   }
 
   /**

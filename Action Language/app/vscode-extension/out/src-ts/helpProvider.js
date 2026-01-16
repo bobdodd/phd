@@ -42,9 +42,8 @@ const fs = __importStar(require("fs"));
  */
 class ParadiseHelpProvider {
     constructor(extensionPath) {
-        // Help docs are in the project root, not in the extension
-        // We need to find the project root by going up from the extension
-        this.docsPath = path.join(extensionPath, '..', '..', 'docs', 'issues');
+        // Help docs are packaged with the extension
+        this.docsPath = path.join(extensionPath, 'docs', 'issues');
     }
     /**
      * Show help for a specific issue type
