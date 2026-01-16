@@ -210,7 +210,7 @@ class ParadiseHelpProvider {
             text-decoration: underline;
         }
         .fix-section {
-            background: var(--vscode-editor-selectionBackground);
+            background: var(--vscode-editor-inactiveSelectionBackground);
             border: 2px solid var(--vscode-textLink-foreground);
             border-radius: 8px;
             padding: 20px;
@@ -223,9 +223,11 @@ class ParadiseHelpProvider {
         .fix-description {
             margin-bottom: 15px;
             font-size: 1.1em;
+            color: var(--vscode-foreground);
         }
         .fix-code {
             background: var(--vscode-textCodeBlock-background);
+            color: var(--vscode-editor-foreground);
             padding: 15px;
             border-radius: 5px;
             font-family: var(--vscode-editor-font-family);
@@ -276,6 +278,9 @@ class ParadiseHelpProvider {
         }
         li {
             margin: 5px 0;
+        }
+        .help-content {
+            color: var(--vscode-foreground);
         }
     </style>
 </head>
