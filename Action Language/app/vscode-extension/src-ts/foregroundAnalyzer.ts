@@ -19,6 +19,7 @@ import { OrphanedEventHandlerAnalyzer } from '../lib/analyzers/OrphanedEventHand
 import { MissingAriaConnectionAnalyzer } from '../lib/analyzers/MissingAriaConnectionAnalyzer';
 import { FocusOrderConflictAnalyzer } from '../lib/analyzers/FocusOrderConflictAnalyzer';
 import { VisibilityFocusConflictAnalyzer } from '../lib/analyzers/VisibilityFocusConflictAnalyzer';
+import { FocusManagementAnalyzer } from '../lib/analyzers/FocusManagementAnalyzer';
 import { ParadiseCodeActionProvider } from './codeActionProvider';
 
 export class ForegroundAnalyzer {
@@ -42,7 +43,8 @@ export class ForegroundAnalyzer {
       new OrphanedEventHandlerAnalyzer(),
       new MissingAriaConnectionAnalyzer(),
       new FocusOrderConflictAnalyzer(),
-      new VisibilityFocusConflictAnalyzer()
+      new VisibilityFocusConflictAnalyzer(),
+      new FocusManagementAnalyzer()
     ];
 
     console.log('[ForegroundAnalyzer] Initialized with', this.analyzers.length, 'analyzers');

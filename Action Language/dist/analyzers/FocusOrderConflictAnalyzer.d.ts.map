@@ -1,0 +1,1 @@
+{"version":3,"file":"FocusOrderConflictAnalyzer.d.ts","sourceRoot":"","sources":["../../src/analyzers/FocusOrderConflictAnalyzer.ts"],"names":[],"mappings":"AA2BA,OAAO,EACL,YAAY,EACZ,eAAe,EACf,KAAK,EACN,MAAM,gBAAgB,CAAC;AAGxB,qBAAa,0BAA2B,SAAQ,YAAY;IAC1D,QAAQ,CAAC,IAAI,0BAA0B;IACvC,QAAQ,CAAC,WAAW,2EACsD;IAO1E,OAAO,CAAC,OAAO,EAAE,eAAe,GAAG,KAAK,EAAE;IAuF1C,OAAO,CAAC,WAAW;CAUpB"}

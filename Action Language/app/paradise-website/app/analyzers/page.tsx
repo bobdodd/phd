@@ -78,12 +78,26 @@ export default function AnalyzersPage() {
                 <h3 className="text-xl font-bold text-gray-900">FocusManagementAnalyzer</h3>
               </div>
               <p className="text-gray-700 mb-3">
-                Detects focus changes without proper restoration when removing/hiding elements. Critical
-                for modals, tabs, and dynamic content.
+                Detects 6 types of focus management issues: element removal/hiding without focus checks,
+                non-focusable element targeting, standalone blur calls, and modal close without focus restoration.
+                Critical for modals, tabs, and dynamic content.
               </p>
-              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2">
-                <strong>WCAG:</strong> 2.4.3 | <strong>Scope:</strong> JavaScript-only
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2 mb-2">
+                <strong>WCAG:</strong> 2.4.3, 2.4.7, 4.1.2 | <strong>Scope:</strong> JavaScript-only
               </div>
+              <details className="text-sm text-gray-600">
+                <summary className="cursor-pointer font-medium text-paradise-blue hover:text-paradise-purple">
+                  View 6 Issue Types
+                </summary>
+                <ul className="mt-2 ml-4 space-y-1 list-disc">
+                  <li>removal-without-focus-management</li>
+                  <li>hiding-without-focus-management</li>
+                  <li>hiding-class-without-focus-management</li>
+                  <li>possibly-non-focusable</li>
+                  <li>standalone-blur</li>
+                  <li>focus-restoration-missing</li>
+                </ul>
+              </details>
             </div>
 
             <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-paradise-blue hover:shadow-2xl transition-shadow">
@@ -473,14 +487,17 @@ btn.addEventListener('click', handler);
                   </tr>
                   <tr className="hover:bg-gray-50">
                     <td className="px-6 py-4 text-sm font-mono text-gray-600">2</td>
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">FocusManagementAnalyzer</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      FocusManagementAnalyzer
+                      <span className="block text-xs text-gray-500 mt-1">(6 issue types)</span>
+                    </td>
                     <td className="px-6 py-4 text-sm">
                       <span className="bg-paradise-blue/10 text-paradise-blue px-2 py-1 rounded">Phase 1</span>
                     </td>
                     <td className="px-6 py-4 text-sm">
                       <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
                     </td>
-                    <td className="px-6 py-4 text-sm font-mono text-gray-600">2.4.3</td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">2.4.3, 2.4.7, 4.1.2</td>
                   </tr>
                   <tr className="hover:bg-gray-50">
                     <td className="px-6 py-4 text-sm font-mono text-gray-600">3</td>

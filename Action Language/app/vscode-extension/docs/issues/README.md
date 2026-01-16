@@ -43,6 +43,36 @@ Each help page includes:
 
 ### Focus Management
 
+- **[removal-without-focus-management](removal-without-focus-management.md)** - Element removed without checking if it has focus
+  - WCAG: 2.4.3, 2.4.7 (Focus Order, Focus Visible)
+  - Severity: Warning
+  - Quick Fix: ✓ Available
+
+- **[hiding-without-focus-management](hiding-without-focus-management.md)** - Element hidden without checking if it has focus
+  - WCAG: 2.4.3, 2.4.7 (Focus Order, Focus Visible)
+  - Severity: Warning
+  - Quick Fix: ✓ Available
+
+- **[hiding-class-without-focus-management](hiding-class-without-focus-management.md)** - classList operation may hide element without focus check
+  - WCAG: 2.4.7 (Focus Visible)
+  - Severity: Info
+  - Quick Fix: ✓ Available
+
+- **[possibly-non-focusable](possibly-non-focusable.md)** - Attempting to focus element that may not be focusable
+  - WCAG: 2.4.3, 4.1.2 (Focus Order, Name, Role, Value)
+  - Severity: Warning
+  - Quick Fix: ✓ Available
+
+- **[standalone-blur](standalone-blur.md)** - Removing focus without explicitly moving it
+  - WCAG: 2.4.7 (Focus Visible)
+  - Severity: Info
+  - Quick Fix: ✓ Available
+
+- **[focus-restoration-missing](focus-restoration-missing.md)** - Modal/dialog closes without restoring focus
+  - WCAG: 2.4.3 (Focus Order)
+  - Severity: Warning
+  - Quick Fix: ✓ Available
+
 - **[focus-order-conflict](focus-order-conflict.md)** - Positive tabindex creates unpredictable focus order
   - WCAG: 2.4.3 (Focus Order)
   - Severity: Warning
@@ -78,6 +108,12 @@ Each help page includes:
 | mouse-only-click | ✅ | 2.1.1 | Warning |
 | orphaned-event-handler | ✅ | 4.1.2 | Error |
 | missing-aria-connection | ✅ | 4.1.2, 1.3.1 | Warning |
+| removal-without-focus-management | ✅ | 2.4.3, 2.4.7 | Warning |
+| hiding-without-focus-management | ✅ | 2.4.3, 2.4.7 | Warning |
+| hiding-class-without-focus-management | ✅ | 2.4.7 | Info |
+| possibly-non-focusable | ✅ | 2.4.3, 4.1.2 | Warning |
+| standalone-blur | ✅ | 2.4.7 | Info |
+| focus-restoration-missing | ✅ | 2.4.3 | Warning |
 | focus-order-conflict | ✅ | 2.4.3 | Warning |
 | visibility-focus-conflict | ✅ | 2.4.7 | Error |
 | react-portal-accessibility | ✅ | Various | Warning |
