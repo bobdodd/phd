@@ -131,11 +131,11 @@ export class ParadiseCodeActionProvider implements vscode.CodeActionProvider {
       vscode.CodeActionKind.QuickFix
     );
 
-    // Create a command that will open the help
+    // Create a command that will open the help, passing the full issue
     action.command = {
       title: 'View Help',
       command: 'paradise.viewHelp',
-      arguments: [issue.type]
+      arguments: [issue.type, issue] // Pass full issue for fix context
     };
 
     action.isPreferred = false; // Help is secondary to actual fixes

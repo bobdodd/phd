@@ -1,13 +1,35 @@
+import { Issue } from '../lib/analyzers/BaseAnalyzer';
 /**
  * Provides help documentation for Paradise accessibility issues
  */
 export declare class ParadiseHelpProvider {
     private docsPath;
+    private extensionPath;
     constructor(extensionPath: string);
     /**
-     * Show help for a specific issue type
+     * Show help for a specific issue type with optional fix context
      */
-    showHelp(issueType: string): Promise<void>;
+    showHelp(issueType: string, issue?: Issue): Promise<void>;
+    /**
+     * Show help with fix code in a webview panel
+     */
+    private showHelpWithFix;
+    /**
+     * Apply a fix to the document
+     */
+    private applyFix;
+    /**
+     * Convert markdown to HTML (simple conversion for basic markdown)
+     */
+    private markdownToHtml;
+    /**
+     * Get the HTML content for the webview
+     */
+    private getWebviewContent;
+    /**
+     * Escape HTML special characters
+     */
+    private escapeHtml;
     /**
      * Show the help index
      */

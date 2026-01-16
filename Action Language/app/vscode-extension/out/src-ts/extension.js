@@ -210,8 +210,8 @@ async function activate(context) {
         vscode.window.showInformationMessage('Paradise diagnostics cleared');
     }));
     // Register "View Help" command
-    context.subscriptions.push(vscode.commands.registerCommand('paradise.viewHelp', async (issueType) => {
-        await helpProvider.showHelp(issueType);
+    context.subscriptions.push(vscode.commands.registerCommand('paradise.viewHelp', async (issueType, issue) => {
+        await helpProvider.showHelp(issueType, issue);
     }));
     // Register "View All Help" command
     context.subscriptions.push(vscode.commands.registerCommand('paradise.viewAllHelp', async () => {

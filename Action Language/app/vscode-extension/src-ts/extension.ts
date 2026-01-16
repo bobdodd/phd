@@ -219,8 +219,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Register "View Help" command
   context.subscriptions.push(
-    vscode.commands.registerCommand('paradise.viewHelp', async (issueType: string) => {
-      await helpProvider.showHelp(issueType);
+    vscode.commands.registerCommand('paradise.viewHelp', async (issueType: string, issue?: any) => {
+      await helpProvider.showHelp(issueType, issue);
     })
   );
 
