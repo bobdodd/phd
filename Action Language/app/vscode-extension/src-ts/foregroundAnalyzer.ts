@@ -246,13 +246,15 @@ export class ForegroundAnalyzer {
       location.column + (location.length || 0)
     );
 
-    // Build message with confidence indicator
-    const confidenceIndicator = this.getConfidenceIndicator(issue.confidence);
+    // Build comprehensive message
     const baseMessage = isPrimary
       ? issue.message
       : `${issue.message} (related location)`;
 
-    const message = `${baseMessage}\n\n${confidenceIndicator}`;
+    const wcagInfo = this.getWCAGInfo(issue.wcagCriteria);
+    const confidenceIndicator = this.getConfidenceIndicator(issue.confidence);
+
+    const message = `${baseMessage}\n\n${wcagInfo}\n\n${confidenceIndicator}`;
 
     const diagnostic = new vscode.Diagnostic(
       range,
@@ -261,7 +263,10 @@ export class ForegroundAnalyzer {
     );
 
     diagnostic.source = 'Paradise';
-    diagnostic.code = issue.type;
+    diagnostic.code = {
+      value: issue.type,
+      target: vscode.Uri.parse(`https://github.com/bobdodd/paradise/blob/main/docs/issues/${issue.type}.md`)
+    };
 
     // Add related information for other locations
     if (isPrimary && issue.relatedLocations && issue.relatedLocations.length > 0) {
@@ -285,6 +290,47 @@ export class ForegroundAnalyzer {
     }
 
     return diagnostic;
+  }
+
+  /**
+   * Get WCAG criteria information with links
+   */
+  private getWCAGInfo(wcagCriteria: string[]): string {
+    if (!wcagCriteria || wcagCriteria.length === 0) {
+      return '';
+    }
+
+    const criteriaLinks = wcagCriteria.map(criterion => {
+      const url = `https://www.w3.org/WAI/WCAG21/Understanding/${this.getCriterionSlug(criterion)}`;
+      return `• WCAG ${criterion}: ${url}`;
+    }).join('\n');
+
+    return `📋 WCAG Criteria:\n${criteriaLinks}`;
+  }
+
+  /**
+   * Convert WCAG criterion number to URL slug
+   */
+  private getCriterionSlug(criterion: string): string {
+    const slugMap: Record<string, string> = {
+      '1.1.1': 'non-text-content',
+      '1.3.1': 'info-and-relationships',
+      '1.4.2': 'audio-control',
+      '1.4.3': 'contrast-minimum',
+      '2.1.1': 'keyboard',
+      '2.1.2': 'no-keyboard-trap',
+      '2.1.4': 'character-key-shortcuts',
+      '2.2.1': 'timing-adjustable',
+      '2.2.2': 'pause-stop-hide',
+      '2.4.3': 'focus-order',
+      '2.4.7': 'focus-visible',
+      '3.2.1': 'on-focus',
+      '3.2.2': 'on-input',
+      '4.1.2': 'name-role-value',
+      '4.1.3': 'status-messages'
+    };
+
+    return slugMap[criterion] || criterion.replace(/\./g, '-');
   }
 
   /**
