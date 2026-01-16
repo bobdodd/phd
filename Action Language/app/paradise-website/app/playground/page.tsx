@@ -584,6 +584,373 @@ function AccessibleForm({ onSubmit }) {
       css: []
     },
     issues: []
+  },
+  'keyboard-trap': {
+    title: 'Keyboard Trap (KeyboardNavigationAnalyzer)',
+    description: 'Tab trapped without Escape handler',
+    category: 'js-only',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'modal.js',
+          content: `// ❌ Bad: Tab key trapped without Escape
+const modal = document.getElementById('modal');
+
+modal.addEventListener('keydown', function(e) {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    // Trap focus within modal
+    focusNextElement();
+  }
+  // Missing: Escape key handler!
+});
+
+function focusNextElement() {
+  const focusable = modal.querySelectorAll('button, input');
+  // Trap implementation
+}`
+        }
+      ],
+      css: []
+    },
+    issues: ['potential-keyboard-trap']
+  },
+  'screen-reader-keys': {
+    title: 'Screen Reader Conflict (KeyboardNavigationAnalyzer)',
+    description: 'Single-letter shortcuts conflict with screen readers',
+    category: 'js-only',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'shortcuts.js',
+          content: `// ❌ Bad: Single-letter shortcuts without modifiers
+document.addEventListener('keydown', function(e) {
+  // Conflicts with NVDA heading navigation (h key)
+  if (e.key === 'h') {
+    goToHomepage();
+  }
+
+  // Conflicts with JAWS button navigation (b key)
+  if (e.key === 'b') {
+    goBack();
+  }
+
+  // Use Ctrl+H or Alt+H instead!
+});`
+        }
+      ],
+      css: []
+    },
+    issues: ['screen-reader-conflict']
+  },
+  'deprecated-keycode': {
+    title: 'Deprecated keyCode (KeyboardNavigationAnalyzer)',
+    description: 'Using event.keyCode instead of event.key',
+    category: 'js-only',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'old-keyboard.js',
+          content: `// ❌ Bad: Using deprecated keyCode
+const input = document.getElementById('search');
+
+input.addEventListener('keydown', function(e) {
+  // DEPRECATED: keyCode is obsolete
+  if (e.keyCode === 13) {  // Enter key
+    submitSearch();
+  }
+
+  if (e.keyCode === 27) {  // Escape key
+    clearSearch();
+  }
+
+  // Use e.key === 'Enter' instead!
+});`
+        }
+      ],
+      css: []
+    },
+    issues: ['deprecated-keycode']
+  },
+  'tab-shift-missing': {
+    title: 'Tab Without Shift (KeyboardNavigationAnalyzer)',
+    description: 'Tab handler missing Shift+Tab support',
+    category: 'js-only',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'tab-handler.js',
+          content: `// ❌ Bad: Only handles forward Tab, not Shift+Tab
+const menu = document.getElementById('menu');
+
+menu.addEventListener('keydown', function(e) {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    focusNextItem();
+  }
+  // Missing: e.shiftKey check for reverse navigation!
+});
+
+function focusNextItem() {
+  // Only goes forward
+}`
+        }
+      ],
+      css: []
+    },
+    issues: ['tab-without-shift']
+  },
+  'missing-escape': {
+    title: 'Missing Escape Handler (KeyboardNavigationAnalyzer)',
+    description: 'Modal without Escape key to close',
+    category: 'js-only',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'dialog.js',
+          content: `// ❌ Bad: Dialog without Escape handler
+const dialog = document.querySelector('[role="dialog"]');
+const closeBtn = dialog.querySelector('.close');
+
+// Only mouse close
+closeBtn.addEventListener('click', function() {
+  closeDialog();
+});
+
+// Missing: Escape key handler!
+// dialog.addEventListener('keydown', e => {
+//   if (e.key === 'Escape') closeDialog();
+// });`
+        }
+      ],
+      css: []
+    },
+    issues: ['missing-escape-handler']
+  },
+  'missing-arrow-nav': {
+    title: 'Missing Arrow Navigation (KeyboardNavigationAnalyzer)',
+    description: 'ARIA listbox without arrow key support',
+    category: 'js-only',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'listbox.js',
+          content: `// ❌ Bad: role="listbox" without arrow keys
+const listbox = document.querySelector('[role="listbox"]');
+const options = listbox.querySelectorAll('[role="option"]');
+
+// Only click handlers
+options.forEach(option => {
+  option.addEventListener('click', function() {
+    selectOption(option);
+  });
+});
+
+// Missing: ArrowUp/ArrowDown handlers for keyboard navigation!`
+        }
+      ],
+      css: []
+    },
+    issues: ['missing-arrow-navigation']
+  },
+  'arrow-browse-conflict': {
+    title: 'Arrow Keys Conflict (KeyboardNavigationAnalyzer)',
+    description: 'Global arrow handlers break screen reader browse mode',
+    category: 'js-only',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'scroll.js',
+          content: `// ❌ Bad: Global arrow handlers interfere with browse mode
+document.addEventListener('keydown', function(e) {
+  // Prevents screen readers from using arrows to read!
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    scrollToNextSection();
+  }
+
+  if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    scrollToPreviousSection();
+  }
+
+  // Only use arrow keys in interactive widgets!
+});`
+        }
+      ],
+      css: []
+    },
+    issues: ['screen-reader-arrow-conflict']
+  },
+  'focus-removal': {
+    title: 'Removal Without Focus Check (FocusManagementAnalyzer)',
+    description: 'Element removed without checking if focused',
+    category: 'js-only',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'remove.js',
+          content: `// ❌ Bad: Remove element without focus management
+const notification = document.getElementById('notification');
+
+function closeNotification() {
+  // What if notification has focus?
+  notification.remove();
+  // Focus is lost! Should move to trigger element.
+}
+
+// ✅ Good approach:
+// if (notification.contains(document.activeElement)) {
+//   triggerButton.focus();
+// }
+// notification.remove();`
+        }
+      ],
+      css: []
+    },
+    issues: ['removal-without-focus-management']
+  },
+  'focus-hiding': {
+    title: 'Hiding Without Focus Check (FocusManagementAnalyzer)',
+    description: 'Element hidden without checking focus',
+    category: 'js-only',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'hide.js',
+          content: `// ❌ Bad: Hide element without focus management
+const panel = document.getElementById('panel');
+
+function hidePanel() {
+  // What if panel or its children have focus?
+  panel.style.display = 'none';
+  // Focus trapped on hidden element!
+}
+
+// ✅ Good approach:
+// if (panel.contains(document.activeElement)) {
+//   panelToggle.focus();
+// }
+// panel.style.display = 'none';`
+        }
+      ],
+      css: []
+    },
+    issues: ['hiding-without-focus-management']
+  },
+  'focus-class-toggle': {
+    title: 'Class Toggle Focus Issue (FocusManagementAnalyzer)',
+    description: 'classList operation may hide element with focus',
+    category: 'js-only',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'toggle.js',
+          content: `// ❌ Potentially Bad: Class toggle may hide focused element
+const dropdown = document.getElementById('dropdown');
+
+function toggleDropdown() {
+  // If 'hidden' class sets display:none and dropdown has focus...
+  dropdown.classList.toggle('hidden');
+  // Focus may be trapped!
+}
+
+// Check CSS: does .hidden set display:none or visibility:hidden?`
+        }
+      ],
+      css: []
+    },
+    issues: ['hiding-class-without-focus-management']
+  },
+  'non-focusable-focus': {
+    title: 'Focusing Non-Focusable (FocusManagementAnalyzer)',
+    description: 'Attempting to focus element that may not be focusable',
+    category: 'js-only',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'focus-div.js',
+          content: `// ❌ Bad: Trying to focus a non-focusable element
+const content = document.getElementById('content');
+
+function showContent() {
+  content.hidden = false;
+  content.focus();  // DIVs aren't natively focusable!
+}
+
+// ✅ Good: Add tabindex="-1" first
+// content.setAttribute('tabindex', '-1');
+// content.focus();`
+        }
+      ],
+      css: []
+    },
+    issues: ['possibly-non-focusable']
+  },
+  'standalone-blur': {
+    title: 'Standalone Blur (FocusManagementAnalyzer)',
+    description: 'Removing focus without moving it elsewhere',
+    category: 'js-only',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'blur.js',
+          content: `// ❌ Bad: Blur without explicit focus move
+const input = document.getElementById('search');
+
+function clearSearch() {
+  input.value = '';
+  input.blur();  // Where does focus go? Unknown!
+}
+
+// ✅ Good: Move focus explicitly
+// const clearButton = document.getElementById('clear');
+// clearButton.focus();`
+        }
+      ],
+      css: []
+    },
+    issues: ['standalone-blur']
+  },
+  'focus-restoration-missing': {
+    title: 'Focus Restoration Missing (FocusManagementAnalyzer)',
+    description: 'Modal closes without restoring focus to trigger',
+    category: 'js-only',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'modal-close.js',
+          content: `// ❌ Bad: Close modal without restoring focus
+const modal = document.getElementById('modal');
+const closeBtn = modal.querySelector('.close');
+
+closeBtn.addEventListener('click', function() {
+  modal.hidden = true;
+  // Focus lost! Should return to trigger button.
+});
+
+// ✅ Good: Store and restore focus
+// const openButton = document.activeElement;
+// modal.hidden = true;
+// openButton.focus();`
+        }
+      ],
+      css: []
+    },
+    issues: ['focus-restoration-missing']
   }
 };
 

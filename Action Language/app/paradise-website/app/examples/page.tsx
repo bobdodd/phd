@@ -745,6 +745,632 @@ function createMenu() {
     impact: 'Users with motor disabilities who rely on keyboard navigation could not efficiently use the editor, severely limiting productivity.'
   },
 
+  // KeyboardNavigationAnalyzer Examples
+  {
+    id: 'keyboard-trap-modal',
+    title: 'Keyboard Trap in Modal Dialog',
+    category: 'web',
+    language: 'JavaScript',
+    framework: 'React',
+    description: 'Modal with Tab key trapped without Escape to exit',
+    problem: 'Modal intercepted Tab for focus management but forgot Escape key, creating keyboard trap that violated WCAG 2.1.2',
+    before: `function Modal({ isOpen, onClose }) {
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        // Focus trap implementation
+        const focusable = modalRef.current.querySelectorAll('button, input');
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          first.focus();
+        }
+      }
+      // ❌ Missing: Escape key handler!
+    };
+
+    modalRef.current?.addEventListener('keydown', handleKeyDown);
+    return () => modalRef.current?.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div ref={modalRef} role="dialog" aria-modal="true">
+      <h2>Confirm Action</h2>
+      <button onClick={onClose}>Cancel</button>
+      <button onClick={handleConfirm}>Confirm</button>
+    </div>
+  );
+}`,
+    after: `function Modal({ isOpen, onClose }) {
+  const modalRef = useRef(null);
+  const previousFocusRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Store previously focused element
+    previousFocusRef.current = document.activeElement;
+
+    const handleKeyDown = (e) => {
+      // ✅ Escape key closes modal
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const focusable = modalRef.current.querySelectorAll('button, input');
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          first.focus();
+        }
+      }
+    };
+
+    modalRef.current?.addEventListener('keydown', handleKeyDown);
+
+    // Focus first element
+    const firstFocusable = modalRef.current?.querySelector('button, input');
+    firstFocusable?.focus();
+
+    return () => {
+      modalRef.current?.removeEventListener('keydown', handleKeyDown);
+      // Restore focus when modal closes
+      previousFocusRef.current?.focus();
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div ref={modalRef} role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <h2 id="modal-title">Confirm Action</h2>
+      <button onClick={onClose}>Cancel</button>
+      <button onClick={handleConfirm}>Confirm</button>
+    </div>
+  );
+}`,
+    issuesFound: [
+      'potential-keyboard-trap: Tab trapped without Escape handler',
+      'focus-restoration-missing: No focus restoration on close',
+      'Missing aria-labelledby on dialog',
+      'No initial focus management'
+    ],
+    wcag: ['2.1.2', '2.4.3'],
+    impact: 'Keyboard users were trapped in modal with no way to exit, forcing browser refresh. Affected power users, assistive technology users, and anyone preferring keyboard navigation.'
+  },
+
+  {
+    id: 'screen-reader-shortcuts',
+    title: 'Single-Letter Keyboard Shortcuts Conflict',
+    category: 'web',
+    language: 'TypeScript',
+    framework: 'Next.js',
+    description: 'Gmail-style shortcuts conflicted with screen reader navigation keys',
+    problem: 'Single-letter shortcuts (h, j, k) conflicted with NVDA/JAWS screen reader navigation, making site unusable for blind users',
+    before: `// Email application with Vim-style shortcuts
+export default function EmailList() {
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // ❌ These conflict with screen reader navigation!
+      if (e.key === 'h') {
+        // Conflicts with NVDA heading navigation
+        navigateToInbox();
+      }
+      if (e.key === 'j') {
+        // Conflicts with screen reader navigation
+        selectNextEmail();
+      }
+      if (e.key === 'k') {
+        // Conflicts with screen reader navigation
+        selectPreviousEmail();
+      }
+      if (e.key === 'r') {
+        // Conflicts with JAWS refresh
+        replyToEmail();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyPress);
+    return () => document.removeEventListener('keydown', handleKeyPress);
+  }, []);
+
+  return (
+    <div className="email-list">
+      {/* Email list UI */}
+    </div>
+  );
+}`,
+    after: `// Email application with accessible keyboard shortcuts
+export default function EmailList() {
+  const [shortcutsEnabled, setShortcutsEnabled] = useState(false);
+
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Only if explicitly enabled by user
+      if (!shortcutsEnabled) return;
+
+      // ✅ Use modifier keys to avoid conflicts
+      if (e.ctrlKey && e.altKey) {
+        if (e.key === 'h') {
+          e.preventDefault();
+          navigateToInbox();
+        }
+        if (e.key === 'j') {
+          e.preventDefault();
+          selectNextEmail();
+        }
+        if (e.key === 'k') {
+          e.preventDefault();
+          selectPreviousEmail();
+        }
+        if (e.key === 'r') {
+          e.preventDefault();
+          replyToEmail();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyPress);
+    return () => document.removeEventListener('keydown', handleKeyPress);
+  }, [shortcutsEnabled]);
+
+  return (
+    <div className="email-list">
+      <div className="shortcuts-toggle" role="region" aria-label="Keyboard shortcuts">
+        <label>
+          <input
+            type="checkbox"
+            checked={shortcutsEnabled}
+            onChange={(e) => setShortcutsEnabled(e.target.checked)}
+            aria-describedby="shortcuts-help"
+          />
+          Enable keyboard shortcuts (Ctrl+Alt+Key)
+        </label>
+        <p id="shortcuts-help" className="text-sm text-gray-600">
+          When enabled: Ctrl+Alt+H (Inbox), Ctrl+Alt+J (Next), Ctrl+Alt+K (Previous), Ctrl+Alt+R (Reply)
+        </p>
+      </div>
+      {/* Email list UI */}
+    </div>
+  );
+}`,
+    issuesFound: [
+      'screen-reader-conflict: Single-letter h, j, k, r without modifiers',
+      'No user control to disable shortcuts',
+      'No documentation of keyboard shortcuts',
+      'Conflicts with NVDA heading navigation (h)',
+      'Conflicts with screen reader browse commands'
+    ],
+    wcag: ['2.1.1', '2.1.4'],
+    impact: 'NVDA and JAWS users could not navigate the application. The h key conflicted with heading navigation, j/k interfered with browse mode, making the site completely unusable for blind users.'
+  },
+
+  {
+    id: 'deprecated-keycode',
+    title: 'Deprecated keyCode in Search Box',
+    category: 'web',
+    language: 'JavaScript',
+    description: 'Legacy code using event.keyCode instead of modern event.key',
+    problem: 'Using deprecated keyCode API caused inconsistent behavior across browsers and keyboard layouts',
+    before: `// Search box with old-style keyboard handling
+const searchInput = document.getElementById('search');
+
+searchInput.addEventListener('keydown', function(event) {
+  // ❌ Deprecated: keyCode values are browser-specific
+  if (event.keyCode === 13) {  // Enter
+    performSearch(searchInput.value);
+  }
+
+  if (event.keyCode === 27) {  // Escape
+    clearSearch();
+  }
+
+  // Arrow keys for autocomplete
+  if (event.keyCode === 38) {  // Up arrow
+    selectPreviousSuggestion();
+  }
+
+  if (event.keyCode === 40) {  // Down arrow
+    selectNextSuggestion();
+  }
+});`,
+    after: `// Search box with modern keyboard handling
+const searchInput = document.getElementById('search');
+
+searchInput.addEventListener('keydown', function(event) {
+  // ✅ Modern: event.key is standardized and reliable
+  if (event.key === 'Enter') {
+    performSearch(searchInput.value);
+  }
+
+  if (event.key === 'Escape') {
+    clearSearch();
+  }
+
+  // Arrow keys for autocomplete
+  if (event.key === 'ArrowUp') {
+    event.preventDefault();
+    selectPreviousSuggestion();
+  }
+
+  if (event.key === 'ArrowDown') {
+    event.preventDefault();
+    selectNextSuggestion();
+  }
+});`,
+    issuesFound: [
+      'deprecated-keycode: Using event.keyCode instead of event.key',
+      'Browser compatibility issues with keyCode',
+      'Non-QWERTY keyboard layout problems',
+      'Missing preventDefault for arrow keys'
+    ],
+    wcag: ['2.1.1'],
+    impact: 'Users with non-QWERTY layouts (Dvorak, AZERTY, etc.) experienced wrong key mappings. International users faced broken keyboard navigation. Deprecated API caused maintenance issues.'
+  },
+
+  {
+    id: 'focus-removal-notification',
+    title: 'Toast Notification Focus Loss',
+    category: 'web',
+    language: 'TypeScript',
+    framework: 'React',
+    description: 'Toast notification removed without checking if user was interacting with it',
+    problem: 'Auto-dismissing notification removed element even when focused, causing keyboard users to lose context',
+    before: `// Auto-dismissing toast notification
+function ToastNotification({ message, onDismiss }: ToastProps) {
+  useEffect(() => {
+    // Auto-dismiss after 5 seconds
+    const timer = setTimeout(() => {
+      onDismiss();
+      // ❌ What if user is reading or interacting with toast?
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [onDismiss]);
+
+  return (
+    <div className="toast" role="alert">
+      <p>{message}</p>
+      <button onClick={onDismiss}>Dismiss</button>
+    </div>
+  );
+}
+
+// Parent component
+function App() {
+  const [toast, setToast] = useState<string | null>(null);
+
+  const showToast = (message: string) => {
+    setToast(message);
+  };
+
+  const dismissToast = () => {
+    setToast(null);  // ❌ Removes element without focus check
+  };
+
+  return (
+    <div>
+      {/* App content */}
+      {toast && (
+        <ToastNotification message={toast} onDismiss={dismissToast} />
+      )}
+    </div>
+  );
+}`,
+    after: `// Auto-dismissing toast with focus management
+function ToastNotification({ message, onDismiss, triggerId }: ToastProps) {
+  const toastRef = useRef<HTMLDivElement>(null);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    if (isPaused) return;
+
+    // Auto-dismiss after 5 seconds
+    const timer = setTimeout(() => {
+      onDismiss();
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [onDismiss, isPaused]);
+
+  const handleDismiss = () => {
+    // ✅ Check if toast or its children have focus
+    if (toastRef.current?.contains(document.activeElement)) {
+      // Restore focus to trigger element
+      const trigger = document.getElementById(triggerId);
+      trigger?.focus();
+    }
+    onDismiss();
+  };
+
+  return (
+    <div
+      ref={toastRef}
+      className="toast"
+      role="alert"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onFocus={() => setIsPaused(true)}
+      onBlur={() => setIsPaused(false)}
+    >
+      <p>{message}</p>
+      <button onClick={handleDismiss}>Dismiss</button>
+    </div>
+  );
+}
+
+// Parent component
+function App() {
+  const [toast, setToast] = useState<string | null>(null);
+  const [toastTriggerId, setToastTriggerId] = useState<string>('');
+
+  const showToast = (message: string, triggerId: string) => {
+    setToast(message);
+    setToastTriggerId(triggerId);
+  };
+
+  const dismissToast = () => {
+    setToast(null);
+  };
+
+  return (
+    <div>
+      <button
+        id="save-button"
+        onClick={() => showToast('Changes saved!', 'save-button')}
+      >
+        Save
+      </button>
+      {toast && (
+        <ToastNotification
+          message={toast}
+          onDismiss={dismissToast}
+          triggerId={toastTriggerId}
+        />
+      )}
+    </div>
+  );
+}`,
+    issuesFound: [
+      'removal-without-focus-management: Element removed without focus check',
+      'No pause on hover/focus for auto-dismiss',
+      'Missing focus restoration to trigger',
+      'Auto-dismiss timer not accessible'
+    ],
+    wcag: ['2.2.1', '2.4.7', '2.4.3'],
+    impact: 'Keyboard users reading notification lost focus when it auto-dismissed. Screen reader users missed announcements. Power users could not dismiss notifications explicitly before timeout.'
+  },
+
+  {
+    id: 'focus-hiding-dropdown',
+    title: 'Dropdown Menu Focus Trap on Hide',
+    category: 'web',
+    language: 'JavaScript',
+    description: 'Dropdown hidden with CSS while item inside had focus',
+    problem: 'Hiding dropdown with display:none trapped focus on invisible element, breaking keyboard navigation',
+    before: `// Dropdown menu with broken focus management
+class DropdownMenu {
+  constructor(toggleButton, menuElement) {
+    this.toggle = toggleButton;
+    this.menu = menuElement;
+    this.isOpen = false;
+
+    this.toggle.addEventListener('click', () => this.toggleMenu());
+
+    // Click outside to close
+    document.addEventListener('click', (e) => {
+      if (!this.menu.contains(e.target) && e.target !== this.toggle) {
+        this.closeMenu();
+      }
+    });
+  }
+
+  toggleMenu() {
+    if (this.isOpen) {
+      this.closeMenu();
+    } else {
+      this.openMenu();
+    }
+  }
+
+  openMenu() {
+    this.menu.style.display = 'block';
+    this.isOpen = true;
+  }
+
+  closeMenu() {
+    // ❌ What if a menu item has focus?
+    this.menu.style.display = 'none';
+    this.isOpen = false;
+    // Focus trapped on hidden element!
+  }
+}`,
+    after: `// Dropdown menu with proper focus management
+class DropdownMenu {
+  constructor(toggleButton, menuElement) {
+    this.toggle = toggleButton;
+    this.menu = menuElement;
+    this.isOpen = false;
+
+    this.toggle.addEventListener('click', () => this.toggleMenu());
+    this.toggle.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.isOpen) {
+        this.closeMenu();
+      }
+    });
+
+    // Click outside to close
+    document.addEventListener('click', (e) => {
+      if (!this.menu.contains(e.target) && e.target !== this.toggle) {
+        this.closeMenu();
+      }
+    });
+  }
+
+  toggleMenu() {
+    if (this.isOpen) {
+      this.closeMenu();
+    } else {
+      this.openMenu();
+    }
+  }
+
+  openMenu() {
+    this.menu.style.display = 'block';
+    this.menu.hidden = false;
+    this.isOpen = true;
+
+    // Focus first menu item
+    const firstItem = this.menu.querySelector('[role="menuitem"]');
+    firstItem?.focus();
+  }
+
+  closeMenu() {
+    // ✅ Check if menu or child has focus
+    if (this.menu.contains(document.activeElement)) {
+      // Return focus to toggle button
+      this.toggle.focus();
+    }
+
+    this.menu.style.display = 'none';
+    this.menu.hidden = true;
+    this.isOpen = false;
+  }
+}`,
+    issuesFound: [
+      'hiding-without-focus-management: Menu hidden while item focused',
+      'No Escape key to close menu',
+      'Missing initial focus on menu open',
+      'No focus restoration to toggle button'
+    ],
+    wcag: ['2.4.3', '2.4.7', '2.1.2'],
+    impact: 'Keyboard users lost focus when dropdown closed, forcing Tab through entire page to regain focus. Screen reader users experienced "ghost focus" on invisible items. Escape key did not work.'
+  },
+
+  {
+    id: 'non-focusable-panel',
+    title: 'Focusing Non-Focusable Panel',
+    category: 'web',
+    language: 'TypeScript',
+    framework: 'React',
+    description: 'Accordion tried to focus panel div without tabindex',
+    problem: 'Code attempted to focus non-focusable element, causing silent failures and broken keyboard navigation',
+    before: `// Accordion with focus management bug
+function Accordion({ items }: AccordionProps) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const handleToggle = (index: number) => {
+    const newIndex = openIndex === index ? null : index;
+    setOpenIndex(newIndex);
+
+    if (newIndex !== null) {
+      // ❌ Trying to focus a div (not natively focusable!)
+      const panel = document.getElementById(\`panel-\${index}\`);
+      panel?.focus();
+      // Silent failure - focus never moves
+    }
+  };
+
+  return (
+    <div className="accordion">
+      {items.map((item, index) => (
+        <div key={index}>
+          <button
+            onClick={() => handleToggle(index)}
+            aria-expanded={openIndex === index}
+            aria-controls={\`panel-\${index}\`}
+          >
+            {item.title}
+          </button>
+          <div
+            id={\`panel-\${index}\`}
+            hidden={openIndex !== index}
+          >
+            {item.content}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}`,
+    after: `// Accordion with correct focus management
+function Accordion({ items }: AccordionProps) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const panelRefs = useRef<Map<number, HTMLElement>>(new Map());
+
+  const handleToggle = (index: number) => {
+    const newIndex = openIndex === index ? null : index;
+    setOpenIndex(newIndex);
+
+    if (newIndex !== null) {
+      // ✅ Make panel focusable before focusing
+      const panel = panelRefs.current.get(index);
+      if (panel) {
+        panel.setAttribute('tabindex', '-1');
+        panel.focus();
+
+        // Remove tabindex after focus (prevent tab order inclusion)
+        setTimeout(() => {
+          panel.removeAttribute('tabindex');
+        }, 100);
+      }
+    }
+  };
+
+  return (
+    <div className="accordion">
+      {items.map((item, index) => (
+        <div key={index}>
+          <button
+            onClick={() => handleToggle(index)}
+            aria-expanded={openIndex === index}
+            aria-controls={\`panel-\${index}\`}
+          >
+            {item.title}
+          </button>
+          <div
+            id={\`panel-\${index}\`}
+            ref={(el) => {
+              if (el) panelRefs.current.set(index, el);
+            }}
+            role="region"
+            aria-labelledby={\`button-\${index}\`}
+            hidden={openIndex !== index}
+          >
+            {item.content}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}`,
+    issuesFound: [
+      'possibly-non-focusable: Attempting to focus div without tabindex',
+      'Missing role="region" on panels',
+      'No aria-labelledby on panels',
+      'Silent focus failure (no user feedback)'
+    ],
+    wcag: ['2.4.3', '4.1.2'],
+    impact: 'Keyboard users experienced "focus appears to disappear" when opening panels. Screen reader users did not get panel context. Expected keyboard navigation pattern did not work.'
+  },
+
   // Framework-Specific Examples
   {
     id: 'nextjs-navigation',
