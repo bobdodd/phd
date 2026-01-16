@@ -158,32 +158,37 @@ export class ParadiseHelpProvider {
         body {
             font-family: var(--vscode-font-family);
             font-size: var(--vscode-font-size);
-            color: var(--vscode-foreground);
+            color: var(--vscode-editor-foreground);
             background: var(--vscode-editor-background);
             padding: 20px;
             line-height: 1.6;
         }
         h1 {
-            color: var(--vscode-textLink-foreground);
+            color: var(--vscode-editor-foreground);
             border-bottom: 1px solid var(--vscode-panel-border);
             padding-bottom: 10px;
+            font-weight: 600;
         }
         h2 {
-            color: var(--vscode-textLink-activeForeground);
+            color: var(--vscode-editor-foreground);
             margin-top: 30px;
+            font-weight: 600;
         }
         h3 {
-            color: var(--vscode-textPreformat-foreground);
+            color: var(--vscode-editor-foreground);
             margin-top: 20px;
+            font-weight: 600;
         }
         code {
             background: var(--vscode-textCodeBlock-background);
+            color: var(--vscode-editor-foreground);
             padding: 2px 6px;
             border-radius: 3px;
             font-family: var(--vscode-editor-font-family);
         }
         pre {
             background: var(--vscode-textCodeBlock-background);
+            color: var(--vscode-editor-foreground);
             padding: 15px;
             border-radius: 5px;
             overflow-x: auto;
@@ -192,6 +197,7 @@ export class ParadiseHelpProvider {
         pre code {
             background: none;
             padding: 0;
+            color: inherit;
         }
         a {
             color: var(--vscode-textLink-foreground);
@@ -202,20 +208,21 @@ export class ParadiseHelpProvider {
             text-decoration: underline;
         }
         .fix-section {
-            background: var(--vscode-editor-inactiveSelectionBackground);
-            border: 2px solid var(--vscode-textLink-foreground);
+            background: var(--vscode-input-background);
+            border: 2px solid var(--vscode-focusBorder);
             border-radius: 8px;
             padding: 20px;
             margin: 20px 0;
         }
         .fix-section h2 {
             margin-top: 0;
-            color: var(--vscode-textLink-foreground);
+            color: var(--vscode-editor-foreground);
+            font-weight: 600;
         }
         .fix-description {
             margin-bottom: 15px;
             font-size: 1.1em;
-            color: var(--vscode-foreground);
+            color: var(--vscode-editor-foreground);
         }
         .fix-code {
             background: var(--vscode-textCodeBlock-background);
@@ -256,23 +263,32 @@ export class ParadiseHelpProvider {
         }
         .fix-location {
             font-size: 0.9em;
-            color: var(--vscode-descriptionForeground);
+            color: var(--vscode-editor-foreground);
+            opacity: 0.8;
             margin-top: 10px;
         }
+        .fix-location code {
+            opacity: 1;
+        }
         blockquote {
-            border-left: 4px solid var(--vscode-textLink-foreground);
+            border-left: 4px solid var(--vscode-focusBorder);
             margin: 15px 0;
             padding-left: 15px;
-            color: var(--vscode-descriptionForeground);
+            color: var(--vscode-editor-foreground);
+            opacity: 0.9;
         }
         ul {
             padding-left: 25px;
         }
         li {
             margin: 5px 0;
+            color: var(--vscode-editor-foreground);
         }
         .help-content {
-            color: var(--vscode-foreground);
+            color: var(--vscode-editor-foreground);
+        }
+        .help-content p {
+            color: var(--vscode-editor-foreground);
         }
     </style>
 </head>
