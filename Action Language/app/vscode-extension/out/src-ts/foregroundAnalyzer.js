@@ -49,6 +49,7 @@ const MissingAriaConnectionAnalyzer_1 = require("../lib/analyzers/MissingAriaCon
 const FocusOrderConflictAnalyzer_1 = require("../lib/analyzers/FocusOrderConflictAnalyzer");
 const VisibilityFocusConflictAnalyzer_1 = require("../lib/analyzers/VisibilityFocusConflictAnalyzer");
 const FocusManagementAnalyzer_1 = require("../lib/analyzers/FocusManagementAnalyzer");
+const KeyboardNavigationAnalyzer_1 = require("../lib/analyzers/KeyboardNavigationAnalyzer");
 class ForegroundAnalyzer {
     constructor(diagnosticCollection, projectManager, codeActionProvider) {
         this.diagnosticCollection = diagnosticCollection;
@@ -61,7 +62,8 @@ class ForegroundAnalyzer {
             new MissingAriaConnectionAnalyzer_1.MissingAriaConnectionAnalyzer(),
             new FocusOrderConflictAnalyzer_1.FocusOrderConflictAnalyzer(),
             new VisibilityFocusConflictAnalyzer_1.VisibilityFocusConflictAnalyzer(),
-            new FocusManagementAnalyzer_1.FocusManagementAnalyzer()
+            new FocusManagementAnalyzer_1.FocusManagementAnalyzer(),
+            new KeyboardNavigationAnalyzer_1.KeyboardNavigationAnalyzer()
         ];
         console.log('[ForegroundAnalyzer] Initialized with', this.analyzers.length, 'analyzers');
     }

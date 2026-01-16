@@ -20,6 +20,7 @@ import { MissingAriaConnectionAnalyzer } from '../lib/analyzers/MissingAriaConne
 import { FocusOrderConflictAnalyzer } from '../lib/analyzers/FocusOrderConflictAnalyzer';
 import { VisibilityFocusConflictAnalyzer } from '../lib/analyzers/VisibilityFocusConflictAnalyzer';
 import { FocusManagementAnalyzer } from '../lib/analyzers/FocusManagementAnalyzer';
+import { KeyboardNavigationAnalyzer } from '../lib/analyzers/KeyboardNavigationAnalyzer';
 import { ParadiseCodeActionProvider } from './codeActionProvider';
 
 export class ForegroundAnalyzer {
@@ -44,7 +45,8 @@ export class ForegroundAnalyzer {
       new MissingAriaConnectionAnalyzer(),
       new FocusOrderConflictAnalyzer(),
       new VisibilityFocusConflictAnalyzer(),
-      new FocusManagementAnalyzer()
+      new FocusManagementAnalyzer(),
+      new KeyboardNavigationAnalyzer()
     ];
 
     console.log('[ForegroundAnalyzer] Initialized with', this.analyzers.length, 'analyzers');

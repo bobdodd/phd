@@ -27,6 +27,41 @@ Each help page includes:
   - Severity: Warning
   - Quick Fix: ✓ Available
 
+- **[potential-keyboard-trap](potential-keyboard-trap.md)** - Tab key intercepted with preventDefault without Escape handler
+  - WCAG: 2.1.2 (No Keyboard Trap)
+  - Severity: Warning
+  - Quick Fix: ✓ Available
+
+- **[screen-reader-conflict](screen-reader-conflict.md)** - Single-character keyboard shortcuts conflict with screen reader navigation
+  - WCAG: 2.1.1, 2.1.4 (Keyboard, Character Key Shortcuts)
+  - Severity: Warning
+  - Quick Fix: ✓ Available
+
+- **[deprecated-keycode](deprecated-keycode.md)** - Using deprecated event.keyCode or event.which
+  - WCAG: 2.1.1 (Keyboard)
+  - Severity: Info
+  - Quick Fix: ✓ Available
+
+- **[tab-without-shift](tab-without-shift.md)** - Tab key handler doesn't check event.shiftKey for reverse navigation
+  - WCAG: 2.1.1 (Keyboard)
+  - Severity: Info
+  - Quick Fix: ✓ Available
+
+- **[missing-escape-handler](missing-escape-handler.md)** - Modal or dialog without Escape key handler
+  - WCAG: 2.1.2 (No Keyboard Trap)
+  - Severity: Warning
+  - Quick Fix: ✓ Available
+
+- **[missing-arrow-navigation](missing-arrow-navigation.md)** - ARIA widget role without arrow key navigation
+  - WCAG: 2.1.1, 4.1.2 (Keyboard, Name, Role, Value)
+  - Severity: Info
+  - Quick Fix: ✗ Manual implementation required
+
+- **[screen-reader-arrow-conflict](screen-reader-arrow-conflict.md)** - Arrow key handlers interfere with screen reader browse mode
+  - WCAG: 2.1.1 (Keyboard)
+  - Severity: Info
+  - Quick Fix: ✗ Manual fix required
+
 ### Code Integrity
 
 - **[orphaned-event-handler](orphaned-event-handler.md)** - Event handler attached to non-existent element
@@ -106,6 +141,13 @@ Each help page includes:
 | Issue Type | Status | WCAG | Severity |
 |------------|--------|------|----------|
 | mouse-only-click | ✅ | 2.1.1 | Warning |
+| potential-keyboard-trap | ✅ | 2.1.2 | Warning |
+| screen-reader-conflict | ✅ | 2.1.1, 2.1.4 | Warning |
+| deprecated-keycode | ✅ | 2.1.1 | Info |
+| tab-without-shift | ✅ | 2.1.1 | Info |
+| missing-escape-handler | ✅ | 2.1.2 | Warning |
+| missing-arrow-navigation | ✅ | 2.1.1, 4.1.2 | Info |
+| screen-reader-arrow-conflict | ✅ | 2.1.1 | Info |
 | orphaned-event-handler | ✅ | 4.1.2 | Error |
 | missing-aria-connection | ✅ | 4.1.2, 1.3.1 | Warning |
 | removal-without-focus-management | ✅ | 2.4.3, 2.4.7 | Warning |
@@ -134,6 +176,7 @@ Paradise maps issues to WCAG 2.1 success criteria:
 
 - **[2.1.1 Keyboard](https://www.w3.org/WAI/WCAG21/Understanding/keyboard)** - All functionality available via keyboard
 - **[2.1.2 No Keyboard Trap](https://www.w3.org/WAI/WCAG21/Understanding/no-keyboard-trap)** - Users can navigate away using keyboard alone
+- **[2.1.4 Character Key Shortcuts](https://www.w3.org/WAI/WCAG21/Understanding/character-key-shortcuts)** - Single-character shortcuts can be turned off or remapped
 - **[2.4.3 Focus Order](https://www.w3.org/WAI/WCAG21/Understanding/focus-order)** - Navigation order is logical and intuitive
 - **[2.4.7 Focus Visible](https://www.w3.org/WAI/WCAG21/Understanding/focus-visible)** - Keyboard focus indicator is visible
 - **[4.1.2 Name, Role, Value](https://www.w3.org/WAI/WCAG21/Understanding/name-role-value)** - UI components have accessible names and roles

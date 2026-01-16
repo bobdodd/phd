@@ -20,9 +20,9 @@ export default function AnalyzersPage() {
         <div className="mb-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="bg-white rounded-xl shadow-lg p-6 text-center border-2 border-paradise-blue/20">
-              <div className="text-4xl font-bold text-paradise-blue mb-2">13</div>
+              <div className="text-4xl font-bold text-paradise-blue mb-2">14</div>
               <div className="text-gray-600 font-medium">Total Analyzers</div>
-              <div className="text-xs text-gray-500 mt-1">8 JS-only + 5 Multi-model</div>
+              <div className="text-xs text-gray-500 mt-1">9 JS-only + 5 Multi-model</div>
             </div>
             <div className="bg-white rounded-xl shadow-lg p-6 text-center border-2 border-green-500/20">
               <div className="text-4xl font-bold text-green-600 mb-2">0</div>
@@ -47,7 +47,7 @@ export default function AnalyzersPage() {
           <div className="bg-gradient-to-r from-paradise-blue to-paradise-purple rounded-2xl shadow-xl p-8 text-white mb-8">
             <h2 className="text-4xl font-bold mb-4 text-center">Phase 1: JavaScript-Only Analysis</h2>
             <p className="text-lg text-center opacity-95 max-w-3xl mx-auto">
-              Paradise began with 8 analyzers that examine JavaScript in isolation using ActionLanguage.
+              Paradise began with 9 analyzers that examine JavaScript in isolation using ActionLanguage.
               These analyzers detect many real issues but have limitations when code spans multiple files.
             </p>
           </div>
@@ -105,6 +105,37 @@ export default function AnalyzersPage() {
                 <div className="w-10 h-10 bg-paradise-blue/10 rounded-lg flex items-center justify-center text-paradise-blue font-bold">
                   3
                 </div>
+                <h3 className="text-xl font-bold text-gray-900">KeyboardNavigationAnalyzer</h3>
+              </div>
+              <p className="text-gray-700 mb-3">
+                Detects 7 types of keyboard navigation issues: keyboard traps without Escape, screen reader conflicts,
+                deprecated keyCode usage, Tab without Shift handling, missing Escape handlers, missing arrow navigation,
+                and arrow key conflicts with browse mode. Critical for keyboard and screen reader users.
+              </p>
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2 mb-2">
+                <strong>WCAG:</strong> 2.1.1, 2.1.2, 2.1.4, 4.1.2 | <strong>Scope:</strong> JavaScript-only
+              </div>
+              <details className="text-sm text-gray-600">
+                <summary className="cursor-pointer font-medium text-paradise-blue hover:text-paradise-purple">
+                  View 7 Issue Types
+                </summary>
+                <ul className="mt-2 ml-4 space-y-1 list-disc">
+                  <li>potential-keyboard-trap</li>
+                  <li>screen-reader-conflict</li>
+                  <li>deprecated-keycode</li>
+                  <li>tab-without-shift</li>
+                  <li>missing-escape-handler</li>
+                  <li>missing-arrow-navigation</li>
+                  <li>screen-reader-arrow-conflict</li>
+                </ul>
+              </details>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-paradise-blue hover:shadow-2xl transition-shadow">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 bg-paradise-blue/10 rounded-lg flex items-center justify-center text-paradise-blue font-bold">
+                  4
+                </div>
                 <h3 className="text-xl font-bold text-gray-900">MissingLabelAnalyzer</h3>
               </div>
               <p className="text-gray-700 mb-3">
@@ -119,7 +150,7 @@ export default function AnalyzersPage() {
             <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-paradise-blue hover:shadow-2xl transition-shadow">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 bg-paradise-blue/10 rounded-lg flex items-center justify-center text-paradise-blue font-bold">
-                  4
+                  5
                 </div>
                 <h3 className="text-xl font-bold text-gray-900">MissingAltTextAnalyzer</h3>
               </div>
@@ -135,7 +166,7 @@ export default function AnalyzersPage() {
             <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-paradise-blue hover:shadow-2xl transition-shadow">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 bg-paradise-blue/10 rounded-lg flex items-center justify-center text-paradise-blue font-bold">
-                  5
+                  6
                 </div>
                 <h3 className="text-xl font-bold text-gray-900">TabIndexAnalyzer</h3>
               </div>
@@ -151,7 +182,7 @@ export default function AnalyzersPage() {
             <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-paradise-blue hover:shadow-2xl transition-shadow">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 bg-paradise-blue/10 rounded-lg flex items-center justify-center text-paradise-blue font-bold">
-                  6
+                  7
                 </div>
                 <h3 className="text-xl font-bold text-gray-900">RedundantRoleAnalyzer</h3>
               </div>
@@ -167,7 +198,7 @@ export default function AnalyzersPage() {
             <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-paradise-blue hover:shadow-2xl transition-shadow">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 bg-paradise-blue/10 rounded-lg flex items-center justify-center text-paradise-blue font-bold">
-                  7
+                  8
                 </div>
                 <h3 className="text-xl font-bold text-gray-900">ContextChangeAnalyzer</h3>
               </div>
@@ -183,7 +214,7 @@ export default function AnalyzersPage() {
             <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-paradise-blue hover:shadow-2xl transition-shadow">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 bg-paradise-blue/10 rounded-lg flex items-center justify-center text-paradise-blue font-bold">
-                  8
+                  9
                 </div>
                 <h3 className="text-xl font-bold text-gray-900">FormValidationAnalyzer</h3>
               </div>
@@ -262,7 +293,7 @@ export default function AnalyzersPage() {
           <div className="bg-white rounded-2xl shadow-xl p-8 border-l-8 border-paradise-blue mb-12">
             <div className="flex items-start gap-6 mb-6">
               <div className="flex-shrink-0 w-16 h-16 bg-paradise-blue rounded-xl flex items-center justify-center text-white text-2xl font-bold">
-                9
+                10
               </div>
               <div className="flex-1">
                 <h2 className="text-3xl font-bold text-gray-900 mb-2">MouseOnlyClickAnalyzer</h2>
@@ -340,7 +371,7 @@ button.addEventListener('keydown', (e) => {
           <div className="bg-white rounded-2xl shadow-xl p-8 border-l-8 border-red-500 mb-12">
             <div className="flex items-start gap-6 mb-6">
               <div className="flex-shrink-0 w-16 h-16 bg-red-500 rounded-xl flex items-center justify-center text-white text-2xl font-bold">
-                10
+                11
               </div>
               <div className="flex-1">
                 <h2 className="text-3xl font-bold text-gray-900 mb-2">OrphanedEventHandlerAnalyzer</h2>
@@ -412,7 +443,7 @@ btn.addEventListener('click', handler);
             {/* Analyzer 11 */}
             <div className="bg-white rounded-xl shadow-lg p-6 border-l-8 border-pink-500">
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 bg-pink-500 rounded-lg flex items-center justify-center text-white text-xl font-bold">11</div>
+                <div className="w-12 h-12 bg-pink-500 rounded-lg flex items-center justify-center text-white text-xl font-bold">12</div>
                 <div>
                   <h3 className="text-2xl font-bold">MissingAriaConnectionAnalyzer</h3>
                   <div className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">NEW - Requires Multi-Model</div>
@@ -427,7 +458,7 @@ btn.addEventListener('click', handler);
             {/* Analyzer 12 */}
             <div className="bg-white rounded-xl shadow-lg p-6 border-l-8 border-teal-500">
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 bg-teal-500 rounded-lg flex items-center justify-center text-white text-xl font-bold">12</div>
+                <div className="w-12 h-12 bg-teal-500 rounded-lg flex items-center justify-center text-white text-xl font-bold">13</div>
                 <div>
                   <h3 className="text-2xl font-bold">VisibilityFocusConflictAnalyzer</h3>
                   <div className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">NEW - Requires Multi-Model</div>
@@ -442,7 +473,7 @@ btn.addEventListener('click', handler);
             {/* Analyzer 13 */}
             <div className="bg-white rounded-xl shadow-lg p-6 border-l-8 border-purple-500">
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center text-white text-xl font-bold">13</div>
+                <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center text-white text-xl font-bold">14</div>
                 <div>
                   <h3 className="text-2xl font-bold">FocusOrderConflictAnalyzer</h3>
                   <div className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-semibold">ENHANCED with Multi-Model</div>
@@ -501,6 +532,20 @@ btn.addEventListener('click', handler);
                   </tr>
                   <tr className="hover:bg-gray-50">
                     <td className="px-6 py-4 text-sm font-mono text-gray-600">3</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      KeyboardNavigationAnalyzer
+                      <span className="block text-xs text-gray-500 mt-1">(7 issue types)</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-paradise-blue/10 text-paradise-blue px-2 py-1 rounded">Phase 1</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">2.1.1, 2.1.2, 2.1.4, 4.1.2</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">4</td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">MissingLabelAnalyzer</td>
                     <td className="px-6 py-4 text-sm">
                       <span className="bg-paradise-blue/10 text-paradise-blue px-2 py-1 rounded">Phase 1</span>
@@ -511,7 +556,7 @@ btn.addEventListener('click', handler);
                     <td className="px-6 py-4 text-sm font-mono text-gray-600">1.3.1, 4.1.2</td>
                   </tr>
                   <tr className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm font-mono text-gray-600">4</td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">5</td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">MissingAltTextAnalyzer</td>
                     <td className="px-6 py-4 text-sm">
                       <span className="bg-paradise-blue/10 text-paradise-blue px-2 py-1 rounded">Phase 1</span>
@@ -522,7 +567,7 @@ btn.addEventListener('click', handler);
                     <td className="px-6 py-4 text-sm font-mono text-gray-600">1.1.1</td>
                   </tr>
                   <tr className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm font-mono text-gray-600">5</td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">6</td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">TabIndexAnalyzer</td>
                     <td className="px-6 py-4 text-sm">
                       <span className="bg-paradise-blue/10 text-paradise-blue px-2 py-1 rounded">Phase 1</span>
@@ -533,7 +578,7 @@ btn.addEventListener('click', handler);
                     <td className="px-6 py-4 text-sm font-mono text-gray-600">2.4.3</td>
                   </tr>
                   <tr className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm font-mono text-gray-600">6</td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">7</td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">RedundantRoleAnalyzer</td>
                     <td className="px-6 py-4 text-sm">
                       <span className="bg-paradise-blue/10 text-paradise-blue px-2 py-1 rounded">Phase 1</span>
@@ -544,7 +589,7 @@ btn.addEventListener('click', handler);
                     <td className="px-6 py-4 text-sm font-mono text-gray-600">4.1.2</td>
                   </tr>
                   <tr className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm font-mono text-gray-600">7</td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">8</td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">ContextChangeAnalyzer</td>
                     <td className="px-6 py-4 text-sm">
                       <span className="bg-paradise-blue/10 text-paradise-blue px-2 py-1 rounded">Phase 1</span>
@@ -555,7 +600,7 @@ btn.addEventListener('click', handler);
                     <td className="px-6 py-4 text-sm font-mono text-gray-600">3.2.1, 3.2.2</td>
                   </tr>
                   <tr className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm font-mono text-gray-600">8</td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">9</td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">FormValidationAnalyzer</td>
                     <td className="px-6 py-4 text-sm">
                       <span className="bg-paradise-blue/10 text-paradise-blue px-2 py-1 rounded">Phase 1</span>
@@ -566,7 +611,7 @@ btn.addEventListener('click', handler);
                     <td className="px-6 py-4 text-sm font-mono text-gray-600">3.3.1, 3.3.3</td>
                   </tr>
                   <tr className="hover:bg-gray-50 bg-green-50">
-                    <td className="px-6 py-4 text-sm font-mono text-gray-600">9</td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">10</td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">MouseOnlyClickAnalyzer</td>
                     <td className="px-6 py-4 text-sm">
                       <span className="bg-green-500/20 text-green-700 px-2 py-1 rounded">Phase 2</span>
@@ -577,7 +622,7 @@ btn.addEventListener('click', handler);
                     <td className="px-6 py-4 text-sm font-mono text-gray-600">2.1.1</td>
                   </tr>
                   <tr className="hover:bg-gray-50 bg-green-50">
-                    <td className="px-6 py-4 text-sm font-mono text-gray-600">10</td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">11</td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">OrphanedEventHandlerAnalyzer</td>
                     <td className="px-6 py-4 text-sm">
                       <span className="bg-green-500/20 text-green-700 px-2 py-1 rounded">Phase 2</span>
@@ -588,7 +633,7 @@ btn.addEventListener('click', handler);
                     <td className="px-6 py-4 text-sm font-mono text-gray-600">2.1.1, 4.1.2</td>
                   </tr>
                   <tr className="hover:bg-gray-50 bg-green-50">
-                    <td className="px-6 py-4 text-sm font-mono text-gray-600">11</td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">12</td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">MissingAriaConnectionAnalyzer</td>
                     <td className="px-6 py-4 text-sm">
                       <span className="bg-green-500/20 text-green-700 px-2 py-1 rounded">Phase 2</span>
@@ -599,7 +644,7 @@ btn.addEventListener('click', handler);
                     <td className="px-6 py-4 text-sm font-mono text-gray-600">1.3.1, 4.1.2</td>
                   </tr>
                   <tr className="hover:bg-gray-50 bg-green-50">
-                    <td className="px-6 py-4 text-sm font-mono text-gray-600">12</td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">13</td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">VisibilityFocusConflictAnalyzer</td>
                     <td className="px-6 py-4 text-sm">
                       <span className="bg-green-500/20 text-green-700 px-2 py-1 rounded">Phase 2</span>
@@ -610,7 +655,7 @@ btn.addEventListener('click', handler);
                     <td className="px-6 py-4 text-sm font-mono text-gray-600">2.4.7, 2.4.3</td>
                   </tr>
                   <tr className="hover:bg-gray-50 bg-green-50">
-                    <td className="px-6 py-4 text-sm font-mono text-gray-600">13</td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">14</td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">FocusOrderConflictAnalyzer</td>
                     <td className="px-6 py-4 text-sm">
                       <span className="bg-green-500/20 text-green-700 px-2 py-1 rounded">Phase 2</span>
@@ -629,7 +674,7 @@ btn.addEventListener('click', handler);
         {/* CTA */}
         <div className="max-w-4xl mx-auto text-center">
           <div className="bg-gradient-to-r from-paradise-blue to-paradise-purple rounded-2xl shadow-2xl p-12 text-white">
-            <h2 className="text-3xl font-bold mb-4">Experience All 13 Analyzers</h2>
+            <h2 className="text-3xl font-bold mb-4">Experience All 14 Analyzers</h2>
             <p className="text-lg opacity-95 mb-8">
               Try Paradise's complete analyzer suite - from JavaScript-only to multi-model - and see how
               the evolution eliminates false positives while catching more real issues.
