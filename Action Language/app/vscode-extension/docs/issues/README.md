@@ -43,15 +43,29 @@ Each help page includes:
 
 ### Focus Management
 
-- **focus-order-conflict** (documentation coming soon)
+- **[focus-order-conflict](focus-order-conflict.md)** - Positive tabindex creates unpredictable focus order
   - WCAG: 2.4.3 (Focus Order)
   - Severity: Warning
+  - Quick Fix: ✗ Manual fix required
 
 ### Visual & Interactive
 
-- **visibility-focus-conflict** (documentation coming soon)
-  - WCAG: 2.4.7 (Focus Visible)
+- **[visibility-focus-conflict](visibility-focus-conflict.md)** - Element is focusable but visually hidden
+  - WCAG: 2.4.7 (Focus Visible), 4.1.2 (Name, Role, Value)
+  - Severity: Error
+  - Quick Fix: ✗ Manual fix required
+
+### React-Specific
+
+- **[react-portal-accessibility](react-portal-accessibility.md)** - Portal renders outside parent DOM hierarchy
+  - WCAG: 2.1.1, 2.4.3, 1.3.2, 4.1.2
   - Severity: Warning
+  - Quick Fix: ✓ Comprehensive guidance
+
+- **[react-stop-propagation](react-stop-propagation.md)** - stopPropagation blocks assistive technology events
+  - WCAG: 2.1.1, 4.1.2
+  - Severity: Warning/Error
+  - Quick Fix: ✓ Alternative approaches
 
 ## Documentation Status
 
@@ -64,10 +78,10 @@ Each help page includes:
 | mouse-only-click | ✅ | 2.1.1 | Warning |
 | orphaned-event-handler | ✅ | 4.1.2 | Error |
 | missing-aria-connection | ✅ | 4.1.2, 1.3.1 | Warning |
-| focus-order-conflict | 📋 | 2.4.3 | Warning |
-| visibility-focus-conflict | 📋 | 2.4.7 | Warning |
-| react-portal-accessibility | 📋 | Various | Warning |
-| react-stop-propagation | 📋 | 2.1.1 | Info |
+| focus-order-conflict | ✅ | 2.4.3 | Warning |
+| visibility-focus-conflict | ✅ | 2.4.7 | Error |
+| react-portal-accessibility | ✅ | Various | Warning |
+| react-stop-propagation | ✅ | 2.1.1 | Warning/Error |
 
 ## Contributing
 
