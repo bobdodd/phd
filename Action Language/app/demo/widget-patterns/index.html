@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Widget Pattern Analysis - Paradise Demo Site</title>
+  <link rel="stylesheet" href="../css/demo.css">
+  <style>
+    .hero {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      font-size: 1.5rem;
+      opacity: 0.9;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin: 3rem 0;
+    }
+
+    .feature-card {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 2rem;
+      transition: all 0.3s;
+    }
+
+    .feature-card:hover {
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+
+    .feature-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .pattern-category {
+      margin: 3rem 0;
+    }
+
+    .pattern-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .pattern-card {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 1.5rem;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .pattern-card:hover {
+      border-color: #667eea;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .pattern-card h3 {
+      margin: 0 0 0.5rem 0;
+      color: #2d3748;
+    }
+
+    .pattern-card p {
+      margin: 0;
+      color: #718096;
+      font-size: 0.9rem;
+    }
+
+    .complexity-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .complexity-low {
+      background: #c6f6d5;
+      color: #22543d;
+    }
+
+    .complexity-medium {
+      background: #fef3c7;
+      color: #78350f;
+    }
+
+    .complexity-high {
+      background: #fed7d7;
+      color: #742a2a;
+    }
+
+    .complexity-very-high {
+      background: #e9d5ff;
+      color: #5b21b6;
+    }
+
+    .stats-bar {
+      display: flex;
+      justify-content: space-around;
+      background: white;
+      border-radius: 8px;
+      padding: 2rem;
+      margin: 3rem 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-number {
+      display: block;
+      font-size: 3rem;
+      font-weight: bold;
+      color: #667eea;
+      line-height: 1;
+    }
+
+    .stat-label {
+      display: block;
+      color: #718096;
+      margin-top: 0.5rem;
+    }
+
+    .multi-model-highlight {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 3rem 2rem;
+      border-radius: 12px;
+      margin: 3rem 0;
+    }
+
+    .multi-model-highlight h2 {
+      margin-top: 0;
+    }
+
+    .example-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .example-card {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 1.5rem;
+      text-decoration: none;
+      color: white;
+      transition: all 0.2s;
+    }
+
+    .example-card:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .example-card h3 {
+      margin: 0 0 0.5rem 0;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-right: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .badge.multi-file {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <div class="hero">
+    <h1>🎯 Widget Pattern Analysis Demo</h1>
+    <p>Discover how Paradise validates complete ARIA widget implementations</p>
+    <p style="font-size: 1rem; margin-top: 1rem; opacity: 0.8;">
+      Unlike other tools that check individual attributes, Paradise validates <strong>complete patterns</strong>
+      including structure, ARIA relationships, and keyboard behavior.
+    </p>
+  </div>
+
+  <main id="main" style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
+
+    <section>
+      <h2>Why Widget Pattern Analysis Matters</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🔍</div>
+          <h3>Beyond Attribute Checking</h3>
+          <p>Traditional tools check if <code>role="tab"</code> exists. Paradise validates the <strong>entire tabs pattern</strong> including arrow navigation, aria-selected updates, and panel relationships.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">⌨️</div>
+          <h3>Keyboard Behavior Validation</h3>
+          <p>Detects missing keyboard navigation patterns: arrow keys, Home/End support, focus traps, Escape handlers, and roving tabindex implementations.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🔗</div>
+          <h3>Multi-Model Analysis</h3>
+          <p>Validates patterns split across HTML, JavaScript, and CSS files. No false positives when handlers are in different files.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🎓</div>
+          <h3>Educational Demos</h3>
+          <p>See side-by-side comparisons of accessible vs. inaccessible implementations. Learn why each component matters.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">✨</div>
+          <h3>Auto-Fix Suggestions</h3>
+          <p>Get complete implementation code for fixing incomplete patterns. Copy-paste working solutions.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>WCAG Compliance</h3>
+          <p>Every pattern maps to specific WCAG 2.1 success criteria (1.3.1, 2.1.1, 2.1.2, 4.1.2) for audit trail.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="stats-bar">
+      <div class="stat">
+        <span class="stat-number">21</span>
+        <span class="stat-label">Widget Patterns</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">52</span>
+        <span class="stat-label">Issue Types Detected</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">0</span>
+        <span class="stat-label">False Positives</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">100%</span>
+        <span class="stat-label">WCAG Coverage</span>
+      </div>
+    </div>
+
+    <section class="pattern-category">
+      <h2>Navigation Widgets (7 patterns)</h2>
+      <p>Widgets for navigating content and user interfaces</p>
+      <div class="pattern-grid">
+        <a href="pages/navigation-widgets/tabs.html" class="pattern-card">
+          <span class="complexity-badge complexity-high">High</span>
+          <h3>Tabs</h3>
+          <p>Tablist with arrow navigation, aria-selected, and panel management</p>
+        </a>
+
+        <a href="pages/navigation-widgets/menu.html" class="pattern-card">
+          <span class="complexity-badge complexity-high">High</span>
+          <h3>Menu</h3>
+          <p>Menu with arrow navigation, Enter/Space activation, and submenus</p>
+        </a>
+
+        <a href="pages/navigation-widgets/tree.html" class="pattern-card">
+          <span class="complexity-badge complexity-very-high">Very High</span>
+          <h3>Tree</h3>
+          <p>Hierarchical tree with 4-way arrow navigation and expand/collapse</p>
+        </a>
+
+        <a href="pages/navigation-widgets/breadcrumb.html" class="pattern-card">
+          <span class="complexity-badge complexity-low">Low</span>
+          <h3>Breadcrumb</h3>
+          <p>Navigation trail with aria-current="page" on current location</p>
+        </a>
+
+        <a href="pages/navigation-widgets/toolbar.html" class="pattern-card">
+          <span class="complexity-badge complexity-medium">Medium</span>
+          <h3>Toolbar</h3>
+          <p>Button group with roving tabindex and arrow navigation</p>
+        </a>
+
+        <a href="pages/navigation-widgets/grid.html" class="pattern-card">
+          <span class="complexity-badge complexity-very-high">Very High</span>
+          <h3>Grid</h3>
+          <p>2D navigation with row/gridcell structure and arrow keys</p>
+        </a>
+
+        <a href="pages/navigation-widgets/feed.html" class="pattern-card">
+          <span class="complexity-badge complexity-high">High</span>
+          <h3>Feed</h3>
+          <p>Dynamic content stream with aria-posinset and aria-setsize</p>
+        </a>
+      </div>
+    </section>
+
+    <section class="pattern-category">
+      <h2>Input Widgets (7 patterns)</h2>
+      <p>Widgets for user input and data entry</p>
+      <div class="pattern-grid">
+        <a href="pages/input-widgets/combobox.html" class="pattern-card">
+          <span class="complexity-badge complexity-very-high">Very High</span>
+          <h3>Combobox</h3>
+          <p>Autocomplete dropdown with aria-activedescendant</p>
+        </a>
+
+        <a href="pages/input-widgets/listbox.html" class="pattern-card">
+          <span class="complexity-badge complexity-medium">Medium</span>
+          <h3>Listbox</h3>
+          <p>Selectable list with arrow navigation and selection state</p>
+        </a>
+
+        <a href="pages/input-widgets/radiogroup.html" class="pattern-card">
+          <span class="complexity-badge complexity-medium">Medium</span>
+          <h3>Radiogroup</h3>
+          <p>Radio button group with arrow navigation and auto-check</p>
+        </a>
+
+        <a href="pages/input-widgets/slider.html" class="pattern-card">
+          <span class="complexity-badge complexity-medium">Medium</span>
+          <h3>Slider</h3>
+          <p>Value slider with arrow keys and aria-valuenow/valuemin/valuemax</p>
+        </a>
+
+        <a href="pages/input-widgets/spinbutton.html" class="pattern-card">
+          <span class="complexity-badge complexity-medium">Medium</span>
+          <h3>Spinbutton</h3>
+          <p>Numeric input with Up/Down arrows and value attributes</p>
+        </a>
+
+        <a href="pages/input-widgets/switch.html" class="pattern-card">
+          <span class="complexity-badge complexity-low">Low</span>
+          <h3>Switch</h3>
+          <p>Toggle switch with aria-checked state management</p>
+        </a>
+
+        <a href="pages/input-widgets/meter.html" class="pattern-card">
+          <span class="complexity-badge complexity-low">Low</span>
+          <h3>Meter</h3>
+          <p>Value meter with aria-valuenow for measurement display</p>
+        </a>
+      </div>
+    </section>
+
+    <section class="pattern-category">
+      <h2>Disclosure Widgets (4 patterns)</h2>
+      <p>Widgets for showing and hiding content</p>
+      <div class="pattern-grid">
+        <a href="pages/disclosure-widgets/dialog.html" class="pattern-card">
+          <span class="complexity-badge complexity-very-high">Very High</span>
+          <h3>Dialog</h3>
+          <p>Modal with focus trap, Escape handler, and focus restoration</p>
+        </a>
+
+        <a href="pages/disclosure-widgets/accordion.html" class="pattern-card">
+          <span class="complexity-badge complexity-medium">Medium</span>
+          <h3>Accordion</h3>
+          <p>Collapsible sections with aria-expanded and aria-controls</p>
+        </a>
+
+        <a href="pages/disclosure-widgets/disclosure.html" class="pattern-card">
+          <span class="complexity-badge complexity-low">Low</span>
+          <h3>Disclosure</h3>
+          <p>Simple show/hide toggle with aria-expanded</p>
+        </a>
+
+        <a href="pages/disclosure-widgets/tooltip.html" class="pattern-card">
+          <span class="complexity-badge complexity-low">Low</span>
+          <h3>Tooltip</h3>
+          <p>Contextual help popup with unique ID and show/hide handlers</p>
+        </a>
+      </div>
+    </section>
+
+    <section class="pattern-category">
+      <h2>Status Widgets (3 patterns)</h2>
+      <p>Widgets for displaying status and progress</p>
+      <div class="pattern-grid">
+        <a href="pages/status-widgets/progressbar.html" class="pattern-card">
+          <span class="complexity-badge complexity-low">Low</span>
+          <h3>Progressbar</h3>
+          <p>Progress indicator with aria-valuenow for determinate progress</p>
+        </a>
+
+        <a href="pages/status-widgets/carousel.html" class="pattern-card">
+          <span class="complexity-badge complexity-medium">Medium</span>
+          <h3>Carousel</h3>
+          <p>Auto-rotating content with pause/play controls</p>
+        </a>
+
+        <a href="pages/status-widgets/link.html" class="pattern-card">
+          <span class="complexity-badge complexity-low">Low</span>
+          <h3>Link</h3>
+          <p>Custom link (role="link") with click and Enter key handlers</p>
+        </a>
+      </div>
+    </section>
+
+    <div class="multi-model-highlight">
+      <h2>🌟 Multi-Model Analysis Examples</h2>
+      <p style="margin-bottom: 0;">
+        See how Paradise analyzes patterns split across multiple files — the feature that eliminates false positives.
+      </p>
+
+      <div class="example-grid">
+        <a href="pages/multi-model-examples/cross-file-tabs/" class="example-card">
+          <h3>Cross-File Tabs</h3>
+          <p>Tabs pattern split across 3 files: HTML structure, click handlers, and keyboard navigation.</p>
+          <div>
+            <span class="badge multi-file">3 Files</span>
+            <span class="badge multi-file">Zero False Positives</span>
+          </div>
+        </a>
+
+        <a href="pages/multi-model-examples/component-based-dialog/" class="example-card">
+          <h3>Component-Based Dialog</h3>
+          <p>React-style dialog with component structure and custom hooks.</p>
+          <div>
+            <span class="badge multi-file">Component Architecture</span>
+            <span class="badge multi-file">Hook Detection</span>
+          </div>
+        </a>
+
+        <a href="pages/multi-model-examples/distributed-menu/" class="example-card">
+          <h3>Distributed Menu</h3>
+          <p>Menu with setup, navigation, and actions in separate files.</p>
+          <div>
+            <span class="badge multi-file">4 Files</span>
+            <span class="badge multi-file">Complete Pattern</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <section style="margin-top: 4rem;">
+      <h2>How to Use This Demo Site</h2>
+      <ol style="font-size: 1.1rem; line-height: 1.8;">
+        <li><strong>Browse Patterns:</strong> Click any pattern card to see side-by-side accessible vs. inaccessible implementations</li>
+        <li><strong>Test with Keyboard:</strong> Use Tab, arrow keys, Enter, and Escape to test widget behavior</li>
+        <li><strong>View Analysis Results:</strong> See what Paradise detects on each page</li>
+        <li><strong>Learn from Code:</strong> View complete implementation code with explanations</li>
+        <li><strong>Copy Solutions:</strong> Use provided code snippets to fix your own widgets</li>
+      </ol>
+    </section>
+
+    <section style="background: #f7fafc; padding: 2rem; border-radius: 8px; margin-top: 3rem;">
+      <h2>About Paradise Widget Pattern Analyzer</h2>
+      <p style="font-size: 1.1rem; line-height: 1.6;">
+        Paradise's Widget Pattern Analyzer is the <strong>only accessibility tool</strong> that validates complete ARIA widget implementations.
+        While other tools check if <code>role="tab"</code> exists, Paradise ensures the entire pattern works correctly:
+      </p>
+      <ul style="font-size: 1.1rem; line-height: 1.8;">
+        <li>✅ Complete structural hierarchy</li>
+        <li>✅ All required ARIA attributes and relationships</li>
+        <li>✅ Keyboard navigation implementation</li>
+        <li>✅ Dynamic state management</li>
+        <li>✅ Focus management patterns</li>
+      </ul>
+      <p style="font-size: 1.1rem; margin-top: 1rem;">
+        <strong>Result:</strong> Catch incomplete widgets that pass basic ARIA checks but fail real-world keyboard testing.
+      </p>
+    </section>
+
+  </main>
+
+  <footer style="background: #2d3748; color: white; padding: 2rem; text-align: center; margin-top: 4rem;">
+    <p style="margin: 0;">
+      Paradise Accessibility Analyzer - Widget Pattern Demo Site
+    </p>
+    <p style="margin-top: 0.5rem; opacity: 0.7;">
+      <a href="../index.html" style="color: #90cdf4;">← Back to Main Demo Index</a>
+    </p>
+  </footer>
+</body>
+</html>

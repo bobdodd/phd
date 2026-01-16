@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progressbar Pattern - Comprehensive Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .implementation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(650px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .implementation-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .implementation-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge.accessible {
+            background: #10b981;
+            color: white;
+        }
+
+        .badge.inaccessible {
+            background: #ef4444;
+            color: white;
+        }
+
+        .implementation-section h3 {
+            font-size: 1.3rem;
+            margin: 2rem 0 1rem 0;
+            color: #4a5568;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+
+        .demo-block {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f7fafc;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .demo-label {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #2d3748;
+            font-size: 1rem;
+        }
+
+        .demo-description {
+            font-size: 0.9rem;
+            color: #718096;
+            margin-bottom: 1rem;
+        }
+
+        /* Progressbar Styles */
+        .progress-container {
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar-wrapper {
+            position: relative;
+            width: 100%;
+            height: 30px;
+            background: #e2e8f0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+
+        .progress-text {
+            font-weight: 500;
+        }
+
+        /* File Upload Styles */
+        .file-upload-progress {
+            margin-bottom: 1.5rem;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .file-details {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .file-size {
+            font-size: 0.85rem;
+            color: #718096;
+        }
+
+        /* Installation Progress Styles */
+        .installation-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.25rem;
+        }
+
+        .step-status {
+            font-size: 0.85rem;
+            color: #718096;
+        }
+
+        /* Loading Styles */
+        .loading-indicator {
+            margin-bottom: 1.5rem;
+        }
+
+        .spinner-progress {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        /* Button Styles */
+        .button-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #38a169;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #e53e3e;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.processing {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-badge.complete {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Circular Progress */
+        .circular-progress-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .circular-progress {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+
+        .circular-progress svg {
+            transform: rotate(-90deg);
+        }
+
+        .circular-progress-bg {
+            fill: none;
+            stroke: #e2e8f0;
+            stroke-width: 10;
+        }
+
+        .circular-progress-bar {
+            fill: none;
+            stroke: #667eea;
+            stroke-width: 10;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.3s ease;
+        }
+
+        .circular-progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        /* Live Region */
+        .live-region {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #eef2ff;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #4a5568;
+            min-height: 3rem;
+        }
+
+        .live-region:empty {
+            display: none;
+        }
+
+        /* Multi-step Progress */
+        .multi-step-progress {
+            margin-bottom: 2rem;
+        }
+
+        .steps-list {
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .steps-list::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e2e8f0;
+            z-index: 0;
+        }
+
+        .step-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            z-index: 1;
+        }
+
+        .step-marker {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #a0aec0;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-item.active .step-marker {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .step-item.completed .step-marker {
+            border-color: #48bb78;
+            background: #48bb78;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.85rem;
+            color: #718096;
+            text-align: center;
+        }
+
+        .step-item.active .step-label {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        /* Indeterminate Progress */
+        .progress-bar-indeterminate {
+            position: relative;
+            width: 100%;
+            height: 30px;
+            background: #e2e8f0;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .progress-bar-indeterminate::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 30%;
+            background: linear-gradient(90deg, transparent, #667eea, transparent);
+            animation: indeterminate 1.5s ease-in-out infinite;
+        }
+
+        @keyframes indeterminate {
+            0% {
+                left: -30%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        /* Issues List */
+        .issues-section {
+            background: #fff5f5;
+            border: 2px solid #fc8181;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .issues-section h4 {
+            color: #c53030;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .issues-list {
+            list-style: none;
+        }
+
+        .issues-list li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: #742a2a;
+        }
+
+        .issues-list li::before {
+            content: '✗';
+            position: absolute;
+            left: 0;
+            color: #fc8181;
+            font-weight: bold;
+        }
+
+        /* Code Display */
+        .code-display {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        .code-display code {
+            display: block;
+            white-space: pre;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1400px) {
+            .implementation-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .implementation-section {
+                padding: 1.5rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .steps-list {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .steps-list::before {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Progressbar Pattern Demo</h1>
+            <p class="subtitle">Comprehensive comparison of accessible vs. inaccessible implementations</p>
+        </header>
+
+        <div class="implementation-grid">
+            <!-- ACCESSIBLE IMPLEMENTATION -->
+            <div class="implementation-section">
+                <h2>
+                    <span class="badge accessible">Accessible</span>
+                    Proper Implementation
+                </h2>
+
+                <!-- Basic Progress Bar -->
+                <h3>1. Basic Progress Bar</h3>
+                <div class="demo-block">
+                    <div class="demo-label">Task Progress</div>
+                    <div class="demo-description">Standard linear progress bar with proper ARIA attributes</div>
+
+                    <div class="progress-container">
+                        <div class="progress-bar-wrapper">
+                            <div class="progress-bar-fill"
+                                 id="accessible-basic-fill"
+                                 role="progressbar"
+                                 aria-labelledby="accessible-basic-label"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100"
+                                 aria-valuenow="0"
+                                 style="width: 0%">
+                                0%
+                            </div>
+                        </div>
+                        <div class="progress-info">
+                            <span id="accessible-basic-label" class="progress-text">Loading...</span>
+                            <span id="accessible-basic-percentage">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="accessibleProgress.startBasic()">Start</button>
+                        <button class="btn-secondary" onclick="accessibleProgress.pauseBasic()">Pause</button>
+                        <button class="btn-danger" onclick="accessibleProgress.resetBasic()">Reset</button>
+                    </div>
+
+                    <div class="live-region" role="status" aria-live="polite" aria-atomic="true" id="accessible-basic-live"></div>
+                </div>
+
+                <!-- File Upload Progress -->
+                <h3>2. File Upload Progress</h3>
+                <div class="demo-block">
+                    <div class="demo-label">Document Upload</div>
+                    <div class="demo-description">Simulates file upload with aria-valuetext for human-readable status</div>
+
+                    <div class="file-upload-progress">
+                        <div class="file-info">
+                            <div class="file-icon">PDF</div>
+                            <div class="file-details">
+                                <div class="file-name">annual-report-2024.pdf</div>
+                                <div class="file-size">15.7 MB</div>
+                            </div>
+                            <span id="accessible-file-status" class="status-badge pending">Pending</span>
+                        </div>
+
+                        <div class="progress-bar-wrapper">
+                            <div class="progress-bar-fill"
+                                 id="accessible-file-fill"
+                                 role="progressbar"
+                                 aria-label="File upload progress"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100"
+                                 aria-valuenow="0"
+                                 aria-valuetext="Upload not started"
+                                 style="width: 0%">
+                            </div>
+                        </div>
+                        <div class="progress-info">
+                            <span id="accessible-file-text" class="progress-text">Ready to upload</span>
+                            <span id="accessible-file-percentage">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="accessibleProgress.startFileUpload()">Upload File</button>
+                        <button class="btn-danger" onclick="accessibleProgress.cancelFileUpload()">Cancel</button>
+                    </div>
+
+                    <div class="live-region" role="status" aria-live="polite" aria-atomic="true" id="accessible-file-live"></div>
+                </div>
+
+                <!-- Installation Progress -->
+                <h3>3. Multi-Step Installation</h3>
+                <div class="demo-block">
+                    <div class="demo-label">Software Installation</div>
+                    <div class="demo-description">Overall progress with individual step tracking</div>
+
+                    <div class="progress-container">
+                        <div class="progress-bar-wrapper">
+                            <div class="progress-bar-fill"
+                                 id="accessible-install-fill"
+                                 role="progressbar"
+                                 aria-label="Installation progress"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100"
+                                 aria-valuenow="0"
+                                 aria-valuetext="Installation not started"
+                                 style="width: 0%">
+                                0%
+                            </div>
+                        </div>
+                        <div class="progress-info">
+                            <span id="accessible-install-text" class="progress-text">Ready to install</span>
+                            <span id="accessible-install-percentage">0%</span>
+                        </div>
+                    </div>
+
+                    <div id="accessible-install-steps"></div>
+
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="accessibleProgress.startInstallation()">Start Installation</button>
+                        <button class="btn-danger" onclick="accessibleProgress.cancelInstallation()">Cancel</button>
+                    </div>
+
+                    <div class="live-region" role="status" aria-live="polite" aria-atomic="true" id="accessible-install-live"></div>
+                </div>
+
+                <!-- Circular Progress -->
+                <h3>4. Circular Progress</h3>
+                <div class="demo-block">
+                    <div class="demo-label">Data Processing</div>
+                    <div class="demo-description">Circular progress indicator with SVG</div>
+
+                    <div class="circular-progress-container">
+                        <div class="circular-progress">
+                            <svg width="120" height="120">
+                                <circle class="circular-progress-bg" cx="60" cy="60" r="50"></circle>
+                                <circle class="circular-progress-bar"
+                                        id="accessible-circular-bar"
+                                        cx="60"
+                                        cy="60"
+                                        r="50"
+                                        stroke-dasharray="314.159"
+                                        stroke-dashoffset="314.159"
+                                        role="progressbar"
+                                        aria-label="Data processing progress"
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"
+                                        aria-valuenow="0">
+                                </circle>
+                            </svg>
+                            <div class="circular-progress-text" id="accessible-circular-text">0%</div>
+                        </div>
+                        <div id="accessible-circular-status" class="progress-text">Processing not started</div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="accessibleProgress.startCircular()">Start Processing</button>
+                        <button class="btn-danger" onclick="accessibleProgress.stopCircular()">Stop</button>
+                    </div>
+
+                    <div class="live-region" role="status" aria-live="polite" aria-atomic="true" id="accessible-circular-live"></div>
+                </div>
+
+                <!-- Indeterminate Progress -->
+                <h3>5. Indeterminate Progress</h3>
+                <div class="demo-block">
+                    <div class="demo-label">Loading Content</div>
+                    <div class="demo-description">For operations with unknown duration</div>
+
+                    <div class="progress-container">
+                        <div class="progress-bar-indeterminate"
+                             id="accessible-indeterminate"
+                             role="progressbar"
+                             aria-label="Loading content"
+                             aria-valuemin="0"
+                             aria-valuemax="100"
+                             aria-valuetext="Loading in progress"
+                             style="display: none;">
+                        </div>
+                        <div class="progress-info">
+                            <span id="accessible-indeterminate-text" class="progress-text">Ready to load</span>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="accessibleProgress.startIndeterminate()">Start Loading</button>
+                        <button class="btn-danger" onclick="accessibleProgress.stopIndeterminate()">Complete</button>
+                    </div>
+
+                    <div class="live-region" role="status" aria-live="polite" aria-atomic="true" id="accessible-indeterminate-live"></div>
+                </div>
+            </div>
+
+            <!-- INACCESSIBLE IMPLEMENTATION -->
+            <div class="implementation-section">
+                <h2>
+                    <span class="badge inaccessible">Inaccessible</span>
+                    Bad Implementation
+                </h2>
+
+                <!-- Basic Progress Bar -->
+                <h3>1. Basic Progress Bar</h3>
+                <div class="demo-block">
+                    <div class="demo-label">Task Progress</div>
+                    <div class="demo-description">Missing role and ARIA attributes</div>
+
+                    <div class="progress-container">
+                        <div class="progress-bar-wrapper">
+                            <div class="progress-bar-fill"
+                                 id="inaccessible-basic-fill"
+                                 style="width: 0%">
+                                0%
+                            </div>
+                        </div>
+                        <div class="progress-info">
+                            <span class="progress-text">Loading...</span>
+                            <span id="inaccessible-basic-percentage">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="inaccessibleProgress.startBasic()">Start</button>
+                        <button class="btn-secondary" onclick="inaccessibleProgress.pauseBasic()">Pause</button>
+                        <button class="btn-danger" onclick="inaccessibleProgress.resetBasic()">Reset</button>
+                    </div>
+                </div>
+
+                <!-- File Upload Progress -->
+                <h3>2. File Upload Progress</h3>
+                <div class="demo-block">
+                    <div class="demo-label">Document Upload</div>
+                    <div class="demo-description">No aria-valuetext or live region announcements</div>
+
+                    <div class="file-upload-progress">
+                        <div class="file-info">
+                            <div class="file-icon">PDF</div>
+                            <div class="file-details">
+                                <div class="file-name">annual-report-2024.pdf</div>
+                                <div class="file-size">15.7 MB</div>
+                            </div>
+                            <span id="inaccessible-file-status" class="status-badge pending">Pending</span>
+                        </div>
+
+                        <div class="progress-bar-wrapper">
+                            <div class="progress-bar-fill"
+                                 id="inaccessible-file-fill"
+                                 style="width: 0%">
+                            </div>
+                        </div>
+                        <div class="progress-info">
+                            <span id="inaccessible-file-text" class="progress-text">Ready to upload</span>
+                            <span id="inaccessible-file-percentage">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="inaccessibleProgress.startFileUpload()">Upload File</button>
+                        <button class="btn-danger" onclick="inaccessibleProgress.cancelFileUpload()">Cancel</button>
+                    </div>
+                </div>
+
+                <!-- Installation Progress -->
+                <h3>3. Multi-Step Installation</h3>
+                <div class="demo-block">
+                    <div class="demo-label">Software Installation</div>
+                    <div class="demo-description">Missing aria-valuemin and aria-valuemax</div>
+
+                    <div class="progress-container">
+                        <div class="progress-bar-wrapper">
+                            <div class="progress-bar-fill"
+                                 id="inaccessible-install-fill"
+                                 style="width: 0%">
+                                0%
+                            </div>
+                        </div>
+                        <div class="progress-info">
+                            <span id="inaccessible-install-text" class="progress-text">Ready to install</span>
+                            <span id="inaccessible-install-percentage">0%</span>
+                        </div>
+                    </div>
+
+                    <div id="inaccessible-install-steps"></div>
+
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="inaccessibleProgress.startInstallation()">Start Installation</button>
+                        <button class="btn-danger" onclick="inaccessibleProgress.cancelInstallation()">Cancel</button>
+                    </div>
+                </div>
+
+                <!-- Circular Progress -->
+                <h3>4. Circular Progress</h3>
+                <div class="demo-block">
+                    <div class="demo-label">Data Processing</div>
+                    <div class="demo-description">No progressbar role on SVG element</div>
+
+                    <div class="circular-progress-container">
+                        <div class="circular-progress">
+                            <svg width="120" height="120">
+                                <circle class="circular-progress-bg" cx="60" cy="60" r="50"></circle>
+                                <circle class="circular-progress-bar"
+                                        id="inaccessible-circular-bar"
+                                        cx="60"
+                                        cy="60"
+                                        r="50"
+                                        stroke-dasharray="314.159"
+                                        stroke-dashoffset="314.159">
+                                </circle>
+                            </svg>
+                            <div class="circular-progress-text" id="inaccessible-circular-text">0%</div>
+                        </div>
+                        <div id="inaccessible-circular-status" class="progress-text">Processing not started</div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="inaccessibleProgress.startCircular()">Start Processing</button>
+                        <button class="btn-danger" onclick="inaccessibleProgress.stopCircular()">Stop</button>
+                    </div>
+                </div>
+
+                <!-- Indeterminate Progress -->
+                <h3>5. Indeterminate Progress</h3>
+                <div class="demo-block">
+                    <div class="demo-label">Loading Content</div>
+                    <div class="demo-description">Missing ARIA attributes for screen readers</div>
+
+                    <div class="progress-container">
+                        <div class="progress-bar-indeterminate"
+                             id="inaccessible-indeterminate"
+                             style="display: none;">
+                        </div>
+                        <div class="progress-info">
+                            <span id="inaccessible-indeterminate-text" class="progress-text">Ready to load</span>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="inaccessibleProgress.startIndeterminate()">Start Loading</button>
+                        <button class="btn-danger" onclick="inaccessibleProgress.stopIndeterminate()">Complete</button>
+                    </div>
+                </div>
+
+                <!-- Issues Section -->
+                <div class="issues-section">
+                    <h4>Paradise Detects 4 Critical Issues:</h4>
+                    <ul class="issues-list">
+                        <li>Missing role="progressbar" on progress elements</li>
+                        <li>Missing aria-valuemin and aria-valuemax attributes</li>
+                        <li>Missing aria-valuenow for current progress value</li>
+                        <li>No aria-label or aria-labelledby for accessible names</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/accessible/progressbar-complete.js"></script>
+    <script src="../../js/inaccessible/progressbar-incomplete.js"></script>
+</body>
+</html>

@@ -50,6 +50,8 @@ const FocusOrderConflictAnalyzer_1 = require("../lib/analyzers/FocusOrderConflic
 const VisibilityFocusConflictAnalyzer_1 = require("../lib/analyzers/VisibilityFocusConflictAnalyzer");
 const FocusManagementAnalyzer_1 = require("../lib/analyzers/FocusManagementAnalyzer");
 const KeyboardNavigationAnalyzer_1 = require("../lib/analyzers/KeyboardNavigationAnalyzer");
+const ARIASemanticAnalyzer_1 = require("../lib/analyzers/ARIASemanticAnalyzer");
+const WidgetPatternAnalyzer_1 = require("../lib/analyzers/WidgetPatternAnalyzer");
 class ForegroundAnalyzer {
     constructor(diagnosticCollection, projectManager, codeActionProvider) {
         this.diagnosticCollection = diagnosticCollection;
@@ -63,7 +65,9 @@ class ForegroundAnalyzer {
             new FocusOrderConflictAnalyzer_1.FocusOrderConflictAnalyzer(),
             new VisibilityFocusConflictAnalyzer_1.VisibilityFocusConflictAnalyzer(),
             new FocusManagementAnalyzer_1.FocusManagementAnalyzer(),
-            new KeyboardNavigationAnalyzer_1.KeyboardNavigationAnalyzer()
+            new KeyboardNavigationAnalyzer_1.KeyboardNavigationAnalyzer(),
+            new ARIASemanticAnalyzer_1.ARIASemanticAnalyzer(),
+            new WidgetPatternAnalyzer_1.WidgetPatternAnalyzer()
         ];
         console.log('[ForegroundAnalyzer] Initialized with', this.analyzers.length, 'analyzers');
     }

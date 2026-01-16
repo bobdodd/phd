@@ -1658,6 +1658,388 @@ export class RegistrationFormComponent implements OnInit {
     ],
     wcag: ['3.3.1', '4.1.3'],
     impact: 'Screen reader users submitted invalid forms repeatedly without knowing why, leading to frustration and form abandonment.'
+  },
+
+  // ARIA Semantics Examples
+  {
+    id: 'invalid-aria-role',
+    title: 'Invalid ARIA Role',
+    category: 'web',
+    language: 'JavaScript',
+    framework: 'React',
+    description: 'Custom dropdown using non-existent ARIA role',
+    problem: 'Developer used "dropdown" role which doesn\'t exist in ARIA 1.2, causing screen readers to ignore the role entirely',
+    before: `function CustomDropdown({ options, value, onChange }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="custom-dropdown">
+      <button
+        role="dropdown"  {/* ❌ Invalid role! */}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {value}
+      </button>
+      {isOpen && (
+        <ul className="options">
+          {options.map(opt => (
+            <li key={opt} onClick={() => onChange(opt)}>
+              {opt}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}`,
+    after: `function CustomDropdown({ options, value, onChange }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="custom-dropdown">
+      <button
+        role="combobox"  {/* ✅ Valid ARIA 1.2 role */}
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
+        aria-controls="dropdown-listbox"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {value}
+      </button>
+      {isOpen && (
+        <ul
+          id="dropdown-listbox"
+          role="listbox"  {/* ✅ Valid role */}
+        >
+          {options.map(opt => (
+            <li
+              key={opt}
+              role="option"  {/* ✅ Valid role */}
+              onClick={() => onChange(opt)}
+            >
+              {opt}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}`,
+    issuesFound: [
+      'invalid-role: "dropdown" is not a valid ARIA 1.2 role',
+      'Missing aria-expanded state',
+      'Missing aria-haspopup attribute',
+      'List items not marked as options'
+    ],
+    wcag: ['4.1.2'],
+    impact: 'Screen readers ignored the invalid role, announcing the element as a generic button without indicating it opens a menu. Users with visual impairments couldn\'t understand the element\'s purpose.'
+  },
+
+  {
+    id: 'interactive-role-no-handler',
+    title: 'Interactive Role Without Handler',
+    category: 'web',
+    language: 'JavaScript',
+    description: 'Div with button role but no keyboard support',
+    problem: 'Element has role="button" but lacks event handlers, making it non-functional for keyboard and screen reader users',
+    before: `// Dashboard card with broken interaction
+const cardElement = document.getElementById('dashboard-card');
+cardElement.setAttribute('role', 'button');
+// ❌ No click handler!
+// ❌ No keyboard handler!
+// ❌ Not focusable!
+
+// Screen reader announces "button" but nothing happens`,
+    after: `// Dashboard card with full keyboard support
+const cardElement = document.getElementById('dashboard-card');
+cardElement.setAttribute('role', 'button');
+cardElement.setAttribute('tabindex', '0');  // ✅ Focusable
+
+// ✅ Click handler
+cardElement.addEventListener('click', function() {
+  openDashboardDetails();
+});
+
+// ✅ Keyboard handler (Enter and Space)
+cardElement.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    openDashboardDetails();
+  }
+});
+
+// Now works for all users: mouse, keyboard, screen reader`,
+    issuesFound: [
+      'interactive-role-static: role="button" without event handlers',
+      'Element not keyboard-focusable',
+      'No click handler for mouse users',
+      'No keydown handler for keyboard users'
+    ],
+    wcag: ['2.1.1', '4.1.2'],
+    impact: 'Keyboard users could not access the dashboard card at all. Screen reader users heard "button" but pressing Enter/Space did nothing, creating confusion and blocking access to critical functionality.'
+  },
+
+  {
+    id: 'static-aria-expanded',
+    title: 'Static aria-expanded Attribute',
+    category: 'web',
+    language: 'JavaScript',
+    framework: 'React',
+    description: 'Accordion with aria-expanded that never updates',
+    problem: 'aria-expanded set to "false" but never changes when accordion opens, causing screen readers to announce incorrect state',
+    before: `function FAQAccordion({ question, answer }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div>
+      <button
+        aria-expanded="false"  {/* ❌ Always false! */}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {question}
+      </button>
+      {isOpen && (
+        <div className="answer">
+          {answer}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Screen reader always announces "collapsed"
+// even when content is visible!`,
+    after: `function FAQAccordion({ question, answer }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div>
+      <button
+        aria-expanded={isOpen}  {/* ✅ Dynamic state! */}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {question}
+      </button>
+      {isOpen && (
+        <div className="answer">
+          {answer}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Screen reader now announces correct state:
+// "expanded" when open, "collapsed" when closed`,
+    issuesFound: [
+      'aria-expanded-static: Set to "false" but never updated',
+      'Screen reader announces incorrect state',
+      'Visual state and ARIA state out of sync'
+    ],
+    wcag: ['4.1.2'],
+    impact: 'Screen reader users navigated through a FAQ list, hearing "collapsed" for every item even when content was visible. They repeatedly clicked already-open items trying to expand them, wasting time and creating frustration.'
+  },
+
+  {
+    id: 'dialog-missing-label',
+    title: 'Dialog Without Accessible Label',
+    category: 'web',
+    language: 'JavaScript',
+    framework: 'React',
+    description: 'Confirmation dialog missing aria-label or aria-labelledby',
+    problem: 'Dialog has no accessible name, so screen readers announce "dialog" without context about its purpose',
+    before: `function DeleteConfirmDialog({ isOpen, onConfirm, onCancel }) {
+  return isOpen ? (
+    <div
+      role="dialog"
+      aria-modal="true"
+      {/* ❌ No aria-label or aria-labelledby! */}
+    >
+      <h2>Confirm Delete</h2>
+      <p>Are you sure you want to delete this item?</p>
+      <button onClick={onCancel}>Cancel</button>
+      <button onClick={onConfirm}>Delete</button>
+    </div>
+  ) : null;
+}
+
+// Screen reader announces: "dialog"
+// User hears no context about what dialog does!`,
+    after: `function DeleteConfirmDialog({ isOpen, onConfirm, onCancel }) {
+  return isOpen ? (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="dialog-title"  {/* ✅ Links to title */}
+    >
+      <h2 id="dialog-title">Confirm Delete</h2>
+      <p>Are you sure you want to delete this item?</p>
+      <button onClick={onCancel}>Cancel</button>
+      <button onClick={onConfirm}>Delete</button>
+    </div>
+  ) : null;
+}
+
+// Screen reader announces: "Confirm Delete, dialog"
+// User immediately knows the dialog's purpose!`,
+    issuesFound: [
+      'dialog-missing-label: Dialog without accessible name',
+      'No aria-labelledby or aria-label attribute',
+      'Screen reader provides no context on dialog purpose'
+    ],
+    wcag: ['4.1.2'],
+    impact: 'Screen reader users heard "dialog" when the confirmation opened but had to navigate through the content to understand it was a delete confirmation. In a complex app with multiple dialogs, this lack of context caused significant confusion.'
+  },
+
+  {
+    id: 'missing-aria-checked',
+    title: 'Checkbox Role Missing aria-checked',
+    category: 'web',
+    language: 'JavaScript',
+    description: 'Custom checkbox with role but no state attribute',
+    problem: 'Element has role="checkbox" but missing required aria-checked attribute, breaking screen reader announcements',
+    before: `// Custom checkbox component
+function CustomCheckbox({ label, onChange }) {
+  const [checked, setChecked] = useState(false);
+
+  const toggle = () => {
+    setChecked(!checked);
+    onChange(!checked);
+  };
+
+  return (
+    <div
+      role="checkbox"
+      {/* ❌ Missing aria-checked! */}
+      onClick={toggle}
+      className={checked ? 'checked' : ''}
+    >
+      {checked ? '☑' : '☐'} {label}
+    </div>
+  );
+}
+
+// Screen reader never announces checked state!`,
+    after: `// Custom checkbox component with proper ARIA
+function CustomCheckbox({ label, onChange }) {
+  const [checked, setChecked] = useState(false);
+
+  const toggle = () => {
+    setChecked(!checked);
+    onChange(!checked);
+  };
+
+  return (
+    <div
+      role="checkbox"
+      aria-checked={checked}  {/* ✅ Required attribute */}
+      tabIndex={0}  {/* ✅ Focusable */}
+      onClick={toggle}
+      onKeyDown={(e) => {  {/* ✅ Keyboard support */}
+        if (e.key === ' ') {
+          e.preventDefault();
+          toggle();
+        }
+      }}
+      className={checked ? 'checked' : ''}
+    >
+      {checked ? '☑' : '☐'} {label}
+    </div>
+  );
+}
+
+// Screen reader announces: "checked, checkbox" or "not checked, checkbox"`,
+    issuesFound: [
+      'missing-required-aria: role="checkbox" requires aria-checked',
+      'interactive-role-static: Missing keyboard handler',
+      'Element not keyboard-focusable'
+    ],
+    wcag: ['4.1.2', '2.1.1'],
+    impact: 'Screen reader users could not tell if checkboxes were checked or unchecked. They clicked checkboxes repeatedly, unable to verify their selection state, leading to incorrect form submissions.'
+  },
+
+  {
+    id: 'assertive-live-region-overuse',
+    title: 'Overuse of aria-live="assertive"',
+    category: 'web',
+    language: 'JavaScript',
+    framework: 'React',
+    description: 'Form validation using assertive live region',
+    problem: 'Non-urgent form validation uses aria-live="assertive", interrupting screen readers unnecessarily',
+    before: `function EmailInput({ value, onChange }) {
+  const [error, setError] = useState('');
+
+  const validate = (email) => {
+    if (!email.includes('@')) {
+      setError('Invalid email format');
+    } else {
+      setError('');
+    }
+  };
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => {
+          onChange(e.target.value);
+          validate(e.target.value);
+        }}
+      />
+      <div
+        aria-live="assertive"  {/* ❌ Too aggressive! */}
+        role="alert"
+      >
+        {error}
+      </div>
+    </div>
+  );
+}
+
+// Interrupts screen reader mid-sentence for every keystroke!`,
+    after: `function EmailInput({ value, onChange }) {
+  const [error, setError] = useState('');
+
+  const validate = (email) => {
+    if (!email.includes('@')) {
+      setError('Invalid email format');
+    } else {
+      setError('');
+    }
+  };
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => {
+          onChange(e.target.value);
+          validate(e.target.value);
+        }}
+        aria-invalid={error ? 'true' : 'false'}
+        aria-describedby="email-error"
+      />
+      <div
+        id="email-error"
+        aria-live="polite"  {/* ✅ Non-disruptive */}
+        role="status"
+      >
+        {error}
+      </div>
+    </div>
+  );
+}
+
+// Announces error after user pauses, not immediately`,
+    issuesFound: [
+      'assertive-live-region: Form validation uses aria-live="assertive"',
+      'Should use "polite" for non-urgent messages',
+      'Unnecessarily interrupts screen reader'
+    ],
+    wcag: ['4.1.3'],
+    impact: 'Screen reader users were constantly interrupted mid-sentence while typing email addresses. Every keystroke triggered an assertive announcement, making the form nearly unusable and causing users to abandon registration.'
   }
 ];
 

@@ -21,6 +21,8 @@ import { FocusOrderConflictAnalyzer } from '../lib/analyzers/FocusOrderConflictA
 import { VisibilityFocusConflictAnalyzer } from '../lib/analyzers/VisibilityFocusConflictAnalyzer';
 import { FocusManagementAnalyzer } from '../lib/analyzers/FocusManagementAnalyzer';
 import { KeyboardNavigationAnalyzer } from '../lib/analyzers/KeyboardNavigationAnalyzer';
+import { ARIASemanticAnalyzer } from '../lib/analyzers/ARIASemanticAnalyzer';
+import { WidgetPatternAnalyzer } from '../lib/analyzers/WidgetPatternAnalyzer';
 import { ParadiseCodeActionProvider } from './codeActionProvider';
 
 export class ForegroundAnalyzer {
@@ -46,7 +48,9 @@ export class ForegroundAnalyzer {
       new FocusOrderConflictAnalyzer(),
       new VisibilityFocusConflictAnalyzer(),
       new FocusManagementAnalyzer(),
-      new KeyboardNavigationAnalyzer()
+      new KeyboardNavigationAnalyzer(),
+      new ARIASemanticAnalyzer(),
+      new WidgetPatternAnalyzer()
     ];
 
     console.log('[ForegroundAnalyzer] Initialized with', this.analyzers.length, 'analyzers');

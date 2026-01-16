@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slider Pattern - Comprehensive Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .intro-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .intro-section h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        .intro-section ul {
+            margin-left: 2rem;
+            margin-top: 1rem;
+        }
+
+        .intro-section li {
+            margin-bottom: 0.5rem;
+        }
+
+        .intro-section code {
+            background: #f0f0f0;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 968px) {
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .demo-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .demo-section.accessible {
+            border-top: 4px solid #10b981;
+        }
+
+        .demo-section.inaccessible {
+            border-top: 4px solid #ef4444;
+        }
+
+        .demo-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .demo-header h2 {
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge.danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .slider-demo {
+            margin-bottom: 2.5rem;
+        }
+
+        .slider-demo:last-child {
+            margin-bottom: 0;
+        }
+
+        .slider-demo h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #555;
+        }
+
+        .slider-demo p {
+            color: #666;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        /* Slider Container Styles */
+        .slider-container {
+            padding: 1.5rem;
+            background: #f9fafb;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .slider-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .slider-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+
+        .slider-wrapper {
+            position: relative;
+            width: 100%;
+            height: 40px;
+            display: flex;
+            align-items: center;
+        }
+
+        .slider-track {
+            position: relative;
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .slider-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: #667eea;
+            border-radius: 4px;
+            transition: width 0.1s ease;
+        }
+
+        .slider-thumb {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 50%;
+            cursor: grab;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            transition: box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .slider-thumb:hover {
+            box-shadow: 0 0 0 8px rgba(102, 126, 234, 0.1);
+        }
+
+        .slider-thumb:active {
+            cursor: grabbing;
+            box-shadow: 0 0 0 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .slider-thumb:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.3);
+            border-color: #4f46e5;
+        }
+
+        .slider-value-display {
+            margin-top: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .current-value {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+
+        .value-range {
+            color: #9ca3af;
+            font-size: 0.85rem;
+        }
+
+        /* Inaccessible Slider Styles */
+        .inaccessible .slider-thumb {
+            background: #fca5a5;
+            border-color: #ef4444;
+        }
+
+        .inaccessible .slider-fill {
+            background: #ef4444;
+        }
+
+        .inaccessible .slider-thumb:hover {
+            box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.1);
+        }
+
+        .inaccessible .slider-thumb:active {
+            box-shadow: 0 0 0 12px rgba(239, 68, 68, 0.15);
+        }
+
+        .inaccessible .current-value {
+            color: #ef4444;
+        }
+
+        /* Range Slider (Dual Handle) */
+        .slider-fill-range {
+            position: absolute;
+            height: 100%;
+            background: #667eea;
+            border-radius: 4px;
+            transition: left 0.1s ease, width 0.1s ease;
+        }
+
+        /* Vertical Slider */
+        .slider-wrapper.vertical {
+            width: 40px;
+            height: 200px;
+            margin: 0 auto;
+        }
+
+        .vertical .slider-track {
+            width: 8px;
+            height: 100%;
+            margin: 0 auto;
+        }
+
+        .vertical .slider-fill {
+            width: 100%;
+            height: 0%;
+            top: auto;
+            bottom: 0;
+        }
+
+        .vertical .slider-thumb {
+            left: 50%;
+            top: auto;
+            transform: translate(-50%, 50%);
+        }
+
+        /* Discrete Slider */
+        .slider-marks {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        .slider-mark {
+            position: absolute;
+            width: 2px;
+            height: 12px;
+            background: #9ca3af;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .slider-mark.active {
+            background: #667eea;
+        }
+
+        /* Temperature Slider Styles */
+        .temperature-slider .slider-fill {
+            background: linear-gradient(90deg, #3b82f6 0%, #ef4444 100%);
+        }
+
+        .temperature-slider .slider-thumb {
+            border-color: #8b5cf6;
+        }
+
+        .temperature-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #8b5cf6;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        /* Color Slider Styles */
+        .color-preview {
+            width: 100%;
+            height: 60px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 2px solid #e5e7eb;
+            transition: background-color 0.1s ease;
+        }
+
+        .rgb-sliders .slider-group {
+            margin-bottom: 1rem;
+        }
+
+        .red-slider .slider-fill {
+            background: #ef4444;
+        }
+
+        .red-slider .slider-thumb {
+            border-color: #ef4444;
+        }
+
+        .green-slider .slider-fill {
+            background: #10b981;
+        }
+
+        .green-slider .slider-thumb {
+            border-color: #10b981;
+        }
+
+        .blue-slider .slider-fill {
+            background: #3b82f6;
+        }
+
+        .blue-slider .slider-thumb {
+            border-color: #3b82f6;
+        }
+
+        /* Disabled State */
+        .slider-group.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .slider-group.disabled .slider-track {
+            cursor: not-allowed;
+        }
+
+        /* Issues Section */
+        .issues-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .issues-section h2 {
+            color: #ef4444;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .issue-count {
+            background: #ef4444;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .issues-list {
+            list-style: none;
+        }
+
+        .issue-item {
+            padding: 1rem;
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+
+        .issue-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .issue-item strong {
+            color: #991b1b;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .issue-item code {
+            background: white;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.85rem;
+            color: #dc2626;
+        }
+
+        /* Keyboard Help */
+        .keyboard-help {
+            background: #eff6ff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+            border: 1px solid #dbeafe;
+        }
+
+        .keyboard-help h3 {
+            color: #1e40af;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .keyboard-shortcuts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .shortcut {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .key {
+            background: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            border: 1px solid #bfdbfe;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #1e40af;
+            font-weight: 600;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .shortcut-desc {
+            color: #1e3a8a;
+            font-size: 0.9rem;
+        }
+
+        /* Focus Visible Indicator */
+        .focus-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1e40af;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .focus-indicator.visible {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Testing Section */
+        .testing-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .testing-section h2 {
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .test-steps {
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .test-steps h3 {
+            color: #374151;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .test-steps ol {
+            margin-left: 1.5rem;
+        }
+
+        .test-steps li {
+            margin-bottom: 0.75rem;
+            color: #4b5563;
+        }
+
+        .test-steps code {
+            background: white;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.85rem;
+            border: 1px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>Slider Pattern</h1>
+            <p>Interactive demonstration of accessible vs inaccessible slider implementations</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Introduction Section -->
+        <section class="intro-section">
+            <h2>About the Slider Pattern</h2>
+            <p>
+                A slider is an input widget that allows users to select a value from a range by moving a handle along a track.
+                Sliders can be used for various purposes like volume control, brightness adjustment, selecting ranges, and more.
+            </p>
+            <h3 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: #374151;">ARIA Requirements:</h3>
+            <ul>
+                <li><code>role="slider"</code> on the interactive element</li>
+                <li><code>aria-label</code> or <code>aria-labelledby</code> for accessible name</li>
+                <li><code>aria-valuemin</code> for minimum value</li>
+                <li><code>aria-valuemax</code> for maximum value</li>
+                <li><code>aria-valuenow</code> for current value</li>
+                <li><code>aria-valuetext</code> (optional) for formatted value display</li>
+                <li><code>aria-orientation</code> for vertical sliders (default is horizontal)</li>
+                <li><code>tabindex="0"</code> for keyboard accessibility</li>
+            </ul>
+            <h3 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: #374151;">Keyboard Support:</h3>
+            <ul>
+                <li><strong>Arrow Right/Up:</strong> Increase value by one step</li>
+                <li><strong>Arrow Left/Down:</strong> Decrease value by one step</li>
+                <li><strong>Home:</strong> Set to minimum value</li>
+                <li><strong>End:</strong> Set to maximum value</li>
+                <li><strong>Page Up:</strong> Increase by larger increment (optional)</li>
+                <li><strong>Page Down:</strong> Decrease by larger increment (optional)</li>
+            </ul>
+        </section>
+
+        <!-- Demo Grid -->
+        <div class="demo-grid">
+            <!-- Accessible Version -->
+            <section class="demo-section accessible">
+                <div class="demo-header">
+                    <h2>Accessible Implementation</h2>
+                    <span class="badge success">Compliant</span>
+                </div>
+
+                <!-- Volume Slider -->
+                <div class="slider-demo">
+                    <h3>Volume Control</h3>
+                    <p>Standard horizontal slider with all ARIA attributes and keyboard support</p>
+                    <div class="slider-container">
+                        <div class="slider-group">
+                            <label id="volume-label" class="slider-label">Volume</label>
+                            <div class="slider-wrapper">
+                                <div class="slider-track" data-slider-track="volume">
+                                    <div class="slider-fill" data-slider-fill="volume"></div>
+                                    <div
+                                        class="slider-thumb"
+                                        role="slider"
+                                        tabindex="0"
+                                        aria-labelledby="volume-label"
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"
+                                        aria-valuenow="50"
+                                        data-slider="volume"
+                                        data-slider-min="0"
+                                        data-slider-max="100"
+                                        data-slider-step="1"
+                                    ></div>
+                                </div>
+                            </div>
+                            <div class="slider-value-display">
+                                <span class="current-value" data-value-display="volume">50</span>
+                                <span class="value-range">0 - 100</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Temperature Slider -->
+                <div class="slider-demo">
+                    <h3>Temperature Control</h3>
+                    <p>Slider with custom valuetext for Fahrenheit display</p>
+                    <div class="slider-container temperature-slider">
+                        <div class="temperature-value" data-temp-display="accessible">68°F</div>
+                        <div class="slider-group">
+                            <label id="temp-label" class="slider-label">Temperature</label>
+                            <div class="slider-wrapper">
+                                <div class="slider-track" data-slider-track="temperature">
+                                    <div class="slider-fill" data-slider-fill="temperature"></div>
+                                    <div
+                                        class="slider-thumb"
+                                        role="slider"
+                                        tabindex="0"
+                                        aria-labelledby="temp-label"
+                                        aria-valuemin="60"
+                                        aria-valuemax="80"
+                                        aria-valuenow="68"
+                                        aria-valuetext="68 degrees Fahrenheit"
+                                        data-slider="temperature"
+                                        data-slider-min="60"
+                                        data-slider-max="80"
+                                        data-slider-step="1"
+                                    ></div>
+                                </div>
+                            </div>
+                            <div class="slider-value-display">
+                                <span class="value-range">60°F - 80°F</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Brightness Slider -->
+                <div class="slider-demo">
+                    <h3>Brightness Control</h3>
+                    <p>Slider with percentage display and large step increments (Page Up/Down)</p>
+                    <div class="slider-container">
+                        <div class="slider-group">
+                            <label id="brightness-label" class="slider-label">Brightness</label>
+                            <div class="slider-wrapper">
+                                <div class="slider-track" data-slider-track="brightness">
+                                    <div class="slider-fill" data-slider-fill="brightness"></div>
+                                    <div
+                                        class="slider-thumb"
+                                        role="slider"
+                                        tabindex="0"
+                                        aria-labelledby="brightness-label"
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"
+                                        aria-valuenow="75"
+                                        aria-valuetext="75 percent"
+                                        data-slider="brightness"
+                                        data-slider-min="0"
+                                        data-slider-max="100"
+                                        data-slider-step="5"
+                                    ></div>
+                                </div>
+                            </div>
+                            <div class="slider-value-display">
+                                <span class="current-value" data-value-display="brightness">75%</span>
+                                <span class="value-range">0% - 100%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vertical Slider -->
+                <div class="slider-demo">
+                    <h3>Vertical Slider</h3>
+                    <p>Volume control with vertical orientation and aria-orientation</p>
+                    <div class="slider-container">
+                        <div class="slider-group">
+                            <label id="vertical-volume-label" class="slider-label">Master Volume</label>
+                            <div class="slider-wrapper vertical">
+                                <div class="slider-track" data-slider-track="vertical-volume">
+                                    <div class="slider-fill" data-slider-fill="vertical-volume"></div>
+                                    <div
+                                        class="slider-thumb"
+                                        role="slider"
+                                        tabindex="0"
+                                        aria-labelledby="vertical-volume-label"
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"
+                                        aria-valuenow="60"
+                                        aria-orientation="vertical"
+                                        data-slider="vertical-volume"
+                                        data-slider-min="0"
+                                        data-slider-max="100"
+                                        data-slider-step="1"
+                                        data-slider-orientation="vertical"
+                                    ></div>
+                                </div>
+                            </div>
+                            <div class="slider-value-display">
+                                <span class="current-value" data-value-display="vertical-volume">60</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="keyboard-help">
+                    <h3>Try Keyboard Navigation</h3>
+                    <div class="keyboard-shortcuts">
+                        <div class="shortcut">
+                            <span class="key">Arrow Keys</span>
+                            <span class="shortcut-desc">Adjust value</span>
+                        </div>
+                        <div class="shortcut">
+                            <span class="key">Home/End</span>
+                            <span class="shortcut-desc">Min/Max value</span>
+                        </div>
+                        <div class="shortcut">
+                            <span class="key">Page Up/Down</span>
+                            <span class="shortcut-desc">Large steps</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Inaccessible Version -->
+            <section class="demo-section inaccessible">
+                <div class="demo-header">
+                    <h2>Inaccessible Implementation</h2>
+                    <span class="badge danger">5 Issues</span>
+                </div>
+
+                <!-- Volume Slider (Bad) -->
+                <div class="slider-demo">
+                    <h3>Volume Control</h3>
+                    <p>Slider without proper ARIA attributes or keyboard support</p>
+                    <div class="slider-container">
+                        <div class="slider-group">
+                            <span class="slider-label">Volume</span>
+                            <div class="slider-wrapper">
+                                <div class="slider-track" data-bad-slider-track="bad-volume">
+                                    <div class="slider-fill" data-bad-slider-fill="bad-volume"></div>
+                                    <div
+                                        class="slider-thumb"
+                                        data-bad-slider="bad-volume"
+                                        data-bad-slider-min="0"
+                                        data-bad-slider-max="100"
+                                    ></div>
+                                </div>
+                            </div>
+                            <div class="slider-value-display">
+                                <span class="current-value" data-bad-value-display="bad-volume">50</span>
+                                <span class="value-range">0 - 100</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Temperature Slider (Bad) -->
+                <div class="slider-demo">
+                    <h3>Temperature Control</h3>
+                    <p>No semantic role or accessible name</p>
+                    <div class="slider-container temperature-slider">
+                        <div class="temperature-value" data-temp-display="inaccessible">68°F</div>
+                        <div class="slider-group">
+                            <span class="slider-label">Temperature</span>
+                            <div class="slider-wrapper">
+                                <div class="slider-track" data-bad-slider-track="bad-temperature">
+                                    <div class="slider-fill" data-bad-slider-fill="bad-temperature"></div>
+                                    <div
+                                        class="slider-thumb"
+                                        data-bad-slider="bad-temperature"
+                                        data-bad-slider-min="60"
+                                        data-bad-slider-max="80"
+                                    ></div>
+                                </div>
+                            </div>
+                            <div class="slider-value-display">
+                                <span class="value-range">60°F - 80°F</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Brightness Slider (Bad) -->
+                <div class="slider-demo">
+                    <h3>Brightness Control</h3>
+                    <p>Missing ARIA value attributes and keyboard navigation</p>
+                    <div class="slider-container">
+                        <div class="slider-group">
+                            <span class="slider-label">Brightness</span>
+                            <div class="slider-wrapper">
+                                <div class="slider-track" data-bad-slider-track="bad-brightness">
+                                    <div class="slider-fill" data-bad-slider-fill="bad-brightness"></div>
+                                    <div
+                                        class="slider-thumb"
+                                        data-bad-slider="bad-brightness"
+                                        data-bad-slider-min="0"
+                                        data-bad-slider-max="100"
+                                    ></div>
+                                </div>
+                            </div>
+                            <div class="slider-value-display">
+                                <span class="current-value" data-bad-value-display="bad-brightness">75%</span>
+                                <span class="value-range">0% - 100%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vertical Slider (Bad) -->
+                <div class="slider-demo">
+                    <h3>Vertical Slider</h3>
+                    <p>No aria-orientation or proper keyboard handling for vertical movement</p>
+                    <div class="slider-container">
+                        <div class="slider-group">
+                            <span class="slider-label">Master Volume</span>
+                            <div class="slider-wrapper vertical">
+                                <div class="slider-track" data-bad-slider-track="bad-vertical-volume">
+                                    <div class="slider-fill" data-bad-slider-fill="bad-vertical-volume"></div>
+                                    <div
+                                        class="slider-thumb"
+                                        data-bad-slider="bad-vertical-volume"
+                                        data-bad-slider-min="0"
+                                        data-bad-slider-max="100"
+                                        data-bad-slider-orientation="vertical"
+                                    ></div>
+                                </div>
+                            </div>
+                            <div class="slider-value-display">
+                                <span class="current-value" data-bad-value-display="bad-vertical-volume">60</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="keyboard-help" style="background: #fef2f2; border-color: #fecaca;">
+                    <h3 style="color: #991b1b;">Keyboard Navigation Broken</h3>
+                    <p style="color: #7f1d1d; margin: 0;">These sliders are only operable with a mouse. Keyboard users cannot interact with them.</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- Issues Section -->
+        <section class="issues-section">
+            <h2>
+                <span class="issue-count">5</span>
+                Accessibility Issues Detected
+            </h2>
+            <ul class="issues-list">
+                <li class="issue-item">
+                    <strong>Issue 1: Missing role="slider"</strong>
+                    The inaccessible sliders lack <code>role="slider"</code>, so screen readers cannot identify them as interactive slider controls.
+                </li>
+                <li class="issue-item">
+                    <strong>Issue 2: No accessible name</strong>
+                    Missing <code>aria-label</code> or <code>aria-labelledby</code> means screen reader users don't know what the slider controls.
+                </li>
+                <li class="issue-item">
+                    <strong>Issue 3: Missing ARIA value attributes</strong>
+                    Without <code>aria-valuemin</code>, <code>aria-valuemax</code>, and <code>aria-valuenow</code>, assistive technologies cannot announce the current value or range.
+                </li>
+                <li class="issue-item">
+                    <strong>Issue 4: No keyboard support</strong>
+                    Missing <code>tabindex="0"</code> and keyboard event handlers prevent keyboard-only users from interacting with the sliders.
+                </li>
+                <li class="issue-item">
+                    <strong>Issue 5: Missing aria-orientation for vertical slider</strong>
+                    The vertical slider lacks <code>aria-orientation="vertical"</code>, causing confusion about which arrow keys to use.
+                </li>
+            </ul>
+        </section>
+
+        <!-- Testing Section -->
+        <section class="testing-section">
+            <h2>Testing Instructions</h2>
+            <div class="test-steps">
+                <h3>Keyboard Testing</h3>
+                <ol>
+                    <li>Press <code>Tab</code> to navigate to the accessible sliders - they should receive focus with a visible indicator</li>
+                    <li>Use <code>Arrow Right/Up</code> to increase the value and <code>Arrow Left/Down</code> to decrease</li>
+                    <li>Press <code>Home</code> to jump to minimum value and <code>End</code> to jump to maximum</li>
+                    <li>Try <code>Page Up</code> and <code>Page Down</code> for larger increments on the brightness slider</li>
+                    <li>Try tabbing to the inaccessible sliders - they won't receive focus</li>
+                </ol>
+
+                <h3 style="margin-top: 1.5rem;">Screen Reader Testing</h3>
+                <ol>
+                    <li>Enable your screen reader (NVDA, JAWS, VoiceOver, etc.)</li>
+                    <li>Navigate to the accessible sliders - they should announce as "slider" with the label and current value</li>
+                    <li>Adjust the value - the screen reader should announce the new value</li>
+                    <li>Navigate to the inaccessible sliders - they won't be announced as interactive controls</li>
+                    <li>The accessible temperature slider should read the valuetext (e.g., "68 degrees Fahrenheit")</li>
+                </ol>
+
+                <h3 style="margin-top: 1.5rem;">Mouse Testing</h3>
+                <ol>
+                    <li>Click and drag slider thumbs - both accessible and inaccessible versions should work</li>
+                    <li>Click on the track to jump to a position</li>
+                    <li>Verify that focus indicators appear when clicking on accessible sliders</li>
+                </ol>
+            </div>
+        </section>
+    </div>
+
+    <div class="focus-indicator" id="focusIndicator">
+        Keyboard focus active - Use arrow keys to adjust
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../js/accessible/slider-complete.js"></script>
+    <script src="../../js/inaccessible/slider-incomplete.js"></script>
+</body>
+</html>

@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toolbar Pattern - Paradise Widget Patterns</title>
+  <link rel="stylesheet" href="../../css/demo.css">
+  <style>
+    .toolbar-demo {
+      margin: 2rem 0;
+    }
+
+    .toolbar-container {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 1rem;
+      background: #f9f9f9;
+    }
+
+    [role="toolbar"] {
+      display: flex;
+      gap: 0.25rem;
+      padding: 0.5rem;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    [role="toolbar"] button {
+      padding: 0.5rem 0.75rem;
+      background: #fff;
+      border: 1px solid #999;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      transition: all 0.2s;
+      min-width: 2.5rem;
+    }
+
+    [role="toolbar"] button:hover {
+      background: #f0f0f0;
+      border-color: #666;
+    }
+
+    [role="toolbar"] button:focus {
+      outline: 2px solid #0066cc;
+      outline-offset: 2px;
+      background: #e3f2fd;
+      border-color: #0066cc;
+    }
+
+    [role="toolbar"] button[aria-pressed="true"] {
+      background: #0066cc;
+      color: white;
+      border-color: #0055aa;
+    }
+
+    [role="toolbar"] button[aria-pressed="true"]:hover {
+      background: #0055aa;
+    }
+
+    [role="toolbar"] .separator {
+      width: 1px;
+      background: #ccc;
+      margin: 0 0.25rem;
+    }
+
+    /* Bad toolbar styles */
+    .bad-toolbar {
+      display: flex;
+      gap: 0.25rem;
+      padding: 0.5rem;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .bad-toolbar button {
+      padding: 0.5rem 0.75rem;
+      background: #fff;
+      border: 1px solid #999;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      transition: all 0.2s;
+      min-width: 2.5rem;
+    }
+
+    .bad-toolbar button:hover {
+      background: #f0f0f0;
+      border-color: #666;
+    }
+
+    .bad-toolbar button.active {
+      background: #0066cc;
+      color: white;
+      border-color: #0055aa;
+    }
+
+    .bad-toolbar .separator {
+      width: 1px;
+      background: #ccc;
+      margin: 0 0.25rem;
+    }
+
+    /* Output display */
+    .toolbar-output {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      min-height: 60px;
+    }
+
+    .format-preview {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="../../index.html">Home</a> &gt;
+      <a href="#navigation">Navigation Widgets</a> &gt;
+      <span>Toolbar</span>
+    </nav>
+
+    <header>
+      <h1>🔧 Toolbar Pattern</h1>
+      <p class="subtitle">Text formatting toolbar with arrow navigation and roving tabindex</p>
+      <div class="pattern-info">
+        <span class="complexity-badge high">High Complexity</span>
+        <span class="wcag-badge">WCAG 2.1.1, 4.1.2</span>
+      </div>
+    </header>
+
+    <section class="pattern-description">
+      <h2>What is a Toolbar?</h2>
+      <p>A toolbar is a container for grouping a set of controls, such as buttons, menubuttons, or checkboxes. Toolbars are commonly used in application interfaces for formatting, editing, or other actions. The toolbar pattern provides arrow key navigation and manages focus across its items.</p>
+
+      <div class="key-requirements">
+        <h3>Complete Toolbar Pattern Requires:</h3>
+        <ul>
+          <li><code>role="toolbar"</code> on container element</li>
+          <li><code>aria-label</code> on toolbar to identify its purpose</li>
+          <li>Button elements or <code>role="button"</code> on items</li>
+          <li><code>aria-pressed</code> for toggle buttons (true/false)</li>
+          <li><strong>Roving tabindex:</strong> Only one item has <code>tabindex="0"</code>, rest have <code>tabindex="-1"</code></li>
+          <li><strong>Arrow Left/Right:</strong> Navigate between toolbar items</li>
+          <li><strong>Home:</strong> Move focus to first toolbar item</li>
+          <li><strong>End:</strong> Move focus to last toolbar item</li>
+          <li><strong>Enter/Space:</strong> Activate the focused button</li>
+          <li><strong>Optional keyboard shortcuts:</strong> Ctrl+B (bold), Ctrl+I (italic), Ctrl+U (underline)</li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="comparison">
+      <!-- LEFT SIDE - ACCESSIBLE -->
+      <section class="example good">
+        <h2>✅ Accessible Implementation</h2>
+        <p>Complete toolbar with role, label, roving tabindex, and arrow navigation.</p>
+
+        <div class="toolbar-demo">
+          <div class="toolbar-container">
+            <div role="toolbar" aria-label="Text Formatting" id="good-toolbar">
+              <button type="button" id="good-bold" aria-pressed="false" tabindex="0" title="Bold (Ctrl+B)">
+                <strong>B</strong>
+              </button>
+              <button type="button" id="good-italic" aria-pressed="false" tabindex="-1" title="Italic (Ctrl+I)">
+                <em>I</em>
+              </button>
+              <button type="button" id="good-underline" aria-pressed="false" tabindex="-1" title="Underline (Ctrl+U)">
+                <u>U</u>
+              </button>
+              <div class="separator" role="separator" aria-hidden="true"></div>
+              <button type="button" id="good-align-left" aria-pressed="true" tabindex="-1" title="Align Left">
+                ⬅
+              </button>
+              <button type="button" id="good-align-center" aria-pressed="false" tabindex="-1" title="Align Center">
+                ↔
+              </button>
+              <button type="button" id="good-align-right" aria-pressed="false" tabindex="-1" title="Align Right">
+                ➡
+              </button>
+            </div>
+
+            <div class="toolbar-output">
+              <div id="good-output" class="format-preview">
+                Sample text for formatting. Use the toolbar above to apply bold, italic, underline, and alignment.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis Results</h3>
+          <div class="result-box success">
+            <strong>✅ Complete Toolbar Pattern Detected</strong>
+            <p>0 issues found</p>
+          </div>
+
+          <h4>Validation Checklist:</h4>
+          <ul class="validation-results">
+            <li class="check-pass">✓ <code>role="toolbar"</code> present</li>
+            <li class="check-pass">✓ <code>aria-label="Text Formatting"</code> identifies toolbar</li>
+            <li class="check-pass">✓ Button elements used for controls</li>
+            <li class="check-pass">✓ <code>aria-pressed</code> state on toggle buttons</li>
+            <li class="check-pass">✓ Roving tabindex: One item has <code>tabindex="0"</code></li>
+            <li class="check-pass">✓ Arrow Left/Right navigation detected</li>
+            <li class="check-pass">✓ Home/End key support detected</li>
+            <li class="check-pass">✓ Enter/Space activation detected</li>
+            <li class="check-pass">✓ Focus management implemented</li>
+          </ul>
+        </div>
+
+        <div class="testing-instructions">
+          <h3>Testing Instructions</h3>
+          <ol>
+            <li><strong>Tab:</strong> Move focus into toolbar (first button)</li>
+            <li><strong>Arrow Right:</strong> Navigate to next button</li>
+            <li><strong>Arrow Left:</strong> Navigate to previous button</li>
+            <li><strong>Home:</strong> Jump to first button (Bold)</li>
+            <li><strong>End:</strong> Jump to last button (Align Right)</li>
+            <li><strong>Enter or Space:</strong> Activate focused button</li>
+            <li><strong>Ctrl+B/I/U:</strong> Shortcuts for bold/italic/underline (optional feature)</li>
+            <li><strong>Screen Reader:</strong> Announces "Text Formatting toolbar" and button states</li>
+            <li><strong>Visual:</strong> Focus indicator visible on current button</li>
+          </ol>
+        </div>
+
+        <details class="code-sample">
+          <summary>View Complete HTML</summary>
+          <pre><code>&lt;div role="toolbar" aria-label="Text Formatting"&gt;
+  &lt;button type="button"
+          aria-pressed="false"
+          tabindex="0"&gt;
+    &lt;strong&gt;B&lt;/strong&gt;
+  &lt;/button&gt;
+  &lt;button type="button"
+          aria-pressed="false"
+          tabindex="-1"&gt;
+    &lt;em&gt;I&lt;/em&gt;
+  &lt;/button&gt;
+  &lt;button type="button"
+          aria-pressed="false"
+          tabindex="-1"&gt;
+    &lt;u&gt;U&lt;/u&gt;
+  &lt;/button&gt;
+  &lt;div role="separator" aria-hidden="true"&gt;&lt;/div&gt;
+  &lt;button type="button"
+          aria-pressed="true"
+          tabindex="-1"&gt;
+    Align Left
+  &lt;/button&gt;
+  &lt;!-- More buttons... --&gt;
+&lt;/div&gt;</code></pre>
+        </details>
+
+        <details class="code-sample">
+          <summary>View Complete JavaScript</summary>
+          <pre><code>// Complete toolbar implementation
+const toolbar = document.querySelector('[role="toolbar"]');
+const buttons = toolbar.querySelectorAll('button');
+
+// Roving tabindex implementation
+function moveFocus(button) {
+  buttons.forEach(b => b.tabIndex = -1);
+  button.tabIndex = 0;
+  button.focus();
+}
+
+// Arrow key navigation
+toolbar.addEventListener('keydown', (e) => {
+  const current = Array.from(buttons).indexOf(document.activeElement);
+
+  if (e.key === 'ArrowRight') {
+    const next = (current + 1) % buttons.length;
+    moveFocus(buttons[next]);
+  } else if (e.key === 'ArrowLeft') {
+    const prev = current === 0 ? buttons.length - 1 : current - 1;
+    moveFocus(buttons[prev]);
+  } else if (e.key === 'Home') {
+    moveFocus(buttons[0]);
+  } else if (e.key === 'End') {
+    moveFocus(buttons[buttons.length - 1]);
+  }
+});
+
+// Button activation
+buttons.forEach(button => {
+  button.addEventListener('click', () => {
+    const pressed = button.getAttribute('aria-pressed') === 'true';
+    button.setAttribute('aria-pressed', String(!pressed));
+  });
+});</code></pre>
+        </details>
+      </section>
+
+      <!-- RIGHT SIDE - INACCESSIBLE -->
+      <section class="example bad">
+        <h2>❌ Inaccessible Implementation</h2>
+        <p>Toolbar missing role, label, roving tabindex, and keyboard navigation.</p>
+
+        <div class="toolbar-demo">
+          <div class="toolbar-container">
+            <div class="bad-toolbar" id="bad-toolbar">
+              <button type="button" id="bad-bold" title="Bold">
+                <strong>B</strong>
+              </button>
+              <button type="button" id="bad-italic" title="Italic">
+                <em>I</em>
+              </button>
+              <button type="button" id="bad-underline" title="Underline">
+                <u>U</u>
+              </button>
+              <div class="separator" aria-hidden="true"></div>
+              <button type="button" id="bad-align-left" class="active" title="Align Left">
+                ⬅
+              </button>
+              <button type="button" id="bad-align-center" title="Align Center">
+                ↔
+              </button>
+              <button type="button" id="bad-align-right" title="Align Right">
+                ➡
+              </button>
+            </div>
+
+            <div class="toolbar-output">
+              <div id="bad-output" class="format-preview">
+                Sample text for formatting. Use the toolbar above to apply bold, italic, underline, and alignment.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis Results</h3>
+          <div class="result-box error">
+            <strong>❌ Incomplete Toolbar Pattern</strong>
+            <p>7 issues found</p>
+          </div>
+
+          <h4>Missing Pattern Requirements:</h4>
+          <ul class="validation-results">
+            <li class="check-fail">✗ Missing <code>role="toolbar"</code></li>
+            <li class="check-fail">✗ Missing <code>aria-label</code> on toolbar</li>
+            <li class="check-fail">✗ Missing <code>aria-pressed</code> state on toggle buttons</li>
+            <li class="check-fail">✗ Missing roving tabindex implementation</li>
+            <li class="check-fail">✗ No Arrow Left/Right navigation</li>
+            <li class="check-fail">✗ No Home/End key support</li>
+            <li class="check-fail">✗ No proper focus management</li>
+          </ul>
+
+          <p class="wcag-fail">
+            <strong>WCAG 2.1.1 (Keyboard):</strong> FAIL - Arrow navigation not implemented<br>
+            <strong>WCAG 4.1.2 (Name, Role, Value):</strong> FAIL - Missing toolbar role and button states
+          </p>
+        </div>
+
+        <div class="issue-explanation">
+          <h3>Why This Fails</h3>
+          <ul>
+            <li><strong>No role="toolbar":</strong> Screen readers don't announce this as a toolbar, just a collection of buttons</li>
+            <li><strong>No aria-label:</strong> Users don't know what this toolbar is for</li>
+            <li><strong>No aria-pressed:</strong> Screen readers can't announce toggle state (on/off)</li>
+            <li><strong>All buttons tabindex="0":</strong> Tab key stops at every button instead of just once at toolbar</li>
+            <li><strong>No arrow navigation:</strong> Keyboard users must tab through every button instead of using arrows</li>
+            <li><strong>No Home/End:</strong> Cannot quickly jump to first/last button</li>
+            <li><strong>Poor keyboard UX:</strong> Excessive tab stops, no efficient navigation between controls</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <section class="code-walkthrough">
+      <h2>Code Walkthrough</h2>
+
+      <h3>HTML Structure (Accessible)</h3>
+      <pre><code>&lt;div role="toolbar" aria-label="Text Formatting"&gt;
+  &lt;button type="button" aria-pressed="false" tabindex="0"&gt;
+    &lt;strong&gt;B&lt;/strong&gt;
+  &lt;/button&gt;
+  &lt;button type="button" aria-pressed="false" tabindex="-1"&gt;
+    &lt;em&gt;I&lt;/em&gt;
+  &lt;/button&gt;
+  &lt;!-- More buttons... --&gt;
+&lt;/div&gt;</code></pre>
+
+      <h3>Why This Structure Works</h3>
+
+      <h4>1. role="toolbar"</h4>
+      <pre><code>&lt;div role="toolbar" aria-label="Text Formatting"&gt;
+  &lt;!-- Buttons --&gt;
+&lt;/div&gt;</code></pre>
+      <p>
+        <strong>role="toolbar"</strong> identifies this as a toolbar container, telling screen readers
+        it's a grouping of controls. <strong>aria-label="Text Formatting"</strong> describes the
+        toolbar's purpose, helping users understand what actions these buttons perform.
+      </p>
+      <p>
+        Screen readers announce: "Text Formatting toolbar, button, Bold, not pressed, 1 of 6"
+      </p>
+
+      <h4>2. aria-pressed for Toggle State</h4>
+      <pre><code>&lt;button type="button" aria-pressed="false"&gt;
+  &lt;strong&gt;B&lt;/strong&gt;
+&lt;/button&gt;</code></pre>
+      <p>
+        <strong>aria-pressed</strong> indicates whether a toggle button is activated (true) or not (false).
+        This is essential for formatting buttons where state needs to be communicated.
+      </p>
+      <p>
+        Without aria-pressed, screen reader users hear "Bold, button" but don't know if bold is currently applied.
+        With aria-pressed, they hear "Bold, toggle button, not pressed" or "Bold, toggle button, pressed".
+      </p>
+
+      <h4>3. Roving Tabindex</h4>
+      <pre><code>&lt;button tabindex="0"&gt;B&lt;/button&gt;  &lt;!-- First button --&gt;
+&lt;button tabindex="-1"&gt;I&lt;/button&gt; &lt;!-- Other buttons --&gt;
+&lt;button tabindex="-1"&gt;U&lt;/button&gt;</code></pre>
+      <p>
+        <strong>Roving tabindex</strong> ensures only ONE button in the toolbar is in the tab order at a time.
+        When user presses Tab, they enter the toolbar once (not 6 times for 6 buttons).
+        Arrow keys then move focus between buttons, updating tabindex dynamically.
+      </p>
+      <p>
+        This matches native application behavior and reduces cognitive load.
+        Users learn: "Tab to toolbar, arrows within toolbar, Tab to leave toolbar."
+      </p>
+
+      <h4>4. Arrow Key Navigation</h4>
+      <pre><code>toolbar.addEventListener('keydown', (event) => {
+  const buttons = Array.from(toolbar.querySelectorAll('button'));
+  const current = buttons.indexOf(document.activeElement);
+
+  if (event.key === 'ArrowRight') {
+    const next = (current + 1) % buttons.length;
+    moveFocus(buttons[next]);
+  } else if (event.key === 'ArrowLeft') {
+    const prev = current === 0 ? buttons.length - 1 : current - 1;
+    moveFocus(buttons[prev]);
+  }
+});</code></pre>
+      <p>
+        <strong>Arrow Right/Left</strong> moves focus between toolbar buttons in a logical sequence.
+        When reaching the end, focus wraps to the beginning (and vice versa).
+        This creates an intuitive navigation experience matching user expectations.
+      </p>
+
+      <h4>5. Home and End Keys</h4>
+      <pre><code>if (event.key === 'Home') {
+  moveFocus(buttons[0]);
+} else if (event.key === 'End') {
+  moveFocus(buttons[buttons.length - 1]);
+}</code></pre>
+      <p>
+        <strong>Home</strong> and <strong>End</strong> keys allow quick navigation to toolbar boundaries.
+        This is especially helpful in toolbars with many buttons, letting users jump to either end instantly.
+      </p>
+
+      <h4>6. Focus Management Function</h4>
+      <pre><code>function moveFocus(targetButton) {
+  // Remove all buttons from tab order
+  buttons.forEach(btn => btn.tabIndex = -1);
+
+  // Add target button to tab order
+  targetButton.tabIndex = 0;
+
+  // Move focus to target button
+  targetButton.focus();
+}</code></pre>
+      <p>
+        This function implements roving tabindex by ensuring only the currently focused button
+        has tabindex="0". When focus moves, tabindex values update, maintaining proper tab order.
+      </p>
+    </section>
+
+    <section class="why-paradise">
+      <h2>🎯 What Paradise Detects</h2>
+
+      <h3>Complete Pattern Validation</h3>
+      <p>Paradise validates the <strong>entire toolbar structure and behavior</strong>, not just individual elements:</p>
+
+      <div class="detection-grid">
+        <div class="detection-item">
+          <h4>✓ Toolbar Structure</h4>
+          <ul>
+            <li>role="toolbar" present</li>
+            <li>aria-label identifies toolbar</li>
+            <li>Button elements or role="button"</li>
+            <li>Proper container semantics</li>
+          </ul>
+        </div>
+
+        <div class="detection-item">
+          <h4>✓ Toggle Button States</h4>
+          <ul>
+            <li>aria-pressed on toggle buttons</li>
+            <li>State values (true/false)</li>
+            <li>State updates on activation</li>
+            <li>Visual state indication</li>
+          </ul>
+        </div>
+
+        <div class="detection-item">
+          <h4>✓ Roving Tabindex</h4>
+          <ul>
+            <li>Only one button has tabindex="0"</li>
+            <li>Others have tabindex="-1"</li>
+            <li>Tabindex updates with focus</li>
+            <li>Single tab stop for toolbar</li>
+          </ul>
+        </div>
+
+        <div class="detection-item">
+          <h4>✓ Keyboard Navigation</h4>
+          <ul>
+            <li>Arrow Left/Right implemented</li>
+            <li>Home/End key support</li>
+            <li>Focus wrapping at boundaries</li>
+            <li>Enter/Space activation</li>
+          </ul>
+        </div>
+
+        <div class="detection-item">
+          <h4>✓ Focus Management</h4>
+          <ul>
+            <li>Focus visible on current button</li>
+            <li>Focus moves with arrow keys</li>
+            <li>Programmatic focus control</li>
+            <li>Tab order maintenance</li>
+          </ul>
+        </div>
+
+        <div class="detection-item">
+          <h4>✓ Optional Enhancements</h4>
+          <ul>
+            <li>Keyboard shortcuts (Ctrl+B, etc.)</li>
+            <li>Logical button grouping</li>
+            <li>Visual separators</li>
+            <li>Tooltip labels</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="comparison-table">
+      <h2>Why Other Tools Miss This</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Validation Aspect</th>
+            <th>Traditional Tools</th>
+            <th>Paradise</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>role="toolbar"</strong></td>
+            <td>~ May suggest role="toolbar"</td>
+            <td>✓ Requires role="toolbar" on container</td>
+          </tr>
+          <tr>
+            <td><strong>aria-label</strong></td>
+            <td>~ Basic label validation</td>
+            <td>✓ Requires descriptive label on toolbar</td>
+          </tr>
+          <tr>
+            <td><strong>aria-pressed</strong></td>
+            <td>✗ Cannot verify toggle state</td>
+            <td>✓ Validates toggle button states</td>
+          </tr>
+          <tr>
+            <td><strong>Roving Tabindex</strong></td>
+            <td>✗ Cannot detect implementation</td>
+            <td>✓ Verifies only one button has tabindex="0"</td>
+          </tr>
+          <tr>
+            <td><strong>Arrow Navigation</strong></td>
+            <td>✗ Cannot test keyboard behavior</td>
+            <td>✓ Detects Arrow Left/Right handlers</td>
+          </tr>
+          <tr>
+            <td><strong>Home/End Keys</strong></td>
+            <td>✗ Cannot test keyboard behavior</td>
+            <td>✓ Detects Home/End key support</td>
+          </tr>
+          <tr>
+            <td><strong>Focus Management</strong></td>
+            <td>✗ Cannot verify dynamic focus</td>
+            <td>✓ Validates focus moves with arrows</td>
+          </tr>
+          <tr>
+            <td><strong>Complete Pattern</strong></td>
+            <td>✗ Checks elements independently</td>
+            <td>✓ Validates entire pattern structure and behavior</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="tool-limitation">
+        <strong>Traditional tools:</strong> May detect missing role="toolbar" or suggest aria-label,
+        but cannot verify roving tabindex implementation, arrow key navigation, or proper focus management.
+        They check static HTML but cannot validate dynamic keyboard interactions.
+      </p>
+
+      <p class="paradise-advantage">
+        <strong>Paradise:</strong> Understands the toolbar pattern as a complete, interactive system.
+        Validates that role="toolbar" + aria-label + roving tabindex + arrow navigation + focus management
+        work together to create a fully accessible toolbar matching WAI-ARIA Authoring Practices.
+        Paradise can detect keyboard handlers and verify the implementation matches the expected behavior.
+      </p>
+    </section>
+
+    <section class="wcag-mapping">
+      <h2>📋 WCAG Success Criteria</h2>
+      <ul class="wcag-list">
+        <li>
+          <strong>2.1.1 Keyboard (Level A)</strong>
+          <p>All functionality must be operable through a keyboard interface. The toolbar must support arrow key navigation, Enter/Space activation, and Home/End keys. Roving tabindex ensures efficient keyboard access.</p>
+        </li>
+        <li>
+          <strong>4.1.2 Name, Role, Value (Level A)</strong>
+          <p>For all user interface components, the name and role can be programmatically determined; states and values can be programmatically set. The toolbar needs role="toolbar", aria-label, and aria-pressed states for toggle buttons.</p>
+        </li>
+        <li>
+          <strong>2.4.3 Focus Order (Level A)</strong>
+          <p>If a Web page can be navigated sequentially, components receive focus in an order that preserves meaning. Roving tabindex creates a single tab stop for the toolbar, with arrow keys for internal navigation.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="resources">
+      <h2>📚 Resources</h2>
+      <ul>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/" target="_blank">WAI-ARIA: Toolbar Pattern</a></li>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/example-index/toolbar/toolbar.html" target="_blank">WAI-ARIA: Toolbar Example</a></li>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/" target="_blank">WAI-ARIA: Keyboard Interface Practice</a></li>
+        <li><a href="/docs/issues/incomplete-toolbar-pattern.md">Paradise: Toolbar Pattern Help</a></li>
+      </ul>
+    </section>
+
+    <nav class="demo-nav">
+      <a href="breadcrumb-comprehensive.html" class="nav-prev">← Previous: Breadcrumb</a>
+      <a href="../../index.html" class="nav-home">🏠 All Patterns</a>
+      <a href="#" class="nav-next nav-disabled">Next →</a>
+    </nav>
+  </div>
+
+  <script src="../../js/accessible/toolbar-complete.js"></script>
+  <script src="../../js/inaccessible/toolbar-incomplete.js"></script>
+</body>
+</html>

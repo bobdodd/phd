@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feed Pattern Demo - Paradise Widget Patterns</title>
+  <link rel="stylesheet" href="../../css/demo.css">
+  <style>
+    .feed-container {
+      max-width: 600px;
+      margin: 20px 0;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .feed-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .feed-header h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .feed-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .feed-control-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    .feed-control-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .feed-control-btn:focus {
+      outline: 2px solid white;
+      outline-offset: 2px;
+    }
+
+    [role="feed"] {
+      background: #f8f9fa;
+      max-height: 500px;
+      overflow-y: auto;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    [role="feed"][aria-busy="true"] {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    [role="article"] {
+      background: white;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 16px;
+      transition: background 0.2s;
+      position: relative;
+    }
+
+    [role="article"]:focus {
+      outline: 3px solid #667eea;
+      outline-offset: -3px;
+      background: #f0f4ff;
+    }
+
+    [role="article"]:last-child {
+      border-bottom: none;
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .post-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .post-author-info {
+      flex: 1;
+    }
+
+    .post-author {
+      font-weight: 600;
+      font-size: 15px;
+      color: #1a1a1a;
+      margin: 0 0 2px 0;
+    }
+
+    .post-time {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .post-content {
+      color: #333;
+      font-size: 15px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .post-image {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #667eea;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .post-actions {
+      display: flex;
+      gap: 16px;
+      padding-top: 8px;
+    }
+
+    .post-action-btn {
+      background: none;
+      border: none;
+      color: #666;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 4px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .post-action-btn:hover {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .post-action-btn:focus {
+      outline: 2px solid #667eea;
+      outline-offset: 2px;
+    }
+
+    .load-more-container {
+      padding: 16px;
+      text-align: center;
+      background: white;
+      border-top: 2px solid #e0e0e0;
+    }
+
+    .load-more-btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 32px;
+      font-size: 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-weight: 500;
+    }
+
+    .load-more-btn:hover {
+      background: #5568d3;
+    }
+
+    .load-more-btn:focus {
+      outline: 3px solid #667eea;
+      outline-offset: 2px;
+    }
+
+    .load-more-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .loading-indicator {
+      display: none;
+      padding: 16px;
+      text-align: center;
+      color: #667eea;
+      font-size: 14px;
+      background: white;
+    }
+
+    .loading-indicator.active {
+      display: block;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .feed-stats {
+      background: #f8f9fa;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #666;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .position-indicator {
+      display: inline-block;
+      padding: 2px 8px;
+      background: #667eea;
+      color: white;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      position: absolute;
+      top: 16px;
+      right: 16px;
+    }
+
+    /* Keyboard navigation hints */
+    .keyboard-hint {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 4px;
+      padding: 12px;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+
+    .keyboard-hint strong {
+      color: #856404;
+    }
+
+    .keyboard-hint kbd {
+      background: #f8f9fa;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      padding: 2px 6px;
+      font-size: 12px;
+      font-family: monospace;
+    }
+
+    /* Bad implementation styles */
+    .bad-feed {
+      background: #f8f9fa;
+      max-height: 500px;
+      overflow-y: auto;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .bad-post {
+      background: white;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 16px;
+      transition: background 0.2s;
+    }
+
+    .bad-post:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="../../index.html">Home</a> &gt;
+      <a href="#navigation">Navigation Widgets</a> &gt;
+      <span>Feed</span>
+    </nav>
+
+    <header>
+      <h1>Feed Pattern</h1>
+      <p class="subtitle">Social media feed with infinite scroll, keyboard navigation, and proper ARIA</p>
+
+      <div class="pattern-info">
+        <span class="complexity-badge high">High Complexity</span>
+        <span class="wcag-badge">WCAG 2.1.1, 2.4.3, 4.1.2, 4.1.3</span>
+      </div>
+    </header>
+
+    <section class="pattern-description">
+      <h2>What is a Feed?</h2>
+      <p>A feed is a section containing a scrollable list of articles where scrolling may cause articles to be added or removed from either end. Feeds are commonly used in social media, news sites, and activity streams where content is loaded dynamically.</p>
+
+      <div class="key-requirements">
+        <h3>Complete Feed Pattern Requires:</h3>
+        <ul>
+          <li><code>role="feed"</code> on container</li>
+          <li><code>role="article"</code> on each feed item</li>
+          <li><code>aria-label</code> or <code>aria-labelledby</code> on feed</li>
+          <li><code>aria-setsize</code> on articles (total count)</li>
+          <li><code>aria-posinset</code> on articles (position)</li>
+          <li><code>aria-busy="true"</code> during loading</li>
+          <li><code>tabindex="0"</code> on articles for keyboard focus</li>
+          <li><strong>Page Up/Page Down:</strong> Navigate between articles</li>
+          <li><strong>Ctrl+Home:</strong> Jump to first article</li>
+          <li><strong>Ctrl+End:</strong> Jump to last loaded article</li>
+          <li><strong>Focus management:</strong> New items announce position</li>
+          <li><strong>Load more:</strong> Infinite scroll or explicit button</li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="comparison">
+      <!-- LEFT SIDE - ACCESSIBLE -->
+      <section class="example good">
+        <h2>Accessible Implementation</h2>
+        <p>Complete feed with role="feed", aria-setsize/posinset, Page Up/Down navigation, and focus management.</p>
+
+        <div class="keyboard-hint">
+          <strong>Try:</strong>
+          <kbd>Tab</kbd> to focus feed,
+          <kbd>Page Down</kbd> to move forward,
+          <kbd>Page Up</kbd> to move back,
+          <kbd>Ctrl+Home</kbd> for first item,
+          <kbd>Ctrl+End</kbd> for last item
+        </div>
+
+        <div class="feed-container">
+          <div class="feed-header">
+            <h3>Social Feed</h3>
+            <div class="feed-controls">
+              <button class="feed-control-btn" id="good-refresh-btn" aria-label="Refresh feed">
+                🔄 Refresh
+              </button>
+            </div>
+          </div>
+
+          <ul role="feed"
+              id="good-feed"
+              aria-label="Social media feed"
+              aria-busy="false">
+            <!-- Articles will be dynamically loaded -->
+          </ul>
+
+          <div id="good-loading" class="loading-indicator">
+            <span class="loading-spinner"></span>
+            Loading more posts...
+          </div>
+
+          <div class="load-more-container">
+            <button class="load-more-btn" id="good-load-more">
+              Load More Posts
+            </button>
+          </div>
+
+          <div class="feed-stats" id="good-stats" aria-live="polite" aria-atomic="true">
+            Loaded 0 of 0 posts
+          </div>
+        </div>
+
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis Results</h3>
+          <div class="result-box success">
+            <strong>Complete Feed Pattern Detected</strong>
+            <p>0 issues found</p>
+          </div>
+
+          <h4>Validation Checklist:</h4>
+          <ul class="validation-results">
+            <li class="check-pass">✓ <code>role="feed"</code> present</li>
+            <li class="check-pass">✓ <code>role="article"</code> on items</li>
+            <li class="check-pass">✓ <code>aria-label</code> on feed</li>
+            <li class="check-pass">✓ <code>aria-setsize</code> on articles</li>
+            <li class="check-pass">✓ <code>aria-posinset</code> on articles</li>
+            <li class="check-pass">✓ <code>aria-busy</code> during loading</li>
+            <li class="check-pass">✓ <code>tabindex="0"</code> on articles</li>
+            <li class="check-pass">✓ Page Up/Down navigation detected</li>
+            <li class="check-pass">✓ Ctrl+Home/End navigation detected</li>
+            <li class="check-pass">✓ Focus management for new items</li>
+            <li class="check-pass">✓ Load more functionality</li>
+          </ul>
+        </div>
+
+        <details class="code-sample">
+          <summary>View Complete HTML</summary>
+          <pre><code>&lt;ul role="feed"
+    aria-label="Social media feed"
+    aria-busy="false"&gt;
+
+  &lt;li role="article"
+      tabindex="0"
+      aria-posinset="1"
+      aria-setsize="10"
+      aria-labelledby="post-1-author"&gt;
+    &lt;div class="post-header"&gt;
+      &lt;div class="post-avatar"&gt;JD&lt;/div&gt;
+      &lt;div class="post-author-info"&gt;
+        &lt;p class="post-author" id="post-1-author"&gt;
+          Jane Doe
+        &lt;/p&gt;
+        &lt;p class="post-time"&gt;2 hours ago&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="post-content"&gt;
+      Just launched our new feature!
+    &lt;/div&gt;
+
+    &lt;div class="post-actions"&gt;
+      &lt;button&gt;👍 Like&lt;/button&gt;
+      &lt;button&gt;💬 Comment&lt;/button&gt;
+      &lt;button&gt;🔄 Share&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+
+  &lt;!-- More articles... --&gt;
+&lt;/ul&gt;</code></pre>
+        </details>
+
+        <details class="code-sample">
+          <summary>View Complete JavaScript</summary>
+          <pre><code>// Feed navigation implementation
+const feed = document.getElementById('feed');
+const articles = feed.querySelectorAll('[role="article"]');
+
+// Page Down: Move to next article
+feed.addEventListener('keydown', (event) => {
+  const current = document.activeElement;
+  const currentIndex = Array.from(articles)
+    .indexOf(current);
+
+  if (event.key === 'PageDown') {
+    event.preventDefault();
+    const nextIndex = Math.min(
+      currentIndex + 1,
+      articles.length - 1
+    );
+    articles[nextIndex].focus();
+
+  } else if (event.key === 'PageUp') {
+    event.preventDefault();
+    const prevIndex = Math.max(currentIndex - 1, 0);
+    articles[prevIndex].focus();
+
+  } else if (event.ctrlKey && event.key === 'Home') {
+    event.preventDefault();
+    articles[0].focus();
+
+  } else if (event.ctrlKey && event.key === 'End') {
+    event.preventDefault();
+    articles[articles.length - 1].focus();
+  }
+});
+
+// Load more with aria-busy
+async function loadMore() {
+  feed.setAttribute('aria-busy', 'true');
+
+  const newPosts = await fetchPosts();
+  const currentSize = articles.length;
+
+  newPosts.forEach((post, index) => {
+    const article = createArticle(post);
+    const position = currentSize + index + 1;
+
+    article.setAttribute('aria-posinset', position);
+    article.setAttribute('aria-setsize',
+      currentSize + newPosts.length);
+
+    feed.appendChild(article);
+  });
+
+  feed.setAttribute('aria-busy', 'false');
+
+  // Update setsize on all articles
+  const allArticles = feed.querySelectorAll('[role="article"]');
+  const totalSize = allArticles.length;
+  allArticles.forEach(article => {
+    article.setAttribute('aria-setsize', totalSize);
+  });
+}</code></pre>
+        </details>
+      </section>
+
+      <!-- RIGHT SIDE - INACCESSIBLE -->
+      <section class="example bad">
+        <h2>Inaccessible Implementation</h2>
+        <p>Feed missing ARIA attributes and keyboard navigation.</p>
+
+        <div class="feed-container">
+          <div class="feed-header">
+            <h3>Social Feed</h3>
+            <div class="feed-controls">
+              <button class="feed-control-btn" id="bad-refresh-btn" aria-label="Refresh feed">
+                🔄 Refresh
+              </button>
+            </div>
+          </div>
+
+          <ul id="bad-feed" class="bad-feed">
+            <!-- Articles will be dynamically loaded -->
+          </ul>
+
+          <div id="bad-loading" class="loading-indicator">
+            <span class="loading-spinner"></span>
+            Loading more posts...
+          </div>
+
+          <div class="load-more-container">
+            <button class="load-more-btn" id="bad-load-more">
+              Load More Posts
+            </button>
+          </div>
+
+          <div class="feed-stats" id="bad-stats">
+            Loaded 0 of 0 posts
+          </div>
+        </div>
+
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis Results</h3>
+          <div class="result-box error">
+            <strong>Incomplete Feed Pattern</strong>
+            <p>7 issues found</p>
+          </div>
+
+          <h4>Issues Detected:</h4>
+          <ul class="issues-list">
+            <li class="issue-error">
+              <strong>Missing <code>role="feed"</code></strong>
+              <p>Container not announced as feed</p>
+            </li>
+            <li class="issue-error">
+              <strong>Missing <code>role="article"</code></strong>
+              <p>Items not identified as articles</p>
+            </li>
+            <li class="issue-error">
+              <strong>Missing <code>aria-label</code></strong>
+              <p>Feed has no accessible name</p>
+            </li>
+            <li class="issue-error">
+              <strong>Missing <code>aria-setsize</code> and <code>aria-posinset</code></strong>
+              <p>Article position not communicated</p>
+            </li>
+            <li class="issue-error">
+              <strong>Missing <code>aria-busy</code></strong>
+              <p>Loading state not communicated</p>
+            </li>
+            <li class="issue-error">
+              <strong>No Page Up/Down navigation</strong>
+              <p>Cannot navigate articles with keyboard</p>
+            </li>
+            <li class="issue-error">
+              <strong>No focus management</strong>
+              <p>New items not focusable or announced</p>
+            </li>
+          </ul>
+
+          <h4>Validation Checklist:</h4>
+          <ul class="validation-results">
+            <li class="check-fail">✗ <code>role="feed"</code> missing</li>
+            <li class="check-fail">✗ <code>role="article"</code> missing</li>
+            <li class="check-fail">✗ <code>aria-label</code> missing</li>
+            <li class="check-fail">✗ <code>aria-setsize</code> missing</li>
+            <li class="check-fail">✗ <code>aria-posinset</code> missing</li>
+            <li class="check-fail">✗ <code>aria-busy</code> not used</li>
+            <li class="check-fail">✗ No Page Up/Down navigation</li>
+            <li class="check-fail">✗ No Ctrl+Home/End navigation</li>
+            <li class="check-fail">✗ No focus management</li>
+          </ul>
+        </div>
+
+        <details class="code-sample">
+          <summary>View Incomplete HTML</summary>
+          <pre><code>&lt;!-- INCOMPLETE: Missing ARIA attributes --&gt;
+&lt;ul id="feed"&gt;
+  &lt;li&gt;
+    &lt;div class="post-header"&gt;
+      &lt;div class="post-avatar"&gt;JD&lt;/div&gt;
+      &lt;div class="post-author-info"&gt;
+        &lt;p class="post-author"&gt;Jane Doe&lt;/p&gt;
+        &lt;p class="post-time"&gt;2 hours ago&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="post-content"&gt;
+      Just launched our new feature!
+    &lt;/div&gt;
+
+    &lt;div class="post-actions"&gt;
+      &lt;button&gt;👍 Like&lt;/button&gt;
+      &lt;button&gt;💬 Comment&lt;/button&gt;
+      &lt;button&gt;🔄 Share&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+        </details>
+
+        <details class="code-sample">
+          <summary>View Incomplete JavaScript</summary>
+          <pre><code>// INCOMPLETE: Only visual updates
+const feed = document.getElementById('feed');
+
+async function loadMore() {
+  // ❌ MISSING: aria-busy state
+
+  const newPosts = await fetchPosts();
+
+  newPosts.forEach(post => {
+    const article = createArticle(post);
+    // ❌ MISSING: aria-posinset
+    // ❌ MISSING: aria-setsize
+    // ❌ MISSING: tabindex for keyboard focus
+
+    feed.appendChild(article);
+  });
+
+  // ❌ MISSING: Page Up/Down navigation
+  // ❌ MISSING: Ctrl+Home/End navigation
+  // ❌ MISSING: Focus management
+}</code></pre>
+        </details>
+      </section>
+    </div>
+
+    <section class="testing-panel">
+      <h2>Interactive Testing</h2>
+      <p>Test both implementations with keyboard navigation:</p>
+
+      <div class="testing-instructions">
+        <h3>Keyboard Testing Steps:</h3>
+        <ol>
+          <li>Tab to the feed container</li>
+          <li>Tab again to focus first article</li>
+          <li><strong>Accessible:</strong> Article receives focus with visible outline</li>
+          <li><strong>Inaccessible:</strong> Cannot focus articles directly</li>
+          <li>Press <kbd>Page Down</kbd></li>
+          <li><strong>Accessible:</strong> Focus moves to next article</li>
+          <li><strong>Inaccessible:</strong> Page scrolls but focus doesn't move</li>
+          <li>Press <kbd>Page Up</kbd></li>
+          <li><strong>Accessible:</strong> Focus moves to previous article</li>
+          <li><strong>Inaccessible:</strong> Page scrolls but focus doesn't move</li>
+          <li>Press <kbd>Ctrl+Home</kbd></li>
+          <li><strong>Accessible:</strong> Focus jumps to first article</li>
+          <li><strong>Inaccessible:</strong> Nothing happens</li>
+          <li>Press <kbd>Ctrl+End</kbd></li>
+          <li><strong>Accessible:</strong> Focus jumps to last article</li>
+          <li><strong>Inaccessible:</strong> Nothing happens</li>
+          <li>Click "Load More Posts"</li>
+          <li><strong>Accessible:</strong> Feed shows aria-busy, new items have position info</li>
+          <li><strong>Inaccessible:</strong> No loading state communicated</li>
+        </ol>
+
+        <h3>Screen Reader Testing:</h3>
+        <ul>
+          <li><strong>Accessible:</strong> Announces "feed, Social media feed"</li>
+          <li><strong>Inaccessible:</strong> Announces generic "list"</li>
+          <li><strong>Accessible:</strong> Each item announced as "article, 1 of 10"</li>
+          <li><strong>Inaccessible:</strong> Items announced without position context</li>
+          <li><strong>Accessible:</strong> Loading state announced as "busy"</li>
+          <li><strong>Inaccessible:</strong> No loading state announcement</li>
+          <li><strong>Accessible:</strong> Can use article navigation commands</li>
+          <li><strong>Inaccessible:</strong> Article navigation not available</li>
+        </ul>
+
+        <div class="testing-checklist">
+          <h4>Test Checklist:</h4>
+          <label><input type="checkbox"> Tab to feed</label>
+          <label><input type="checkbox"> Focus articles (accessible only)</label>
+          <label><input type="checkbox"> Page Down navigates (accessible only)</label>
+          <label><input type="checkbox"> Page Up navigates (accessible only)</label>
+          <label><input type="checkbox"> Ctrl+Home to first (accessible only)</label>
+          <label><input type="checkbox"> Ctrl+End to last (accessible only)</label>
+          <label><input type="checkbox"> Load more shows aria-busy (accessible only)</label>
+          <label><input type="checkbox"> New items have position info (accessible only)</label>
+          <label><input type="checkbox"> Screen reader announces feed role (accessible only)</label>
+        </div>
+      </div>
+    </section>
+
+    <section class="explanation">
+      <h2>What Paradise Detects</h2>
+      <p>Paradise validates the <strong>complete feed pattern</strong> in 11 steps:</p>
+
+      <ol class="detection-steps">
+        <li>
+          <strong>Feed Role Detection</strong>
+          <p>Verifies <code>role="feed"</code> on container</p>
+        </li>
+        <li>
+          <strong>Article Role Detection</strong>
+          <p>Checks each item has <code>role="article"</code></p>
+        </li>
+        <li>
+          <strong>Feed Labeling</strong>
+          <p>Validates <code>aria-label</code> or <code>aria-labelledby</code> present</p>
+        </li>
+        <li>
+          <strong>Position Information</strong>
+          <p>Confirms <code>aria-posinset</code> on each article</p>
+        </li>
+        <li>
+          <strong>Size Information</strong>
+          <p>Validates <code>aria-setsize</code> on each article</p>
+        </li>
+        <li>
+          <strong>Loading State</strong>
+          <p>Detects <code>aria-busy="true"</code> during loading operations</p>
+        </li>
+        <li>
+          <strong>Keyboard Focusability</strong>
+          <p>Checks <code>tabindex="0"</code> on articles</p>
+        </li>
+        <li>
+          <strong>Page Down Navigation</strong>
+          <p>Detects keydown handler for PageDown to move forward</p>
+        </li>
+        <li>
+          <strong>Page Up Navigation</strong>
+          <p>Detects keydown handler for PageUp to move backward</p>
+        </li>
+        <li>
+          <strong>Ctrl+Home/End Navigation</strong>
+          <p>Validates jump to first/last article handlers</p>
+        </li>
+        <li>
+          <strong>Focus Management</strong>
+          <p>Confirms focus moves properly when navigating articles</p>
+        </li>
+      </ol>
+
+      <div class="insight-box">
+        <h3>Why This Matters</h3>
+        <p>Feed patterns are critical for accessibility in social media and news sites. Without proper ARIA attributes and keyboard navigation, screen reader users cannot understand the structure of the feed, don't know which article they're on, and cannot efficiently navigate content. The combination of role="feed", aria-setsize/posinset, and Page Up/Down navigation provides the equivalent experience for keyboard users as scrolling does for mouse users.</p>
+      </div>
+    </section>
+
+    <section class="comparison-section">
+      <h2>Why Other Tools Miss This</h2>
+
+      <div class="tool-comparison">
+        <div class="comparison-item">
+          <h3>Traditional Tool Output</h3>
+          <pre><code>✓ List is present
+✓ Content loads dynamically
+✓ Scroll works properly
+
+Result: All checks pass! ✅</code></pre>
+          <p class="comparison-note">But keyboard users cannot navigate articles, and screen readers don't announce position.</p>
+        </div>
+
+        <div class="comparison-item">
+          <h3>Paradise Output</h3>
+          <pre><code>✓ Feed container detected
+✗ Missing role="feed"
+✗ Missing role="article"
+✗ Missing aria-label
+✗ Missing aria-setsize/posinset
+✗ Missing aria-busy
+✗ No Page Up/Down navigation
+✗ No focus management
+
+Result: Incomplete pattern ❌</code></pre>
+          <p class="comparison-note">Paradise catches all missing feed semantics and navigation.</p>
+        </div>
+      </div>
+
+      <div class="why-box">
+        <h3>The Difference</h3>
+        <ul>
+          <li><strong>Other tools:</strong> Check if list exists and content loads</li>
+          <li><strong>Paradise:</strong> Validates complete feed pattern with position tracking</li>
+          <li><strong>Result:</strong> Paradise prevents feeds that work visually but fail for assistive technology</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="wcag-mapping">
+      <h2>WCAG Success Criteria</h2>
+      <p>Complete feed pattern satisfies:</p>
+      <ul class="wcag-list">
+        <li>
+          <strong>2.1.1 Keyboard (Level A)</strong>
+          <p>Page Up/Down navigation, Ctrl+Home/End for first/last</p>
+        </li>
+        <li>
+          <strong>2.4.3 Focus Order (Level A)</strong>
+          <p>Focus moves logically through articles</p>
+        </li>
+        <li>
+          <strong>4.1.2 Name, Role, Value (Level A)</strong>
+          <p><code>role="feed"</code>, <code>role="article"</code>, <code>aria-label</code></p>
+        </li>
+        <li>
+          <strong>4.1.3 Status Messages (Level AA)</strong>
+          <p><code>aria-busy</code> communicates loading state</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="resources">
+      <h2>Additional Resources</h2>
+      <ul>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/feed/" target="_blank">WAI-ARIA: Feed Pattern</a></li>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/example-index/feed/feed.html" target="_blank">WAI-ARIA: Feed Example</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/feed_role" target="_blank">MDN: Feed Role</a></li>
+      </ul>
+    </section>
+
+    <nav class="demo-nav">
+      <a href="grid-comprehensive.html" class="nav-prev">← Previous: Grid</a>
+      <a href="../../index.html" class="nav-home">🏠 All Patterns</a>
+      <a href="menu-comprehensive.html" class="nav-next">Next: Menu →</a>
+    </nav>
+  </div>
+
+  <script src="../../js/accessible/feed-complete.js"></script>
+  <script src="../../js/inaccessible/feed-incomplete.js"></script>
+</body>
+</html>

@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radiogroup Pattern - Comprehensive Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 5px solid #667eea;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.5em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge.accessible {
+            background: #10b981;
+            color: white;
+        }
+
+        .badge.inaccessible {
+            background: #ef4444;
+            color: white;
+        }
+
+        .requirements {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 2px solid #e5e7eb;
+        }
+
+        .requirements h3 {
+            color: #374151;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .requirements ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .requirements li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            color: #4b5563;
+        }
+
+        .requirements li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .demo-area {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 2px solid #e5e7eb;
+        }
+
+        .demo-area h3 {
+            margin-bottom: 20px;
+            color: #374151;
+            font-size: 1.3em;
+        }
+
+        /* Radiogroup Container Styles */
+        .radiogroup-container {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f9fafb;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .radiogroup-title {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .radiogroup-description {
+            font-size: 0.95em;
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+
+        /* ACCESSIBLE Radiogroup Styles */
+        .radiogroup {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .radiogroup.horizontal {
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .radio-option {
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: white;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .radio-option:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+        }
+
+        .radio-option[aria-checked="true"] {
+            background: #eff6ff;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .radio-option:focus {
+            outline: 3px solid #93c5fd;
+            outline-offset: 2px;
+        }
+
+        .radio-option[aria-disabled="true"] {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f9fafb;
+        }
+
+        .radio-option[aria-disabled="true"]:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
+        }
+
+        .radio-button {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #6b7280;
+            border-radius: 50%;
+            margin-right: 12px;
+            position: relative;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .radio-option[aria-checked="true"] .radio-button {
+            border-color: #667eea;
+            border-width: 7px;
+        }
+
+        .radio-option[aria-disabled="true"] .radio-button {
+            border-color: #9ca3af;
+        }
+
+        .radio-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .radio-label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 1.05em;
+        }
+
+        .radio-sublabel {
+            font-size: 0.9em;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .radio-price {
+            font-weight: 700;
+            color: #10b981;
+            margin-left: auto;
+            padding-left: 15px;
+            font-size: 1.1em;
+        }
+
+        /* Horizontal variant styles */
+        .radiogroup.horizontal .radio-option {
+            flex: 1;
+            min-width: 150px;
+            justify-content: center;
+        }
+
+        .radiogroup.horizontal .radio-option .radio-content {
+            text-align: center;
+        }
+
+        .radiogroup.horizontal .radio-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            margin: 0;
+        }
+
+        /* Card variant styles */
+        .radiogroup.cards .radio-option {
+            padding: 25px;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .radiogroup.cards .radio-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            margin: 0;
+        }
+
+        .radiogroup.cards .radio-content {
+            margin-top: 10px;
+        }
+
+        .radio-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        /* INACCESSIBLE Radiogroup Styles */
+        .radiogroup-bad {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .radiogroup-bad.horizontal {
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .radio-option-bad {
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: white;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .radio-option-bad:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+        }
+
+        .radio-option-bad.selected {
+            background: #eff6ff;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .radio-option-bad .radio-button {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #6b7280;
+            border-radius: 50%;
+            margin-right: 12px;
+            position: relative;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .radio-option-bad.selected .radio-button {
+            border-color: #667eea;
+            border-width: 7px;
+        }
+
+        /* State Display */
+        .state-display {
+            margin-top: 25px;
+            padding: 20px;
+            background: #eff6ff;
+            border: 2px solid #bfdbfe;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .state-display h4 {
+            color: #1e40af;
+            margin-bottom: 10px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .state-item {
+            padding: 8px 0;
+            color: #1e3a8a;
+        }
+
+        .state-item strong {
+            color: #1e40af;
+            min-width: 180px;
+            display: inline-block;
+        }
+
+        .state-value {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        /* Issues Panel */
+        .issues-panel {
+            background: #fef2f2;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #ef4444;
+            margin-top: 20px;
+        }
+
+        .issues-panel h4 {
+            color: #991b1b;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .issues-panel ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .issues-panel li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #7f1d1d;
+        }
+
+        .issues-panel li::before {
+            content: "⚠";
+            position: absolute;
+            left: 0;
+            color: #ef4444;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .code-block .keyword {
+            color: #c792ea;
+        }
+
+        .code-block .string {
+            color: #c3e88d;
+        }
+
+        .code-block .attribute {
+            color: #82aaff;
+        }
+
+        .code-block .value {
+            color: #f78c6c;
+        }
+
+        .code-block .comment {
+            color: #697098;
+            font-style: italic;
+        }
+
+        /* Comparison Grid */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .comparison-card {
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid;
+        }
+
+        .comparison-card.good {
+            background: #f0fdf4;
+            border-color: #10b981;
+        }
+
+        .comparison-card.bad {
+            background: #fef2f2;
+            border-color: #ef4444;
+        }
+
+        .comparison-card h4 {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .comparison-card.good h4 {
+            color: #047857;
+        }
+
+        .comparison-card.bad h4 {
+            color: #991b1b;
+        }
+
+        /* Keyboard Info */
+        .keyboard-info {
+            background: #fef3c7;
+            border: 2px solid #fbbf24;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .keyboard-info h4 {
+            color: #92400e;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .keyboard-shortcuts {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .key {
+            display: inline-block;
+            background: white;
+            border: 2px solid #d97706;
+            border-radius: 4px;
+            padding: 5px 12px;
+            font-weight: 600;
+            color: #92400e;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        .key-description {
+            color: #78350f;
+        }
+
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .radiogroup.horizontal {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Radiogroup Pattern</h1>
+            <p>Comprehensive demonstration of accessible and inaccessible radiogroup implementations</p>
+        </div>
+
+        <div class="content">
+            <!-- Requirements Section -->
+            <div class="section">
+                <h2>ARIA Radiogroup Requirements</h2>
+                <div class="requirements">
+                    <h3>Essential Requirements for Accessible Radiogroups</h3>
+                    <ul>
+                        <li><code>role="radiogroup"</code> on the container element</li>
+                        <li><code>role="radio"</code> on each radio option element</li>
+                        <li><code>aria-checked="true"</code> on selected option, <code>aria-checked="false"</code> on others</li>
+                        <li><code>aria-labelledby</code> or <code>aria-label</code> on the radiogroup to describe the group</li>
+                        <li><strong>Arrow keys</strong> (Up/Down or Left/Right) navigate between options with roving tabindex</li>
+                        <li><strong>Space</strong> key selects the currently focused option</li>
+                        <li>Only one option can have <code>tabindex="0"</code> at a time (roving tabindex pattern)</li>
+                        <li>Unselected, non-focused options have <code>tabindex="-1"</code></li>
+                    </ul>
+                </div>
+
+                <div class="keyboard-info">
+                    <h4>⌨️ Keyboard Interactions</h4>
+                    <div class="keyboard-shortcuts">
+                        <span class="key">↑ / ↓</span>
+                        <span class="key-description">Navigate through radio options (vertical orientation)</span>
+                        <span class="key">← / →</span>
+                        <span class="key-description">Navigate through radio options (horizontal orientation)</span>
+                        <span class="key">Space</span>
+                        <span class="key-description">Select the currently focused radio option</span>
+                        <span class="key">Tab</span>
+                        <span class="key-description">Move focus into or out of the radiogroup</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accessible Implementation Section -->
+            <div class="section">
+                <h2>
+                    <span>Accessible Implementation</span>
+                    <span class="badge accessible">Fully Accessible</span>
+                </h2>
+
+                <div class="demo-area">
+                    <h3>Shipping Method Selection (Vertical Layout)</h3>
+
+                    <div class="radiogroup-container">
+                        <div class="radiogroup-title" id="shipping-label">Select Shipping Method</div>
+                        <div class="radiogroup-description">Choose how you'd like your order delivered</div>
+
+                        <div role="radiogroup" aria-labelledby="shipping-label" class="radiogroup" id="shipping-group">
+                            <div role="radio" aria-checked="true" tabindex="0" class="radio-option" data-value="standard">
+                                <div class="radio-button"></div>
+                                <div class="radio-content">
+                                    <div class="radio-label">Standard Shipping</div>
+                                    <div class="radio-sublabel">5-7 business days</div>
+                                </div>
+                                <div class="radio-price">FREE</div>
+                            </div>
+
+                            <div role="radio" aria-checked="false" tabindex="-1" class="radio-option" data-value="express">
+                                <div class="radio-button"></div>
+                                <div class="radio-content">
+                                    <div class="radio-label">Express Shipping</div>
+                                    <div class="radio-sublabel">2-3 business days</div>
+                                </div>
+                                <div class="radio-price">$12.99</div>
+                            </div>
+
+                            <div role="radio" aria-checked="false" tabindex="-1" class="radio-option" data-value="overnight">
+                                <div class="radio-button"></div>
+                                <div class="radio-content">
+                                    <div class="radio-label">Overnight Shipping</div>
+                                    <div class="radio-sublabel">Next business day</div>
+                                </div>
+                                <div class="radio-price">$24.99</div>
+                            </div>
+
+                            <div role="radio" aria-checked="false" tabindex="-1" class="radio-option" data-value="pickup" aria-disabled="true">
+                                <div class="radio-button"></div>
+                                <div class="radio-content">
+                                    <div class="radio-label">Store Pickup</div>
+                                    <div class="radio-sublabel">Currently unavailable in your area</div>
+                                </div>
+                                <div class="radio-price">FREE</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="state-display">
+                        <h4>Current Selection (Shipping)</h4>
+                        <div class="state-item"><strong>Selected Method:</strong> <span id="shipping-state" class="state-value">Standard Shipping</span></div>
+                        <div class="state-item"><strong>Price:</strong> <span id="shipping-price" class="state-value">FREE</span></div>
+                    </div>
+                </div>
+
+                <div class="demo-area">
+                    <h3>T-Shirt Size Selection (Horizontal Layout)</h3>
+
+                    <div class="radiogroup-container">
+                        <div class="radiogroup-title" id="size-label">Select Size</div>
+                        <div class="radiogroup-description">Choose your preferred t-shirt size</div>
+
+                        <div role="radiogroup" aria-labelledby="size-label" class="radiogroup horizontal" id="size-group">
+                            <div role="radio" aria-checked="false" tabindex="-1" class="radio-option" data-value="xs">
+                                <div class="radio-button"></div>
+                                <div class="radio-content">
+                                    <div class="radio-label">XS</div>
+                                </div>
+                            </div>
+
+                            <div role="radio" aria-checked="false" tabindex="-1" class="radio-option" data-value="s">
+                                <div class="radio-button"></div>
+                                <div class="radio-content">
+                                    <div class="radio-label">S</div>
+                                </div>
+                            </div>
+
+                            <div role="radio" aria-checked="true" tabindex="0" class="radio-option" data-value="m">
+                                <div class="radio-button"></div>
+                                <div class="radio-content">
+                                    <div class="radio-label">M</div>
+                                </div>
+                            </div>
+
+                            <div role="radio" aria-checked="false" tabindex="-1" class="radio-option" data-value="l">
+                                <div class="radio-button"></div>
+                                <div class="radio-content">
+                                    <div class="radio-label">L</div>
+                                </div>
+                            </div>
+
+                            <div role="radio" aria-checked="false" tabindex="-1" class="radio-option" data-value="xl">
+                                <div class="radio-button"></div>
+                                <div class="radio-content">
+                                    <div class="radio-label">XL</div>
+                                </div>
+                            </div>
+
+                            <div role="radio" aria-checked="false" tabindex="-1" class="radio-option" data-value="xxl">
+                                <div class="radio-button"></div>
+                                <div class="radio-content">
+                                    <div class="radio-label">XXL</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="state-display">
+                        <h4>Current Selection (Size)</h4>
+                        <div class="state-item"><strong>Selected Size:</strong> <span id="size-state" class="state-value">M</span></div>
+                    </div>
+                </div>
+
+                <div class="demo-area">
+                    <h3>Subscription Plan Selection (Card Layout)</h3>
+
+                    <div class="radiogroup-container">
+                        <div class="radiogroup-title" id="plan-label">Choose Your Plan</div>
+                        <div class="radiogroup-description">Select the subscription that works best for you</div>
+
+                        <div role="radiogroup" aria-labelledby="plan-label" class="radiogroup horizontal cards" id="plan-group">
+                            <div role="radio" aria-checked="false" tabindex="-1" class="radio-option" data-value="basic">
+                                <div class="radio-button"></div>
+                                <div class="radio-icon">📦</div>
+                                <div class="radio-content">
+                                    <div class="radio-label">Basic</div>
+                                    <div class="radio-sublabel">Perfect for individuals</div>
+                                    <div class="radio-price">$9/mo</div>
+                                </div>
+                            </div>
+
+                            <div role="radio" aria-checked="true" tabindex="0" class="radio-option" data-value="pro">
+                                <div class="radio-button"></div>
+                                <div class="radio-icon">⭐</div>
+                                <div class="radio-content">
+                                    <div class="radio-label">Pro</div>
+                                    <div class="radio-sublabel">Best for small teams</div>
+                                    <div class="radio-price">$29/mo</div>
+                                </div>
+                            </div>
+
+                            <div role="radio" aria-checked="false" tabindex="-1" class="radio-option" data-value="enterprise">
+                                <div class="radio-button"></div>
+                                <div class="radio-icon">🚀</div>
+                                <div class="radio-content">
+                                    <div class="radio-label">Enterprise</div>
+                                    <div class="radio-sublabel">For large organizations</div>
+                                    <div class="radio-price">$99/mo</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="state-display">
+                        <h4>Current Selection (Plan)</h4>
+                        <div class="state-item"><strong>Selected Plan:</strong> <span id="plan-state" class="state-value">Pro</span></div>
+                        <div class="state-item"><strong>Price:</strong> <span id="plan-price" class="state-value">$29/mo</span></div>
+                    </div>
+                </div>
+
+                <div class="code-block">
+<span class="comment">&lt;!-- ACCESSIBLE RADIOGROUP - Vertical Layout --&gt;</span>
+<span class="keyword">&lt;div</span> <span class="attribute">role</span>=<span class="string">"radiogroup"</span>
+     <span class="attribute">aria-labelledby</span>=<span class="string">"shipping-label"</span><span class="keyword">&gt;</span>
+
+    <span class="keyword">&lt;div</span> <span class="attribute">role</span>=<span class="string">"radio"</span>
+         <span class="attribute">aria-checked</span>=<span class="string">"true"</span>
+         <span class="attribute">tabindex</span>=<span class="string">"0"</span>
+         <span class="attribute">class</span>=<span class="string">"radio-option"</span><span class="keyword">&gt;</span>
+        Standard Shipping
+    <span class="keyword">&lt;/div&gt;</span>
+
+    <span class="keyword">&lt;div</span> <span class="attribute">role</span>=<span class="string">"radio"</span>
+         <span class="attribute">aria-checked</span>=<span class="string">"false"</span>
+         <span class="attribute">tabindex</span>=<span class="string">"-1"</span>
+         <span class="attribute">class</span>=<span class="string">"radio-option"</span><span class="keyword">&gt;</span>
+        Express Shipping
+    <span class="keyword">&lt;/div&gt;</span>
+<span class="keyword">&lt;/div&gt;</span>
+
+<span class="comment">&lt;!-- Key Features:
+     - role="radiogroup" on container
+     - role="radio" on each option
+     - aria-checked for state
+     - Roving tabindex (only one tabindex="0")
+     - Arrow key navigation
+     - Space to select --&gt;</span>
+                </div>
+            </div>
+
+            <!-- Inaccessible Implementation Section -->
+            <div class="section">
+                <h2>
+                    <span>Inaccessible Implementation</span>
+                    <span class="badge inaccessible">Has Issues</span>
+                </h2>
+
+                <div class="demo-area">
+                    <h3>Broken Shipping Selection (Multiple Accessibility Issues)</h3>
+
+                    <div class="radiogroup-container">
+                        <div style="font-weight: 600; color: #374151; margin-bottom: 15px; font-size: 1.2em;">Select Shipping Method</div>
+                        <div class="radiogroup-description">Choose how you'd like your order delivered</div>
+
+                        <div class="radiogroup-bad" id="shipping-bad-group">
+                            <div class="radio-option-bad selected" data-value="standard">
+                                <div class="radio-button"></div>
+                                <div class="radio-content">
+                                    <div class="radio-label">Standard Shipping</div>
+                                    <div class="radio-sublabel">5-7 business days</div>
+                                </div>
+                                <div class="radio-price">FREE</div>
+                            </div>
+
+                            <div class="radio-option-bad" data-value="express">
+                                <div class="radio-button"></div>
+                                <div class="radio-content">
+                                    <div class="radio-label">Express Shipping</div>
+                                    <div class="radio-sublabel">2-3 business days</div>
+                                </div>
+                                <div class="radio-price">$12.99</div>
+                            </div>
+
+                            <div class="radio-option-bad" data-value="overnight">
+                                <div class="radio-button"></div>
+                                <div class="radio-content">
+                                    <div class="radio-label">Overnight Shipping</div>
+                                    <div class="radio-sublabel">Next business day</div>
+                                </div>
+                                <div class="radio-price">$24.99</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="state-display">
+                        <h4>Current Selection (Broken)</h4>
+                        <div class="state-item"><strong>Selected Method:</strong> <span id="shipping-bad-state" class="state-value">Standard Shipping</span></div>
+                        <div class="state-item"><strong>Price:</strong> <span id="shipping-bad-price" class="state-value">FREE</span></div>
+                    </div>
+                </div>
+
+                <div class="demo-area">
+                    <h3>Broken Size Selection (Horizontal)</h3>
+
+                    <div class="radiogroup-container">
+                        <div style="font-weight: 600; color: #374151; margin-bottom: 15px; font-size: 1.2em;">Select Size</div>
+                        <div class="radiogroup-description">Choose your preferred t-shirt size</div>
+
+                        <div class="radiogroup-bad horizontal" id="size-bad-group">
+                            <div class="radio-option-bad" data-value="xs">
+                                <div class="radio-button"></div>
+                                <div class="radio-content">
+                                    <div class="radio-label">XS</div>
+                                </div>
+                            </div>
+
+                            <div class="radio-option-bad" data-value="s">
+                                <div class="radio-button"></div>
+                                <div class="radio-content">
+                                    <div class="radio-label">S</div>
+                                </div>
+                            </div>
+
+                            <div class="radio-option-bad selected" data-value="m">
+                                <div class="radio-button"></div>
+                                <div class="radio-content">
+                                    <div class="radio-label">M</div>
+                                </div>
+                            </div>
+
+                            <div class="radio-option-bad" data-value="l">
+                                <div class="radio-button"></div>
+                                <div class="radio-content">
+                                    <div class="radio-label">L</div>
+                                </div>
+                            </div>
+
+                            <div class="radio-option-bad" data-value="xl">
+                                <div class="radio-button"></div>
+                                <div class="radio-content">
+                                    <div class="radio-label">XL</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="state-display">
+                        <h4>Current Selection (Broken)</h4>
+                        <div class="state-item"><strong>Selected Size:</strong> <span id="size-bad-state" class="state-value">M</span></div>
+                    </div>
+                </div>
+
+                <div class="issues-panel">
+                    <h4>⚠ Accessibility Issues (6 detected by Paradise)</h4>
+                    <ul>
+                        <li><strong>Missing role="radiogroup":</strong> Container doesn't identify as a radiogroup to screen readers</li>
+                        <li><strong>Missing role="radio":</strong> Individual options are not identified as radio buttons</li>
+                        <li><strong>Missing aria-checked:</strong> Screen readers cannot determine which option is selected</li>
+                        <li><strong>Missing aria-labelledby/aria-label:</strong> The radiogroup has no accessible name describing its purpose</li>
+                        <li><strong>No keyboard navigation:</strong> Arrow keys don't work to navigate between options</li>
+                        <li><strong>No roving tabindex:</strong> Missing proper tabindex management for keyboard focus</li>
+                    </ul>
+                </div>
+
+                <div class="code-block">
+<span class="comment">&lt;!-- INACCESSIBLE - Do not use! --&gt;</span>
+<span class="keyword">&lt;div</span> <span class="attribute">class</span>=<span class="string">"radiogroup-bad"</span><span class="keyword">&gt;</span>
+    <span class="keyword">&lt;div</span> <span class="attribute">class</span>=<span class="string">"radio-option-bad selected"</span><span class="keyword">&gt;</span>
+        Standard Shipping
+    <span class="keyword">&lt;/div&gt;</span>
+    <span class="keyword">&lt;div</span> <span class="attribute">class</span>=<span class="string">"radio-option-bad"</span><span class="keyword">&gt;</span>
+        Express Shipping
+    <span class="keyword">&lt;/div&gt;</span>
+<span class="keyword">&lt;/div&gt;</span>
+
+<span class="comment">&lt;!-- Issues:
+     - No role="radiogroup" or role="radio"
+     - No aria-checked attributes
+     - No aria-label/aria-labelledby
+     - Only works with mouse clicks
+     - No keyboard navigation
+     - No roving tabindex pattern
+     - Screen readers cannot understand structure --&gt;</span>
+                </div>
+            </div>
+
+            <!-- Comparison Section -->
+            <div class="section">
+                <h2>Accessibility Comparison</h2>
+
+                <div class="comparison-grid">
+                    <div class="comparison-card good">
+                        <h4>✓ Accessible Radiogroup</h4>
+                        <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                            <li style="padding: 8px 0; color: #065f46;">✓ Has role="radiogroup" on container</li>
+                            <li style="padding: 8px 0; color: #065f46;">✓ Has role="radio" on each option</li>
+                            <li style="padding: 8px 0; color: #065f46;">✓ aria-checked shows selection state</li>
+                            <li style="padding: 8px 0; color: #065f46;">✓ aria-labelledby describes purpose</li>
+                            <li style="padding: 8px 0; color: #065f46;">✓ Arrow keys navigate options</li>
+                            <li style="padding: 8px 0; color: #065f46;">✓ Space selects focused option</li>
+                            <li style="padding: 8px 0; color: #065f46;">✓ Roving tabindex pattern</li>
+                            <li style="padding: 8px 0; color: #065f46;">✓ Screen readers announce everything</li>
+                        </ul>
+                    </div>
+
+                    <div class="comparison-card bad">
+                        <h4>✗ Inaccessible Radiogroup</h4>
+                        <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                            <li style="padding: 8px 0; color: #991b1b;">✗ Missing role="radiogroup"</li>
+                            <li style="padding: 8px 0; color: #991b1b;">✗ Missing role="radio" on options</li>
+                            <li style="padding: 8px 0; color: #991b1b;">✗ No aria-checked attributes</li>
+                            <li style="padding: 8px 0; color: #991b1b;">✗ No accessible label for group</li>
+                            <li style="padding: 8px 0; color: #991b1b;">✗ Arrow keys don't work</li>
+                            <li style="padding: 8px 0; color: #991b1b;">✗ Space key doesn't select</li>
+                            <li style="padding: 8px 0; color: #991b1b;">✗ No tabindex management</li>
+                            <li style="padding: 8px 0; color: #991b1b;">✗ Mouse-only operation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/accessible/radiogroup-complete.js"></script>
+    <script src="../../js/inaccessible/radiogroup-incomplete.js"></script>
+</body>
+</html>

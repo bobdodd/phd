@@ -76,6 +76,48 @@ Each help page includes:
   - Severity: Warning
   - Quick Fix: ✗ Manual fix required
 
+### ARIA Semantics
+
+- **[invalid-role](invalid-role.md)** - Using ARIA role value that doesn't exist in ARIA 1.2 specification
+  - WCAG: 4.1.2 (Name, Role, Value)
+  - Severity: Error
+  - Quick Fix: ✓ Available
+
+- **[interactive-role-static](interactive-role-static.md)** - Interactive ARIA role without required event handlers
+  - WCAG: 2.1.1, 4.1.2 (Keyboard, Name, Role, Value)
+  - Severity: Error
+  - Quick Fix: ✓ Available
+
+- **[aria-expanded-static](aria-expanded-static.md)** - aria-expanded set but never updated
+  - WCAG: 4.1.2 (Name, Role, Value)
+  - Severity: Warning
+  - Quick Fix: ✓ Available
+
+- **[dialog-missing-label](dialog-missing-label.md)** - Dialog role without accessible label
+  - WCAG: 4.1.2 (Name, Role, Value)
+  - Severity: Error
+  - Quick Fix: ✓ Available
+
+- **[missing-required-aria](missing-required-aria.md)** - ARIA role missing required attributes
+  - WCAG: 4.1.2 (Name, Role, Value)
+  - Severity: Error
+  - Quick Fix: ✓ Available
+
+- **[assertive-live-region](assertive-live-region.md)** - Overuse of aria-live="assertive"
+  - WCAG: 4.1.3 (Status Messages)
+  - Severity: Warning
+  - Quick Fix: ✓ Available
+
+- **[aria-hidden-true](aria-hidden-true.md)** - aria-hidden on focusable/interactive element
+  - WCAG: 4.1.2 (Name, Role, Value)
+  - Severity: Error
+  - Quick Fix: ✓ Available
+
+- **[aria-label-overuse](aria-label-overuse.md)** - aria-label overriding visible text
+  - WCAG: 2.5.3 (Label in Name)
+  - Severity: Info
+  - Quick Fix: ✓ Available
+
 ### Focus Management
 
 - **[removal-without-focus-management](removal-without-focus-management.md)** - Element removed without checking if it has focus
@@ -150,6 +192,14 @@ Each help page includes:
 | screen-reader-arrow-conflict | ✅ | 2.1.1 | Info |
 | orphaned-event-handler | ✅ | 4.1.2 | Error |
 | missing-aria-connection | ✅ | 4.1.2, 1.3.1 | Warning |
+| invalid-role | ✅ | 4.1.2 | Error |
+| interactive-role-static | ✅ | 2.1.1, 4.1.2 | Error |
+| aria-expanded-static | ✅ | 4.1.2 | Warning |
+| dialog-missing-label | ✅ | 4.1.2 | Error |
+| missing-required-aria | ✅ | 4.1.2 | Error |
+| assertive-live-region | ✅ | 4.1.3 | Warning |
+| aria-hidden-true | ✅ | 4.1.2 | Error |
+| aria-label-overuse | ✅ | 2.5.3 | Info |
 | removal-without-focus-management | ✅ | 2.4.3, 2.4.7 | Warning |
 | hiding-without-focus-management | ✅ | 2.4.3, 2.4.7 | Warning |
 | hiding-class-without-focus-management | ✅ | 2.4.7 | Info |
@@ -174,13 +224,15 @@ Please [open an issue](https://github.com/bobdodd/paradise/issues) or submit a p
 
 Paradise maps issues to WCAG 2.1 success criteria:
 
+- **[1.3.1 Info and Relationships](https://www.w3.org/WAI/WCAG21/Understanding/info-and-relationships)** - Structure and relationships are programmatically determined
 - **[2.1.1 Keyboard](https://www.w3.org/WAI/WCAG21/Understanding/keyboard)** - All functionality available via keyboard
 - **[2.1.2 No Keyboard Trap](https://www.w3.org/WAI/WCAG21/Understanding/no-keyboard-trap)** - Users can navigate away using keyboard alone
 - **[2.1.4 Character Key Shortcuts](https://www.w3.org/WAI/WCAG21/Understanding/character-key-shortcuts)** - Single-character shortcuts can be turned off or remapped
 - **[2.4.3 Focus Order](https://www.w3.org/WAI/WCAG21/Understanding/focus-order)** - Navigation order is logical and intuitive
 - **[2.4.7 Focus Visible](https://www.w3.org/WAI/WCAG21/Understanding/focus-visible)** - Keyboard focus indicator is visible
+- **[2.5.3 Label in Name](https://www.w3.org/WAI/WCAG21/Understanding/label-in-name)** - Accessible names contain the visible text label
 - **[4.1.2 Name, Role, Value](https://www.w3.org/WAI/WCAG21/Understanding/name-role-value)** - UI components have accessible names and roles
-- **[1.3.1 Info and Relationships](https://www.w3.org/WAI/WCAG21/Understanding/info-and-relationships)** - Structure and relationships are programmatically determined
+- **[4.1.3 Status Messages](https://www.w3.org/WAI/WCAG21/Understanding/status-messages)** - Status messages are announced to assistive technologies
 
 ## Additional Resources
 

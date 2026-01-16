@@ -20,9 +20,9 @@ export default function AnalyzersPage() {
         <div className="mb-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="bg-white rounded-xl shadow-lg p-6 text-center border-2 border-paradise-blue/20">
-              <div className="text-4xl font-bold text-paradise-blue mb-2">14</div>
+              <div className="text-4xl font-bold text-paradise-blue mb-2">15</div>
               <div className="text-gray-600 font-medium">Total Analyzers</div>
-              <div className="text-xs text-gray-500 mt-1">9 JS-only + 5 Multi-model</div>
+              <div className="text-xs text-gray-500 mt-1">9 JS-only + 6 Multi-model</div>
             </div>
             <div className="bg-white rounded-xl shadow-lg p-6 text-center border-2 border-green-500/20">
               <div className="text-4xl font-bold text-green-600 mb-2">0</div>
@@ -484,6 +484,34 @@ btn.addEventListener('click', handler);
                 <strong>WCAG:</strong> 2.4.3, 2.4.7 | <strong>Impact:</strong> Chaotic focus flow confuses users
               </div>
             </div>
+
+            {/* Analyzer 14 */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border-l-8 border-green-500">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center text-white text-xl font-bold">15</div>
+                <div>
+                  <h3 className="text-2xl font-bold">ARIASemanticAnalyzer</h3>
+                  <div className="inline-block bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-semibold">NEW - Phase 2</div>
+                </div>
+              </div>
+              <p className="text-gray-700 mb-2">
+                Validates ARIA semantics - detects invalid roles, interactive roles without handlers, static aria-expanded,
+                missing required attributes, overuse of assertive live regions, and aria-label issues
+              </p>
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2 mb-3">
+                <strong>WCAG:</strong> 4.1.2, 4.1.3, 2.5.3, 2.1.1 | <strong>Impact:</strong> Broken ARIA implementation confuses screen readers
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="bg-red-50 text-red-800 px-2 py-1 rounded">✓ invalid-role</div>
+                <div className="bg-red-50 text-red-800 px-2 py-1 rounded">✓ interactive-role-static</div>
+                <div className="bg-yellow-50 text-yellow-800 px-2 py-1 rounded">✓ aria-expanded-static</div>
+                <div className="bg-red-50 text-red-800 px-2 py-1 rounded">✓ dialog-missing-label</div>
+                <div className="bg-red-50 text-red-800 px-2 py-1 rounded">✓ missing-required-aria</div>
+                <div className="bg-yellow-50 text-yellow-800 px-2 py-1 rounded">✓ assertive-live-region</div>
+                <div className="bg-red-50 text-red-800 px-2 py-1 rounded">✓ aria-hidden-true</div>
+                <div className="bg-blue-50 text-blue-800 px-2 py-1 rounded">✓ aria-label-overuse</div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -665,6 +693,20 @@ btn.addEventListener('click', handler);
                     </td>
                     <td className="px-6 py-4 text-sm font-mono text-gray-600">2.4.3</td>
                   </tr>
+                  <tr className="hover:bg-gray-50 bg-green-50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">15</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      ARIASemanticAnalyzer
+                      <span className="block text-xs text-gray-500 mt-1">(8 issue types)</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-green-500/20 text-green-700 px-2 py-1 rounded">Phase 2</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">4.1.2, 4.1.3, 2.5.3</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -674,7 +716,7 @@ btn.addEventListener('click', handler);
         {/* CTA */}
         <div className="max-w-4xl mx-auto text-center">
           <div className="bg-gradient-to-r from-paradise-blue to-paradise-purple rounded-2xl shadow-2xl p-12 text-white">
-            <h2 className="text-3xl font-bold mb-4">Experience All 14 Analyzers</h2>
+            <h2 className="text-3xl font-bold mb-4">Experience All 15 Analyzers</h2>
             <p className="text-lg opacity-95 mb-8">
               Try Paradise's complete analyzer suite - from JavaScript-only to multi-model - and see how
               the evolution eliminates false positives while catching more real issues.

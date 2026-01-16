@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accordion Pattern Demo - Paradise Widget Patterns</title>
+  <link rel="stylesheet" href="../../css/demo.css">
+  <style>
+    .accordion {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+
+    .accordion-item {
+      border-bottom: 1px solid #ccc;
+    }
+
+    .accordion-item:last-child {
+      border-bottom: none;
+    }
+
+    .accordion-header {
+      margin: 0;
+    }
+
+    .accordion-button {
+      width: 100%;
+      padding: 16px;
+      text-align: left;
+      background: #f8f8f8;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s;
+    }
+
+    .accordion-button:hover {
+      background: #e8e8e8;
+    }
+
+    .accordion-button:focus {
+      outline: 2px solid #0066cc;
+      outline-offset: -2px;
+    }
+
+    .accordion-button[aria-expanded="true"] {
+      background: #e0e0e0;
+    }
+
+    .accordion-icon {
+      transition: transform 0.2s;
+      font-size: 20px;
+    }
+
+    .accordion-button[aria-expanded="true"] .accordion-icon {
+      transform: rotate(180deg);
+    }
+
+    .accordion-panel {
+      padding: 16px;
+      background: white;
+    }
+
+    .accordion-panel[hidden] {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="../../index.html">Home</a> &gt;
+      <a href="#disclosure">Disclosure Widgets</a> &gt;
+      <span>Accordion</span>
+    </nav>
+
+    <header>
+      <h1>📋 Accordion Pattern</h1>
+      <p class="subtitle">Collapsible sections with keyboard navigation</p>
+
+      <div class="pattern-info">
+        <span class="complexity-badge high">High Complexity</span>
+        <span class="wcag-badge">WCAG 1.3.1, 2.1.1, 4.1.2</span>
+      </div>
+    </header>
+
+    <section class="pattern-description">
+      <h2>What is an Accordion?</h2>
+      <p>An accordion is a vertically stacked set of collapsible panels. Each panel has a header (button) that controls the visibility of its associated content panel. Accordions help organize content into manageable sections.</p>
+
+      <div class="key-requirements">
+        <h3>Complete Accordion Pattern Requires:</h3>
+        <ul>
+          <li>Button elements for each header</li>
+          <li><code>aria-expanded</code> on buttons (true/false based on state)</li>
+          <li><code>aria-controls</code> on buttons pointing to panel IDs</li>
+          <li><code>id</code> attributes on panels for linking</li>
+          <li><strong>State management:</strong> Update aria-expanded when toggling</li>
+          <li><strong>Keyboard navigation:</strong> Arrow keys move between headers (optional but recommended)</li>
+          <li><strong>Visual indicators:</strong> Icon showing expanded/collapsed state</li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="comparison">
+      <!-- LEFT SIDE - ACCESSIBLE -->
+      <section class="example good">
+        <h2>✅ Accessible Implementation</h2>
+        <p>Complete accordion with aria-expanded and aria-controls.</p>
+
+        <div class="accordion" id="good-accordion">
+          <div class="accordion-item">
+            <h3 class="accordion-header">
+              <button class="accordion-button"
+                      aria-expanded="false"
+                      aria-controls="good-panel-1"
+                      id="good-header-1">
+                <span>Section 1: Getting Started</span>
+                <span class="accordion-icon" aria-hidden="true">▼</span>
+              </button>
+            </h3>
+            <div id="good-panel-1"
+                 class="accordion-panel"
+                 role="region"
+                 aria-labelledby="good-header-1"
+                 hidden>
+              <p>This is the content for section 1. It contains detailed information about getting started with the product.</p>
+              <p>You can include multiple paragraphs, links, and other content here.</p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h3 class="accordion-header">
+              <button class="accordion-button"
+                      aria-expanded="false"
+                      aria-controls="good-panel-2"
+                      id="good-header-2">
+                <span>Section 2: Advanced Features</span>
+                <span class="accordion-icon" aria-hidden="true">▼</span>
+              </button>
+            </h3>
+            <div id="good-panel-2"
+                 class="accordion-panel"
+                 role="region"
+                 aria-labelledby="good-header-2"
+                 hidden>
+              <p>This section covers advanced features including customization options and integrations.</p>
+              <ul>
+                <li>Feature A: Advanced configuration</li>
+                <li>Feature B: API integration</li>
+                <li>Feature C: Custom workflows</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h3 class="accordion-header">
+              <button class="accordion-button"
+                      aria-expanded="false"
+                      aria-controls="good-panel-3"
+                      id="good-header-3">
+                <span>Section 3: Troubleshooting</span>
+                <span class="accordion-icon" aria-hidden="true">▼</span>
+              </button>
+            </h3>
+            <div id="good-panel-3"
+                 class="accordion-panel"
+                 role="region"
+                 aria-labelledby="good-header-3"
+                 hidden>
+              <p>Common issues and their solutions:</p>
+              <ul>
+                <li><strong>Issue 1:</strong> Connection problems</li>
+                <li><strong>Issue 2:</strong> Performance optimization</li>
+                <li><strong>Issue 3:</strong> Data synchronization</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis Results</h3>
+          <div class="result-box success">
+            <strong>✅ Complete Accordion Pattern Detected</strong>
+            <p>0 issues found</p>
+          </div>
+
+          <h4>Validation Checklist:</h4>
+          <ul class="validation-results">
+            <li class="check-pass">✓ Buttons have <code>aria-expanded</code> attributes</li>
+            <li class="check-pass">✓ Buttons have <code>aria-controls</code> pointing to panels</li>
+            <li class="check-pass">✓ Panels have matching <code>id</code> attributes</li>
+            <li class="check-pass">✓ State management updates <code>aria-expanded</code></li>
+            <li class="check-pass">✓ Panels have <code>role="region"</code></li>
+            <li class="check-pass">✓ Panels have <code>aria-labelledby</code> pointing to headers</li>
+            <li class="check-pass">✓ Arrow key navigation (optional enhancement)</li>
+          </ul>
+        </div>
+
+        <details class="code-sample">
+          <summary>View Complete HTML</summary>
+          <pre><code>&lt;div class="accordion"&gt;
+  &lt;div class="accordion-item"&gt;
+    &lt;h3&gt;
+      &lt;button aria-expanded="false"
+              aria-controls="panel-1"
+              id="header-1"&gt;
+        Section 1
+      &lt;/button&gt;
+    &lt;/h3&gt;
+    &lt;div id="panel-1"
+         role="region"
+         aria-labelledby="header-1"
+         hidden&gt;
+      Content goes here...
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        </details>
+
+        <details class="code-sample">
+          <summary>View Complete JavaScript</summary>
+          <pre><code>// Complete accordion implementation
+const accordion = document.getElementById('accordion');
+const buttons = accordion.querySelectorAll('.accordion-button');
+
+buttons.forEach(button => {
+  button.addEventListener('click', () => {
+    // Get current state
+    const isExpanded = button.getAttribute('aria-expanded') === 'true';
+
+    // Get associated panel
+    const panelId = button.getAttribute('aria-controls');
+    const panel = document.getElementById(panelId);
+
+    // Toggle state
+    button.setAttribute('aria-expanded', String(!isExpanded));
+
+    if (!isExpanded) {
+      panel.removeAttribute('hidden');
+    } else {
+      panel.setAttribute('hidden', '');
+    }
+  });
+});
+
+// Optional: Arrow key navigation
+accordion.addEventListener('keydown', (event) => {
+  if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+    const currentButton = event.target;
+    const allButtons = Array.from(buttons);
+    const currentIndex = allButtons.indexOf(currentButton);
+
+    let nextIndex;
+    if (event.key === 'ArrowDown') {
+      nextIndex = (currentIndex + 1) % allButtons.length;
+    } else {
+      nextIndex = currentIndex === 0
+        ? allButtons.length - 1
+        : currentIndex - 1;
+    }
+
+    event.preventDefault();
+    allButtons[nextIndex].focus();
+  }
+});</code></pre>
+        </details>
+      </section>
+
+      <!-- RIGHT SIDE - INACCESSIBLE -->
+      <section class="example bad">
+        <h2>❌ Inaccessible Implementation</h2>
+        <p>Accordion missing ARIA attributes and state management.</p>
+
+        <div class="accordion" id="bad-accordion">
+          <div class="accordion-item">
+            <h3 class="accordion-header">
+              <button class="accordion-button" data-panel="bad-panel-1">
+                <span>Section 1: Getting Started</span>
+                <span class="accordion-icon" aria-hidden="true">▼</span>
+              </button>
+            </h3>
+            <div id="bad-panel-1" class="accordion-panel" hidden>
+              <p>This is the content for section 1. It contains detailed information about getting started with the product.</p>
+              <p>You can include multiple paragraphs, links, and other content here.</p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h3 class="accordion-header">
+              <button class="accordion-button" data-panel="bad-panel-2">
+                <span>Section 2: Advanced Features</span>
+                <span class="accordion-icon" aria-hidden="true">▼</span>
+              </button>
+            </h3>
+            <div id="bad-panel-2" class="accordion-panel" hidden>
+              <p>This section covers advanced features including customization options and integrations.</p>
+              <ul>
+                <li>Feature A: Advanced configuration</li>
+                <li>Feature B: API integration</li>
+                <li>Feature C: Custom workflows</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h3 class="accordion-header">
+              <button class="accordion-button" data-panel="bad-panel-3">
+                <span>Section 3: Troubleshooting</span>
+                <span class="accordion-icon" aria-hidden="true">▼</span>
+              </button>
+            </h3>
+            <div id="bad-panel-3" class="accordion-panel" hidden>
+              <p>Common issues and their solutions:</p>
+              <ul>
+                <li><strong>Issue 1:</strong> Connection problems</li>
+                <li><strong>Issue 2:</strong> Performance optimization</li>
+                <li><strong>Issue 3:</strong> Data synchronization</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis Results</h3>
+          <div class="result-box error">
+            <strong>❌ Incomplete Accordion Pattern</strong>
+            <p>4 issues found</p>
+          </div>
+
+          <h4>Issues Detected:</h4>
+          <ul class="issues-list">
+            <li class="issue-error">
+              <strong>Missing <code>aria-expanded</code> on buttons</strong>
+              <p>Screen readers cannot announce expanded/collapsed state</p>
+            </li>
+            <li class="issue-error">
+              <strong>Missing <code>aria-controls</code> on buttons</strong>
+              <p>No programmatic link between buttons and panels</p>
+            </li>
+            <li class="issue-error">
+              <strong>aria-expanded not updated on toggle</strong>
+              <p>State changes not communicated to assistive technology</p>
+            </li>
+            <li class="issue-error">
+              <strong>Panels missing <code>aria-labelledby</code></strong>
+              <p>Panels not labeled by their headers</p>
+            </li>
+          </ul>
+
+          <h4>Validation Checklist:</h4>
+          <ul class="validation-results">
+            <li class="check-fail">✗ <code>aria-expanded</code> missing</li>
+            <li class="check-fail">✗ <code>aria-controls</code> missing</li>
+            <li class="check-fail">✗ State management incomplete</li>
+            <li class="check-fail">✗ <code>aria-labelledby</code> missing on panels</li>
+            <li class="check-warn">⚠ No arrow key navigation</li>
+          </ul>
+        </div>
+
+        <details class="code-sample">
+          <summary>View Incomplete HTML</summary>
+          <pre><code>&lt;!-- INCOMPLETE: Missing ARIA attributes --&gt;
+&lt;div class="accordion"&gt;
+  &lt;div class="accordion-item"&gt;
+    &lt;h3&gt;
+      &lt;button data-panel="panel-1"&gt;
+        Section 1
+      &lt;/button&gt;
+    &lt;/h3&gt;
+    &lt;div id="panel-1" hidden&gt;
+      Content goes here...
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        </details>
+
+        <details class="code-sample">
+          <summary>View Incomplete JavaScript</summary>
+          <pre><code>// INCOMPLETE: Only show/hide, no ARIA updates
+const buttons = document.querySelectorAll('.accordion-button');
+
+buttons.forEach(button => {
+  button.addEventListener('click', () => {
+    const panelId = button.getAttribute('data-panel');
+    const panel = document.getElementById(panelId);
+
+    // Toggle visibility
+    const isHidden = panel.hasAttribute('hidden');
+    if (isHidden) {
+      panel.removeAttribute('hidden');
+    } else {
+      panel.setAttribute('hidden', '');
+    }
+
+    // ❌ MISSING: aria-expanded update
+    // ❌ MISSING: State communication to AT
+  });
+});
+
+// ❌ MISSING: Arrow key navigation</code></pre>
+        </details>
+      </section>
+    </div>
+
+    <section class="testing-panel">
+      <h2>🧪 Interactive Testing</h2>
+      <p>Test both implementations with keyboard and screen reader:</p>
+
+      <div class="testing-instructions">
+        <h3>Keyboard Testing Steps:</h3>
+        <ol>
+          <li>Tab to accordion buttons</li>
+          <li>Press <kbd>Enter</kbd> or <kbd>Space</kbd> to expand/collapse</li>
+          <li><strong>Accessible:</strong> Try <kbd>↓</kbd> and <kbd>↑</kbd> to navigate headers</li>
+          <li><strong>Inaccessible:</strong> Arrow keys do nothing</li>
+          <li>Tab into expanded panel content</li>
+          <li>Verify you can interact with links/content inside panels</li>
+        </ol>
+
+        <h3>Screen Reader Testing:</h3>
+        <ul>
+          <li><strong>Accessible:</strong> Announces "button, collapsed" or "button, expanded"</li>
+          <li><strong>Inaccessible:</strong> Only announces "button" without state</li>
+          <li><strong>Accessible:</strong> Screen reader knows which panel is controlled</li>
+          <li><strong>Inaccessible:</strong> No relationship between button and panel</li>
+        </ul>
+
+        <div class="testing-checklist">
+          <h4>Test Checklist:</h4>
+          <label><input type="checkbox"> Navigate to buttons with Tab</label>
+          <label><input type="checkbox"> Activate with Enter/Space</label>
+          <label><input type="checkbox"> Arrow keys navigate headers (accessible only)</label>
+          <label><input type="checkbox"> Screen reader announces state (accessible only)</label>
+          <label><input type="checkbox"> Can Tab into panel content when expanded</label>
+          <label><input type="checkbox"> Visual icon matches state</label>
+        </div>
+      </div>
+    </section>
+
+    <section class="explanation">
+      <h2>🎯 What Paradise Detects</h2>
+      <p>Paradise validates the <strong>complete accordion pattern</strong> in 5 steps:</p>
+
+      <ol class="detection-steps">
+        <li>
+          <strong>Button Detection</strong>
+          <p>Finds buttons that act as accordion headers (click handlers present)</p>
+        </li>
+        <li>
+          <strong>ARIA Attributes</strong>
+          <p>Verifies <code>aria-expanded</code> and <code>aria-controls</code> present</p>
+        </li>
+        <li>
+          <strong>Panel Relationships</strong>
+          <p>Checks that <code>aria-controls</code> IDs match panel <code>id</code> attributes</p>
+        </li>
+        <li>
+          <strong>State Management</strong>
+          <p>Verifies <code>aria-expanded</code> updates when button is clicked</p>
+        </li>
+        <li>
+          <strong>Panel Labeling</strong>
+          <p>Confirms panels have <code>aria-labelledby</code> pointing to headers</p>
+        </li>
+      </ol>
+
+      <div class="insight-box">
+        <h3>💡 Why This Matters</h3>
+        <p>Screen reader users rely on <code>aria-expanded</code> to know if content is visible or hidden. Without it, they must expand every section to find content. The <code>aria-controls</code> relationship helps users understand which panel is associated with each button.</p>
+      </div>
+    </section>
+
+    <section class="comparison-section">
+      <h2>🔍 Why Other Tools Miss This</h2>
+
+      <div class="tool-comparison">
+        <div class="comparison-item">
+          <h3>Traditional Tool Output</h3>
+          <pre><code>✓ Buttons are keyboard accessible
+✓ Content can be toggled
+
+Result: All checks pass! ✅</code></pre>
+          <p class="comparison-note">But screen readers don't know about state changes.</p>
+        </div>
+
+        <div class="comparison-item">
+          <h3>Paradise Output</h3>
+          <pre><code>✓ Buttons detected
+✗ Missing aria-expanded attributes
+✗ Missing aria-controls attributes
+✗ aria-expanded not updated on click
+✗ Panels missing aria-labelledby
+
+Result: Incomplete pattern ❌</code></pre>
+          <p class="comparison-note">Paradise catches missing state management.</p>
+        </div>
+      </div>
+
+      <div class="why-box">
+        <h3>The Difference</h3>
+        <ul>
+          <li><strong>Other tools:</strong> Check if buttons exist and are clickable</li>
+          <li><strong>Paradise:</strong> Validates complete ARIA state management</li>
+          <li><strong>Result:</strong> Paradise prevents accordions that work for mouse users but fail for screen readers</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="wcag-mapping">
+      <h2>📋 WCAG Success Criteria</h2>
+      <p>Complete accordion pattern satisfies:</p>
+      <ul class="wcag-list">
+        <li>
+          <strong>1.3.1 Info and Relationships (Level A)</strong>
+          <p><code>aria-expanded</code> and <code>aria-controls</code> communicate structure</p>
+        </li>
+        <li>
+          <strong>2.1.1 Keyboard (Level A)</strong>
+          <p>All functionality available via keyboard (Enter/Space, optional arrows)</p>
+        </li>
+        <li>
+          <strong>4.1.2 Name, Role, Value (Level A)</strong>
+          <p>Buttons communicate their expanded/collapsed state</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="resources">
+      <h2>📚 Additional Resources</h2>
+      <ul>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/accordion/" target="_blank">WAI-ARIA: Accordion Pattern</a></li>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/" target="_blank">WAI-ARIA: Keyboard Interface</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-expanded" target="_blank">MDN: aria-expanded</a></li>
+      </ul>
+    </section>
+
+    <nav class="demo-nav">
+      <a href="dialog.html" class="nav-prev">← Previous: Dialog</a>
+      <a href="../../index.html" class="nav-home">🏠 All Patterns</a>
+      <a href="../navigation-widgets/menu.html" class="nav-next">Next: Menu →</a>
+    </nav>
+  </div>
+
+  <script src="../../js/accessible/accordion-complete.js"></script>
+  <script src="../../js/inaccessible/accordion-incomplete.js"></script>
+</body>
+</html>

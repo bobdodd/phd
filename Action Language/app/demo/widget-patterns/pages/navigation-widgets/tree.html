@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tree Pattern - Paradise Widget Patterns</title>
+  <link rel="stylesheet" href="../../css/demo.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="../../index.html">Home</a> &gt;
+      <a href="#navigation">Navigation Widgets</a> &gt;
+      <span>Tree</span>
+    </nav>
+
+    <header>
+      <h1>🌳 Tree Pattern</h1>
+      <p class="subtitle">Hierarchical tree with 4-way arrow navigation</p>
+      <div class="pattern-info">
+        <span class="complexity-badge very-high">Very High Complexity</span>
+        <span class="wcag-badge">WCAG 2.1.1, 4.1.2</span>
+      </div>
+    </header>
+
+    <section class="pattern-description">
+      <h2>Complete Tree Pattern Requires:</h2>
+      <ul>
+        <li><code>role="tree"</code> on container</li>
+        <li><code>role="treeitem"</code> on each node</li>
+        <li><code>aria-expanded</code> on expandable nodes</li>
+        <li><code>aria-level</code> indicating depth</li>
+        <li><code>aria-setsize</code> and <code>aria-posinset</code> for position</li>
+        <li><strong>Arrow Up/Down:</strong> Navigate siblings</li>
+        <li><strong>Arrow Right:</strong> Expand node or move to first child</li>
+        <li><strong>Arrow Left:</strong> Collapse node or move to parent</li>
+        <li><strong>Enter/Space:</strong> Activate or expand/collapse</li>
+        <li><strong>Home/End:</strong> Jump to first/last visible node</li>
+      </ul>
+    </section>
+
+    <div class="comparison">
+      <section class="example good">
+        <h2>✅ Accessible Pattern</h2>
+        <p>Complete tree with 4-way navigation and aria-expanded management.</p>
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis: ✅ Complete Pattern</h3>
+          <ul class="validation-results">
+            <li class="check-pass">✓ role="tree" present</li>
+            <li class="check-pass">✓ role="treeitem" on nodes</li>
+            <li class="check-pass">✓ aria-expanded management</li>
+            <li class="check-pass">✓ aria-level on all nodes</li>
+            <li class="check-pass">✓ 4-way arrow navigation</li>
+            <li class="check-pass">✓ Enter/Space handlers</li>
+            <li class="check-pass">✓ Home/End support</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="example bad">
+        <h2>❌ Inaccessible Pattern</h2>
+        <p>Hierarchical list missing tree roles and navigation.</p>
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis: ❌ Incomplete Pattern</h3>
+          <ul class="issues-list">
+            <li class="issue-error">Missing role="tree"</li>
+            <li class="issue-error">Missing role="treeitem"</li>
+            <li class="issue-error">Missing aria-expanded</li>
+            <li class="issue-error">Missing aria-level</li>
+            <li class="issue-error">No arrow navigation</li>
+            <li class="issue-error">No expand/collapse handlers</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <section class="wcag-mapping">
+      <h2>📋 WCAG Success Criteria</h2>
+      <ul class="wcag-list">
+        <li><strong>2.1.1 Keyboard (Level A)</strong> - 4-way arrow navigation, Enter/Space, Home/End</li>
+        <li><strong>4.1.2 Name, Role, Value (Level A)</strong> - tree/treeitem roles, aria-expanded, aria-level</li>
+      </ul>
+    </section>
+
+    <section class="resources">
+      <h2>📚 Resources</h2>
+      <ul>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/treeview/" target="_blank">WAI-ARIA: Tree View Pattern</a></li>
+        <li><a href="/docs/issues/incomplete-tree-pattern.md">Paradise: Tree Pattern Help</a></li>
+      </ul>
+    </section>
+
+    <nav class="demo-nav">
+      <a href="menu.html" class="nav-prev">← Previous: Menu</a>
+      <a href="../../index.html" class="nav-home">🏠 All Patterns</a>
+      <a href="toolbar.html" class="nav-next">Next: Toolbar →</a>
+    </nav>
+  </div>
+</body>
+</html>
