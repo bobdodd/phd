@@ -4,6 +4,10 @@
   "description": "Real-time accessibility analysis for JavaScript code",
   "version": "1.0.0",
   "publisher": "actionlanguage",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/actionlanguage/paradise"
+  },
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -20,103 +24,178 @@
   ],
   "activationEvents": [
     "onLanguage:javascript",
-    "onLanguage:javascriptreact"
+    "onLanguage:javascriptreact",
+    "onLanguage:typescript",
+    "onLanguage:typescriptreact",
+    "onLanguage:html",
+    "onLanguage:css",
+    "onCommand:paradise.analyzeFile"
   ],
-  "main": "./src/extension.js",
+  "main": "./out/src-ts/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "actionlanguage-a11y.analyzeFile",
-        "title": "Analyze Accessibility",
-        "category": "ActionLanguage"
+        "command": "paradise.analyzeFile",
+        "title": "Analyze File Accessibility",
+        "category": "Paradise"
       },
       {
-        "command": "actionlanguage-a11y.analyzeWorkspace",
+        "command": "paradise.analyzeWorkspace",
         "title": "Analyze Workspace Accessibility",
-        "category": "ActionLanguage"
+        "category": "Paradise"
       },
       {
-        "command": "actionlanguage-a11y.showReport",
-        "title": "Show Accessibility Report",
-        "category": "ActionLanguage"
+        "command": "paradise.clearDiagnostics",
+        "title": "Clear Diagnostics",
+        "category": "Paradise"
       }
     ],
     "configuration": {
-      "title": "ActionLanguage Accessibility",
+      "title": "Paradise Accessibility",
       "properties": {
-        "actionlanguage-a11y.enable": {
+        "paradise.enable": {
           "type": "boolean",
           "default": true,
           "description": "Enable/disable accessibility analysis"
         },
-        "actionlanguage-a11y.analyzeOnSave": {
-          "type": "boolean",
-          "default": true,
-          "description": "Run analysis when file is saved"
-        },
-        "actionlanguage-a11y.analyzeOnType": {
-          "type": "boolean",
-          "default": false,
-          "description": "Run analysis as you type (may impact performance)"
-        },
-        "actionlanguage-a11y.analyzeOnTypeDelay": {
-          "type": "number",
-          "default": 1000,
-          "description": "Delay in milliseconds before analyzing after typing stops"
-        },
-        "actionlanguage-a11y.minSeverity": {
+        "paradise.analysisMode": {
           "type": "string",
-          "enum": ["error", "warning", "info"],
-          "default": "info",
-          "description": "Minimum severity level to report"
+          "enum": [
+            "file",
+            "smart",
+            "project"
+          ],
+          "default": "smart",
+          "markdownDescription": "Analysis scope:\n- **file**: Fast, file-only analysis (more false positives)\n- **smart**: Analyze file + related files (balanced, recommended)\n- **project**: Full project analysis (most accurate, slower)"
         },
-        "actionlanguage-a11y.showInlineHints": {
+        "paradise.enableBackgroundAnalysis": {
           "type": "boolean",
           "default": true,
-          "description": "Show inline hints for accessibility issues"
+          "description": "Enable continuous background analysis for project-wide accuracy"
         },
-        "actionlanguage-a11y.excludePatterns": {
+        "paradise.includePatterns": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "default": ["**/node_modules/**", "**/dist/**", "**/build/**"],
-          "description": "Glob patterns for files to exclude from analysis"
+          "default": [
+            "**/*.html",
+            "**/*.js",
+            "**/*.ts",
+            "**/*.jsx",
+            "**/*.tsx",
+            "**/*.css"
+          ],
+          "description": "File patterns to include in project analysis"
+        },
+        "paradise.excludePatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/node_modules/**",
+            "**/dist/**",
+            "**/build/**",
+            "**/.git/**"
+          ],
+          "description": "File patterns to exclude from analysis"
+        },
+        "paradise.maxProjectFiles": {
+          "type": "number",
+          "default": 1000,
+          "description": "Maximum number of files to analyze in project mode (prevents performance issues)"
+        },
+        "paradise.diagnosticPlacement": {
+          "type": "string",
+          "enum": [
+            "both",
+            "primary",
+            "all"
+          ],
+          "default": "both",
+          "markdownDescription": "Where to show diagnostics:\n- **both**: Show at HTML element and JS handler\n- **primary**: Show only at primary location (HTML element)\n- **all**: Show at all related locations"
+        },
+        "paradise.analyzeOnSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run analysis when file is saved"
+        },
+        "paradise.analyzeOnType": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run analysis as you type (may impact performance)"
+        },
+        "paradise.analyzeOnTypeDelay": {
+          "type": "number",
+          "default": 500,
+          "description": "Delay in milliseconds before analyzing after typing stops"
+        },
+        "paradise.minSeverity": {
+          "type": "string",
+          "enum": [
+            "error",
+            "warning",
+            "info"
+          ],
+          "default": "info",
+          "description": "Minimum severity level to report"
         }
       }
     },
     "menus": {
       "editor/context": [
         {
-          "command": "actionlanguage-a11y.analyzeFile",
-          "when": "editorLangId == javascript || editorLangId == javascriptreact",
-          "group": "actionlanguage"
+          "command": "paradise.analyzeFile",
+          "when": "editorLangId == javascript || editorLangId == javascriptreact || editorLangId == typescript || editorLangId == typescriptreact || editorLangId == html || editorLangId == css",
+          "group": "paradise"
         }
       ],
       "explorer/context": [
         {
-          "command": "actionlanguage-a11y.analyzeFile",
-          "when": "resourceLangId == javascript || resourceLangId == javascriptreact",
-          "group": "actionlanguage"
+          "command": "paradise.analyzeFile",
+          "when": "resourceLangId == javascript || resourceLangId == javascriptreact || resourceLangId == typescript || resourceLangId == typescriptreact || resourceLangId == html || resourceLangId == css",
+          "group": "paradise"
         }
       ]
     },
     "languages": [
       {
         "id": "javascript",
-        "extensions": [".js", ".jsx", ".mjs"]
+        "extensions": [
+          ".js",
+          ".jsx",
+          ".mjs"
+        ]
       }
     ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "echo 'No compilation needed'",
-    "watch": "echo 'No watch needed'",
-    "test": "node test/extension.test.js"
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js",
+    "lint": "eslint src-ts --ext ts"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.23.0",
+    "@babel/traverse": "^7.23.0",
+    "@babel/types": "^7.23.0",
+    "css-tree": "^3.1.0",
+    "node-html-parser": "^6.1.13"
   },
   "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^18.x",
     "@types/vscode": "^1.74.0",
+    "@typescript-eslint/eslint-plugin": "^5.x",
+    "@typescript-eslint/parser": "^5.x",
+    "eslint": "^8.x",
+    "glob": "^8.1.0",
+    "mocha": "^10.2.0",
+    "typescript": "^5.9.3",
     "vscode-test": "^1.6.1"
-  },
-  "dependencies": {}
+  }
 }
