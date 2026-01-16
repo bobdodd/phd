@@ -59,6 +59,10 @@ export default function Home() {
                 <div className="w-2 h-2 bg-paradise-purple rounded-full"></div>
                 <span>WCAG 2.1 coverage</span>
               </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-paradise-orange rounded-full"></div>
+                <span>21 ARIA widget patterns</span>
+              </div>
             </div>
           </div>
         </div>
@@ -246,6 +250,169 @@ export default function Home() {
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Widget Pattern Coverage Section */}
+      <section className="py-20 bg-gradient-to-br from-white via-paradise-blue/5 to-paradise-purple/5">
+        <div className="container mx-auto px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Complete ARIA Widget Pattern Validation
+              </h2>
+              <p className="text-lg text-gray-600">
+                Paradise validates all 21 WAI-ARIA widget patterns with comprehensive demos
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              {/* Navigation Category */}
+              <div className="bg-white rounded-xl p-6 shadow-sm border-2 border-paradise-blue/20 hover:border-paradise-blue/40 transition-all">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-paradise-blue to-paradise-blue/80 rounded-lg flex items-center justify-center text-white font-bold">
+                    7
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900">Navigation</h3>
+                </div>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-paradise-blue rounded-full"></div>
+                    <span>Tabs</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-paradise-blue rounded-full"></div>
+                    <span>Menu</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-paradise-blue rounded-full"></div>
+                    <span>Tree</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-paradise-blue rounded-full"></div>
+                    <span>Breadcrumb</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-paradise-blue rounded-full"></div>
+                    <span>Toolbar</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-paradise-blue rounded-full"></div>
+                    <span>Grid</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-paradise-blue rounded-full"></div>
+                    <span>Feed</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Input Category */}
+              <div className="bg-white rounded-xl p-6 shadow-sm border-2 border-paradise-green/20 hover:border-paradise-green/40 transition-all">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-paradise-green to-paradise-green/80 rounded-lg flex items-center justify-center text-white font-bold">
+                    6
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900">Input</h3>
+                </div>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-paradise-green rounded-full"></div>
+                    <span>Combobox</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-paradise-green rounded-full"></div>
+                    <span>Listbox</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-paradise-green rounded-full"></div>
+                    <span>Radiogroup</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-paradise-green rounded-full"></div>
+                    <span>Slider</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-paradise-green rounded-full"></div>
+                    <span>Spinbutton</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-paradise-green rounded-full"></div>
+                    <span>Switch</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Disclosure Category */}
+              <div className="bg-white rounded-xl p-6 shadow-sm border-2 border-paradise-purple/20 hover:border-paradise-purple/40 transition-all">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-paradise-purple to-paradise-purple/80 rounded-lg flex items-center justify-center text-white font-bold">
+                    4
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900">Disclosure</h3>
+                </div>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-paradise-purple rounded-full"></div>
+                    <span>Dialog</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-paradise-purple rounded-full"></div>
+                    <span>Accordion</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-paradise-purple rounded-full"></div>
+                    <span>Disclosure</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-paradise-purple rounded-full"></div>
+                    <span>Tooltip</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Status Category */}
+              <div className="bg-white rounded-xl p-6 shadow-sm border-2 border-paradise-orange/20 hover:border-paradise-orange/40 transition-all">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-paradise-orange to-paradise-orange/80 rounded-lg flex items-center justify-center text-white font-bold">
+                    4
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900">Status</h3>
+                </div>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-paradise-orange rounded-full"></div>
+                    <span>Progressbar</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-paradise-orange rounded-full"></div>
+                    <span>Meter</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-paradise-orange rounded-full"></div>
+                    <span>Carousel</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-paradise-orange rounded-full"></div>
+                    <span>Link</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* CTA Button */}
+            <div className="text-center">
+              <a
+                href="/patterns"
+                className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-paradise-blue via-paradise-purple to-paradise-green text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all"
+              >
+                Explore all widget patterns
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
             </div>
           </div>
         </div>

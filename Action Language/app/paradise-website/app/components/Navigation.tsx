@@ -97,6 +97,7 @@ export default function Navigation() {
                 { href: '/architecture', label: 'Architecture' },
                 { href: '/frameworks', label: 'Frameworks' },
                 { href: '/analyzers', label: 'Analyzers' },
+                { href: '/patterns', label: 'Widget Patterns' },
                 { href: '/api', label: 'API Reference' },
               ]}
             />
@@ -257,6 +258,13 @@ export default function Navigation() {
                       onClick={() => setIsMobileOpen(false)}
                     >
                       Analyzers
+                    </a>
+                    <a
+                      href="/patterns"
+                      className="text-gray-600 hover:text-paradise-blue transition-colors py-1"
+                      onClick={() => setIsMobileOpen(false)}
+                    >
+                      Widget Patterns
                     </a>
                     <a
                       href="/api"
