@@ -19,18 +19,22 @@ import { OrphanedEventHandlerAnalyzer } from '../lib/analyzers/OrphanedEventHand
 import { MissingAriaConnectionAnalyzer } from '../lib/analyzers/MissingAriaConnectionAnalyzer';
 import { FocusOrderConflictAnalyzer } from '../lib/analyzers/FocusOrderConflictAnalyzer';
 import { VisibilityFocusConflictAnalyzer } from '../lib/analyzers/VisibilityFocusConflictAnalyzer';
+import { ParadiseCodeActionProvider } from './codeActionProvider';
 
 export class ForegroundAnalyzer {
   private diagnosticCollection: vscode.DiagnosticCollection;
   private projectManager: ProjectModelManager;
   private analyzers: any[]; // TODO: Create proper Analyzer interface
+  private codeActionProvider: ParadiseCodeActionProvider;
 
   constructor(
     diagnosticCollection: vscode.DiagnosticCollection,
-    projectManager: ProjectModelManager
+    projectManager: ProjectModelManager,
+    codeActionProvider: ParadiseCodeActionProvider
   ) {
     this.diagnosticCollection = diagnosticCollection;
     this.projectManager = projectManager;
+    this.codeActionProvider = codeActionProvider;
 
     // Initialize all analyzers (only those with TypeScript definitions)
     this.analyzers = [
@@ -70,6 +74,9 @@ export class ForegroundAnalyzer {
       // Step 3: Publish diagnostics immediately
       const diagnostics = this.convertToDiagnostics(result.issues, document);
       this.diagnosticCollection.set(document.uri, diagnostics);
+
+      // Step 4: Register issues for code actions
+      this.codeActionProvider.registerIssues(document, result.issues);
 
       const duration = Date.now() - startTime;
       console.log(`[ForegroundAnalyzer] Analyzed ${document.fileName} in ${duration}ms (${result.analysisScope} scope, ${result.issues.length} issues)`);
@@ -314,5 +321,6 @@ export class ForegroundAnalyzer {
    */
   clearDiagnostics(uri: vscode.Uri): void {
     this.diagnosticCollection.delete(uri);
+    this.codeActionProvider.clearIssues(uri);
   }
 }
