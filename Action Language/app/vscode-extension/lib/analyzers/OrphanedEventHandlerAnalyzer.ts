@@ -71,6 +71,7 @@ export class OrphanedEventHandlerAnalyzer extends BaseAnalyzer {
               message,
               handler.location,
               ['4.1.2'], // WCAG 4.1.2: Name, Role, Value (element must exist)
+              context,
               {
                 elementContext: undefined, // No element context (element doesn't exist!)
               }
