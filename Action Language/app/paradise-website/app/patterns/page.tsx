@@ -29,7 +29,7 @@ const patterns: Pattern[] = [
     wcagCriteria: ['2.4.8', '4.1.2'],
     description: 'Navigation path showing current location in site hierarchy',
     issuesDetected: 4,
-    demoPath: '/demo/widget-patterns/pages/navigation-widgets/breadcrumb-comprehensive.html',
+    demoPath: '/demos/widget-patterns/pages/navigation-widgets/breadcrumb-comprehensive.html',
     whatParadiseDetects: [
       'Missing aria-label on nav element',
       'Missing aria-current on current page',
@@ -46,7 +46,7 @@ const patterns: Pattern[] = [
     wcagCriteria: ['2.1.1', '4.1.2', '2.4.3'],
     description: 'Dropdown menu with hierarchical actions and keyboard navigation',
     issuesDetected: 12,
-    demoPath: '/demo/widget-patterns/pages/navigation-widgets/menu-comprehensive.html',
+    demoPath: '/demos/widget-patterns/pages/navigation-widgets/menu-comprehensive.html',
     whatParadiseDetects: [
       'Missing role="menu" and role="menuitem"',
       'Arrow key navigation not implemented',
@@ -65,7 +65,7 @@ const patterns: Pattern[] = [
     wcagCriteria: ['2.1.1', '4.1.2', '1.3.1'],
     description: 'Tab interface for switching between related content panels',
     issuesDetected: 8,
-    demoPath: '/demo/widget-patterns/pages/navigation-widgets/tabs.html',
+    demoPath: '/demos/widget-patterns/pages/navigation-widgets/tabs.html',
     whatParadiseDetects: [
       'Missing tablist, tab, and tabpanel roles',
       'aria-selected not updated dynamically',
@@ -83,7 +83,7 @@ const patterns: Pattern[] = [
     wcagCriteria: ['2.1.1', '4.1.2'],
     description: 'Collection of commonly used function buttons and controls',
     issuesDetected: 6,
-    demoPath: '/demo/widget-patterns/pages/navigation-widgets/toolbar-comprehensive.html',
+    demoPath: '/demos/widget-patterns/pages/navigation-widgets/toolbar-comprehensive.html',
     whatParadiseDetects: [
       'Missing role="toolbar"',
       'Arrow key navigation not implemented',
@@ -100,7 +100,7 @@ const patterns: Pattern[] = [
     wcagCriteria: ['2.1.1', '4.1.2', '4.1.3'],
     description: 'Hierarchical list with expandable/collapsible branches',
     issuesDetected: 15,
-    demoPath: '/demo/widget-patterns/pages/navigation-widgets/tree-comprehensive.html',
+    demoPath: '/demos/widget-patterns/pages/navigation-widgets/tree-comprehensive.html',
     whatParadiseDetects: [
       'Missing tree, treeitem, and group roles',
       'aria-expanded not updated on toggle',
@@ -119,7 +119,7 @@ const patterns: Pattern[] = [
     wcagCriteria: ['2.1.1', '4.1.2', '1.3.1'],
     description: 'Interactive table with cell navigation and editing',
     issuesDetected: 18,
-    demoPath: '/demo/widget-patterns/pages/navigation-widgets/grid-comprehensive.html',
+    demoPath: '/demos/widget-patterns/pages/navigation-widgets/grid-comprehensive.html',
     whatParadiseDetects: [
       'Missing grid, row, and gridcell roles',
       '2D arrow key navigation not implemented',
@@ -138,7 +138,7 @@ const patterns: Pattern[] = [
     wcagCriteria: ['4.1.2', '4.1.3'],
     description: 'Scrollable list of articles with dynamic loading',
     issuesDetected: 10,
-    demoPath: '/demo/widget-patterns/pages/navigation-widgets/feed-comprehensive.html',
+    demoPath: '/demos/widget-patterns/pages/navigation-widgets/feed-comprehensive.html',
     whatParadiseDetects: [
       'Missing role="feed" and role="article"',
       'aria-setsize and aria-posinset not set',
@@ -158,7 +158,7 @@ const patterns: Pattern[] = [
     wcagCriteria: ['2.1.1', '4.1.2', '4.1.3'],
     description: 'Input field with autocomplete dropdown suggestions',
     issuesDetected: 14,
-    demoPath: '/demo/widget-patterns/pages/input-widgets/combobox-comprehensive.html',
+    demoPath: '/demos/widget-patterns/pages/input-widgets/combobox-comprehensive.html',
     whatParadiseDetects: [
       'Missing role="combobox" and aria-expanded',
       'aria-controls not linking to listbox',
@@ -177,7 +177,7 @@ const patterns: Pattern[] = [
     wcagCriteria: ['2.1.1', '4.1.2', '1.3.1'],
     description: 'Scrollable list of selectable options (single or multi-select)',
     issuesDetected: 11,
-    demoPath: '/demo/widget-patterns/pages/input-widgets/listbox-comprehensive.html',
+    demoPath: '/demos/widget-patterns/pages/input-widgets/listbox-comprehensive.html',
     whatParadiseDetects: [
       'Missing role="listbox" and role="option"',
       'aria-selected not set on options',
@@ -196,7 +196,7 @@ const patterns: Pattern[] = [
     wcagCriteria: ['2.1.1', '4.1.2', '1.3.1'],
     description: 'Group of radio buttons for mutually exclusive selection',
     issuesDetected: 7,
-    demoPath: '/demo/widget-patterns/pages/input-widgets/radiogroup-comprehensive.html',
+    demoPath: '/demos/widget-patterns/pages/input-widgets/radiogroup-comprehensive.html',
     whatParadiseDetects: [
       'Missing role="radiogroup" wrapper',
       'Missing role="radio" on custom radios',
@@ -215,7 +215,7 @@ const patterns: Pattern[] = [
     wcagCriteria: ['2.1.1', '4.1.2'],
     description: 'Input control for selecting a value from a range',
     issuesDetected: 8,
-    demoPath: '/demo/widget-patterns/pages/input-widgets/slider-comprehensive.html',
+    demoPath: '/demos/widget-patterns/pages/input-widgets/slider-comprehensive.html',
     whatParadiseDetects: [
       'Missing role="slider"',
       'aria-valuenow, aria-valuemin, aria-valuemax not set',
@@ -234,7 +234,7 @@ const patterns: Pattern[] = [
     wcagCriteria: ['2.1.1', '4.1.2'],
     description: 'Numeric input with increment/decrement buttons',
     issuesDetected: 9,
-    demoPath: '/demo/widget-patterns/pages/input-widgets/spinbutton-comprehensive.html',
+    demoPath: '/demos/widget-patterns/pages/input-widgets/spinbutton-comprehensive.html',
     whatParadiseDetects: [
       'Missing role="spinbutton"',
       'aria-valuenow not updated on change',
@@ -253,7 +253,7 @@ const patterns: Pattern[] = [
     wcagCriteria: ['2.1.1', '4.1.2'],
     description: 'Binary toggle control (on/off state)',
     issuesDetected: 5,
-    demoPath: '/demo/widget-patterns/pages/input-widgets/switch-comprehensive.html',
+    demoPath: '/demos/widget-patterns/pages/input-widgets/switch-comprehensive.html',
     whatParadiseDetects: [
       'Missing role="switch"',
       'aria-checked not reflecting state',
@@ -273,7 +273,7 @@ const patterns: Pattern[] = [
     wcagCriteria: ['2.1.1', '4.1.2'],
     description: 'Stacked headers that expand/collapse content sections',
     issuesDetected: 8,
-    demoPath: '/demo/widget-patterns/pages/disclosure-widgets/accordion.html',
+    demoPath: '/demos/widget-patterns/pages/disclosure-widgets/accordion.html',
     whatParadiseDetects: [
       'Missing button element for accordion headers',
       'aria-expanded not updated on toggle',
@@ -292,7 +292,7 @@ const patterns: Pattern[] = [
     wcagCriteria: ['2.1.1', '4.1.2'],
     description: 'Show/hide toggle for single content section',
     issuesDetected: 4,
-    demoPath: '/demo/widget-patterns/pages/disclosure-widgets/disclosure-comprehensive.html',
+    demoPath: '/demos/widget-patterns/pages/disclosure-widgets/disclosure-comprehensive.html',
     whatParadiseDetects: [
       'Non-button element used for trigger',
       'aria-expanded not updating',
@@ -309,7 +309,7 @@ const patterns: Pattern[] = [
     wcagCriteria: ['2.1.2', '2.4.3', '4.1.2'],
     description: 'Modal or non-modal dialog window',
     issuesDetected: 13,
-    demoPath: '/demo/widget-patterns/pages/disclosure-widgets/dialog.html',
+    demoPath: '/demos/widget-patterns/pages/disclosure-widgets/dialog.html',
     whatParadiseDetects: [
       'Missing role="dialog" or role="alertdialog"',
       'aria-modal not set for modal dialogs',
@@ -330,7 +330,7 @@ const patterns: Pattern[] = [
     wcagCriteria: ['1.4.13', '4.1.2'],
     description: 'Contextual popup with additional information',
     issuesDetected: 7,
-    demoPath: '/demo/widget-patterns/pages/disclosure-widgets/tooltip-comprehensive.html',
+    demoPath: '/demos/widget-patterns/pages/disclosure-widgets/tooltip-comprehensive.html',
     whatParadiseDetects: [
       'Missing role="tooltip"',
       'aria-describedby not linking trigger to tooltip',
@@ -351,7 +351,7 @@ const patterns: Pattern[] = [
     wcagCriteria: ['4.1.2', '4.1.3'],
     description: 'Visual indicator showing task completion progress',
     issuesDetected: 5,
-    demoPath: '/demo/widget-patterns/pages/status-widgets/progressbar-comprehensive.html',
+    demoPath: '/demos/widget-patterns/pages/status-widgets/progressbar-comprehensive.html',
     whatParadiseDetects: [
       'Missing role="progressbar"',
       'aria-valuenow not updated as progress changes',
@@ -369,7 +369,7 @@ const patterns: Pattern[] = [
     wcagCriteria: ['4.1.2'],
     description: 'Gauge showing value within known range (not progress)',
     issuesDetected: 6,
-    demoPath: '/demo/widget-patterns/pages/status-widgets/meter-comprehensive.html',
+    demoPath: '/demos/widget-patterns/pages/status-widgets/meter-comprehensive.html',
     whatParadiseDetects: [
       'Using progressbar role instead of meter',
       'Missing aria-valuenow, aria-valuemin, aria-valuemax',
@@ -387,7 +387,7 @@ const patterns: Pattern[] = [
     wcagCriteria: ['2.1.1', '2.2.2', '4.1.2'],
     description: 'Rotating content display with navigation controls',
     issuesDetected: 16,
-    demoPath: '/demo/widget-patterns/pages/status-widgets/carousel-comprehensive.html',
+    demoPath: '/demos/widget-patterns/pages/status-widgets/carousel-comprehensive.html',
     whatParadiseDetects: [
       'Auto-rotation without pause control',
       'Missing role="region" with aria-roledescription="carousel"',
@@ -397,6 +397,25 @@ const patterns: Pattern[] = [
       'Slide indicators missing keyboard support',
       'aria-live not configured for announcements',
       'Focus management on slide change'
+    ]
+  },
+  {
+    id: 'link',
+    name: 'Link',
+    emoji: '🔗',
+    category: 'status',
+    complexity: 'Low',
+    wcagCriteria: ['2.4.4', '4.1.2'],
+    description: 'Hyperlink with meaningful accessible name',
+    issuesDetected: 6,
+    demoPath: '/demos/widget-patterns/pages/basics/link-comprehensive.html',
+    whatParadiseDetects: [
+      'Generic link text ("click here", "read more")',
+      'Link without accessible name',
+      'Links that open new windows without warning',
+      'Download links without file type/size info',
+      'Ambiguous link purpose from text alone',
+      'Non-descriptive link context for screen readers'
     ]
   }
 ];

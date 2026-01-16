@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Disclosure Pattern - Paradise Widget Patterns</title>
+  <link rel="stylesheet" href="../../css/demo.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="../../index.html">Home</a> &gt;
+      <a href="#disclosure">Disclosure Widgets</a> &gt;
+      <span>Disclosure</span>
+    </nav>
+
+    <header>
+      <h1>🔽 Disclosure Pattern</h1>
+      <p class="subtitle">Simple show/hide toggle with aria-expanded</p>
+      <div class="pattern-info">
+        <span class="complexity-badge low">Low Complexity</span>
+        <span class="wcag-badge">WCAG 1.3.1, 4.1.2</span>
+      </div>
+    </header>
+
+    <section class="pattern-description">
+      <h2>Complete Disclosure Pattern Requires:</h2>
+      <ul>
+        <li>Button element as disclosure control</li>
+        <li><code>aria-expanded</code> on button (true/false)</li>
+        <li><code>aria-controls</code> pointing to content ID (optional)</li>
+        <li><strong>State updates:</strong> aria-expanded changes on click</li>
+        <li><strong>Keyboard:</strong> Button naturally keyboard accessible</li>
+        <li>Content hidden/shown based on state</li>
+      </ul>
+    </section>
+
+    <div class="comparison">
+      <section class="example good">
+        <h2>✅ Accessible Pattern</h2>
+        <p>Complete disclosure with aria-expanded management.</p>
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis: ✅ Complete Pattern</h3>
+          <ul class="validation-results">
+            <li class="check-pass">✓ Button element used</li>
+            <li class="check-pass">✓ aria-expanded present</li>
+            <li class="check-pass">✓ aria-controls linking (optional)</li>
+            <li class="check-pass">✓ State updates on toggle</li>
+            <li class="check-pass">✓ Content visibility managed</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="example bad">
+        <h2>❌ Inaccessible Pattern</h2>
+        <p>Show/hide toggle missing aria-expanded.</p>
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis: ❌ Incomplete Pattern</h3>
+          <ul class="issues-list">
+            <li class="issue-error">Missing aria-expanded</li>
+            <li class="issue-error">State changes not communicated</li>
+            <li class="issue-error">Using non-button element (div/span)</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <section class="wcag-mapping">
+      <h2>📋 WCAG Success Criteria</h2>
+      <ul class="wcag-list">
+        <li><strong>1.3.1 Info and Relationships (Level A)</strong> - aria-expanded communicates state</li>
+        <li><strong>4.1.2 Name, Role, Value (Level A)</strong> - Button role and state</li>
+      </ul>
+    </section>
+
+    <section class="resources">
+      <h2>📚 Resources</h2>
+      <ul>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/" target="_blank">WAI-ARIA: Disclosure Pattern</a></li>
+        <li><a href="/docs/issues/incomplete-disclosure-pattern.md">Paradise: Disclosure Pattern Help</a></li>
+      </ul>
+    </section>
+
+    <nav class="demo-nav">
+      <a href="accordion.html" class="nav-prev">← Previous: Accordion</a>
+      <a href="../../index.html" class="nav-home">🏠 All Patterns</a>
+      <a href="tooltip.html" class="nav-next">Next: Tooltip →</a>
+    </nav>
+  </div>
+</body>
+</html>

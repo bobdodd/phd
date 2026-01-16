@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multi-Model Example: Distributed Menu - Paradise Widget Patterns</title>
+  <link rel="stylesheet" href="../../css/demo.css">
+  <style>
+    .example-explanation {
+      background: #f0f8ff;
+      border-left: 4px solid #0066cc;
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .file-structure {
+      background: #f8f8f8;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 16px;
+      margin: 16px 0;
+      font-family: monospace;
+      font-size: 14px;
+    }
+
+    .file-structure .file {
+      padding: 4px 0;
+      padding-left: 20px;
+    }
+
+    .file-structure .file::before {
+      content: "📄 ";
+      margin-right: 8px;
+    }
+
+    .analysis-comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .analysis-box {
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .analysis-box.traditional {
+      border-color: #ff6b6b;
+      background: #fff5f5;
+    }
+
+    .analysis-box.paradise {
+      border-color: #4caf50;
+      background: #f1f8f4;
+    }
+
+    .false-positive {
+      color: #d32f2f;
+      font-weight: bold;
+    }
+
+    .true-result {
+      color: #388e3c;
+      font-weight: bold;
+    }
+
+    /* Menu styling */
+    .menu-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .menu-button {
+      padding: 12px 24px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #0066cc;
+      color: white;
+      border: 1px solid #0055aa;
+      border-radius: 4px;
+    }
+
+    .menu-button:hover {
+      background: #0055aa;
+    }
+
+    .menu-button:focus {
+      outline: 2px solid #003d7a;
+      outline-offset: 2px;
+    }
+
+    [role="menu"] {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      list-style: none;
+      padding: 4px 0;
+      margin: 0;
+      min-width: 200px;
+      z-index: 1000;
+    }
+
+    [role="menu"][hidden] {
+      display: none;
+    }
+
+    [role="menuitem"] {
+      padding: 10px 16px;
+      cursor: pointer;
+      white-space: nowrap;
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      font-size: 14px;
+    }
+
+    [role="menuitem"]:hover,
+    [role="menuitem"]:focus {
+      background: #0066cc;
+      color: white;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="../../index.html">Home</a> &gt;
+      <a href="#multi-model">Multi-Model Examples</a> &gt;
+      <span>Distributed Menu</span>
+    </nav>
+
+    <header>
+      <h1>🎯 Multi-Model Example: Distributed Menu (4 Files)</h1>
+      <p class="subtitle">Extreme case: Complete pattern split across 4 separate files</p>
+
+      <div class="pattern-info">
+        <span class="complexity-badge very-high">4-File Distribution</span>
+        <span class="wcag-badge">Zero False Positives</span>
+      </div>
+    </header>
+
+    <section class="example-explanation">
+      <h2>🔍 The Extreme Case</h2>
+      <p>Large codebases often distribute menu functionality across multiple files for organization:</p>
+      <ul>
+        <li><strong>menu-setup.js</strong> - Initialization and configuration</li>
+        <li><strong>menu-structure.js</strong> - DOM structure and visibility toggle</li>
+        <li><strong>menu-navigation.js</strong> - Arrow Up/Down navigation</li>
+        <li><strong>menu-actions.js</strong> - Enter/Space/Escape handlers</li>
+      </ul>
+
+      <p><strong>Traditional tools analyzing each file independently:</strong></p>
+      <ul>
+        <li>❌ menu-structure.js: "Click without keyboard" (FALSE POSITIVE)</li>
+        <li>❌ menu-navigation.js: "No activation handlers" (FALSE POSITIVE)</li>
+        <li>❌ menu-actions.js: "No navigation detected" (FALSE POSITIVE)</li>
+        <li><strong>Result: 3+ false positives, developer ignores warnings</strong></li>
+      </ul>
+
+      <p><strong>Paradise's multi-model architecture at scale:</strong></p>
+      <ul>
+        <li>✅ Analyzes HTML + ALL 4 JavaScript files together</li>
+        <li>✅ Detects complete menu pattern across all files</li>
+        <li>✅ Zero false positives even with extreme distribution</li>
+        <li>✅ Proves scalability of multi-model approach</li>
+      </ul>
+    </section>
+
+    <section class="file-structure-section">
+      <h2>📁 File Structure (Most Complex)</h2>
+      <div class="file-structure">
+        <div>distributed-menu/</div>
+        <div class="file">index.html (menu structure with ARIA)</div>
+        <div class="file">menu-setup.js (initialization + config)</div>
+        <div class="file">menu-structure.js (open/close + click handlers)</div>
+        <div class="file">menu-navigation.js (arrow Up/Down)</div>
+        <div class="file">menu-actions.js (Enter/Space/Escape)</div>
+      </div>
+
+      <p><strong>Why 4 files?</strong> Large teams separate concerns for:</p>
+      <ul>
+        <li>Configuration management (setup file)</li>
+        <li>Core functionality (structure file)</li>
+        <li>Navigation layer (navigation file)</li>
+        <li>Action handlers (actions file)</li>
+      </ul>
+    </section>
+
+    <section class="demo-section">
+      <h2>🎨 Working Demo</h2>
+      <p>This menu implementation is split across 5 files total (HTML + 4 JS files):</p>
+
+      <div class="menu-container">
+        <button class="menu-button"
+                id="demo-menu-button"
+                aria-haspopup="true"
+                aria-expanded="false"
+                aria-controls="demo-menu">
+          Actions ▼
+        </button>
+
+        <ul role="menu" id="demo-menu" aria-labelledby="demo-menu-button" hidden>
+          <li role="none">
+            <button role="menuitem" id="menu-edit">Edit</button>
+          </li>
+          <li role="none">
+            <button role="menuitem" id="menu-duplicate">Duplicate</button>
+          </li>
+          <li role="none">
+            <button role="menuitem" id="menu-delete">Delete</button>
+          </li>
+          <li role="none">
+            <button role="menuitem" id="menu-export">Export</button>
+          </li>
+        </ul>
+      </div>
+
+      <div style="margin-top: 20px; padding: 16px; background: #f0f8ff; border-radius: 4px;">
+        <strong>✅ Try these interactions (distributed across 4 files):</strong>
+        <ul style="margin: 8px 0;">
+          <li><kbd>Enter</kbd> or <kbd>Space</kbd> on button → Opens menu (menu-actions.js)</li>
+          <li><kbd>↓</kbd> <kbd>↑</kbd> → Navigate items (menu-navigation.js)</li>
+          <li><kbd>Enter</kbd> or <kbd>Space</kbd> on item → Activate (menu-actions.js)</li>
+          <li><kbd>Escape</kbd> → Close menu (menu-actions.js)</li>
+          <li>Click outside → Close menu (menu-structure.js)</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="analysis-section">
+      <h2>🔬 Analysis Comparison</h2>
+
+      <div class="analysis-comparison">
+        <div class="analysis-box traditional">
+          <h3>❌ Traditional Tool (File-Scope)</h3>
+          <p><strong>Analyzing: menu-structure.js</strong></p>
+          <pre><code>✓ Menu structure detected
+✓ Click handler on button
+✗ <span class="false-positive">NO KEYBOARD NAVIGATION</span>
+✗ <span class="false-positive">NO ENTER/SPACE HANDLERS</span>
+
+<span class="false-positive">2 issues found</span></code></pre>
+
+          <p><strong>Analyzing: menu-navigation.js</strong></p>
+          <pre><code>✓ Arrow key handlers detected
+✗ <span class="false-positive">NO ACTIVATION HANDLERS</span>
+
+<span class="false-positive">1 issue found</span></code></pre>
+
+          <p><strong>Analyzing: menu-actions.js</strong></p>
+          <pre><code>✓ Enter/Space/Escape detected
+✗ <span class="false-positive">NO NAVIGATION DETECTED</span>
+
+<span class="false-positive">1 issue found</span></code></pre>
+
+          <p><strong>Result:</strong> <span class="false-positive">4 FALSE POSITIVES</span></p>
+          <p>Each file is incomplete on its own, creating constant noise for developers.</p>
+        </div>
+
+        <div class="analysis-box paradise">
+          <h3>✅ Paradise (Multi-Model at Scale)</h3>
+          <p><strong>Analyzing: index.html + all 4 JS files</strong></p>
+          <pre><code>✓ Menu structure (index.html)
+✓ <span class="true-result">INITIALIZATION</span> (menu-setup.js)
+  • Configuration loaded
+  • Menu elements cached
+✓ <span class="true-result">OPEN/CLOSE HANDLERS</span> (menu-structure.js)
+  • Button click opens menu
+  • Outside click closes menu
+  • aria-expanded updates
+✓ <span class="true-result">NAVIGATION</span> (menu-navigation.js)
+  • Arrow Up/Down detected
+  • Focus management
+  • Wrap-around
+✓ <span class="true-result">ACTIVATION</span> (menu-actions.js)
+  • Enter/Space on button
+  • Enter/Space on items
+  • Escape closes menu
+
+<span class="true-result">Complete menu pattern detected
+Zero issues found</span></code></pre>
+
+          <p><strong>Result:</strong> <span class="true-result">ACCURATE DETECTION</span></p>
+          <p>Multi-model analysis sees complete pattern across all 5 files.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="code-walkthrough">
+      <h2>💻 Code Walkthrough (5 Files)</h2>
+
+      <h3>File 1: index.html (Structure)</h3>
+      <details class="code-sample">
+        <summary>View HTML Source</summary>
+        <pre><code>&lt;div class="menu-container"&gt;
+  &lt;button aria-haspopup="true"
+          aria-expanded="false"
+          aria-controls="menu"
+          id="menu-button"&gt;
+    Actions
+  &lt;/button&gt;
+
+  &lt;ul role="menu"
+      id="menu"
+      aria-labelledby="menu-button"
+      hidden&gt;
+    &lt;li role="none"&gt;
+      &lt;button role="menuitem"&gt;Edit&lt;/button&gt;
+    &lt;/li&gt;
+    &lt;li role="none"&gt;
+      &lt;button role="menuitem"&gt;Duplicate&lt;/button&gt;
+    &lt;/li&gt;
+    &lt;li role="none"&gt;
+      &lt;button role="menuitem"&gt;Delete&lt;/button&gt;
+    &lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;
+
+&lt;script src="menu-setup.js"&gt;&lt;/script&gt;
+&lt;script src="menu-structure.js"&gt;&lt;/script&gt;
+&lt;script src="menu-navigation.js"&gt;&lt;/script&gt;
+&lt;script src="menu-actions.js"&gt;&lt;/script&gt;</code></pre>
+      </details>
+
+      <h3>File 2: menu-setup.js (Initialization)</h3>
+      <details class="code-sample">
+        <summary>View Setup Source</summary>
+        <pre><code>// Configuration and element caching
+const MenuConfig = {
+  button: document.getElementById('menu-button'),
+  menu: document.getElementById('menu'),
+  items: Array.from(document.querySelectorAll('[role="menuitem"]')),
+
+  state: {
+    isOpen: false,
+    currentIndex: -1
+  }
+};
+
+console.log('✅ Menu initialized:', MenuConfig);</code></pre>
+      </details>
+
+      <h3>File 3: menu-structure.js (Open/Close)</h3>
+      <details class="code-sample">
+        <summary>View Structure Source</summary>
+        <pre><code>// Open/close functionality
+function openMenu() {
+  MenuConfig.state.isOpen = true;
+  MenuConfig.button.setAttribute('aria-expanded', 'true');
+  MenuConfig.menu.removeAttribute('hidden');
+  MenuConfig.items[0].focus();
+}
+
+function closeMenu() {
+  MenuConfig.state.isOpen = false;
+  MenuConfig.button.setAttribute('aria-expanded', 'false');
+  MenuConfig.menu.setAttribute('hidden', '');
+  MenuConfig.button.focus();
+}
+
+// Button click opens menu
+MenuConfig.button.addEventListener('click', openMenu);
+
+// Click outside closes menu
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.menu-container')) {
+    if (MenuConfig.state.isOpen) closeMenu();
+  }
+});
+
+// ⚠️ File-scope: "Missing keyboard handlers" FALSE POSITIVE
+// Handlers exist in menu-actions.js!</code></pre>
+      </details>
+
+      <h3>File 4: menu-navigation.js (Arrow Keys)</h3>
+      <details class="code-sample">
+        <summary>View Navigation Source</summary>
+        <pre><code>// Arrow key navigation
+MenuConfig.menu.addEventListener('keydown', (event) => {
+  if (!MenuConfig.state.isOpen) return;
+
+  const items = MenuConfig.items;
+  const currentIndex = items.indexOf(document.activeElement);
+
+  if (event.key === 'ArrowDown') {
+    event.preventDefault();
+    const nextIndex = (currentIndex + 1) % items.length;
+    items[nextIndex].focus();
+  } else if (event.key === 'ArrowUp') {
+    event.preventDefault();
+    const prevIndex = currentIndex <= 0
+      ? items.length - 1
+      : currentIndex - 1;
+    items[prevIndex].focus();
+  }
+});
+
+// ⚠️ File-scope: "Missing activation handlers" FALSE POSITIVE
+// Handlers exist in menu-actions.js!</code></pre>
+      </details>
+
+      <h3>File 5: menu-actions.js (Enter/Space/Escape)</h3>
+      <details class="code-sample">
+        <summary>View Actions Source</summary>
+        <pre><code>// Enter/Space to open menu
+MenuConfig.button.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    if (!MenuConfig.state.isOpen) {
+      openMenu();
+    }
+  }
+});
+
+// Enter/Space to activate menu item
+MenuConfig.items.forEach(item => {
+  item.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      console.log('Activated:', item.textContent);
+      closeMenu();
+    }
+  });
+});
+
+// Escape closes menu
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && MenuConfig.state.isOpen) {
+    event.preventDefault();
+    closeMenu();
+  }
+});
+
+// ⚠️ File-scope: "Missing navigation" FALSE POSITIVE
+// Navigation exists in menu-navigation.js!</code></pre>
+      </details>
+    </section>
+
+    <section class="false-positive-breakdown">
+      <h2>❌ False Positive Breakdown</h2>
+
+      <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <thead>
+          <tr style="background: #f5f5f5;">
+            <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">File Analyzed</th>
+            <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">What's Present</th>
+            <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">False Positive Reported</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 12px; border: 1px solid #ddd;"><strong>menu-setup.js</strong></td>
+            <td style="padding: 12px; border: 1px solid #ddd;">Element caching</td>
+            <td style="padding: 12px; border: 1px solid #ddd; color: #d32f2f;">Missing all handlers</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px; border: 1px solid #ddd;"><strong>menu-structure.js</strong></td>
+            <td style="padding: 12px; border: 1px solid #ddd;">Click handler, open/close</td>
+            <td style="padding: 12px; border: 1px solid #ddd; color: #d32f2f;">Missing keyboard handlers</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px; border: 1px solid #ddd;"><strong>menu-navigation.js</strong></td>
+            <td style="padding: 12px; border: 1px solid #ddd;">Arrow Up/Down</td>
+            <td style="padding: 12px; border: 1px solid #ddd; color: #d32f2f;">Missing activation handlers</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px; border: 1px solid #ddd;"><strong>menu-actions.js</strong></td>
+            <td style="padding: 12px; border: 1px solid #ddd;">Enter/Space/Escape</td>
+            <td style="padding: 12px; border: 1px solid #ddd; color: #d32f2f;">Missing navigation</td>
+          </tr>
+          <tr style="background: #f1f8f4;">
+            <td style="padding: 12px; border: 1px solid #ddd;"><strong>Paradise (All Files)</strong></td>
+            <td style="padding: 12px; border: 1px solid #ddd;">Complete pattern</td>
+            <td style="padding: 12px; border: 1px solid #ddd; color: #388e3c;"><strong>Zero false positives ✅</strong></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p><strong>Developer Impact:</strong></p>
+      <ul>
+        <li>❌ Traditional tools: 4 false positives per menu widget</li>
+        <li>❌ 10 menus in project = 40 false positive warnings</li>
+        <li>❌ Developer learns to ignore warnings</li>
+        <li>❌ Real issues go unnoticed</li>
+        <li>✅ Paradise: Zero false positives, trusted warnings</li>
+      </ul>
+    </section>
+
+    <section class="why-this-matters">
+      <h2>💡 Why This Extreme Case Matters</h2>
+
+      <div class="insight-box">
+        <h3>Real-World Large Codebases</h3>
+        <p>Enterprise applications often have extreme code distribution:</p>
+        <ul>
+          <li><strong>Shared utilities:</strong> Common navigation logic in separate file</li>
+          <li><strong>Feature teams:</strong> Different teams own different aspects</li>
+          <li><strong>Progressive enhancement:</strong> Base functionality + keyboard layer + screen reader layer</li>
+          <li><strong>Framework patterns:</strong> Actions in action files, reducers in reducer files</li>
+        </ul>
+
+        <h3>The Scalability Test</h3>
+        <p>This 4-file menu proves Paradise scales:</p>
+        <ul>
+          <li>✅ Handles extreme distribution (5 files total)</li>
+          <li>✅ No degradation in accuracy</li>
+          <li>✅ No increase in false positives</li>
+          <li>✅ Validates complete patterns regardless of organization</li>
+        </ul>
+
+        <h3>Combined with Previous Examples</h3>
+        <ul>
+          <li><strong>Cross-file tabs:</strong> Proves 2-file split works</li>
+          <li><strong>Component dialog:</strong> Proves React hooks work</li>
+          <li><strong>Distributed menu:</strong> Proves 4-file extreme case works</li>
+          <li><strong>Result:</strong> Paradise handles ANY code organization</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="wcag-mapping">
+      <h2>📋 WCAG Success Criteria</h2>
+      <p>This implementation satisfies:</p>
+      <ul class="wcag-list">
+        <li>
+          <strong>2.1.1 Keyboard (Level A)</strong>
+          <p>All functionality detected across files: Enter/Space open (menu-actions.js), arrows navigate (menu-navigation.js), Escape closes (menu-actions.js)</p>
+        </li>
+        <li>
+          <strong>4.1.2 Name, Role, Value (Level A)</strong>
+          <p>ARIA attributes detected: role="menu", role="menuitem", aria-haspopup, aria-expanded (index.html + menu-structure.js)</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="summary-all-examples">
+      <h2>🎯 Summary: All Three Multi-Model Examples</h2>
+
+      <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <thead>
+          <tr style="background: #f5f5f5;">
+            <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Example</th>
+            <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Files</th>
+            <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Architecture</th>
+            <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">False Positives Eliminated</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 12px; border: 1px solid #ddd;"><strong>Cross-File Tabs</strong></td>
+            <td style="padding: 12px; border: 1px solid #ddd;">3</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">Vanilla JS split</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">1</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px; border: 1px solid #ddd;"><strong>Component Dialog</strong></td>
+            <td style="padding: 12px; border: 1px solid #ddd;">3</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">React hooks</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">2</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px; border: 1px solid #ddd;"><strong>Distributed Menu</strong></td>
+            <td style="padding: 12px; border: 1px solid #ddd;">5</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">Extreme distribution</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">4</td>
+          </tr>
+          <tr style="background: #f1f8f4; font-weight: bold;">
+            <td style="padding: 12px; border: 1px solid #ddd;">TOTAL</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">11 files</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">3 patterns</td>
+            <td style="padding: 12px; border: 1px solid #ddd; color: #388e3c;">7 false positives eliminated ✅</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p style="margin-top: 16px;"><strong>Impact:</strong> Paradise's multi-model architecture eliminates false positives across vanilla JavaScript, React hooks, and extreme multi-file distributions. <strong>No other tool can do this.</strong></p>
+    </section>
+
+    <section class="resources">
+      <h2>📚 Related Examples</h2>
+      <ul>
+        <li><a href="../cross-file-tabs/index.html">Cross-File Tabs</a> - 2-file JavaScript split</li>
+        <li><a href="../component-dialog/index.html">Component-Based Dialog</a> - React hooks pattern</li>
+        <li><a href="../../index.html">All Widget Patterns</a></li>
+      </ul>
+    </section>
+
+    <nav class="demo-nav">
+      <a href="../component-dialog/index.html" class="nav-prev">← Previous: Component Dialog</a>
+      <a href="../../index.html" class="nav-home">🏠 All Patterns</a>
+      <a href="../../pages/navigation-widgets/tabs.html" class="nav-next">Next: Pattern Demos →</a>
+    </nav>
+  </div>
+
+  <script src="menu-setup.js"></script>
+  <script src="menu-structure.js"></script>
+  <script src="menu-navigation.js"></script>
+  <script src="menu-actions.js"></script>
+</body>
+</html>

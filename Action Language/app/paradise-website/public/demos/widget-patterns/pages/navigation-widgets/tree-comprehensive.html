@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tree Pattern - Paradise Widget Patterns</title>
+  <link rel="stylesheet" href="../../css/demo.css">
+  <style>
+    .tree-demo {
+      margin: 2rem 0;
+    }
+
+    .tree-container {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 1rem;
+      background: #f9f9f9;
+    }
+
+    [role="tree"] {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    [role="treeitem"] {
+      padding: 0.5rem;
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      border-radius: 4px;
+    }
+
+    [role="treeitem"]:focus {
+      outline: 2px solid #0066cc;
+      outline-offset: 2px;
+      background: #e3f2fd;
+    }
+
+    [role="treeitem"]:hover {
+      background: #f5f5f5;
+    }
+
+    [role="treeitem"][aria-selected="true"] {
+      background: #e3f2fd;
+      font-weight: 600;
+    }
+
+    .tree-expander {
+      display: inline-block;
+      width: 1rem;
+      margin-right: 0.5rem;
+      text-align: center;
+      font-family: monospace;
+    }
+
+    .tree-icon {
+      margin-right: 0.5rem;
+    }
+
+    [role="group"] {
+      list-style: none;
+      padding-left: 1.5rem;
+      margin: 0;
+    }
+
+    [role="treeitem"][aria-expanded="false"] + [role="group"] {
+      display: none;
+    }
+
+    .bad-tree {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .bad-tree li {
+      padding: 0.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+
+    .bad-tree li:hover {
+      background: #f5f5f5;
+    }
+
+    .bad-tree ul {
+      list-style: none;
+      padding-left: 1.5rem;
+      margin: 0;
+    }
+
+    .bad-tree .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="../../index.html">Home</a> &gt;
+      <a href="#navigation">Navigation Widgets</a> &gt;
+      <span>Tree</span>
+    </nav>
+
+    <header>
+      <h1>🌳 Tree Pattern</h1>
+      <p class="subtitle">Hierarchical tree with 4-way arrow navigation</p>
+      <div class="pattern-info">
+        <span class="complexity-badge very-high">Very High Complexity</span>
+        <span class="wcag-badge">WCAG 2.1.1, 4.1.2</span>
+      </div>
+    </header>
+
+    <section class="pattern-description">
+      <h2>Complete Tree Pattern Requires:</h2>
+      <ul>
+        <li><code>role="tree"</code> on container</li>
+        <li><code>role="treeitem"</code> on each node</li>
+        <li><code>role="group"</code> on child node containers</li>
+        <li><code>aria-expanded</code> on expandable nodes (true/false)</li>
+        <li><code>aria-level</code> indicating depth (1-based)</li>
+        <li><code>aria-setsize</code> and <code>aria-posinset</code> for position info</li>
+        <li><code>aria-selected</code> for selection state</li>
+        <li><strong>Arrow Up/Down:</strong> Navigate siblings</li>
+        <li><strong>Arrow Right:</strong> Expand collapsed node or move to first child if expanded</li>
+        <li><strong>Arrow Left:</strong> Collapse expanded node or move to parent if collapsed</li>
+        <li><strong>Enter/Space:</strong> Activate or toggle expansion</li>
+        <li><strong>Home/End:</strong> Jump to first/last visible node</li>
+        <li><strong>Type-ahead:</strong> Jump to node by typing first letters (optional enhancement)</li>
+      </ul>
+    </section>
+
+    <div class="comparison">
+      <section class="example good">
+        <h2>✅ Accessible Tree</h2>
+        <p>Complete tree pattern with 4-way navigation and ARIA management.</p>
+
+        <div class="tree-demo">
+          <div class="tree-container">
+            <ul role="tree" aria-label="File System" id="good-tree">
+              <li role="treeitem"
+                  aria-expanded="true"
+                  aria-level="1"
+                  aria-setsize="3"
+                  aria-posinset="1"
+                  tabindex="0"
+                  id="good-node-1">
+                <span class="tree-expander">▼</span>
+                <span class="tree-icon">📁</span>
+                <span class="tree-label">Documents</span>
+                <ul role="group">
+                  <li role="treeitem"
+                      aria-level="2"
+                      aria-setsize="2"
+                      aria-posinset="1"
+                      tabindex="-1"
+                      id="good-node-1-1">
+                    <span class="tree-expander"></span>
+                    <span class="tree-icon">📄</span>
+                    <span class="tree-label">Report.pdf</span>
+                  </li>
+                  <li role="treeitem"
+                      aria-level="2"
+                      aria-setsize="2"
+                      aria-posinset="2"
+                      tabindex="-1"
+                      id="good-node-1-2">
+                    <span class="tree-expander"></span>
+                    <span class="tree-icon">📄</span>
+                    <span class="tree-label">Presentation.pptx</span>
+                  </li>
+                </ul>
+              </li>
+              <li role="treeitem"
+                  aria-expanded="false"
+                  aria-level="1"
+                  aria-setsize="3"
+                  aria-posinset="2"
+                  tabindex="-1"
+                  id="good-node-2">
+                <span class="tree-expander">▶</span>
+                <span class="tree-icon">📁</span>
+                <span class="tree-label">Pictures</span>
+                <ul role="group">
+                  <li role="treeitem"
+                      aria-expanded="false"
+                      aria-level="2"
+                      aria-setsize="2"
+                      aria-posinset="1"
+                      tabindex="-1"
+                      id="good-node-2-1">
+                    <span class="tree-expander">▶</span>
+                    <span class="tree-icon">📁</span>
+                    <span class="tree-label">Vacation</span>
+                    <ul role="group">
+                      <li role="treeitem"
+                          aria-level="3"
+                          aria-setsize="2"
+                          aria-posinset="1"
+                          tabindex="-1"
+                          id="good-node-2-1-1">
+                        <span class="tree-expander"></span>
+                        <span class="tree-icon">🖼️</span>
+                        <span class="tree-label">beach.jpg</span>
+                      </li>
+                      <li role="treeitem"
+                          aria-level="3"
+                          aria-setsize="2"
+                          aria-posinset="2"
+                          tabindex="-1"
+                          id="good-node-2-1-2">
+                        <span class="tree-expander"></span>
+                        <span class="tree-icon">🖼️</span>
+                        <span class="tree-label">sunset.jpg</span>
+                      </li>
+                    </ul>
+                  </li>
+                  <li role="treeitem"
+                      aria-level="2"
+                      aria-setsize="2"
+                      aria-posinset="2"
+                      tabindex="-1"
+                      id="good-node-2-2">
+                    <span class="tree-expander"></span>
+                    <span class="tree-icon">🖼️</span>
+                    <span class="tree-label">profile.png</span>
+                  </li>
+                </ul>
+              </li>
+              <li role="treeitem"
+                  aria-level="1"
+                  aria-setsize="3"
+                  aria-posinset="3"
+                  tabindex="-1"
+                  id="good-node-3">
+                <span class="tree-expander"></span>
+                <span class="tree-icon">📄</span>
+                <span class="tree-label">README.md</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis: ✅ Complete Pattern</h3>
+          <pre class="analysis-result success">
+✓ Analysis complete: 0 issues found
+
+Pattern Requirements Met:
+✓ role="tree" on container
+✓ role="treeitem" on all nodes
+✓ role="group" on child containers
+✓ aria-expanded on expandable nodes
+✓ aria-level on all nodes
+✓ aria-setsize and aria-posinset present
+✓ Roving tabindex implemented
+✓ Arrow Up/Down navigation detected
+✓ Arrow Right navigation detected
+✓ Arrow Left navigation detected
+✓ Enter/Space activation detected
+✓ Home/End support detected
+✓ Focus management implemented
+
+WCAG 2.1.1 (Keyboard): PASS
+WCAG 4.1.2 (Name, Role, Value): PASS
+          </pre>
+        </div>
+
+        <div class="testing-instructions">
+          <h3>Testing Instructions</h3>
+          <ol>
+            <li><strong>Tab:</strong> Focus the tree (first node gets focus)</li>
+            <li><strong>Arrow Down:</strong> Move to next visible node</li>
+            <li><strong>Arrow Up:</strong> Move to previous visible node</li>
+            <li><strong>Arrow Right on collapsed folder:</strong> Expand the folder</li>
+            <li><strong>Arrow Right on expanded folder:</strong> Move to first child</li>
+            <li><strong>Arrow Right on file:</strong> No effect</li>
+            <li><strong>Arrow Left on expanded folder:</strong> Collapse the folder</li>
+            <li><strong>Arrow Left on collapsed folder or file:</strong> Move to parent</li>
+            <li><strong>Enter/Space:</strong> Activate the node (shows alert)</li>
+            <li><strong>Home:</strong> Jump to first node</li>
+            <li><strong>End:</strong> Jump to last visible node</li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="example bad">
+        <h2>❌ Inaccessible Tree</h2>
+        <p>Hierarchical list missing ARIA roles and keyboard navigation.</p>
+
+        <div class="tree-demo">
+          <div class="tree-container">
+            <ul class="bad-tree" id="bad-tree">
+              <li id="bad-node-1">
+                <span class="tree-expander">▼</span>
+                <span class="tree-icon">📁</span>
+                <span class="tree-label">Documents</span>
+                <ul>
+                  <li id="bad-node-1-1">
+                    <span class="tree-expander"></span>
+                    <span class="tree-icon">📄</span>
+                    <span class="tree-label">Report.pdf</span>
+                  </li>
+                  <li id="bad-node-1-2">
+                    <span class="tree-expander"></span>
+                    <span class="tree-icon">📄</span>
+                    <span class="tree-label">Presentation.pptx</span>
+                  </li>
+                </ul>
+              </li>
+              <li id="bad-node-2">
+                <span class="tree-expander">▶</span>
+                <span class="tree-icon">📁</span>
+                <span class="tree-label">Pictures</span>
+                <ul class="hidden">
+                  <li id="bad-node-2-1">
+                    <span class="tree-expander">▶</span>
+                    <span class="tree-icon">📁</span>
+                    <span class="tree-label">Vacation</span>
+                    <ul class="hidden">
+                      <li id="bad-node-2-1-1">
+                        <span class="tree-expander"></span>
+                        <span class="tree-icon">🖼️</span>
+                        <span class="tree-label">beach.jpg</span>
+                      </li>
+                      <li id="bad-node-2-1-2">
+                        <span class="tree-expander"></span>
+                        <span class="tree-icon">🖼️</span>
+                        <span class="tree-label">sunset.jpg</span>
+                      </li>
+                    </ul>
+                  </li>
+                  <li id="bad-node-2-2">
+                    <span class="tree-expander"></span>
+                    <span class="tree-icon">🖼️</span>
+                    <span class="tree-label">profile.png</span>
+                  </li>
+                </ul>
+              </li>
+              <li id="bad-node-3">
+                <span class="tree-expander"></span>
+                <span class="tree-icon">📄</span>
+                <span class="tree-label">README.md</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis: ❌ Incomplete Pattern</h3>
+          <pre class="analysis-result error">
+⚠ Analysis complete: 12 issues found
+
+Missing Pattern Requirements:
+✗ Missing role="tree" on container
+✗ Missing role="treeitem" on nodes
+✗ Missing role="group" on child containers
+✗ Missing aria-expanded attributes
+✗ Missing aria-level attributes
+✗ Missing aria-setsize and aria-posinset
+✗ No roving tabindex implementation
+✗ No Arrow Up/Down navigation
+✗ No Arrow Right navigation
+✗ No Arrow Left navigation
+✗ No Enter/Space activation
+✗ No Home/End support
+
+WCAG 2.1.1 (Keyboard): FAIL - Not keyboard accessible
+WCAG 4.1.2 (Name, Role, Value): FAIL - Missing roles and states
+          </pre>
+        </div>
+
+        <div class="issue-explanation">
+          <h3>Why This Fails</h3>
+          <ul>
+            <li><strong>No ARIA roles:</strong> Screen readers see flat list, not hierarchical tree</li>
+            <li><strong>No keyboard navigation:</strong> Keyboard users cannot navigate the tree</li>
+            <li><strong>No state communication:</strong> Expansion state not communicated to assistive tech</li>
+            <li><strong>No position info:</strong> Screen readers can't announce "1 of 3" or depth level</li>
+            <li><strong>Mouse-only interaction:</strong> Click on expanders doesn't help keyboard users</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <section class="code-walkthrough">
+      <h2>Code Walkthrough</h2>
+
+      <h3>HTML Structure (Accessible)</h3>
+      <pre><code>&lt;ul role="tree" aria-label="File System"&gt;
+  &lt;li role="treeitem"
+      aria-expanded="true"
+      aria-level="1"
+      aria-setsize="3"
+      aria-posinset="1"
+      tabindex="0"&gt;
+    &lt;span class="tree-expander"&gt;▼&lt;/span&gt;
+    &lt;span&gt;Documents&lt;/span&gt;
+    &lt;ul role="group"&gt;
+      &lt;li role="treeitem"
+          aria-level="2"
+          aria-setsize="2"
+          aria-posinset="1"
+          tabindex="-1"&gt;
+        &lt;span&gt;Report.pdf&lt;/span&gt;
+      &lt;/li&gt;
+      &lt;!-- More items... --&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+
+      <h3>JavaScript Implementation (Key Functions)</h3>
+
+      <h4>4-Way Arrow Navigation</h4>
+      <pre><code>tree.addEventListener('keydown', (event) =&gt; {
+  const currentNode = document.activeElement;
+
+  switch (event.key) {
+    case 'ArrowDown':
+      event.preventDefault();
+      focusNextVisibleNode(currentNode);
+      break;
+
+    case 'ArrowUp':
+      event.preventDefault();
+      focusPreviousVisibleNode(currentNode);
+      break;
+
+    case 'ArrowRight':
+      event.preventDefault();
+      handleRightArrow(currentNode);
+      break;
+
+    case 'ArrowLeft':
+      event.preventDefault();
+      handleLeftArrow(currentNode);
+      break;
+  }
+});</code></pre>
+
+      <h4>Arrow Right Logic</h4>
+      <pre><code>function handleRightArrow(node) {
+  const isExpandable = node.hasAttribute('aria-expanded');
+  const isExpanded = node.getAttribute('aria-expanded') === 'true';
+
+  if (isExpandable && !isExpanded) {
+    // Collapsed folder: expand it
+    expandNode(node);
+  } else if (isExpandable && isExpanded) {
+    // Expanded folder: move to first child
+    const group = node.querySelector('[role="group"]');
+    const firstChild = group?.querySelector('[role="treeitem"]');
+    if (firstChild) {
+      setFocusToNode(firstChild);
+    }
+  }
+  // File (no aria-expanded): do nothing
+}</code></pre>
+
+      <h4>Arrow Left Logic</h4>
+      <pre><code>function handleLeftArrow(node) {
+  const isExpandable = node.hasAttribute('aria-expanded');
+  const isExpanded = node.getAttribute('aria-expanded') === 'true';
+
+  if (isExpandable && isExpanded) {
+    // Expanded folder: collapse it
+    collapseNode(node);
+  } else {
+    // Collapsed folder or file: move to parent
+    const parentItem = findParentTreeItem(node);
+    if (parentItem) {
+      setFocusToNode(parentItem);
+    }
+  }
+}</code></pre>
+
+      <h4>Roving Tabindex</h4>
+      <pre><code>function setFocusToNode(node) {
+  // Remove tabindex from all nodes
+  const allNodes = tree.querySelectorAll('[role="treeitem"]');
+  allNodes.forEach(n =&gt; n.setAttribute('tabindex', '-1'));
+
+  // Set tabindex on target node and focus it
+  node.setAttribute('tabindex', '0');
+  node.focus();
+}</code></pre>
+    </section>
+
+    <section class="why-paradise">
+      <h2>🎯 What Paradise Detects</h2>
+
+      <h3>Complete Pattern Validation</h3>
+      <p>Paradise validates the <strong>entire tree implementation</strong>, not just individual attributes:</p>
+
+      <div class="detection-grid">
+        <div class="detection-item">
+          <h4>✓ Structure Validation</h4>
+          <ul>
+            <li>role="tree" on container</li>
+            <li>role="treeitem" on all nodes</li>
+            <li>role="group" on child containers</li>
+            <li>aria-expanded on folders</li>
+            <li>aria-level on all nodes</li>
+            <li>aria-setsize and aria-posinset</li>
+          </ul>
+        </div>
+
+        <div class="detection-item">
+          <h4>✓ Keyboard Interaction</h4>
+          <ul>
+            <li>Arrow Up/Down handlers present</li>
+            <li>Arrow Right expand/child logic</li>
+            <li>Arrow Left collapse/parent logic</li>
+            <li>Enter/Space activation</li>
+            <li>Home/End support</li>
+            <li>Roving tabindex management</li>
+          </ul>
+        </div>
+
+        <div class="detection-item">
+          <h4>✓ State Management</h4>
+          <ul>
+            <li>aria-expanded updates on toggle</li>
+            <li>Visual expander updates</li>
+            <li>Focus management</li>
+            <li>Visibility of child groups</li>
+          </ul>
+        </div>
+
+        <div class="detection-item">
+          <h4>✓ Edge Cases</h4>
+          <ul>
+            <li>Arrow Right on files (no-op)</li>
+            <li>Arrow Left at root (no-op)</li>
+            <li>Empty groups handled</li>
+            <li>Deep nesting supported</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="comparison-table">
+      <h2>Why Other Tools Miss This</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Validation Aspect</th>
+            <th>Traditional Tools</th>
+            <th>Paradise</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>ARIA Roles</strong></td>
+            <td>✓ Detects missing roles</td>
+            <td>✓ Detects missing roles</td>
+          </tr>
+          <tr>
+            <td><strong>ARIA Attributes</strong></td>
+            <td>✓ Detects missing attributes</td>
+            <td>✓ Detects missing attributes</td>
+          </tr>
+          <tr>
+            <td><strong>4-Way Navigation</strong></td>
+            <td>✗ Cannot verify arrow handlers exist</td>
+            <td>✓ Verifies all 4 arrow directions</td>
+          </tr>
+          <tr>
+            <td><strong>Arrow Right Logic</strong></td>
+            <td>✗ Cannot verify expand vs child navigation</td>
+            <td>✓ Verifies correct Right arrow behavior</td>
+          </tr>
+          <tr>
+            <td><strong>Arrow Left Logic</strong></td>
+            <td>✗ Cannot verify collapse vs parent navigation</td>
+            <td>✓ Verifies correct Left arrow behavior</td>
+          </tr>
+          <tr>
+            <td><strong>Roving Tabindex</strong></td>
+            <td>✗ Cannot verify focus management</td>
+            <td>✓ Verifies roving tabindex implementation</td>
+          </tr>
+          <tr>
+            <td><strong>Home/End Support</strong></td>
+            <td>✗ Cannot verify key handlers</td>
+            <td>✓ Verifies Home/End handlers</td>
+          </tr>
+          <tr>
+            <td><strong>State Updates</strong></td>
+            <td>✗ Cannot verify aria-expanded updates</td>
+            <td>✓ Verifies dynamic state management</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="tool-limitation">
+        <strong>Traditional tools:</strong> Can only check that <code>role="tree"</code> and <code>aria-expanded</code> exist.
+        Cannot verify the complex 4-way navigation logic, roving tabindex, or state management.
+      </p>
+
+      <p class="paradise-advantage">
+        <strong>Paradise:</strong> Analyzes the JavaScript implementation to verify ALL tree pattern requirements,
+        including 4-way arrow navigation with proper expand/collapse/parent/child logic, roving tabindex,
+        Enter/Space activation, Home/End support, and aria-expanded state updates.
+      </p>
+    </section>
+
+    <section class="wcag-mapping">
+      <h2>📋 WCAG Success Criteria</h2>
+      <ul class="wcag-list">
+        <li>
+          <strong>2.1.1 Keyboard (Level A)</strong>
+          <p>Tree must be fully keyboard accessible with 4-way arrow navigation, Enter/Space activation, and Home/End support.</p>
+        </li>
+        <li>
+          <strong>4.1.2 Name, Role, Value (Level A)</strong>
+          <p>All nodes must have proper roles (tree, treeitem, group), states (aria-expanded, aria-selected), and properties (aria-level, aria-setsize, aria-posinset).</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="resources">
+      <h2>📚 Resources</h2>
+      <ul>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/treeview/" target="_blank">WAI-ARIA: Tree View Pattern</a></li>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/treeview/examples/treeview-navigation/" target="_blank">WAI-ARIA: File Directory Tree Example</a></li>
+        <li><a href="/docs/issues/incomplete-tree-pattern.md">Paradise: Tree Pattern Help</a></li>
+      </ul>
+    </section>
+
+    <nav class="demo-nav">
+      <a href="menu-comprehensive.html" class="nav-prev">← Previous: Menu</a>
+      <a href="../../index.html" class="nav-home">🏠 All Patterns</a>
+      <a href="breadcrumb.html" class="nav-next">Next: Breadcrumb →</a>
+    </nav>
+  </div>
+
+  <script src="../../js/accessible/tree-complete.js"></script>
+  <script src="../../js/inaccessible/tree-incomplete.js"></script>
+</body>
+</html>

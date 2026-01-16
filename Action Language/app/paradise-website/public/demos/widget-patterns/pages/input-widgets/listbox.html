@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listbox Pattern - Paradise Widget Patterns</title>
+  <link rel="stylesheet" href="../../css/demo.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="../../index.html">Home</a> &gt;
+      <a href="#input">Input Widgets</a> &gt;
+      <span>Listbox</span>
+    </nav>
+
+    <header>
+      <h1>📋 Listbox Pattern</h1>
+      <p class="subtitle">Selectable list with keyboard navigation</p>
+      <div class="pattern-info">
+        <span class="complexity-badge high">High Complexity</span>
+        <span class="wcag-badge">WCAG 2.1.1, 4.1.2</span>
+      </div>
+    </header>
+
+    <section class="pattern-description">
+      <h2>Complete Listbox Pattern Requires:</h2>
+      <ul>
+        <li><code>role="listbox"</code> on container</li>
+        <li><code>role="option"</code> on each item</li>
+        <li><code>aria-selected</code> on options (true/false)</li>
+        <li><code>aria-multiselectable</code> if multiple selection</li>
+        <li><strong>Arrow keys:</strong> Navigate options</li>
+        <li><strong>Space:</strong> Toggle selection (multi-select)</li>
+        <li><strong>Home/End:</strong> Jump to first/last</li>
+        <li><strong>Type-ahead:</strong> Jump to matching option</li>
+      </ul>
+    </section>
+
+    <div class="comparison">
+      <section class="example good">
+        <h2>✅ Accessible Pattern</h2>
+        <p>Complete listbox with aria-selected and keyboard navigation.</p>
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis: ✅ Complete Pattern</h3>
+          <ul class="validation-results">
+            <li class="check-pass">✓ role="listbox" present</li>
+            <li class="check-pass">✓ role="option" on items</li>
+            <li class="check-pass">✓ aria-selected management</li>
+            <li class="check-pass">✓ Arrow navigation detected</li>
+            <li class="check-pass">✓ Space to select</li>
+            <li class="check-pass">✓ Home/End support</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="example bad">
+        <h2>❌ Inaccessible Pattern</h2>
+        <p>List missing ARIA roles and keyboard support.</p>
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis: ❌ Incomplete Pattern</h3>
+          <ul class="issues-list">
+            <li class="issue-error">Missing role="listbox"</li>
+            <li class="issue-error">Missing role="option"</li>
+            <li class="issue-error">Missing aria-selected</li>
+            <li class="issue-error">No arrow navigation</li>
+            <li class="issue-error">No Space handler</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <section class="wcag-mapping">
+      <h2>📋 WCAG Success Criteria</h2>
+      <ul class="wcag-list">
+        <li><strong>2.1.1 Keyboard (Level A)</strong> - Arrow keys, Space, Home/End</li>
+        <li><strong>4.1.2 Name, Role, Value (Level A)</strong> - listbox/option roles, aria-selected</li>
+      </ul>
+    </section>
+
+    <section class="resources">
+      <h2>📚 Resources</h2>
+      <ul>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/listbox/" target="_blank">WAI-ARIA: Listbox Pattern</a></li>
+        <li><a href="/docs/issues/incomplete-listbox-pattern.md">Paradise: Listbox Pattern Help</a></li>
+      </ul>
+    </section>
+
+    <nav class="demo-nav">
+      <a href="combobox.html" class="nav-prev">← Previous: Combobox</a>
+      <a href="../../index.html" class="nav-home">🏠 All Patterns</a>
+      <a href="slider.html" class="nav-next">Next: Slider →</a>
+    </nav>
+  </div>
+</body>
+</html>

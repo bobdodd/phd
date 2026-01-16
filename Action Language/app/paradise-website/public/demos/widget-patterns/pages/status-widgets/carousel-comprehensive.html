@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carousel Pattern - Comprehensive Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            margin-bottom: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .pattern-info {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .pattern-info h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .pattern-info h3 {
+            color: #764ba2;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .pattern-info ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .pattern-info li {
+            margin-bottom: 8px;
+        }
+
+        .pattern-info code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #f0f0f0;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-left: 15px;
+        }
+
+        .status-badge.accessible {
+            background: #10b981;
+            color: white;
+        }
+
+        .status-badge.inaccessible {
+            background: #ef4444;
+            color: white;
+        }
+
+        .section h2 {
+            font-size: 1.8em;
+            color: #333;
+        }
+
+        /* Carousel Base Styles */
+        .carousel-container {
+            margin-top: 20px;
+        }
+
+        .carousel {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .carousel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .carousel-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .carousel-controls-top {
+            display: flex;
+            gap: 10px;
+        }
+
+        .carousel-viewport {
+            position: relative;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .carousel-slides {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            position: relative;
+            aspect-ratio: 16/9;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .slide-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: white;
+            padding: 30px;
+        }
+
+        .slide-content h3 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .slide-content p {
+            font-size: 1.1em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        /* Navigation Buttons */
+        .carousel-nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: all 0.3s ease;
+            color: #333;
+        }
+
+        .carousel-nav-button:hover {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .carousel-nav-button:focus {
+            outline: 3px solid #667eea;
+            outline-offset: 2px;
+        }
+
+        .carousel-nav-button:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .carousel-nav-button.prev {
+            left: 20px;
+        }
+
+        .carousel-nav-button.next {
+            right: 20px;
+        }
+
+        .carousel-nav-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Play/Pause Button */
+        .carousel-play-pause {
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .carousel-play-pause:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .carousel-play-pause:focus {
+            outline: 3px solid #667eea;
+            outline-offset: 2px;
+        }
+
+        /* Slide Indicators */
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .carousel-indicator {
+            background: #d0d0d0;
+            border: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 0;
+            transition: all 0.3s ease;
+        }
+
+        .carousel-indicator:hover {
+            background: #999;
+            transform: scale(1.2);
+        }
+
+        .carousel-indicator:focus {
+            outline: 2px solid #667eea;
+            outline-offset: 2px;
+        }
+
+        .carousel-indicator[aria-selected="true"] {
+            background: #667eea;
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Product Carousel Specific Styles */
+        .product-carousel .carousel-slide {
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .product-card {
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .product-card img {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .product-card h3 {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .product-card .price {
+            font-size: 2em;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .product-card .rating {
+            color: #fbbf24;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .product-card p {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .product-card .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .product-card .btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Inaccessible Carousel Issues */
+        .inaccessible-carousel .carousel-nav-button {
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        .inaccessible-carousel .carousel-nav-button:focus {
+            outline: none;
+        }
+
+        .inaccessible-carousel .carousel-play-pause:focus {
+            outline: none;
+        }
+
+        .inaccessible-carousel .carousel-indicator:focus {
+            outline: none;
+        }
+
+        /* Issues Panel */
+        .issues-panel {
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+
+        .issues-panel h3 {
+            color: #dc2626;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .issues-list {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .issues-list li {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 4px;
+            border-left: 3px solid #ef4444;
+        }
+
+        .issues-list li strong {
+            color: #dc2626;
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .comparison-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .comparison-table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .check {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .cross {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        /* Live Region for Announcements */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            header p {
+                font-size: 1em;
+            }
+
+            .carousel {
+                max-width: 100%;
+            }
+
+            .carousel-nav-button {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+
+            .carousel-nav-button.prev {
+                left: 10px;
+            }
+
+            .carousel-nav-button.next {
+                right: 10px;
+            }
+
+            .slide-content {
+                padding: 20px;
+            }
+
+            .slide-content h3 {
+                font-size: 1.3em;
+            }
+
+            .slide-content p {
+                font-size: 0.9em;
+            }
+
+            .product-card {
+                padding: 20px;
+            }
+        }
+
+        /* Focus Visible Support */
+        .carousel-nav-button:focus-visible,
+        .carousel-play-pause:focus-visible,
+        .carousel-indicator:focus-visible {
+            outline: 3px solid #667eea;
+            outline-offset: 2px;
+        }
+
+        /* Paused State Indicator */
+        .carousel.paused .carousel-viewport::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Carousel Pattern - Comprehensive Demo</h1>
+            <p>Comparing accessible and inaccessible carousel implementations with automatic rotation</p>
+        </header>
+
+        <!-- Pattern Information -->
+        <section class="pattern-info">
+            <h2>About the Carousel Pattern</h2>
+            <p>
+                A carousel presents a rotating set of content items (usually images) one at a time.
+                Carousels are commonly used for image galleries, product showcases, featured content,
+                and promotional banners.
+            </p>
+
+            <h3>Accessibility Requirements</h3>
+            <ul>
+                <li><code>role="region"</code> on the carousel container with <code>aria-roledescription="carousel"</code></li>
+                <li><code>aria-label</code> on the carousel region to identify it</li>
+                <li><code>role="group"</code> with <code>aria-roledescription="slide"</code> on each slide</li>
+                <li><code>aria-label</code> on each slide indicating position (e.g., "1 of 5")</li>
+                <li>Previous and Next buttons with proper <code>aria-label</code> attributes</li>
+                <li>Pause/Play button for controlling auto-rotation</li>
+                <li>Tab panel pattern for slide indicators with proper ARIA roles</li>
+                <li>Keyboard navigation with Arrow keys or Tab key</li>
+                <li>Auto-rotation stops on mouse hover or keyboard focus</li>
+                <li>Live region announcements for slide changes</li>
+            </ul>
+
+            <h3>Keyboard Interaction</h3>
+            <ul>
+                <li><strong>Tab:</strong> Move focus through carousel controls (Previous, Next, Pause/Play, indicators)</li>
+                <li><strong>Enter/Space:</strong> Activate focused button or indicator</li>
+                <li><strong>Arrow Left/Right:</strong> Navigate between slide indicators (when focused)</li>
+                <li><strong>Home/End:</strong> Move to first/last slide indicator (when focused)</li>
+            </ul>
+
+            <h3>Common Use Cases</h3>
+            <ul>
+                <li><strong>Image Galleries:</strong> Showcasing photos in a slideshow format</li>
+                <li><strong>Product Showcases:</strong> Highlighting featured products with images and details</li>
+                <li><strong>Hero Banners:</strong> Rotating promotional content on landing pages</li>
+                <li><strong>Testimonials:</strong> Displaying customer reviews one at a time</li>
+                <li><strong>Featured Content:</strong> Rotating news articles or blog posts</li>
+            </ul>
+        </section>
+
+        <!-- Accessible Implementation -->
+        <section class="section">
+            <div class="section-header">
+                <h2>Accessible Carousel Implementation</h2>
+                <span class="status-badge accessible">✓ Fully Accessible</span>
+            </div>
+
+            <p>
+                This carousel includes all required ARIA attributes, keyboard navigation,
+                auto-rotation controls, and proper semantic structure. It automatically pauses
+                when you hover over it or focus any element inside it.
+            </p>
+
+            <div class="carousel-container">
+                <!-- Image Carousel Example -->
+                <div
+                    id="accessible-carousel-1"
+                    class="carousel accessible-carousel"
+                    role="region"
+                    aria-roledescription="carousel"
+                    aria-label="Travel destinations image carousel"
+                >
+                    <div class="carousel-header">
+                        <h3 class="carousel-title">Travel Destinations</h3>
+                        <div class="carousel-controls-top">
+                            <button
+                                class="carousel-play-pause"
+                                aria-label="Pause automatic slide rotation"
+                                data-playing="true"
+                            >
+                                <span aria-hidden="true">⏸</span>
+                                <span>Pause</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="carousel-viewport">
+                        <div class="carousel-slides">
+                            <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="1 of 5">
+                                <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&h=450&fit=crop" alt="Paris, France - Eiffel Tower at sunset">
+                                <div class="slide-content">
+                                    <h3>Paris, France</h3>
+                                    <p>The city of lights awaits your discovery</p>
+                                </div>
+                            </div>
+                            <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="2 of 5">
+                                <img src="https://images.unsplash.com/photo-1513581166391-887a96ddeafd?w=800&h=450&fit=crop" alt="Santorini, Greece - White buildings overlooking the blue Aegean Sea">
+                                <div class="slide-content">
+                                    <h3>Santorini, Greece</h3>
+                                    <p>Experience breathtaking sunsets over the Aegean</p>
+                                </div>
+                            </div>
+                            <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="3 of 5">
+                                <img src="https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?w=800&h=450&fit=crop" alt="Tokyo, Japan - Neon lights in bustling city streets">
+                                <div class="slide-content">
+                                    <h3>Tokyo, Japan</h3>
+                                    <p>Where ancient tradition meets modern innovation</p>
+                                </div>
+                            </div>
+                            <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="4 of 5">
+                                <img src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=800&h=450&fit=crop" alt="Machu Picchu, Peru - Ancient ruins in misty mountains">
+                                <div class="slide-content">
+                                    <h3>Machu Picchu, Peru</h3>
+                                    <p>Discover the lost city of the Incas</p>
+                                </div>
+                            </div>
+                            <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="5 of 5">
+                                <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=450&fit=crop" alt="Norwegian Fjords - Majestic mountains and crystal blue waters">
+                                <div class="slide-content">
+                                    <h3>Norwegian Fjords</h3>
+                                    <p>Majestic beauty carved by ancient glaciers</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="carousel-nav-button prev" aria-label="View previous slide">
+                            <span aria-hidden="true">‹</span>
+                        </button>
+                        <button class="carousel-nav-button next" aria-label="View next slide">
+                            <span aria-hidden="true">›</span>
+                        </button>
+                    </div>
+
+                    <div class="carousel-indicators" role="tablist" aria-label="Slide navigation">
+                        <button role="tab" aria-label="Slide 1" aria-selected="true" class="carousel-indicator"></button>
+                        <button role="tab" aria-label="Slide 2" aria-selected="false" class="carousel-indicator"></button>
+                        <button role="tab" aria-label="Slide 3" aria-selected="false" class="carousel-indicator"></button>
+                        <button role="tab" aria-label="Slide 4" aria-selected="false" class="carousel-indicator"></button>
+                        <button role="tab" aria-label="Slide 5" aria-selected="false" class="carousel-indicator"></button>
+                    </div>
+                </div>
+
+                <!-- Product Carousel Example -->
+                <div
+                    id="accessible-carousel-2"
+                    class="carousel accessible-carousel product-carousel"
+                    role="region"
+                    aria-roledescription="carousel"
+                    aria-label="Featured products carousel"
+                    style="margin-top: 30px;"
+                >
+                    <div class="carousel-header">
+                        <h3 class="carousel-title">Featured Products</h3>
+                        <div class="carousel-controls-top">
+                            <button
+                                class="carousel-play-pause"
+                                aria-label="Pause automatic slide rotation"
+                                data-playing="true"
+                            >
+                                <span aria-hidden="true">⏸</span>
+                                <span>Pause</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="carousel-viewport">
+                        <div class="carousel-slides">
+                            <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="1 of 4">
+                                <div class="product-card">
+                                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&fit=crop" alt="Black wireless headphones">
+                                    <h3>Premium Wireless Headphones</h3>
+                                    <div class="price">$299.99</div>
+                                    <div class="rating" aria-label="Rating: 4.5 out of 5 stars">★★★★★</div>
+                                    <p>Immersive sound quality with active noise cancellation and 30-hour battery life.</p>
+                                    <button class="btn">Add to Cart</button>
+                                </div>
+                            </div>
+                            <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="2 of 4">
+                                <div class="product-card">
+                                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=300&fit=crop" alt="Luxury analog watch with leather strap">
+                                    <h3>Classic Leather Watch</h3>
+                                    <div class="price">$449.99</div>
+                                    <div class="rating" aria-label="Rating: 5 out of 5 stars">★★★★★</div>
+                                    <p>Timeless elegance meets precision engineering. Swiss movement with sapphire crystal.</p>
+                                    <button class="btn">Add to Cart</button>
+                                </div>
+                            </div>
+                            <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="3 of 4">
+                                <div class="product-card">
+                                    <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=300&h=300&fit=crop" alt="Designer sunglasses with gold frames">
+                                    <h3>Designer Sunglasses</h3>
+                                    <div class="price">$199.99</div>
+                                    <div class="rating" aria-label="Rating: 4 out of 5 stars">★★★★☆</div>
+                                    <p>UV protection with style. Polarized lenses and lightweight titanium frames.</p>
+                                    <button class="btn">Add to Cart</button>
+                                </div>
+                            </div>
+                            <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="4 of 4">
+                                <div class="product-card">
+                                    <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300&h=300&fit=crop" alt="Modern minimalist backpack">
+                                    <h3>Urban Travel Backpack</h3>
+                                    <div class="price">$129.99</div>
+                                    <div class="rating" aria-label="Rating: 4.5 out of 5 stars">★★★★★</div>
+                                    <p>Water-resistant design with laptop compartment and USB charging port.</p>
+                                    <button class="btn">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="carousel-nav-button prev" aria-label="View previous product">
+                            <span aria-hidden="true">‹</span>
+                        </button>
+                        <button class="carousel-nav-button next" aria-label="View next product">
+                            <span aria-hidden="true">›</span>
+                        </button>
+                    </div>
+
+                    <div class="carousel-indicators" role="tablist" aria-label="Product navigation">
+                        <button role="tab" aria-label="Product 1" aria-selected="true" class="carousel-indicator"></button>
+                        <button role="tab" aria-label="Product 2" aria-selected="false" class="carousel-indicator"></button>
+                        <button role="tab" aria-label="Product 3" aria-selected="false" class="carousel-indicator"></button>
+                        <button role="tab" aria-label="Product 4" aria-selected="false" class="carousel-indicator"></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live region for announcements -->
+            <div aria-live="polite" aria-atomic="true" class="sr-only" id="carousel-live-region"></div>
+        </section>
+
+        <!-- Inaccessible Implementation -->
+        <section class="section">
+            <div class="section-header">
+                <h2>Inaccessible Carousel Implementation</h2>
+                <span class="status-badge inaccessible">✗ Not Accessible</span>
+            </div>
+
+            <p>
+                This carousel lacks proper ARIA attributes, has poor keyboard navigation,
+                missing controls, and doesn't pause on hover. It demonstrates common accessibility mistakes.
+            </p>
+
+            <div class="carousel-container">
+                <!-- Image Carousel - Inaccessible -->
+                <div id="inaccessible-carousel-1" class="carousel inaccessible-carousel">
+                    <div class="carousel-header">
+                        <h3 class="carousel-title">Travel Destinations</h3>
+                    </div>
+
+                    <div class="carousel-viewport">
+                        <div class="carousel-slides">
+                            <div class="carousel-slide">
+                                <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&h=450&fit=crop" alt="">
+                                <div class="slide-content">
+                                    <h3>Paris, France</h3>
+                                    <p>The city of lights awaits your discovery</p>
+                                </div>
+                            </div>
+                            <div class="carousel-slide">
+                                <img src="https://images.unsplash.com/photo-1513581166391-887a96ddeafd?w=800&h=450&fit=crop" alt="">
+                                <div class="slide-content">
+                                    <h3>Santorini, Greece</h3>
+                                    <p>Experience breathtaking sunsets over the Aegean</p>
+                                </div>
+                            </div>
+                            <div class="carousel-slide">
+                                <img src="https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?w=800&h=450&fit=crop" alt="">
+                                <div class="slide-content">
+                                    <h3>Tokyo, Japan</h3>
+                                    <p>Where ancient tradition meets modern innovation</p>
+                                </div>
+                            </div>
+                            <div class="carousel-slide">
+                                <img src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=800&h=450&fit=crop" alt="">
+                                <div class="slide-content">
+                                    <h3>Machu Picchu, Peru</h3>
+                                    <p>Discover the lost city of the Incas</p>
+                                </div>
+                            </div>
+                            <div class="carousel-slide">
+                                <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=450&fit=crop" alt="">
+                                <div class="slide-content">
+                                    <h3>Norwegian Fjords</h3>
+                                    <p>Majestic beauty carved by ancient glaciers</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="carousel-nav-button prev" onclick="moveSlide('inaccessible-carousel-1', -1)">
+                            <span>‹</span>
+                        </div>
+                        <div class="carousel-nav-button next" onclick="moveSlide('inaccessible-carousel-1', 1)">
+                            <span>›</span>
+                        </div>
+                    </div>
+
+                    <div class="carousel-indicators">
+                        <span class="carousel-indicator" onclick="goToSlide('inaccessible-carousel-1', 0)"></span>
+                        <span class="carousel-indicator" onclick="goToSlide('inaccessible-carousel-1', 1)"></span>
+                        <span class="carousel-indicator" onclick="goToSlide('inaccessible-carousel-1', 2)"></span>
+                        <span class="carousel-indicator" onclick="goToSlide('inaccessible-carousel-1', 3)"></span>
+                        <span class="carousel-indicator" onclick="goToSlide('inaccessible-carousel-1', 4)"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Issues Panel -->
+            <div class="issues-panel">
+                <h3>Accessibility Issues (8 detected by Paradise)</h3>
+                <ul class="issues-list">
+                    <li>
+                        <strong>Issue 1:</strong> Missing <code>role="region"</code> and <code>aria-roledescription="carousel"</code> on carousel container
+                    </li>
+                    <li>
+                        <strong>Issue 2:</strong> No <code>aria-label</code> on carousel region to identify it for screen readers
+                    </li>
+                    <li>
+                        <strong>Issue 3:</strong> Slides lack <code>role="group"</code> and <code>aria-roledescription="slide"</code>
+                    </li>
+                    <li>
+                        <strong>Issue 4:</strong> No <code>aria-label</code> on slides indicating position (e.g., "1 of 5")
+                    </li>
+                    <li>
+                        <strong>Issue 5:</strong> Navigation controls are <code>&lt;div&gt;</code> elements instead of <code>&lt;button&gt;</code> elements, not keyboard accessible
+                    </li>
+                    <li>
+                        <strong>Issue 6:</strong> Missing Pause/Play button for auto-rotation control
+                    </li>
+                    <li>
+                        <strong>Issue 7:</strong> Indicators use <code>&lt;span&gt;</code> instead of proper tab panel pattern with role="tab" and role="tablist"
+                    </li>
+                    <li>
+                        <strong>Issue 8:</strong> Images have empty <code>alt</code> attributes, missing descriptive text
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Comparison Table -->
+        <section class="section">
+            <h2>Feature Comparison</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Accessible Version</th>
+                        <th>Inaccessible Version</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Carousel region with role and label</td>
+                        <td class="check">✓ Yes</td>
+                        <td class="cross">✗ No</td>
+                    </tr>
+                    <tr>
+                        <td>Slides with proper ARIA attributes</td>
+                        <td class="check">✓ Yes</td>
+                        <td class="cross">✗ No</td>
+                    </tr>
+                    <tr>
+                        <td>Position information on slides</td>
+                        <td class="check">✓ Yes (aria-label)</td>
+                        <td class="cross">✗ No</td>
+                    </tr>
+                    <tr>
+                        <td>Keyboard accessible navigation buttons</td>
+                        <td class="check">✓ Yes (button elements)</td>
+                        <td class="cross">✗ No (div elements)</td>
+                    </tr>
+                    <tr>
+                        <td>Descriptive button labels</td>
+                        <td class="check">✓ Yes (aria-label)</td>
+                        <td class="cross">✗ No</td>
+                    </tr>
+                    <tr>
+                        <td>Pause/Play control</td>
+                        <td class="check">✓ Yes</td>
+                        <td class="cross">✗ No</td>
+                    </tr>
+                    <tr>
+                        <td>Tab panel pattern for indicators</td>
+                        <td class="check">✓ Yes (role="tablist")</td>
+                        <td class="cross">✗ No</td>
+                    </tr>
+                    <tr>
+                        <td>Arrow key navigation</td>
+                        <td class="check">✓ Yes</td>
+                        <td class="cross">✗ No</td>
+                    </tr>
+                    <tr>
+                        <td>Auto-rotation pause on hover/focus</td>
+                        <td class="check">✓ Yes</td>
+                        <td class="cross">✗ No</td>
+                    </tr>
+                    <tr>
+                        <td>Live region announcements</td>
+                        <td class="check">✓ Yes</td>
+                        <td class="cross">✗ No</td>
+                    </tr>
+                    <tr>
+                        <td>Descriptive image alt text</td>
+                        <td class="check">✓ Yes</td>
+                        <td class="cross">✗ No (empty)</td>
+                    </tr>
+                    <tr>
+                        <td>Focus indicators</td>
+                        <td class="check">✓ Yes</td>
+                        <td class="cross">✗ No</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Implementation Guide -->
+        <section class="section">
+            <h2>Implementation Guide</h2>
+
+            <h3>HTML Structure</h3>
+            <pre style="background: #f5f5f5; padding: 20px; border-radius: 4px; overflow-x: auto;"><code>&lt;div role="region" aria-roledescription="carousel" aria-label="Featured products"&gt;
+  &lt;div class="carousel-header"&gt;
+    &lt;h3&gt;Featured Products&lt;/h3&gt;
+    &lt;button class="play-pause" aria-label="Pause automatic slide rotation"&gt;
+      Pause
+    &lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;div class="carousel-viewport"&gt;
+    &lt;div class="carousel-slides"&gt;
+      &lt;div role="group" aria-roledescription="slide" aria-label="1 of 4"&gt;
+        &lt;!-- Slide content --&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;button class="prev" aria-label="View previous slide"&gt;‹&lt;/button&gt;
+    &lt;button class="next" aria-label="View next slide"&gt;›&lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;div role="tablist" aria-label="Slide navigation"&gt;
+    &lt;button role="tab" aria-label="Slide 1" aria-selected="true"&gt;&lt;/button&gt;
+    &lt;button role="tab" aria-label="Slide 2" aria-selected="false"&gt;&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div aria-live="polite" aria-atomic="true" class="sr-only"&gt;&lt;/div&gt;</code></pre>
+
+            <h3>Key Accessibility Features</h3>
+            <ul>
+                <li><strong>Semantic Roles:</strong> Use <code>role="region"</code> with <code>aria-roledescription="carousel"</code> to identify the carousel</li>
+                <li><strong>Slide Information:</strong> Each slide has <code>role="group"</code> with <code>aria-roledescription="slide"</code> and position information</li>
+                <li><strong>Control Labels:</strong> All interactive elements have descriptive <code>aria-label</code> attributes</li>
+                <li><strong>Auto-rotation Control:</strong> Provide Pause/Play button to stop automatic slide transitions</li>
+                <li><strong>Pause on Interaction:</strong> Stop auto-rotation when user hovers or focuses within carousel</li>
+                <li><strong>Tab Panel Pattern:</strong> Use <code>role="tablist"</code> and <code>role="tab"</code> for slide indicators</li>
+                <li><strong>Keyboard Navigation:</strong> Support arrow keys for navigating between indicators</li>
+                <li><strong>Live Announcements:</strong> Use <code>aria-live="polite"</code> region to announce slide changes</li>
+            </ul>
+
+            <h3>Testing Checklist</h3>
+            <ul>
+                <li>Screen reader announces carousel region and current slide</li>
+                <li>All controls are keyboard accessible with Tab key</li>
+                <li>Previous/Next buttons navigate slides correctly</li>
+                <li>Pause/Play button toggles auto-rotation</li>
+                <li>Auto-rotation pauses on hover and focus</li>
+                <li>Slide indicators work with Enter/Space and arrow keys</li>
+                <li>Focus indicators are clearly visible</li>
+                <li>Slide changes are announced to screen readers</li>
+            </ul>
+        </section>
+    </div>
+
+    <!-- Load JavaScript -->
+    <script src="../../js/accessible/carousel-complete.js"></script>
+    <script src="../../js/inaccessible/carousel-incomplete.js"></script>
+</body>
+</html>

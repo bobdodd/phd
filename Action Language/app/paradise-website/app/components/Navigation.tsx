@@ -10,6 +10,46 @@ interface DropdownProps {
 function Dropdown({ title, links }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setIsOpen(!isOpen);
+    } else if (e.key === 'Escape') {
+      setIsOpen(false);
+    } else if (e.key === 'ArrowDown' && isOpen) {
+      e.preventDefault();
+      // Focus first link in dropdown
+      const firstLink = e.currentTarget.parentElement?.querySelector('a');
+      if (firstLink) (firstLink as HTMLElement).focus();
+    }
+  };
+
+  const handleLinkKeyDown = (e: React.KeyboardEvent, index: number) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      setIsOpen(false);
+      // Return focus to button
+      const button = e.currentTarget.parentElement?.parentElement?.parentElement?.querySelector('button');
+      if (button) (button as HTMLElement).focus();
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      // Focus next link
+      const nextLink = (e.currentTarget as HTMLElement).parentElement?.nextElementSibling?.querySelector('a');
+      if (nextLink) (nextLink as HTMLElement).focus();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (index === 0) {
+        // Return to button
+        const button = e.currentTarget.parentElement?.parentElement?.parentElement?.querySelector('button');
+        if (button) (button as HTMLElement).focus();
+      } else {
+        // Focus previous link
+        const prevLink = (e.currentTarget as HTMLElement).parentElement?.previousElementSibling?.querySelector('a');
+        if (prevLink) (prevLink as HTMLElement).focus();
+      }
+    }
+  };
+
   return (
     <div
       className="relative"
@@ -17,9 +57,11 @@ function Dropdown({ title, links }: DropdownProps) {
       onMouseLeave={() => setIsOpen(false)}
     >
       <button
-        className="text-gray-700 hover:text-paradise-blue font-medium transition-colors flex items-center gap-1"
+        className="text-gray-700 hover:text-paradise-blue font-medium transition-colors flex items-center gap-1 py-2"
         aria-expanded={isOpen}
         aria-haspopup="true"
+        onClick={() => setIsOpen(!isOpen)}
+        onKeyDown={handleKeyDown}
       >
         {title}
         <svg
@@ -36,16 +78,19 @@ function Dropdown({ title, links }: DropdownProps) {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-          {links.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="block px-4 py-2 text-gray-700 hover:bg-paradise-blue/10 hover:text-paradise-blue transition-colors"
-            >
-              {link.label}
-            </a>
-          ))}
+        <div className="absolute top-full left-0 pt-2 w-48 z-50">
+          <div className="bg-white rounded-lg shadow-lg border border-gray-200 py-2">
+            {links.map((link, index) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="block px-4 py-2 text-gray-700 hover:bg-paradise-blue/10 hover:text-paradise-blue transition-colors focus:bg-paradise-blue/10 focus:text-paradise-blue focus:outline-none"
+                onKeyDown={(e) => handleLinkKeyDown(e, index)}
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
         </div>
       )}
     </div>
