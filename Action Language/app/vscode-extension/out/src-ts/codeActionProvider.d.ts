@@ -6,6 +6,7 @@
  */
 import * as vscode from 'vscode';
 import { Issue } from '../lib/analyzers/BaseAnalyzer';
+import { ParadiseHelpProvider } from './helpProvider';
 /**
  * Paradise Code Action Provider
  *
@@ -13,6 +14,8 @@ import { Issue } from '../lib/analyzers/BaseAnalyzer';
  */
 export declare class ParadiseCodeActionProvider implements vscode.CodeActionProvider {
     private issues;
+    private helpProvider;
+    constructor(helpProvider: ParadiseHelpProvider);
     /**
      * Register issues for a document.
      * Called by ForegroundAnalyzer after analysis.
@@ -34,6 +37,10 @@ export declare class ParadiseCodeActionProvider implements vscode.CodeActionProv
      * Check if a location overlaps with a range.
      */
     private locationOverlapsRange;
+    /**
+     * Create a "View Help" code action for an issue.
+     */
+    private createHelpAction;
     /**
      * Create a VS Code CodeAction from an issue fix.
      */

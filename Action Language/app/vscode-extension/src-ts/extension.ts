@@ -10,12 +10,14 @@ import * as vscode from 'vscode';
 import { ProjectModelManager } from './projectModelManager';
 import { ForegroundAnalyzer } from './foregroundAnalyzer';
 import { ParadiseCodeActionProvider } from './codeActionProvider';
+import { ParadiseHelpProvider } from './helpProvider';
 import { ExtensionConfig, AnalysisScope } from './types';
 
 let diagnosticCollection: vscode.DiagnosticCollection;
 let projectManager: ProjectModelManager;
 let foregroundAnalyzer: ForegroundAnalyzer;
 let codeActionProvider: ParadiseCodeActionProvider;
+let helpProvider: ParadiseHelpProvider;
 let statusBarItem: vscode.StatusBarItem;
 let outputChannel: vscode.OutputChannel;
 
@@ -70,8 +72,11 @@ export async function activate(context: vscode.ExtensionContext) {
     outputChannel.appendLine('No workspace folders found');
   }
 
+  // Create help provider
+  helpProvider = new ParadiseHelpProvider(context.extensionPath);
+
   // Create code action provider
-  codeActionProvider = new ParadiseCodeActionProvider();
+  codeActionProvider = new ParadiseCodeActionProvider(helpProvider);
 
   // Register code action provider for JavaScript/TypeScript files
   context.subscriptions.push(
@@ -209,6 +214,20 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('paradise.clearDiagnostics', () => {
       diagnosticCollection.clear();
       vscode.window.showInformationMessage('Paradise diagnostics cleared');
+    })
+  );
+
+  // Register "View Help" command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('paradise.viewHelp', async (issueType: string) => {
+      await helpProvider.showHelp(issueType);
+    })
+  );
+
+  // Register "View All Help" command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('paradise.viewAllHelp', async () => {
+      await helpProvider.showHelpIndex();
     })
   );
 

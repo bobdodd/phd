@@ -263,10 +263,7 @@ export class ForegroundAnalyzer {
     );
 
     diagnostic.source = 'Paradise';
-    diagnostic.code = {
-      value: issue.type,
-      target: vscode.Uri.parse(`https://github.com/bobdodd/paradise/blob/main/docs/issues/${issue.type}.md`)
-    };
+    diagnostic.code = issue.type;
 
     // Add related information for other locations
     if (isPrimary && issue.relatedLocations && issue.relatedLocations.length > 0) {

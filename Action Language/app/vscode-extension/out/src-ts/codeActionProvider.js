@@ -47,8 +47,9 @@ const vscode = __importStar(require("vscode"));
  * Converts Paradise issue fixes into VS Code Quick Fix actions.
  */
 class ParadiseCodeActionProvider {
-    constructor() {
+    constructor(helpProvider) {
         this.issues = new Map();
+        this.helpProvider = helpProvider;
     }
     /**
      * Register issues for a document.
@@ -76,6 +77,9 @@ class ParadiseCodeActionProvider {
         for (const issue of documentIssues) {
             // Check if issue location overlaps with range
             if (this.issueOverlapsRange(issue, range, document)) {
+                // Always add "View Help" action first
+                const helpAction = this.createHelpAction(issue);
+                actions.push(helpAction);
                 // Check if issue has a fix
                 if (issue.fix) {
                     const action = this.createCodeAction(issue, issue.fix, document);
@@ -118,6 +122,20 @@ class ParadiseCodeActionProvider {
         // Check if location line is within or adjacent to the range
         return (locationLine >= range.start.line - 1 &&
             locationLine <= range.end.line + 1);
+    }
+    /**
+     * Create a "View Help" code action for an issue.
+     */
+    createHelpAction(issue) {
+        const action = new vscode.CodeAction(`📖 View Help: ${issue.type}`, vscode.CodeActionKind.QuickFix);
+        // Create a command that will open the help
+        action.command = {
+            title: 'View Help',
+            command: 'paradise.viewHelp',
+            arguments: [issue.type]
+        };
+        action.isPreferred = false; // Help is secondary to actual fixes
+        return action;
     }
     /**
      * Create a VS Code CodeAction from an issue fix.

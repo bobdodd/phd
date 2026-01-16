@@ -7,6 +7,7 @@
 
 import * as vscode from 'vscode';
 import { Issue, IssueFix } from '../lib/analyzers/BaseAnalyzer';
+import { ParadiseHelpProvider } from './helpProvider';
 
 /**
  * Paradise Code Action Provider
@@ -15,6 +16,11 @@ import { Issue, IssueFix } from '../lib/analyzers/BaseAnalyzer';
  */
 export class ParadiseCodeActionProvider implements vscode.CodeActionProvider {
   private issues: Map<string, Issue[]> = new Map();
+  private helpProvider: ParadiseHelpProvider;
+
+  constructor(helpProvider: ParadiseHelpProvider) {
+    this.helpProvider = helpProvider;
+  }
 
   /**
    * Register issues for a document.
@@ -51,6 +57,10 @@ export class ParadiseCodeActionProvider implements vscode.CodeActionProvider {
     for (const issue of documentIssues) {
       // Check if issue location overlaps with range
       if (this.issueOverlapsRange(issue, range, document)) {
+        // Always add "View Help" action first
+        const helpAction = this.createHelpAction(issue);
+        actions.push(helpAction);
+
         // Check if issue has a fix
         if (issue.fix) {
           const action = this.createCodeAction(issue, issue.fix, document);
@@ -110,6 +120,27 @@ export class ParadiseCodeActionProvider implements vscode.CodeActionProvider {
       locationLine >= range.start.line - 1 &&
       locationLine <= range.end.line + 1
     );
+  }
+
+  /**
+   * Create a "View Help" code action for an issue.
+   */
+  private createHelpAction(issue: Issue): vscode.CodeAction {
+    const action = new vscode.CodeAction(
+      `📖 View Help: ${issue.type}`,
+      vscode.CodeActionKind.QuickFix
+    );
+
+    // Create a command that will open the help
+    action.command = {
+      title: 'View Help',
+      command: 'paradise.viewHelp',
+      arguments: [issue.type]
+    };
+
+    action.isPreferred = false; // Help is secondary to actual fixes
+
+    return action;
   }
 
   /**

@@ -46,10 +46,12 @@ const vscode = __importStar(require("vscode"));
 const projectModelManager_1 = require("./projectModelManager");
 const foregroundAnalyzer_1 = require("./foregroundAnalyzer");
 const codeActionProvider_1 = require("./codeActionProvider");
+const helpProvider_1 = require("./helpProvider");
 let diagnosticCollection;
 let projectManager;
 let foregroundAnalyzer;
 let codeActionProvider;
+let helpProvider;
 let statusBarItem;
 let outputChannel;
 /**
@@ -97,8 +99,10 @@ async function activate(context) {
     else {
         outputChannel.appendLine('No workspace folders found');
     }
+    // Create help provider
+    helpProvider = new helpProvider_1.ParadiseHelpProvider(context.extensionPath);
     // Create code action provider
-    codeActionProvider = new codeActionProvider_1.ParadiseCodeActionProvider();
+    codeActionProvider = new codeActionProvider_1.ParadiseCodeActionProvider(helpProvider);
     // Register code action provider for JavaScript/TypeScript files
     context.subscriptions.push(vscode.languages.registerCodeActionsProvider([
         { language: 'javascript', scheme: 'file' },
@@ -204,6 +208,14 @@ async function activate(context) {
     context.subscriptions.push(vscode.commands.registerCommand('paradise.clearDiagnostics', () => {
         diagnosticCollection.clear();
         vscode.window.showInformationMessage('Paradise diagnostics cleared');
+    }));
+    // Register "View Help" command
+    context.subscriptions.push(vscode.commands.registerCommand('paradise.viewHelp', async (issueType) => {
+        await helpProvider.showHelp(issueType);
+    }));
+    // Register "View All Help" command
+    context.subscriptions.push(vscode.commands.registerCommand('paradise.viewAllHelp', async () => {
+        await helpProvider.showHelpIndex();
     }));
     outputChannel.appendLine('Paradise Accessibility Analyzer activated successfully!');
     vscode.window.showInformationMessage('Paradise Accessibility Analyzer is now active');

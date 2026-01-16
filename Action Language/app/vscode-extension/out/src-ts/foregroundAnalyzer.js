@@ -225,10 +225,7 @@ class ForegroundAnalyzer {
         const message = `${baseMessage}\n\n${wcagInfo}\n\n${confidenceIndicator}`;
         const diagnostic = new vscode.Diagnostic(range, message, this.severityFromIssue(issue));
         diagnostic.source = 'Paradise';
-        diagnostic.code = {
-            value: issue.type,
-            target: vscode.Uri.parse(`https://github.com/bobdodd/paradise/blob/main/docs/issues/${issue.type}.md`)
-        };
+        diagnostic.code = issue.type;
         // Add related information for other locations
         if (isPrimary && issue.relatedLocations && issue.relatedLocations.length > 0) {
             diagnostic.relatedInformation = issue.relatedLocations
