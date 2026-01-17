@@ -41,6 +41,7 @@ export declare class MouseOnlyClickAnalyzer extends BaseAnalyzer {
      * Checks all interactive elements in the DOM to see if they have:
      * - A click handler
      * - But NO keyboard handler (keydown/keypress/keyup)
+     * - AND the element is not natively keyboard-accessible
      */
     private analyzeWithDocumentModel;
     /**
@@ -58,6 +59,13 @@ export declare class MouseOnlyClickAnalyzer extends BaseAnalyzer {
      * create a false positive. Use document-scope analysis to avoid this.
      */
     private analyzeFileScope;
+    /**
+     * Check if an element has native keyboard support.
+     *
+     * Native interactive elements (button, a, input, etc.) have built-in
+     * keyboard handling and don't need explicit keyboard event handlers.
+     */
+    private hasNativeKeyboardSupport;
     /**
      * Check if a selector has a keyboard handler in the given model.
      */

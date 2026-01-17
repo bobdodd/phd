@@ -57,6 +57,7 @@ class MouseOnlyClickAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
      * Checks all interactive elements in the DOM to see if they have:
      * - A click handler
      * - But NO keyboard handler (keydown/keypress/keyup)
+     * - AND the element is not natively keyboard-accessible
      */
     analyzeWithDocumentModel(context) {
         const issues = [];
@@ -66,6 +67,10 @@ class MouseOnlyClickAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
         // Get all interactive elements
         const interactiveElements = documentModel.getInteractiveElements();
         for (const elementContext of interactiveElements) {
+            // Skip elements that have native keyboard support
+            if (this.hasNativeKeyboardSupport(elementContext.element)) {
+                continue;
+            }
             // Check if element has click handler but no keyboard handler
             if (elementContext.hasClickHandler &&
                 !elementContext.hasKeyboardHandler) {
@@ -119,6 +124,44 @@ class MouseOnlyClickAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
             }
         }
         return issues;
+    }
+    /**
+     * Check if an element has native keyboard support.
+     *
+     * Native interactive elements (button, a, input, etc.) have built-in
+     * keyboard handling and don't need explicit keyboard event handlers.
+     */
+    hasNativeKeyboardSupport(element) {
+        const tagName = element.tagName.toLowerCase();
+        // List of elements with native keyboard support
+        const nativeInteractive = [
+            'button',
+            'a',
+            'input',
+            'select',
+            'textarea',
+            'summary', // <details>/<summary> pattern
+        ];
+        if (nativeInteractive.includes(tagName)) {
+            return true;
+        }
+        // Elements with certain ARIA roles have expected keyboard behavior
+        const role = element.attributes.role;
+        const rolesWithNativeKeyboard = [
+            'button',
+            'link',
+            'menuitem',
+            'menuitemcheckbox',
+            'menuitemradio',
+            'option',
+            'radio',
+            'switch',
+            'tab',
+        ];
+        if (role && rolesWithNativeKeyboard.includes(role)) {
+            return true;
+        }
+        return false;
     }
     /**
      * Check if a selector has a keyboard handler in the given model.
