@@ -142,6 +142,7 @@ export default function Navigation() {
                 { href: '/architecture', label: 'Architecture' },
                 { href: '/frameworks', label: 'Frameworks' },
                 { href: '/analyzers', label: 'Analyzers' },
+                { href: '/writing-analyzers', label: 'Writing Analyzers' },
                 { href: '/patterns', label: 'Widget Patterns' },
                 { href: '/api', label: 'API Reference' },
               ]}
@@ -161,6 +162,12 @@ export default function Navigation() {
               className="text-gray-700 hover:text-paradise-blue font-medium transition-colors"
             >
               Extension
+            </a>
+            <a
+              href="/analysis-modes"
+              className="text-gray-700 hover:text-paradise-blue font-medium transition-colors"
+            >
+              Analysis Modes
             </a>
             <a
               href="/faq"
@@ -305,6 +312,13 @@ export default function Navigation() {
                       Analyzers
                     </a>
                     <a
+                      href="/writing-analyzers"
+                      className="text-gray-600 hover:text-paradise-blue transition-colors py-1"
+                      onClick={() => setIsMobileOpen(false)}
+                    >
+                      Writing Analyzers
+                    </a>
+                    <a
                       href="/patterns"
                       className="text-gray-600 hover:text-paradise-blue transition-colors py-1"
                       onClick={() => setIsMobileOpen(false)}
@@ -338,6 +352,13 @@ export default function Navigation() {
                 onClick={() => setIsMobileOpen(false)}
               >
                 Extension
+              </a>
+              <a
+                href="/analysis-modes"
+                className="px-4 py-2 text-gray-700 hover:text-paradise-blue font-medium transition-colors"
+                onClick={() => setIsMobileOpen(false)}
+              >
+                Analysis Modes
               </a>
               <a
                 href="/faq"
