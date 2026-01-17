@@ -2,7 +2,13 @@ import { DOMModelImpl } from '../models/DOMModel';
 export declare class HTMLParser {
     private elementCounter;
     private sourceFile;
+    private sourceContent;
+    private lineStarts;
+    private tagLocationMap;
     parse(source: string, sourceFile: string): DOMModelImpl;
+    private buildLineStarts;
+    private buildTagLocationMap;
+    private offsetToLineColumn;
     private convertNode;
     private convertElement;
     private convertTextNode;

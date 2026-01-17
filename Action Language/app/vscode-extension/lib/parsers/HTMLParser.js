@@ -1,175 +1,190 @@
 "use strict";
-/**
- * HTML Parser for Traditional HTML Files
- *
- * This module parses traditional HTML files (not JSX) and converts them into
- * DOMModel structures for Paradise accessibility analysis.
- *
- * Unlike JSXDOMExtractor which handles React JSX, this parser handles:
- * - Standard HTML5 documents
- * - Legacy HTML documents
- * - HTML fragments
- * - Server-rendered HTML
- * - Static HTML pages
- */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HTMLParser = void 0;
 exports.parseHTML = parseHTML;
-var node_html_parser_1 = require("node-html-parser");
-var DOMModel_1 = require("../models/DOMModel");
-/**
- * HTML Parser
- *
- * Parses traditional HTML documents and converts them to DOMModel.
- */
-var HTMLParser = /** @class */ (function () {
-    function HTMLParser() {
+const node_html_parser_1 = require("node-html-parser");
+const DOMModel_1 = require("../models/DOMModel");
+class HTMLParser {
+    constructor() {
         this.elementCounter = 0;
         this.sourceFile = '';
+        this.sourceContent = '';
+        this.lineStarts = [];
+        this.tagLocationMap = new Map();
     }
-    /**
-     * Parse HTML source code and return a DOMModel.
-     *
-     * @param source - HTML source code
-     * @param sourceFile - Filename for error reporting
-     * @returns DOMModel representing the HTML structure
-     *
-     * @example
-     * ```typescript
-     * const parser = new HTMLParser();
-     * const domModel = parser.parse(`
-     *   <!DOCTYPE html>
-     *   <html>
-     *     <body>
-     *       <button id="submit">Click me</button>
-     *     </body>
-     *   </html>
-     * `, 'index.html');
-     * ```
-     */
-    HTMLParser.prototype.parse = function (source, sourceFile) {
+    parse(source, sourceFile) {
+        console.log(`[HTMLParser] parse() called for ${sourceFile.split('/').pop()}, source length: ${source.length}`);
         this.sourceFile = sourceFile;
+        this.sourceContent = source;
         this.elementCounter = 0;
-        // Parse HTML with node-html-parser
-        var root = (0, node_html_parser_1.parse)(source, {
+        this.buildLineStarts(source);
+        console.log(`[HTMLParser] Built ${this.lineStarts.length} line starts`);
+        this.buildTagLocationMap(source);
+        console.log(`[HTMLParser] Built tag location map with ${this.tagLocationMap.size} entries`);
+        const root = (0, node_html_parser_1.parse)(source, {
             comment: true,
             blockTextElements: {
                 script: true,
                 style: true,
             },
         });
-        // Convert to DOMElement tree
-        var domRoot = this.convertNode(root);
+        const domRoot = this.convertNode(root);
         return new DOMModel_1.DOMModelImpl(domRoot, sourceFile);
-    };
-    /**
-     * Convert a node-html-parser node to a DOMElement.
-     */
-    HTMLParser.prototype.convertNode = function (node, parent) {
-        // Handle element nodes
+    }
+    buildLineStarts(source) {
+        this.lineStarts = [0];
+        for (let i = 0; i < source.length; i++) {
+            if (source[i] === '\n') {
+                this.lineStarts.push(i + 1);
+            }
+        }
+    }
+    buildTagLocationMap(source) {
+        const tagRegex = /<(\w+)([^>]*)>/g;
+        let match;
+        while ((match = tagRegex.exec(source)) !== null) {
+            const tagName = match[1].toLowerCase();
+            const attributes = match[2];
+            const offset = match.index + 1;
+            const idMatch = attributes.match(/\bid\s*=\s*["']([^"']+)["']/);
+            const id = idMatch ? idMatch[1] : null;
+            const location = this.offsetToLineColumn(offset);
+            const key = id ? `${tagName}#${id}` : `${tagName}@${offset}`;
+            this.tagLocationMap.set(key, location);
+        }
+    }
+    offsetToLineColumn(offset) {
+        let left = 0;
+        let right = this.lineStarts.length - 1;
+        while (left < right) {
+            const mid = Math.floor((left + right + 1) / 2);
+            if (this.lineStarts[mid] <= offset) {
+                left = mid;
+            }
+            else {
+                right = mid - 1;
+            }
+        }
+        const line = left + 1;
+        const column = offset - this.lineStarts[left];
+        return { line, column };
+    }
+    convertNode(node, parent) {
         if (node.nodeType === node_html_parser_1.NodeType.ELEMENT_NODE) {
             return this.convertElement(node, parent);
         }
-        // Handle text nodes
         if (node.nodeType === node_html_parser_1.NodeType.TEXT_NODE) {
             return this.convertTextNode(node, parent);
         }
-        // Handle comment nodes
         if (node.nodeType === node_html_parser_1.NodeType.COMMENT_NODE) {
             return this.convertCommentNode(node, parent);
         }
-        // Fallback: create an unknown element
         return {
             id: this.generateId(),
             nodeType: 'element',
             tagName: 'unknown',
             attributes: {},
             children: [],
-            parent: parent,
+            parent,
             location: this.createLocation(0, 0),
             metadata: {
                 originalNodeType: node.nodeType,
             },
         };
-    };
-    /**
-     * Convert an element node to a DOMElement.
-     */
-    HTMLParser.prototype.convertElement = function (node, parent) {
-        var tagName = node.rawTagName || 'div';
-        var attributes = this.extractAttributes(node);
-        var element = {
+    }
+    convertElement(node, parent) {
+        const tagName = node.rawTagName || 'div';
+        const attributes = this.extractAttributes(node);
+        let location;
+        const nodeWithRange = node;
+        if (tagName === 'button') {
+            const descriptor = Object.getOwnPropertyDescriptor(nodeWithRange, 'range');
+            console.log(`[HTMLParser] Button element:`, {
+                hasRange: !!nodeWithRange.range,
+                range: nodeWithRange.range,
+                rangeDescriptor: descriptor,
+                lineStartsLength: this.lineStarts.length,
+                sourceContentLength: this.sourceContent.length
+            });
+        }
+        if (nodeWithRange.range && Array.isArray(nodeWithRange.range) && nodeWithRange.range.length >= 2 && nodeWithRange.range[0] >= 0) {
+            const startOffset = nodeWithRange.range[0];
+            const tagStartMatch = this.sourceContent.substring(startOffset, startOffset + 100).match(/<(\w+)/);
+            const tagNameStart = tagStartMatch ? startOffset + tagStartMatch.index + 1 : startOffset;
+            const tagLocation = this.offsetToLineColumn(tagNameStart);
+            location = this.createLocation(tagLocation.line, tagLocation.column, tagName.length);
+            if (tagName === 'button') {
+                console.log(`[HTMLParser] Button at offset ${startOffset}: line ${tagLocation.line}, column ${tagLocation.column}`);
+            }
+        }
+        else {
+            const id = attributes.id;
+            const key = id ? `${tagName}#${id}` : null;
+            const mapLocation = key ? this.tagLocationMap.get(key) : null;
+            if (mapLocation) {
+                location = this.createLocation(mapLocation.line, mapLocation.column, tagName.length);
+                console.log(`[HTMLParser] Using map location for ${tagName}${id ? '#' + id : ''}: line ${mapLocation.line}, column ${mapLocation.column}`);
+            }
+            else {
+                console.log(`[HTMLParser] No location found for ${tagName}${id ? '#' + id : ''}, using fallback (1, 0)`);
+                location = this.createLocation(1, 0);
+            }
+        }
+        const element = {
             id: this.generateId(),
             nodeType: 'element',
             tagName: tagName.toLowerCase(),
-            attributes: attributes,
+            attributes,
             children: [],
-            parent: parent,
-            location: this.createLocation(0, 0), // node-html-parser doesn't provide line numbers by default
+            parent,
+            location,
             metadata: {
-                rawHTML: node.toString().substring(0, 200), // First 200 chars for debugging
+                rawHTML: node.toString().substring(0, 200),
             },
         };
-        // Convert child nodes
-        var childNodes = node.childNodes || [];
-        for (var _i = 0, childNodes_1 = childNodes; _i < childNodes_1.length; _i++) {
-            var child = childNodes_1[_i];
-            var childElement = this.convertNode(child, element);
-            // Only add non-empty text nodes
+        const childNodes = node.childNodes || [];
+        for (const child of childNodes) {
+            const childElement = this.convertNode(child, element);
             if (childElement.nodeType !== 'text' || (childElement.textContent && childElement.textContent.trim())) {
                 element.children.push(childElement);
             }
         }
         return element;
-    };
-    /**
-     * Convert a text node to a DOMElement.
-     */
-    HTMLParser.prototype.convertTextNode = function (node, parent) {
-        var text = node.text || '';
+    }
+    convertTextNode(node, parent) {
+        const text = node.text || '';
         return {
             id: this.generateId(),
             nodeType: 'text',
             tagName: '#text',
             attributes: {},
             children: [],
-            parent: parent,
+            parent,
             textContent: text,
             location: this.createLocation(0, 0),
             metadata: {},
         };
-    };
-    /**
-     * Convert a comment node to a DOMElement.
-     */
-    HTMLParser.prototype.convertCommentNode = function (node, parent) {
+    }
+    convertCommentNode(node, parent) {
         return {
             id: this.generateId(),
             nodeType: 'comment',
             tagName: '#comment',
             attributes: {},
             children: [],
-            parent: parent,
+            parent,
             textContent: node.text || '',
             location: this.createLocation(0, 0),
             metadata: {},
         };
-    };
-    /**
-     * Extract attributes from an HTML element.
-     */
-    HTMLParser.prototype.extractAttributes = function (node) {
-        var attrs = {};
-        // node-html-parser provides attributes as an object
-        var rawAttrs = node.attributes || {};
-        for (var _i = 0, _a = Object.entries(rawAttrs); _i < _a.length; _i++) {
-            var _b = _a[_i], name_1 = _b[0], value = _b[1];
-            // Normalize attribute names to lowercase
-            var normalizedName = name_1.toLowerCase();
-            // Store the attribute value
-            attrs[normalizedName] = value || 'true'; // Boolean attributes
+    }
+    extractAttributes(node) {
+        const attrs = {};
+        const rawAttrs = node.attributes || {};
+        for (const [name, value] of Object.entries(rawAttrs)) {
+            const normalizedName = name.toLowerCase();
+            attrs[normalizedName] = value || 'true';
         }
-        // Also extract id and class if available
         if (node.id) {
             attrs['id'] = node.id;
         }
@@ -177,46 +192,22 @@ var HTMLParser = /** @class */ (function () {
             attrs['class'] = node.classList.toString();
         }
         return attrs;
-    };
-    /**
-     * Create a source location object.
-     */
-    HTMLParser.prototype.createLocation = function (line, column) {
+    }
+    createLocation(line, column, length) {
         return {
             file: this.sourceFile,
-            line: line,
-            column: column,
+            line,
+            column,
+            length,
         };
-    };
-    /**
-     * Generate a unique ID for an element.
-     */
-    HTMLParser.prototype.generateId = function () {
-        return "dom_".concat(++this.elementCounter);
-    };
-    return HTMLParser;
-}());
+    }
+    generateId() {
+        return `dom_${++this.elementCounter}`;
+    }
+}
 exports.HTMLParser = HTMLParser;
-/**
- * Parse HTML source and return a DOMModel.
- *
- * @param source - HTML source code
- * @param sourceFile - Filename for error reporting
- * @returns DOMModel representing the HTML structure
- *
- * @example
- * ```typescript
- * const domModel = parseHTML(`
- *   <div class="container">
- *     <button id="submit">Click me</button>
- *   </div>
- * `, 'page.html');
- *
- * const button = domModel.getElementById('submit');
- * ```
- */
 function parseHTML(source, sourceFile) {
-    var parser = new HTMLParser();
+    const parser = new HTMLParser();
     return parser.parse(source, sourceFile);
 }
 //# sourceMappingURL=HTMLParser.js.map

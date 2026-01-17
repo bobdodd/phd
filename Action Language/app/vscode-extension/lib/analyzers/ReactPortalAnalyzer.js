@@ -1,54 +1,9 @@
 "use strict";
-/**
- * React Portal Analyzer
- *
- * Detects use of React portals (ReactDOM.createPortal) and flags potential
- * accessibility issues that arise from rendering content outside the parent
- * component's DOM hierarchy.
- *
- * WCAG 2.1 Success Criteria:
- * - 2.1.1 Keyboard (Level A): Portals can break keyboard navigation order
- * - 2.4.3 Focus Order (Level A): Focus order may not match visual order
- * - 1.3.2 Meaningful Sequence (Level A): Reading order may be disrupted
- * - 4.1.2 Name, Role, Value (Level A): ARIA relationships may break across boundaries
- *
- * Why this matters:
- * - Portals render content in a different part of the DOM tree
- * - Keyboard tab order follows DOM order, not visual order
- * - ARIA relationships (aria-labelledby, aria-controls) don't cross portal boundaries well
- * - Focus management becomes complex (focus traps, returning focus)
- * - Screen readers may announce portals out of visual context
- */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReactPortalAnalyzer = void 0;
 exports.analyzeReactPortals = analyzeReactPortals;
 const ReactPatternDetector_1 = require("../parsers/ReactPatternDetector");
-/**
- * Analyzer for detecting portal accessibility issues in React components.
- */
 class ReactPortalAnalyzer {
-    /**
-     * Analyze React component for portal accessibility issues.
-     *
-     * @param source - React component source code
-     * @param sourceFile - Filename for error reporting
-     * @returns Array of detected issues
-     *
-     * @example
-     * ```typescript
-     * const analyzer = new ReactPortalAnalyzer();
-     * const issues = analyzer.analyze(`
-     *   function Modal() {
-     *     return ReactDOM.createPortal(
-     *       <div role="dialog">
-     *         <button>Close</button>
-     *       </div>,
-     *       document.getElementById('modal-root')
-     *     );
-     *   }
-     * `, 'Modal.tsx');
-     * ```
-     */
     analyze(source, sourceFile) {
         const issues = [];
         try {
@@ -78,24 +33,17 @@ class ReactPortalAnalyzer {
         }
         return issues;
     }
-    /**
-     * Build a detailed message for the portal issue.
-     */
     buildMessage(portal) {
         const containerInfo = portal.container
             ? ` into container "${portal.container}"`
             : ' into external container';
         let message = `Portal renders content${containerInfo}, which can cause accessibility issues:\n`;
-        // Add specific concerns
         message += '- Keyboard navigation order may not match visual layout\n';
         message += '- ARIA relationships may not work across portal boundary\n';
         message += '- Focus management requires manual implementation\n';
         message += '- Screen readers may announce content out of visual context';
         return message;
     }
-    /**
-     * Build a fix recommendation.
-     */
     buildFix(_portal) {
         return {
             description: 'Ensure portal content is accessible by implementing proper focus management, ARIA live regions for announcements, and testing with keyboard navigation and screen readers.',
@@ -158,21 +106,11 @@ const handleKeyDown = (e: KeyboardEvent) => {
 </div>`,
         };
     }
-    /**
-     * Check if a component uses portals (quick check without full analysis).
-     */
     hasPortal(source) {
         return source.includes('createPortal');
     }
 }
 exports.ReactPortalAnalyzer = ReactPortalAnalyzer;
-/**
- * Convenience function to analyze React component for portal issues.
- *
- * @param source - React component source code
- * @param sourceFile - Filename for error reporting
- * @returns Array of detected issues
- */
 function analyzeReactPortals(source, sourceFile) {
     const analyzer = new ReactPortalAnalyzer();
     return analyzer.analyze(source, sourceFile);

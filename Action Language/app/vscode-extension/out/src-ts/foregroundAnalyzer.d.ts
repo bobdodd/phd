@@ -12,7 +12,8 @@ export declare class ForegroundAnalyzer {
     private projectManager;
     private analyzers;
     private codeActionProvider;
-    constructor(diagnosticCollection: vscode.DiagnosticCollection, projectManager: ProjectModelManager, codeActionProvider: ParadiseCodeActionProvider);
+    private outputChannel;
+    constructor(diagnosticCollection: vscode.DiagnosticCollection, projectManager: ProjectModelManager, codeActionProvider: ParadiseCodeActionProvider, outputChannel: vscode.OutputChannel);
     /**
      * Analyze a document (must be fast: <100ms target)
      */

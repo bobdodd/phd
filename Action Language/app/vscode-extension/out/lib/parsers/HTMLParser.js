@@ -26,6 +26,9 @@ class HTMLParser {
     constructor() {
         this.elementCounter = 0;
         this.sourceFile = '';
+        this.sourceContent = '';
+        this.lineStarts = [];
+        this.tagLocationMap = new Map();
     }
     /**
      * Parse HTML source code and return a DOMModel.
@@ -49,7 +52,12 @@ class HTMLParser {
      */
     parse(source, sourceFile) {
         this.sourceFile = sourceFile;
+        this.sourceContent = source;
         this.elementCounter = 0;
+        // Build line start index for offset-to-line/column conversion
+        this.buildLineStarts(source);
+        // Build manual tag location map as fallback
+        this.buildTagLocationMap(source);
         // Parse HTML with node-html-parser
         const root = (0, node_html_parser_1.parse)(source, {
             comment: true,
@@ -61,6 +69,101 @@ class HTMLParser {
         // Convert to DOMElement tree
         const domRoot = this.convertNode(root);
         return new DOMModel_1.DOMModelImpl(domRoot, sourceFile);
+    }
+    /**
+     * Build an index of line start positions for fast offset-to-line/column conversion.
+     */
+    buildLineStarts(source) {
+        this.lineStarts = [0]; // Line 1 starts at offset 0
+        for (let i = 0; i < source.length; i++) {
+            if (source[i] === '\n') {
+                this.lineStarts.push(i + 1);
+            }
+        }
+    }
+    /**
+     * Build a map of tag locations by scanning source manually.
+     * This is a fallback for when node-html-parser doesn't provide accurate ranges.
+     */
+    buildTagLocationMap(source) {
+        this.tagLocationMap.clear();
+        const tagRegex = /<(\w+)([^>]*)>/g;
+        let match;
+        while ((match = tagRegex.exec(source)) !== null) {
+            const tagName = match[1].toLowerCase();
+            const attributes = match[2];
+            const offset = match.index + 1; // Position of tag name (after '<')
+            // Extract id if present
+            const idMatch = attributes.match(/\bid\s*=\s*["']([^"']+)["']/);
+            const id = idMatch ? idMatch[1] : null;
+            const location = this.offsetToLineColumn(offset);
+            // Create unique key: use id if available, otherwise use offset
+            const key = id ? `${tagName}#${id}` : `${tagName}@${offset}`;
+            this.tagLocationMap.set(key, location);
+        }
+    }
+    /**
+     * Convert character offset to line and column (both 1-indexed for line, 0-indexed for column).
+     */
+    offsetToLineColumn(offset) {
+        // Binary search to find the line
+        let left = 0;
+        let right = this.lineStarts.length - 1;
+        while (left < right) {
+            const mid = Math.floor((left + right + 1) / 2);
+            if (this.lineStarts[mid] <= offset) {
+                left = mid;
+            }
+            else {
+                right = mid - 1;
+            }
+        }
+        const line = left + 1; // Convert to 1-indexed
+        const column = offset - this.lineStarts[left]; // 0-indexed column
+        return { line, column };
+    }
+    /**
+     * Find element location by scanning source for matching tag.
+     * Used for elements without IDs where we can't use the simple id-based lookup.
+     */
+    findElementLocation(tagName, attributes, node) {
+        // Try to use node-html-parser's range if available
+        const nodeWithRange = node;
+        if (nodeWithRange.range && Array.isArray(nodeWithRange.range) &&
+            nodeWithRange.range.length >= 2 && nodeWithRange.range[0] > 0) {
+            // range[0] is the start offset in the source
+            const startOffset = nodeWithRange.range[0];
+            // The range points to the start of the element's content region
+            // We need to search backwards to find the actual < character
+            const searchStart = Math.max(0, startOffset - 200);
+            const searchRegion = this.sourceContent.substring(searchStart, startOffset + 50);
+            // Build a regex to find this specific tag
+            const classAttr = attributes.class;
+            let pattern;
+            if (classAttr) {
+                // Match tag with this class
+                pattern = new RegExp(`<${tagName}[^>]*class\\s*=\\s*["'][^"']*${classAttr.split(' ')[0]}[^"']*["'][^>]*>`, 'gi');
+            }
+            else {
+                // Match any instance of this tag
+                pattern = new RegExp(`<${tagName}(?:\\s|>)`, 'gi');
+            }
+            const match = pattern.exec(searchRegion);
+            if (match) {
+                const tagOffset = searchStart + match.index + 1; // +1 to skip '<'
+                return this.offsetToLineColumn(tagOffset);
+            }
+        }
+        // Try offset-based lookup from our map
+        // This works for elements we've seen during the initial scan
+        for (const [key, loc] of this.tagLocationMap.entries()) {
+            if (key.startsWith(`${tagName}@`)) {
+                // Found an offset-based entry for this tag type
+                // This is imprecise for multiple elements of same type, but better than nothing
+                return loc;
+            }
+        }
+        return null;
     }
     /**
      * Convert a node-html-parser node to a DOMElement.
@@ -98,6 +201,29 @@ class HTMLParser {
     convertElement(node, parent) {
         const tagName = node.rawTagName || 'div';
         const attributes = this.extractAttributes(node);
+        // Get source location - use manual tag location map as PRIMARY source
+        // node-html-parser's range property is unreliable
+        let location;
+        const tagNameLower = tagName.toLowerCase();
+        // PRIMARY: Use manual tag location map (most reliable)
+        const id = attributes.id;
+        const key = id ? `${tagNameLower}#${id}` : null;
+        const mapLocation = key ? this.tagLocationMap.get(key) : null;
+        if (mapLocation) {
+            location = this.createLocation(mapLocation.line, mapLocation.column, tagName.length);
+        }
+        else {
+            // FALLBACK: Try to find element by scanning for matching tag
+            // This handles elements without IDs
+            const foundLocation = this.findElementLocation(tagNameLower, attributes, node);
+            if (foundLocation) {
+                location = this.createLocation(foundLocation.line, foundLocation.column, tagName.length);
+            }
+            else {
+                // Last resort: use (1, 0) which will at least not be (0, 0)
+                location = this.createLocation(1, 0);
+            }
+        }
         const element = {
             id: this.generateId(),
             nodeType: 'element',
@@ -105,7 +231,7 @@ class HTMLParser {
             attributes,
             children: [],
             parent,
-            location: this.createLocation(0, 0), // node-html-parser doesn't provide line numbers by default
+            location,
             metadata: {
                 rawHTML: node.toString().substring(0, 200), // First 200 chars for debugging
             },
@@ -179,11 +305,12 @@ class HTMLParser {
     /**
      * Create a source location object.
      */
-    createLocation(line, column) {
+    createLocation(line, column, length) {
         return {
             file: this.sourceFile,
             line,
             column,
+            length,
         };
     }
     /**

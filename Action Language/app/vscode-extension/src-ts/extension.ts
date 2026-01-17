@@ -78,14 +78,16 @@ export async function activate(context: vscode.ExtensionContext) {
   // Create code action provider
   codeActionProvider = new ParadiseCodeActionProvider(helpProvider);
 
-  // Register code action provider for JavaScript/TypeScript files
+  // Register code action provider for all supported file types
   context.subscriptions.push(
     vscode.languages.registerCodeActionsProvider(
       [
         { language: 'javascript', scheme: 'file' },
         { language: 'typescript', scheme: 'file' },
         { language: 'javascriptreact', scheme: 'file' },
-        { language: 'typescriptreact', scheme: 'file' }
+        { language: 'typescriptreact', scheme: 'file' },
+        { language: 'html', scheme: 'file' },
+        { language: 'css', scheme: 'file' }
       ],
       codeActionProvider,
       {
@@ -95,7 +97,7 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   // Create foreground analyzer
-  foregroundAnalyzer = new ForegroundAnalyzer(diagnosticCollection, projectManager, codeActionProvider);
+  foregroundAnalyzer = new ForegroundAnalyzer(diagnosticCollection, projectManager, codeActionProvider, outputChannel);
 
   // Register callback for when project models are updated
   projectManager.onModelUpdated(async (uri) => {
@@ -118,10 +120,15 @@ export async function activate(context: vscode.ExtensionContext) {
   });
 
   // Analyze currently open documents immediately
+  outputChannel.appendLine(`[Extension] Analyzing ${vscode.workspace.textDocuments.length} open documents`);
   for (const document of vscode.workspace.textDocuments) {
+    outputChannel.appendLine(`[Extension] Checking document: ${document.fileName} (${document.languageId})`);
     if (isSupported(document)) {
+      outputChannel.appendLine(`[Extension] Analyzing: ${document.fileName}`);
       // This is fast (uses file-scope initially)
       await foregroundAnalyzer.analyzeDocument(document);
+    } else {
+      outputChannel.appendLine(`[Extension] Skipping (not supported): ${document.fileName}`);
     }
   }
 
@@ -161,11 +168,19 @@ export async function activate(context: vscode.ExtensionContext) {
   // Listen for document open
   context.subscriptions.push(
     vscode.workspace.onDidOpenTextDocument(async document => {
+      outputChannel.appendLine(`[Extension] onDidOpenTextDocument: ${document.fileName} (${document.languageId})`);
       const config = getConfig();
 
-      if (!config.enable) return;
-      if (!isSupported(document)) return;
+      if (!config.enable) {
+        outputChannel.appendLine('[Extension] Skipping: config.enable is false');
+        return;
+      }
+      if (!isSupported(document)) {
+        outputChannel.appendLine(`[Extension] Skipping: language ${document.languageId} not supported`);
+        return;
+      }
 
+      outputChannel.appendLine('[Extension] Calling foregroundAnalyzer.analyzeDocument');
       await foregroundAnalyzer.analyzeDocument(document);
     })
   );
@@ -264,9 +279,9 @@ function isSupported(document: vscode.TextDocument): boolean {
     'javascript',
     'typescript',
     'javascriptreact',
-    'typescriptreact'
-    // Note: HTML and CSS analysis is not yet implemented in foreground analyzer
-    // They are only analyzed as part of DocumentModel in background analysis
+    'typescriptreact',
+    'html',
+    'css'
   ];
 
   return supportedLanguages.includes(document.languageId);

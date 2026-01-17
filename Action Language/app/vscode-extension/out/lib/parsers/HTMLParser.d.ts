@@ -20,6 +20,9 @@ import { DOMModelImpl } from '../models/DOMModel';
 export declare class HTMLParser {
     private elementCounter;
     private sourceFile;
+    private sourceContent;
+    private lineStarts;
+    private tagLocationMap;
     /**
      * Parse HTML source code and return a DOMModel.
      *
@@ -41,6 +44,24 @@ export declare class HTMLParser {
      * ```
      */
     parse(source: string, sourceFile: string): DOMModelImpl;
+    /**
+     * Build an index of line start positions for fast offset-to-line/column conversion.
+     */
+    private buildLineStarts;
+    /**
+     * Build a map of tag locations by scanning source manually.
+     * This is a fallback for when node-html-parser doesn't provide accurate ranges.
+     */
+    private buildTagLocationMap;
+    /**
+     * Convert character offset to line and column (both 1-indexed for line, 0-indexed for column).
+     */
+    private offsetToLineColumn;
+    /**
+     * Find element location by scanning source for matching tag.
+     * Used for elements without IDs where we can't use the simple id-based lookup.
+     */
+    private findElementLocation;
     /**
      * Convert a node-html-parser node to a DOMElement.
      */

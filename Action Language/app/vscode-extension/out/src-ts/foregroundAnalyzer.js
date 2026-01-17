@@ -53,10 +53,11 @@ const KeyboardNavigationAnalyzer_1 = require("../lib/analyzers/KeyboardNavigatio
 const ARIASemanticAnalyzer_1 = require("../lib/analyzers/ARIASemanticAnalyzer");
 const WidgetPatternAnalyzer_1 = require("../lib/analyzers/WidgetPatternAnalyzer");
 class ForegroundAnalyzer {
-    constructor(diagnosticCollection, projectManager, codeActionProvider) {
+    constructor(diagnosticCollection, projectManager, codeActionProvider, outputChannel) {
         this.diagnosticCollection = diagnosticCollection;
         this.projectManager = projectManager;
         this.codeActionProvider = codeActionProvider;
+        this.outputChannel = outputChannel;
         // Initialize all analyzers (only those with TypeScript definitions)
         this.analyzers = [
             new MouseOnlyClickAnalyzer_1.MouseOnlyClickAnalyzer(),
@@ -75,6 +76,7 @@ class ForegroundAnalyzer {
      * Analyze a document (must be fast: <100ms target)
      */
     async analyzeDocument(document) {
+        this.outputChannel.appendLine(`[ForegroundAnalyzer] analyzeDocument called for: ${document.fileName} (language: ${document.languageId})`);
         const startTime = Date.now();
         try {
             // Step 1: Try to get project-wide model (may not be ready yet)
@@ -82,10 +84,10 @@ class ForegroundAnalyzer {
             // Debug logging
             const fileName = document.fileName.split('/').pop();
             if (projectModel) {
-                console.log(`[ForegroundAnalyzer] ✓ Using document-scope for ${fileName}`);
+                this.outputChannel.appendLine(`[ForegroundAnalyzer] ✓ Using document-scope for ${fileName}`);
             }
             else {
-                console.log(`[ForegroundAnalyzer] ⚠ Using file-scope for ${fileName} (no DocumentModel found)`);
+                this.outputChannel.appendLine(`[ForegroundAnalyzer] ⚠ Using file-scope for ${fileName} (no DocumentModel found)`);
             }
             // Step 2: Analyze with best available model
             const result = projectModel
@@ -93,14 +95,36 @@ class ForegroundAnalyzer {
                 : await this.analyzeFileScope(document);
             // Step 3: Publish diagnostics immediately
             const diagnostics = this.convertToDiagnostics(result.issues, document);
+            this.outputChannel.appendLine(`[ForegroundAnalyzer] Created ${diagnostics.length} diagnostics from ${result.issues.length} issues for ${fileName}`);
+            // Debug: Log first issue and diagnostic details for HTML files
+            if (result.issues.length > 0 && document.languageId === 'html') {
+                const firstIssue = result.issues[0];
+                this.outputChannel.appendLine(`[ForegroundAnalyzer] DEBUG: First issue - line: ${firstIssue.location.line}, column: ${firstIssue.location.column}, length: ${firstIssue.location.length}, file: ${firstIssue.location.file}`);
+                if (diagnostics.length > 0) {
+                    const firstDiag = diagnostics[0];
+                    this.outputChannel.appendLine(`[ForegroundAnalyzer] DEBUG: First diagnostic - range: ${firstDiag.range.start.line}:${firstDiag.range.start.character}-${firstDiag.range.end.line}:${firstDiag.range.end.character}, severity: ${firstDiag.severity}, message: ${firstDiag.message.substring(0, 80)}`);
+                }
+                // Debug: Log ALL issues for this HTML file
+                this.outputChannel.appendLine(`[ForegroundAnalyzer] DEBUG: All ${result.issues.length} issues:`);
+                result.issues.forEach((issue, index) => {
+                    this.outputChannel.appendLine(`  [${index}] line:${issue.location.line} col:${issue.location.column} - ${issue.message.substring(0, 60)}`);
+                });
+            }
+            // Debug: Log issue locations
+            if (result.issues.length > 0 && document.languageId === 'html') {
+                this.outputChannel.appendLine(`[ForegroundAnalyzer] First issue location: line ${result.issues[0].location.line}, column ${result.issues[0].location.column}`);
+                if (diagnostics.length > 0) {
+                    this.outputChannel.appendLine(`[ForegroundAnalyzer] First diagnostic: line ${diagnostics[0].range.start.line + 1}, column ${diagnostics[0].range.start.character}`);
+                }
+            }
             this.diagnosticCollection.set(document.uri, diagnostics);
             // Step 4: Register issues for code actions
             this.codeActionProvider.registerIssues(document, result.issues);
             const duration = Date.now() - startTime;
-            console.log(`[ForegroundAnalyzer] Analyzed ${document.fileName} in ${duration}ms (${result.analysisScope} scope, ${result.issues.length} issues)`);
+            this.outputChannel.appendLine(`[ForegroundAnalyzer] Analyzed ${document.fileName} in ${duration}ms (${result.analysisScope} scope, ${result.issues.length} issues)`);
             // Warn if analysis took too long
             if (duration > 100) {
-                console.warn(`[ForegroundAnalyzer] Analysis took ${duration}ms, exceeding 100ms target`);
+                this.outputChannel.appendLine(`[ForegroundAnalyzer] ⚠ Analysis took ${duration}ms, exceeding 100ms target`);
             }
         }
         catch (error) {
@@ -116,6 +140,24 @@ class ForegroundAnalyzer {
      */
     async analyzeWithProjectModel(document, projectModel) {
         const startTime = Date.now();
+        // Debug: Inspect button elements in the DOM and manually verify locations
+        if (document.languageId === 'html' && document.fileName.includes('accordion')) {
+            const buttons = projectModel.querySelectorAll('button');
+            this.outputChannel.appendLine(`[ForegroundAnalyzer] Found ${buttons.length} button elements in DOM:`);
+            buttons.slice(0, 3).forEach((btn, i) => {
+                this.outputChannel.appendLine(`  Button ${i}: id="${btn.attributes.id || 'none'}" location=(${btn.location.line},${btn.location.column}) length=${btn.location.length} file=${btn.location.file}`);
+            });
+            // Manual verification: Find where the first button actually is in the source
+            const source = document.getText();
+            const firstButtonMatch = source.match(/<button[^>]*id="good-header-1"/);
+            if (firstButtonMatch) {
+                const offset = firstButtonMatch.index;
+                const linesBeforeButton = source.substring(0, offset).split('\n').length;
+                const lastNewlinePos = source.lastIndexOf('\n', offset);
+                const column = offset - lastNewlinePos - 1;
+                this.outputChannel.appendLine(`[ForegroundAnalyzer] Manual search: good-header-1 button found at offset ${offset}, line ${linesBeforeButton}, column ${column}`);
+            }
+        }
         // Run all analyzers with project-wide context
         const allIssues = [];
         for (const analyzer of this.analyzers) {
@@ -144,7 +186,17 @@ class ForegroundAnalyzer {
      */
     async analyzeFileScope(document) {
         const startTime = Date.now();
-        // Parse just this file to ActionLanguage
+        // HTML and CSS files require DocumentModel for analysis
+        // Without it, we can't analyze them meaningfully, so return empty results
+        if (document.languageId === 'html' || document.languageId === 'css') {
+            this.outputChannel.appendLine(`[ForegroundAnalyzer] Skipping file-scope analysis for ${document.languageId} file (requires DocumentModel)`);
+            return {
+                issues: [],
+                analysisScope: 'file',
+                duration: Date.now() - startTime
+            };
+        }
+        // Parse JavaScript file to ActionLanguage
         const content = document.getText();
         const parser = new JavaScriptParser_1.JavaScriptParser();
         const model = parser.parse(content, document.uri.fsPath);
@@ -223,7 +275,13 @@ class ForegroundAnalyzer {
      * Create a VS Code diagnostic from an issue
      */
     createDiagnostic(issue, location, isPrimary, document) {
-        const range = new vscode.Range(location.line - 1, location.column, location.line - 1, location.column + (location.length || 0));
+        // Validate and clamp line/column to document bounds
+        const maxLine = document.lineCount - 1;
+        const line = Math.min(Math.max(0, location.line - 1), maxLine);
+        const maxColumn = document.lineAt(line).text.length;
+        const startColumn = Math.min(Math.max(0, location.column), maxColumn);
+        const endColumn = Math.min(startColumn + (location.length || 0), maxColumn);
+        const range = new vscode.Range(line, startColumn, line, endColumn);
         // Build comprehensive message
         const baseMessage = isPrimary
             ? issue.message
