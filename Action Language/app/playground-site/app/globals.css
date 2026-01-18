@@ -1,0 +1,46 @@
+@import "tailwindcss";
+@import "highlight.js/styles/github-dark.css";
+
+:root {
+  /* WCAG AA compliant colors - minimum 4.5:1 contrast ratio on white */
+  --paradise-blue: #1e40af; /* blue-800 - 8.59:1 contrast */
+  --paradise-blue-hover: #1e3a8a; /* blue-900 - 10.29:1 contrast */
+  --paradise-green: #15803d; /* green-700 - 4.68:1 contrast */
+  --paradise-orange: #c2410c; /* orange-700 - 5.69:1 contrast */
+  --paradise-purple: #7e22ce; /* purple-700 - 7.31:1 contrast */
+  --background: #ffffff;
+  --foreground: #171717;
+
+  /* Additional accessible colors */
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-900: #111827;
+}
+
+@theme inline {
+  --color-paradise-blue: var(--paradise-blue);
+  --color-paradise-green: var(--paradise-green);
+  --color-paradise-orange: var(--paradise-orange);
+  --color-paradise-purple: var(--paradise-purple);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: 'Monaco', 'Courier New', monospace;
+}
