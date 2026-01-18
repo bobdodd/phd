@@ -8,6 +8,8 @@ import * as t from '@babel/types';
 import { SvelteActionLanguageExtractor } from '../../../../src/parsers/SvelteActionLanguageExtractor';
 import { VueActionLanguageExtractor } from '../../../../src/parsers/VueActionLanguageExtractor';
 import { AngularActionLanguageExtractor } from '../../../../src/parsers/AngularActionLanguageExtractor';
+import { MouseOnlyClickAnalyzer } from '../../../../src/analyzers/MouseOnlyClickAnalyzer';
+import { ActionLanguageModelImpl } from '../../../../src/models/ActionLanguageModel';
 
 // Dynamically import Monaco to avoid SSR issues
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
@@ -2155,6 +2157,30 @@ export default function Playground() {
   const detectIssues = (nodes: any[], currentFiles: ExampleFiles) => {
     const detected: any[] = [];
 
+    // Use real MouseOnlyClickAnalyzer
+    const analyzer = new MouseOnlyClickAnalyzer();
+    const actionLanguageModel = new ActionLanguageModelImpl(nodes, 'playground.js');
+
+    try {
+      const analyzerIssues = analyzer.analyze({
+        actionLanguageModel,
+        scope: 'file'
+      });
+
+      // Convert real issues to playground format
+      for (const issue of analyzerIssues) {
+        detected.push({
+          type: issue.type,
+          severity: issue.severity,
+          wcag: issue.wcagCriteria || [],
+          message: issue.message,
+          location: issue.locations?.[0]?.file || 'JavaScript'
+        });
+      }
+    } catch (error) {
+      console.error('Analyzer error:', error);
+    }
+
     // Extract element IDs from HTML
     const htmlElementIds = new Set<string>();
     const allHtml = currentFiles.html.map(f => f.content).join('\n');
@@ -2261,54 +2287,6 @@ export default function Playground() {
       }
     }
 
-    // Mouse-only click detection (works with or without HTML)
-    // This uses proper selector matching to handle cross-file analysis
-    // Native interactive elements (<button>, <a>, etc.) don't need explicit keyboard handlers
-    const clickHandlers = nodes.filter(n => n.actionType === 'eventHandler' && n.event === 'click');
-
-    // Extract element tags from HTML for tag-aware detection
-    const elementTags = new Map<string, string>();
-    if (allHtml) {
-      // Match elements with id attributes and capture their tag names
-      const tagMatches = allHtml.matchAll(/<(\w+)[^>]*id=["']([^"']+)["']/g);
-      for (const match of tagMatches) {
-        const tagName = match[1].toLowerCase();
-        const id = match[2];
-        elementTags.set(`#${id}`, tagName);
-      }
-    }
-
-    // Elements that are natively keyboard accessible
-    const nativelyInteractive = new Set(['button', 'a', 'input', 'select', 'textarea', 'summary']);
-
-    for (const click of clickHandlers) {
-      // Match handlers by selector (e.g., #submitButton)
-      // This correctly handles getElementById calls across multiple files
-      const keyboardHandlers = nodes.filter(n =>
-        n.actionType === 'eventHandler' &&
-        n.element.selector === click.element.selector &&
-        (n.event === 'keydown' || n.event === 'keypress' || n.event === 'keyup')
-      );
-
-      const hasKeyboard = keyboardHandlers.length > 0;
-
-      // Check if this is a natively interactive element
-      const elementTag = elementTags.get(click.element.selector);
-      const isNativelyInteractive = elementTag && nativelyInteractive.has(elementTag);
-
-      // Only flag non-interactive elements that lack keyboard handlers
-      if (!hasKeyboard && !isNativelyInteractive) {
-        detected.push({
-          type: 'mouse-only-click',
-          severity: 'warning',
-          wcag: ['2.1.1'],
-          message: elementTag
-            ? `Click handler on <${elementTag}> element '${click.element.selector}' without keyboard equivalent. Use <button> or add keyboard handler + role="button" + tabindex="0"`
-            : `Click handler on '${click.element.selector}' without keyboard equivalent`,
-          location: 'JavaScript'
-        });
-      }
-    }
 
     // Positive tabIndex detection (JS-only)
     const tabIndexChanges = nodes.filter(n => n.actionType === 'tabIndexChange');

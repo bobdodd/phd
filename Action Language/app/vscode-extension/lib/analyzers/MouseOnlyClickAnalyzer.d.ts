@@ -5,6 +5,8 @@ export declare class MouseOnlyClickAnalyzer extends BaseAnalyzer {
     analyze(context: AnalyzerContext): Issue[];
     private analyzeWithDocumentModel;
     private analyzeFileScope;
+    private hasInferredNativeKeyboardSupport;
+    private hasNativeKeyboardSupport;
     private hasKeyboardHandlerForSelector;
     private createMessage;
     private generateFix;

@@ -50,6 +50,9 @@ class MouseOnlyClickAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
         const clickHandlers = model.findEventHandlers('click');
         for (const clickHandler of clickHandlers) {
             const selector = clickHandler.element.selector;
+            if (this.hasInferredNativeKeyboardSupport(selector)) {
+                continue;
+            }
             const hasKeyboardHandler = this.hasKeyboardHandlerForSelector(model, selector);
             if (!hasKeyboardHandler) {
                 const message = `Element with selector "${selector}" has click handler but no keyboard handler (file-scope analysis - may be false positive if handler is in another file)`;
@@ -59,6 +62,39 @@ class MouseOnlyClickAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
             }
         }
         return issues;
+    }
+    hasInferredNativeKeyboardSupport(selector) {
+        const selectorLower = selector.toLowerCase();
+        const nativeInteractive = [
+            'button',
+            'a',
+            'input',
+            'select',
+            'textarea',
+            'summary',
+        ];
+        for (const tag of nativeInteractive) {
+            if (selectorLower === tag || selectorLower.startsWith(`${tag}[`)) {
+                return true;
+            }
+        }
+        const rolesWithNativeKeyboard = [
+            'button',
+            'link',
+            'menuitem',
+            'menuitemcheckbox',
+            'menuitemradio',
+            'option',
+            'radio',
+            'switch',
+            'tab',
+        ];
+        for (const role of rolesWithNativeKeyboard) {
+            if (selectorLower.includes(`[role="${role}"]`) || selectorLower.includes(`[role='${role}']`)) {
+                return true;
+            }
+        }
+        return false;
     }
     hasNativeKeyboardSupport(element) {
         const tagName = element.tagName.toLowerCase();

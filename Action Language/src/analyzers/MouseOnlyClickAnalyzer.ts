@@ -145,6 +145,12 @@ export class MouseOnlyClickAnalyzer extends BaseAnalyzer {
     for (const clickHandler of clickHandlers) {
       const selector = clickHandler.element.selector;
 
+      // Skip if we can infer native keyboard support from the selector
+      // This helps reduce false positives for buttons, links, etc.
+      if (this.hasInferredNativeKeyboardSupport(selector)) {
+        continue;
+      }
+
       // Check if same element has keyboard handler in this file
       const hasKeyboardHandler = this.hasKeyboardHandlerForSelector(
         model,
@@ -171,6 +177,54 @@ export class MouseOnlyClickAnalyzer extends BaseAnalyzer {
     }
 
     return issues;
+  }
+
+  /**
+   * Infer native keyboard support from selector (file-scope heuristic).
+   *
+   * Since file-scope analysis doesn't have full DOM context, we use the selector
+   * to make educated guesses about whether the element has native keyboard support.
+   */
+  private hasInferredNativeKeyboardSupport(selector: string): boolean {
+    const selectorLower = selector.toLowerCase();
+
+    // Check if selector indicates a native interactive element
+    const nativeInteractive = [
+      'button',
+      'a',
+      'input',
+      'select',
+      'textarea',
+      'summary',
+    ];
+
+    // Check for tag name in selector
+    for (const tag of nativeInteractive) {
+      if (selectorLower === tag || selectorLower.startsWith(`${tag}[`)) {
+        return true;
+      }
+    }
+
+    // Check for role attribute in selector
+    const rolesWithNativeKeyboard = [
+      'button',
+      'link',
+      'menuitem',
+      'menuitemcheckbox',
+      'menuitemradio',
+      'option',
+      'radio',
+      'switch',
+      'tab',
+    ];
+
+    for (const role of rolesWithNativeKeyboard) {
+      if (selectorLower.includes(`[role="${role}"]`) || selectorLower.includes(`[role='${role}']`)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /**
