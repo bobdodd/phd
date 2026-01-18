@@ -13,9 +13,15 @@ import { AngularReactivityAnalyzer } from '../../../../src/analyzers/AngularReac
 import { VueReactivityAnalyzer } from '../../../../src/analyzers/VueReactivityAnalyzer';
 import { SvelteReactivityAnalyzer } from '../../../../src/analyzers/SvelteReactivityAnalyzer';
 import { ReactHooksA11yAnalyzer } from '../../../../src/analyzers/ReactHooksA11yAnalyzer';
+import { ReactPortalAnalyzer } from '../../../../src/analyzers/ReactPortalAnalyzer';
+import { ReactStopPropagationAnalyzer } from '../../../../src/analyzers/ReactStopPropagationAnalyzer';
 import { FocusManagementAnalyzer } from '../../../../src/analyzers/FocusManagementAnalyzer';
+import { FocusOrderConflictAnalyzer } from '../../../../src/analyzers/FocusOrderConflictAnalyzer';
 import { KeyboardNavigationAnalyzer } from '../../../../src/analyzers/KeyboardNavigationAnalyzer';
 import { ARIASemanticAnalyzer } from '../../../../src/analyzers/ARIASemanticAnalyzer';
+import { MissingAriaConnectionAnalyzer } from '../../../../src/analyzers/MissingAriaConnectionAnalyzer';
+import { OrphanedEventHandlerAnalyzer } from '../../../../src/analyzers/OrphanedEventHandlerAnalyzer';
+import { VisibilityFocusConflictAnalyzer } from '../../../../src/analyzers/VisibilityFocusConflictAnalyzer';
 import { WidgetPatternAnalyzer } from '../../../../src/analyzers/WidgetPatternAnalyzer';
 import { ActionLanguageModelImpl } from '../../../../src/models/ActionLanguageModel';
 
@@ -2172,10 +2178,16 @@ export default function Playground() {
     const analyzers = [
       new MouseOnlyClickAnalyzer(),
       new FocusManagementAnalyzer(),
+      new FocusOrderConflictAnalyzer(),
       new KeyboardNavigationAnalyzer(),
       new ARIASemanticAnalyzer(),
+      new MissingAriaConnectionAnalyzer(),
+      new OrphanedEventHandlerAnalyzer(),
+      new VisibilityFocusConflictAnalyzer(),
       new WidgetPatternAnalyzer(),
       new ReactHooksA11yAnalyzer(),
+      new ReactPortalAnalyzer(),
+      new ReactStopPropagationAnalyzer(),
     ];
 
     // Run all ActionLanguage-based analyzers
