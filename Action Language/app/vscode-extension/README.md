@@ -11,9 +11,12 @@ Paradise eliminates false positives by analyzing HTML, JavaScript, and CSS toget
 - **Zero False Positives**: Cross-file analysis eliminates 88% of false positives from traditional tools
 - **Dual-Mode Analysis**: Instant feedback (<100ms) with progressive enhancement as project analysis completes
 - **Multi-File Understanding**: Analyzes HTML + JavaScript + CSS together to understand complete UI patterns
-- **17 Production Analyzers**: Comprehensive detection across keyboard, ARIA, focus, and widget patterns
-- **React Support**: Native JSX/TSX analysis with React Hooks accessibility validation
-- **Svelte Support**: Native .svelte component analysis with reactivity pattern validation
+- **13 Production Analyzers**: Comprehensive detection across keyboard, ARIA, focus, and widget patterns
+- **Framework Support**: Native analysis for React, Vue, Svelte, and Angular
+  - **React**: JSX/TSX with Hooks validation
+  - **Vue**: Single File Components with Composition & Options API
+  - **Svelte**: Components with reactive patterns
+  - **Angular**: Components and templates with directive analysis
 - **Project-Wide Awareness**: Detects handlers split across files, orphaned event handlers, incomplete ARIA relationships
 - **WCAG 2.1 Mapped**: All issues linked to relevant WCAG success criteria with direct documentation links
 - **Confidence Scoring**: Transparent about analysis completeness (HIGH/MEDIUM/LOW confidence)
@@ -89,6 +92,50 @@ Paradise includes native Svelte component analysis:
 - class:hidden without aria-hidden/aria-expanded → **Warning** (WCAG 4.1.2)
 - Reactive focus management without cleanup → **Warning** (WCAG 2.4.3)
 - Store managing a11y state without aria-live → **Warning** (WCAG 4.1.3)
+
+### Vue Support
+
+Paradise includes native Vue Single File Component analysis:
+
+- **Vue Parsing**: Natively understands Vue components and template syntax
+- **Reactive Patterns**: Detects accessibility issues in Vue-specific patterns
+- **Directive Validation**: Comprehensive analysis of Vue directives:
+  - **v-model**: Validates two-way binding with proper ARIA labeling
+  - **v-on/@**: Checks event handlers for keyboard alternatives (@click requires @keydown)
+  - **v-if/v-show**: Detects visibility changes without ARIA communication
+  - **Lifecycle hooks**: Validates focus management with cleanup (beforeUnmount)
+  - **Reactive refs**: Checks for proper ARIA updates with ref changes
+
+**Supported File Types**: `.vue`
+
+**Key Detections**:
+
+- v-model without accessible labels → **Error** (WCAG 4.1.2)
+- @click without keyboard handler on non-interactive elements → **Error** (WCAG 2.1.1)
+- v-if visibility changes without aria-hidden → **Warning** (WCAG 4.1.2)
+- Focus management without cleanup in beforeUnmount → **Warning** (WCAG 2.4.3)
+
+### Angular Support
+
+Paradise includes native Angular component and template analysis:
+
+- **Angular Parsing**: Natively understands Angular components and template syntax
+- **Reactive Patterns**: Detects accessibility issues in Angular-specific patterns
+- **Directive Validation**: Comprehensive analysis of Angular directives:
+  - **[(ngModel)]**: Validates two-way binding with proper ARIA labeling
+  - **(event)**: Checks event handlers for keyboard alternatives ((click) requires (keydown))
+  - **\*ngIf/\*ngFor**: Detects dynamic content without ARIA management
+  - **Lifecycle hooks**: Validates focus management with cleanup (ngOnDestroy)
+  - **@ViewChild/@ContentChild**: Checks for proper focus trap implementations
+
+**Supported File Types**: `.component.ts`, `.component.html`
+
+**Key Detections**:
+
+- [(ngModel)] without accessible labels → **Error** (WCAG 4.1.2)
+- (click) without keyboard handler on non-interactive elements → **Error** (WCAG 2.1.1)
+- \*ngIf visibility changes without aria-hidden → **Warning** (WCAG 4.1.2)
+- Focus management without cleanup in ngOnDestroy → **Warning** (WCAG 2.4.3)
 
 ## Installation
 
@@ -331,13 +378,13 @@ vscode-extension/
 
 - **VS Code**: 1.74.0 or later
 - **Node.js**: 14.x or later
-- **Project types**: HTML, JavaScript, TypeScript, React (JSX/TSX), CSS
+- **Project types**: HTML, JavaScript, TypeScript, React (JSX/TSX), Vue (.vue), Svelte (.svelte), Angular (.component.ts/.html), CSS
 
 ## Known Limitations
 
-- **Framework support**: Currently React/JSX only (Vue, Angular, Svelte planned)
 - **Visual analysis**: No color contrast or focus indicator detection (requires rendering)
 - **Test execution**: Extension tests hang (infrastructure exists, execution deferred)
+- **Build output**: Does not yet analyze compiled/bundled code (source analysis only)
 
 ## Roadmap
 
@@ -347,25 +394,25 @@ vscode-extension/
 - 13 production analyzers
 - VS Code extension with dual-mode analysis
 - Project-wide background analysis
+- Framework support: React, Vue, Svelte, Angular
 
-### Phase 2 (Planned)
+### Phase 2 (In Progress)
 
-- Vue.js Single File Component support
-- Angular component and template support
-- Svelte component support
-- Build output analysis (fallback)
+- Build output analysis (fallback for compiled code)
+- Additional ARIA widget patterns
+- Performance profiling and optimization
 
 ### Phase 3 (Planned)
 
-- Additional analyzers (23+) for comprehensive WCAG coverage
 - iOS SwiftUI support
 - Android Jetpack Compose support
+- Additional frameworks (Solid.js, Qwik, etc.)
 
 ### Phase 4 (Planned)
 
 - VS Code Marketplace publication
 - npm package release
-- Performance profiling and optimization
+- CI/CD integration tooling
 
 ## Contributing
 
