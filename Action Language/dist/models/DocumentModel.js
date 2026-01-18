@@ -266,14 +266,20 @@ exports.DocumentModel = DocumentModel;
 class DocumentModelBuilder {
     build(sources, scope) {
         const { extractJSXDOM } = require('../parsers/JSXDOMExtractor');
+        const { extractSvelteDOM } = require('../parsers/SvelteDOMExtractor');
         const { parseHTML } = require('../parsers/HTMLParser');
         const { JavaScriptParser } = require('../parsers/JavaScriptParser');
+        const { SvelteActionLanguageExtractor } = require('../parsers/SvelteActionLanguageExtractor');
         const { CSSParser } = require('../parsers/CSSParser');
         let domModel;
         if (sources.html && sources.sourceFiles.html) {
             const sourceFile = sources.sourceFiles.html;
             const isJSX = sourceFile.endsWith('.jsx') || sourceFile.endsWith('.tsx');
-            if (isJSX) {
+            const isSvelte = sourceFile.endsWith('.svelte');
+            if (isSvelte) {
+                domModel = extractSvelteDOM(sources.html, sourceFile);
+            }
+            else if (isJSX) {
                 domModel = extractJSXDOM(sources.html, sourceFile);
             }
             else {
@@ -281,12 +287,26 @@ class DocumentModelBuilder {
             }
         }
         const jsParser = new JavaScriptParser();
-        const jsModels = sources.javascript.map((js, i) => jsParser.parse(js, sources.sourceFiles.javascript[i]));
+        const jsModels = sources.javascript.map((js, i) => {
+            const sourceFile = sources.sourceFiles.javascript[i];
+            if (sourceFile.endsWith('.svelte')) {
+                const svelteParser = new SvelteActionLanguageExtractor();
+                return svelteParser.parse(js, sourceFile);
+            }
+            return jsParser.parse(js, sourceFile);
+        });
         if (sources.html && sources.sourceFiles.html &&
             (sources.sourceFiles.html.endsWith('.jsx') || sources.sourceFiles.html.endsWith('.tsx'))) {
             const jsxActionModel = jsParser.parse(sources.html, sources.sourceFiles.html);
             if (jsxActionModel.nodes.length > 0) {
                 jsModels.push(jsxActionModel);
+            }
+        }
+        if (sources.html && sources.sourceFiles.html && sources.sourceFiles.html.endsWith('.svelte')) {
+            const svelteParser = new SvelteActionLanguageExtractor();
+            const svelteActionModel = svelteParser.parse(sources.html, sources.sourceFiles.html);
+            if (svelteActionModel.nodes.length > 0) {
+                jsModels.push(svelteActionModel);
             }
         }
         const cssParser = new CSSParser();

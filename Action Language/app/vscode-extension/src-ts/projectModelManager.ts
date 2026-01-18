@@ -115,7 +115,7 @@ export class ProjectModelManager {
   private async discoverAllFiles(workspaceFolder: vscode.WorkspaceFolder): Promise<FileCollection> {
     const config = vscode.workspace.getConfiguration('paradise');
     const includePatterns = config.get<string[]>('includePatterns', [
-      '**/*.html', '**/*.js', '**/*.ts', '**/*.jsx', '**/*.tsx', '**/*.css'
+      '**/*.html', '**/*.js', '**/*.ts', '**/*.jsx', '**/*.tsx', '**/*.css', '**/*.svelte'
     ]);
 
     const htmlFiles: vscode.Uri[] = [];
@@ -131,7 +131,7 @@ export class ProjectModelManager {
       for (const file of files) {
         if (file.path.endsWith('.html')) {
           htmlFiles.push(file);
-        } else if (file.path.match(/\.(js|ts|jsx|tsx)$/)) {
+        } else if (file.path.match(/\.(js|ts|jsx|tsx|svelte)$/)) {
           jsFiles.push(file);
         } else if (file.path.endsWith('.css')) {
           cssFiles.push(file);

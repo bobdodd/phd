@@ -110,7 +110,8 @@ async function activate(context) {
         { language: 'javascriptreact', scheme: 'file' },
         { language: 'typescriptreact', scheme: 'file' },
         { language: 'html', scheme: 'file' },
-        { language: 'css', scheme: 'file' }
+        { language: 'css', scheme: 'file' },
+        { language: 'svelte', scheme: 'file' }
     ], codeActionProvider, {
         providedCodeActionKinds: [vscode.CodeActionKind.QuickFix]
     }));
@@ -260,7 +261,8 @@ function isSupported(document) {
         'javascriptreact',
         'typescriptreact',
         'html',
-        'css'
+        'css',
+        'svelte'
     ];
     return supportedLanguages.includes(document.languageId);
 }

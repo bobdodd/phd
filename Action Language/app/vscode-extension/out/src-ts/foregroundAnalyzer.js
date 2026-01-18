@@ -42,6 +42,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ForegroundAnalyzer = void 0;
 const vscode = __importStar(require("vscode"));
 const JavaScriptParser_1 = require("../lib/parsers/JavaScriptParser");
+const SvelteActionLanguageExtractor_1 = require("../lib/parsers/SvelteActionLanguageExtractor");
 // Import analyzers
 const MouseOnlyClickAnalyzer_1 = require("../lib/analyzers/MouseOnlyClickAnalyzer");
 const OrphanedEventHandlerAnalyzer_1 = require("../lib/analyzers/OrphanedEventHandlerAnalyzer");
@@ -204,10 +205,20 @@ class ForegroundAnalyzer {
                 duration: Date.now() - startTime
             };
         }
-        // Parse JavaScript file to ActionLanguage
+        // Parse file to ActionLanguage based on language
         const content = document.getText();
-        const parser = new JavaScriptParser_1.JavaScriptParser();
-        const model = parser.parse(content, document.uri.fsPath);
+        let model;
+        if (document.languageId === 'svelte') {
+            // Parse Svelte file
+            const parser = new SvelteActionLanguageExtractor_1.SvelteActionLanguageExtractor();
+            model = parser.parse(content, document.uri.fsPath);
+            this.outputChannel.appendLine(`[ForegroundAnalyzer] Parsed Svelte file with SvelteActionLanguageExtractor`);
+        }
+        else {
+            // Parse JavaScript/TypeScript/JSX/TSX file
+            const parser = new JavaScriptParser_1.JavaScriptParser();
+            model = parser.parse(content, document.uri.fsPath);
+        }
         // Run analyzers with file-scope context
         const allIssues = [];
         for (const analyzer of this.analyzers) {

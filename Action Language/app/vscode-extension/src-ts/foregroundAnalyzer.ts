@@ -9,6 +9,7 @@ import * as vscode from 'vscode';
 import { DocumentModel } from '../lib/models/DocumentModel';
 import { ActionLanguageModel } from '../lib/models/ActionLanguageModel';
 import { JavaScriptParser } from '../lib/parsers/JavaScriptParser';
+import { SvelteActionLanguageExtractor } from '../lib/parsers/SvelteActionLanguageExtractor';
 import { Issue } from '../lib/analyzers/BaseAnalyzer';
 import { AnalysisResult, AnalysisScope, ExtensionConfig } from './types';
 import { ProjectModelManager } from './projectModelManager';
@@ -217,10 +218,20 @@ export class ForegroundAnalyzer {
       };
     }
 
-    // Parse JavaScript file to ActionLanguage
+    // Parse file to ActionLanguage based on language
     const content = document.getText();
-    const parser = new JavaScriptParser();
-    const model = parser.parse(content, document.uri.fsPath);
+    let model: ActionLanguageModel;
+
+    if (document.languageId === 'svelte') {
+      // Parse Svelte file
+      const parser = new SvelteActionLanguageExtractor();
+      model = parser.parse(content, document.uri.fsPath);
+      this.outputChannel.appendLine(`[ForegroundAnalyzer] Parsed Svelte file with SvelteActionLanguageExtractor`);
+    } else {
+      // Parse JavaScript/TypeScript/JSX/TSX file
+      const parser = new JavaScriptParser();
+      model = parser.parse(content, document.uri.fsPath);
+    }
 
     // Run analyzers with file-scope context
     const allIssues: Issue[] = [];

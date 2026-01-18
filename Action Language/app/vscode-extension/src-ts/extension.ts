@@ -87,7 +87,8 @@ export async function activate(context: vscode.ExtensionContext) {
         { language: 'javascriptreact', scheme: 'file' },
         { language: 'typescriptreact', scheme: 'file' },
         { language: 'html', scheme: 'file' },
-        { language: 'css', scheme: 'file' }
+        { language: 'css', scheme: 'file' },
+        { language: 'svelte', scheme: 'file' }
       ],
       codeActionProvider,
       {
@@ -281,7 +282,8 @@ function isSupported(document: vscode.TextDocument): boolean {
     'javascriptreact',
     'typescriptreact',
     'html',
-    'css'
+    'css',
+    'svelte'
   ];
 
   return supportedLanguages.includes(document.languageId);

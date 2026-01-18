@@ -600,19 +600,25 @@ export class DocumentModelBuilder {
   build(sources: SourceCollection, scope: AnalysisScope): DocumentModel {
     // Import parsers (avoiding circular dependencies)
     const { extractJSXDOM } = require('../parsers/JSXDOMExtractor');
+    const { extractSvelteDOM } = require('../parsers/SvelteDOMExtractor');
     const { parseHTML } = require('../parsers/HTMLParser');
     const { JavaScriptParser } = require('../parsers/JavaScriptParser');
+    const { SvelteActionLanguageExtractor } = require('../parsers/SvelteActionLanguageExtractor');
     const { CSSParser } = require('../parsers/CSSParser');
 
-    // Parse DOM (from HTML or JSX)
+    // Parse DOM (from HTML, JSX, or Svelte)
     let domModel: DOMModel | undefined;
     if (sources.html && sources.sourceFiles.html) {
       const sourceFile = sources.sourceFiles.html;
 
-      // Detect if this is JSX/TSX or traditional HTML
+      // Detect file type
       const isJSX = sourceFile.endsWith('.jsx') || sourceFile.endsWith('.tsx');
+      const isSvelte = sourceFile.endsWith('.svelte');
 
-      if (isJSX) {
+      if (isSvelte) {
+        // Use Svelte DOM extractor for Svelte components
+        domModel = extractSvelteDOM(sources.html, sourceFile);
+      } else if (isJSX) {
         // Use JSX extractor for React components
         domModel = extractJSXDOM(sources.html, sourceFile);
       } else {
@@ -623,9 +629,18 @@ export class DocumentModelBuilder {
 
     // Parse JavaScript files
     const jsParser = new JavaScriptParser();
-    const jsModels = sources.javascript.map((js, i) =>
-      jsParser.parse(js, sources.sourceFiles.javascript[i])
-    );
+    const jsModels = sources.javascript.map((js, i) => {
+      const sourceFile = sources.sourceFiles.javascript[i];
+
+      // Use Svelte parser for .svelte files
+      if (sourceFile.endsWith('.svelte')) {
+        const svelteParser = new SvelteActionLanguageExtractor();
+        return svelteParser.parse(js, sourceFile);
+      }
+
+      // Use JavaScript parser for JS/TS/JSX/TSX files
+      return jsParser.parse(js, sourceFile);
+    });
 
     // If we have JSX/TSX source, also parse it for event handlers
     // This extracts inline event handlers like onClick={handler}
@@ -634,6 +649,16 @@ export class DocumentModelBuilder {
       const jsxActionModel = jsParser.parse(sources.html, sources.sourceFiles.html);
       if (jsxActionModel.nodes.length > 0) {
         jsModels.push(jsxActionModel);
+      }
+    }
+
+    // If we have Svelte source, also parse it for ActionLanguage nodes
+    // This extracts Svelte directives like on:click, bind:value
+    if (sources.html && sources.sourceFiles.html && sources.sourceFiles.html.endsWith('.svelte')) {
+      const svelteParser = new SvelteActionLanguageExtractor();
+      const svelteActionModel = svelteParser.parse(sources.html, sources.sourceFiles.html);
+      if (svelteActionModel.nodes.length > 0) {
+        jsModels.push(svelteActionModel);
       }
     }
 
