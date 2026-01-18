@@ -2155,14 +2155,13 @@ export default function Playground() {
       }
     }
 
-    // Run framework-specific analyzers on template HTML
+    // Run framework-specific analyzers only if patterns detected (prevents hang on non-framework content)
     const allHtml = currentFiles.html.map(f => f.content).join('\n');
     const allJs = currentFiles.javascript.map(f => f.content).join('\n');
-    // Combine both since framework templates can be in either location
     const allContent = allHtml + '\n' + allJs;
 
-    // Angular analyzer
-    if (allContent.includes('[(ngModel)]') || allContent.includes('(click)') || allContent.includes('*ngIf')) {
+    // Angular analyzer - only if Angular patterns found
+    if (allContent.includes('[(ngModel)]') || allContent.includes('*ngIf') || allContent.includes('*ngFor')) {
       try {
         const angularExtractor = new AngularActionLanguageExtractor();
         const angularModel = angularExtractor.parse(allContent, 'component.html');
@@ -2186,8 +2185,8 @@ export default function Playground() {
       }
     }
 
-    // Vue analyzer
-    if (allContent.includes('v-model') || allContent.includes('@click') || allContent.includes('v-if')) {
+    // Vue analyzer - only if Vue patterns found
+    if (allContent.includes('v-model') || allContent.includes('v-if') || allContent.includes('v-for') || allContent.includes('@click')) {
       try {
         const vueExtractor = new VueActionLanguageExtractor();
         const vueModel = vueExtractor.parse(allContent, 'component.vue');
@@ -2211,8 +2210,8 @@ export default function Playground() {
       }
     }
 
-    // Svelte analyzer
-    if (allContent.includes('bind:') || allContent.includes('on:click') || allContent.includes('{#if')) {
+    // Svelte analyzer - only if Svelte patterns found
+    if (allContent.includes('bind:') || allContent.includes('on:') || allContent.includes('{#if') || allContent.includes('{#each')) {
       try {
         const svelteExtractor = new SvelteActionLanguageExtractor();
         const svelteModel = svelteExtractor.parse(allContent, 'component.svelte');
