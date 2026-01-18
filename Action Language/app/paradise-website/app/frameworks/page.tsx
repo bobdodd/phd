@@ -8,7 +8,7 @@ export default function FrameworksPage() {
           </h1>
           <p className="text-2xl mb-4 max-w-3xl">
             Paradise provides comprehensive accessibility analysis for modern JavaScript frameworks
-            including React, Vue, and Svelte, with extensibility for Angular and more.
+            including React, Vue, Svelte, and Angular, with extensibility for more.
           </p>
         </div>
       </section>
@@ -120,25 +120,25 @@ export default function FrameworksPage() {
               </div>
 
               {/* Angular */}
-              <div className="bg-gradient-to-br from-red-50 to-pink-50 border-2 border-red-200 rounded-xl p-8 opacity-75">
+              <div className="bg-gradient-to-br from-red-50 to-pink-50 border-2 border-red-200 rounded-xl p-8">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="text-5xl">🅰️</div>
                   <div>
                     <h3 className="text-2xl font-bold text-red-900">Angular</h3>
-                    <span className="inline-block bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold">
-                      Planned
+                    <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
+                      Full Support
                     </span>
                   </div>
                 </div>
                 <p className="text-gray-700 mb-4">
-                  Angular template and component support planned for future release.
+                  Comprehensive Angular template and component accessibility analysis with full support for reactive directives.
                 </p>
                 <ul className="space-y-2 text-sm text-gray-600">
-                  <li>⏳ Template syntax parsing</li>
-                  <li>⏳ Event binding analysis</li>
-                  <li>⏳ Directives and pipes</li>
-                  <li>⏳ Dependency injection patterns</li>
-                  <li>⏳ CDK accessibility features</li>
+                  <li>✅ Template syntax parsing</li>
+                  <li>✅ Event binding analysis: (click), (keydown)</li>
+                  <li>✅ Two-way binding: [(ngModel)]</li>
+                  <li>✅ Structural directives: *ngIf, *ngFor</li>
+                  <li>✅ Dynamic class bindings: [class.name]</li>
                 </ul>
               </div>
             </div>
@@ -1197,6 +1197,197 @@ const increment = () => count.value++;
             </div>
           </div>
 
+          {/* Angular-Specific Features */}
+          <div id="angular-features" className="scroll-mt-8">
+            <h2 className="text-4xl font-bold mb-8 text-red-600">Angular-Specific Features</h2>
+
+            <div className="space-y-8">
+              {/* Angular Reactivity Accessibility Analyzer */}
+              <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-xl p-8 border-2 border-red-300 shadow-lg">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center text-white text-2xl font-bold">
+                    A
+                  </div>
+                  <h3 className="text-3xl font-bold text-red-700">Angular Reactivity Accessibility Analyzer</h3>
+                </div>
+
+                <p className="text-lg text-gray-700 mb-6">
+                  Paradise's Angular analyzer detects accessibility issues specific to Angular's reactive template syntax.
+                  It analyzes Angular directives and bindings to ensure they maintain proper accessibility semantics.
+                </p>
+
+                <div className="grid md:grid-cols-2 gap-6 mb-8">
+                  {/* [(ngModel)] Card */}
+                  <div className="bg-white rounded-lg p-6 border-2 border-red-200 hover:border-red-400 transition-colors">
+                    <h4 className="text-xl font-bold text-red-700 mb-3 flex items-center gap-2">
+                      <span className="text-2xl">🏷️</span>
+                      [(ngModel)] Validation
+                    </h4>
+                    <p className="text-gray-700 mb-4">
+                      Two-way data binding with [(ngModel)] on form inputs must have accessible labels.
+                    </p>
+
+                    <div className="space-y-4">
+                      <div>
+                        <div className="text-sm font-semibold text-red-600 mb-2">❌ Inaccessible:</div>
+                        <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto"><code>{`<input [(ngModel)]="username"
+       placeholder="Username" />`}</code></pre>
+                      </div>
+
+                      <div>
+                        <div className="text-sm font-semibold text-green-600 mb-2">✅ Accessible:</div>
+                        <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto"><code>{`<label for="username">Username</label>
+<input id="username"
+       [(ngModel)]="username" />
+
+<!-- OR with ARIA -->
+<input [(ngModel)]="username"
+       aria-label="Username" />`}</code></pre>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* (click) Card */}
+                  <div className="bg-white rounded-lg p-6 border-2 border-red-200 hover:border-red-400 transition-colors">
+                    <h4 className="text-xl font-bold text-red-700 mb-3 flex items-center gap-2">
+                      <span className="text-2xl">⌨️</span>
+                      (click) Keyboard Support
+                    </h4>
+                    <p className="text-gray-700 mb-4">
+                      Event bindings on non-interactive elements need keyboard handlers for accessibility.
+                    </p>
+
+                    <div className="space-y-4">
+                      <div>
+                        <div className="text-sm font-semibold text-red-600 mb-2">❌ Mouse-only:</div>
+                        <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto"><code>{`<div (click)="toggle()">
+  Toggle
+</div>`}</code></pre>
+                      </div>
+
+                      <div>
+                        <div className="text-sm font-semibold text-green-600 mb-2">✅ Keyboard accessible:</div>
+                        <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto"><code>{`<div (click)="toggle()"
+     (keydown)="handleKey($event)"
+     tabindex="0"
+     role="button">
+  Toggle
+</div>`}</code></pre>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* *ngIf Card */}
+                  <div className="bg-white rounded-lg p-6 border-2 border-red-200 hover:border-red-400 transition-colors">
+                    <h4 className="text-xl font-bold text-red-700 mb-3 flex items-center gap-2">
+                      <span className="text-2xl">👁️</span>
+                      *ngIf ARIA Communication
+                    </h4>
+                    <p className="text-gray-700 mb-4">
+                      Structural directives affecting visibility should announce changes to screen readers.
+                    </p>
+
+                    <div className="space-y-4">
+                      <div>
+                        <div className="text-sm font-semibold text-red-600 mb-2">❌ Silent changes:</div>
+                        <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto"><code>{`<div *ngIf="isVisible">
+  Content
+</div>`}</code></pre>
+                      </div>
+
+                      <div>
+                        <div className="text-sm font-semibold text-green-600 mb-2">✅ Announced:</div>
+                        <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto"><code>{`<div *ngIf="isVisible"
+     aria-live="polite"
+     role="status">
+  Content
+</div>`}</code></pre>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* [class.className] Card */}
+                  <div className="bg-white rounded-lg p-6 border-2 border-red-200 hover:border-red-400 transition-colors">
+                    <h4 className="text-xl font-bold text-red-700 mb-3 flex items-center gap-2">
+                      <span className="text-2xl">🎨</span>
+                      Dynamic Class Bindings
+                    </h4>
+                    <p className="text-gray-700 mb-4">
+                      Class bindings affecting visibility need ARIA attributes for screen readers.
+                    </p>
+
+                    <div className="space-y-4">
+                      <div>
+                        <div className="text-sm font-semibold text-red-600 mb-2">❌ No ARIA:</div>
+                        <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto"><code>{`<div [class.hidden]="!isOpen">
+  Content
+</div>`}</code></pre>
+                      </div>
+
+                      <div>
+                        <div className="text-sm font-semibold text-green-600 mb-2">✅ With ARIA:</div>
+                        <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto"><code>{`<div [class.hidden]="!isOpen"
+     [attr.aria-hidden]="!isOpen">
+  Content
+</div>`}</code></pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-red-100 rounded-lg p-6 border-2 border-red-300">
+                  <h4 className="text-lg font-bold text-red-800 mb-3">🎯 WCAG Coverage</h4>
+                  <div className="grid md:grid-cols-2 gap-4 text-gray-800">
+                    <div>
+                      <strong className="text-red-700">2.1.1 Keyboard (Level A):</strong> All functionality available via keyboard
+                    </div>
+                    <div>
+                      <strong className="text-red-700">2.1.2 No Keyboard Trap (Level A):</strong> Keyboard focus can be moved away
+                    </div>
+                    <div>
+                      <strong className="text-red-700">4.1.2 Name, Role, Value (Level A):</strong> ARIA attributes reflect state
+                    </div>
+                    <div>
+                      <strong className="text-red-700">4.1.3 Status Messages (Level AA):</strong> Dynamic changes announced
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Angular Integration */}
+              <div className="bg-white rounded-xl p-8 border-2 border-gray-200 shadow-lg">
+                <h3 className="text-2xl font-bold mb-4 text-gray-900">Angular Integration</h3>
+                <p className="text-gray-700 mb-6">
+                  Paradise analyzes Angular templates and components with full support for Angular's reactive template syntax:
+                </p>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-bold text-gray-900 mb-2">Template Analysis</h4>
+                    <ul className="space-y-2 text-gray-700">
+                      <li>• Event bindings: (click), (keydown)</li>
+                      <li>• Two-way bindings: [(ngModel)]</li>
+                      <li>• Property bindings: [property]</li>
+                      <li>• Structural directives: *ngIf, *ngFor</li>
+                      <li>• Dynamic class bindings: [class.name]</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="font-bold text-gray-900 mb-2">Component Analysis</h4>
+                    <ul className="space-y-2 text-gray-700">
+                      <li>• Inline template support</li>
+                      <li>• External templateUrl support</li>
+                      <li>• Component decorator parsing</li>
+                      <li>• ViewChild focus management</li>
+                      <li>• ARIA binding validation</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Framework Comparison */}
           <div id="comparison" className="scroll-mt-8">
             <h2 className="text-4xl font-bold mb-8 text-gray-900">Framework Analysis Comparison</h2>
@@ -1210,7 +1401,7 @@ const increment = () => count.value++;
                     <th className="px-6 py-4 text-center font-semibold">Svelte</th>
                     <th className="px-6 py-4 text-center font-semibold">Vue</th>
                     <th className="px-6 py-4 text-center font-semibold">Vanilla JS</th>
-                    <th className="px-6 py-4 text-center font-semibold">Angular (Planned)</th>
+                    <th className="px-6 py-4 text-center font-semibold">Angular</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -1220,7 +1411,7 @@ const increment = () => count.value++;
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">✅</td>
-                    <td className="px-6 py-4 text-center">⏳</td>
+                    <td className="px-6 py-4 text-center">✅</td>
                   </tr>
                   <tr className="bg-gray-50">
                     <td className="px-6 py-4 font-medium text-gray-900">Focus Management</td>
@@ -1228,7 +1419,7 @@ const increment = () => count.value++;
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">✅</td>
-                    <td className="px-6 py-4 text-center">⏳</td>
+                    <td className="px-6 py-4 text-center">✅</td>
                   </tr>
                   <tr>
                     <td className="px-6 py-4 font-medium text-gray-900">ARIA Updates</td>
@@ -1236,7 +1427,7 @@ const increment = () => count.value++;
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">✅</td>
-                    <td className="px-6 py-4 text-center">⏳</td>
+                    <td className="px-6 py-4 text-center">✅</td>
                   </tr>
                   <tr className="bg-gray-50">
                     <td className="px-6 py-4 font-medium text-gray-900">Reactivity/State Management</td>
@@ -1244,7 +1435,7 @@ const increment = () => count.value++;
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">N/A</td>
-                    <td className="px-6 py-4 text-center">⏳</td>
+                    <td className="px-6 py-4 text-center">✅</td>
                   </tr>
                   <tr>
                     <td className="px-6 py-4 font-medium text-gray-900">Two-Way Data Binding</td>
@@ -1252,7 +1443,7 @@ const increment = () => count.value++;
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">N/A</td>
-                    <td className="px-6 py-4 text-center">⏳</td>
+                    <td className="px-6 py-4 text-center">✅</td>
                   </tr>
                   <tr>
                     <td className="px-6 py-4 font-medium text-gray-900">Synthetic Event Issues</td>
@@ -1260,7 +1451,7 @@ const increment = () => count.value++;
                     <td className="px-6 py-4 text-center">N/A</td>
                     <td className="px-6 py-4 text-center">N/A</td>
                     <td className="px-6 py-4 text-center">✅</td>
-                    <td className="px-6 py-4 text-center">⏳</td>
+                    <td className="px-6 py-4 text-center">✅</td>
                   </tr>
                 </tbody>
               </table>

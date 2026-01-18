@@ -1,0 +1,24 @@
+<!-- Angular Template Test File -->
+<!-- This file tests Angular support in Paradise -->
+
+<!-- Issue 1: [(ngModel)] without label (AngularReactivityAnalyzer should detect this) -->
+<input [(ngModel)]="username" placeholder="Username" />
+
+<!-- Issue 2: (click) on div without keyboard handler (AngularReactivityAnalyzer should detect this) -->
+<div (click)="handleClick()">
+  Click me
+</div>
+
+<!-- Issue 3: *ngIf without aria-live (AngularReactivityAnalyzer should detect this) -->
+<div *ngIf="isVisible">
+  Conditional content
+</div>
+
+<!-- Good example: Has both click and keyboard handler -->
+<button (click)="toggle()" (keydown)="handleKey($event)">
+  Toggle
+</button>
+
+<!-- Good example: Input with label -->
+<label for="email-input">Email</label>
+<input id="email-input" [(ngModel)]="email" />

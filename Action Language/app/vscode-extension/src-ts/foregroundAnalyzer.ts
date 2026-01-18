@@ -11,6 +11,7 @@ import { ActionLanguageModel } from '../lib/models/ActionLanguageModel';
 import { JavaScriptParser } from '../lib/parsers/JavaScriptParser';
 import { SvelteActionLanguageExtractor } from '../lib/parsers/SvelteActionLanguageExtractor';
 import { VueActionLanguageExtractor } from '../lib/parsers/VueActionLanguageExtractor';
+import { AngularActionLanguageExtractor } from '../lib/parsers/AngularActionLanguageExtractor';
 import { Issue } from '../lib/analyzers/BaseAnalyzer';
 import { AnalysisResult, AnalysisScope, ExtensionConfig } from './types';
 import { ProjectModelManager } from './projectModelManager';
@@ -30,6 +31,7 @@ import { ReactStopPropagationAnalyzer } from '../lib/analyzers/ReactStopPropagat
 import { ReactHooksA11yAnalyzer } from '../lib/analyzers/ReactHooksA11yAnalyzer';
 import { SvelteReactivityAnalyzer } from '../lib/analyzers/SvelteReactivityAnalyzer';
 import { VueReactivityAnalyzer } from '../lib/analyzers/VueReactivityAnalyzer';
+import { AngularReactivityAnalyzer } from '../lib/analyzers/AngularReactivityAnalyzer';
 import { ParadiseCodeActionProvider } from './codeActionProvider';
 
 export class ForegroundAnalyzer {
@@ -65,7 +67,8 @@ export class ForegroundAnalyzer {
       new ReactStopPropagationAnalyzer(),
       new ReactHooksA11yAnalyzer(),
       new SvelteReactivityAnalyzer(),
-      new VueReactivityAnalyzer()
+      new VueReactivityAnalyzer(),
+      new AngularReactivityAnalyzer()
     ];
 
     console.log('[ForegroundAnalyzer] Initialized with', this.analyzers.length, 'analyzers');
@@ -235,6 +238,11 @@ export class ForegroundAnalyzer {
       const parser = new VueActionLanguageExtractor();
       model = parser.parse(content, document.uri.fsPath);
       this.outputChannel.appendLine(`[ForegroundAnalyzer] Parsed Vue file with VueActionLanguageExtractor`);
+    } else if (document.fileName.endsWith('.html') || document.fileName.endsWith('.component.ts')) {
+      // Parse Angular file (templates or component files)
+      const parser = new AngularActionLanguageExtractor();
+      model = parser.parse(content, document.uri.fsPath);
+      this.outputChannel.appendLine(`[ForegroundAnalyzer] Parsed Angular file with AngularActionLanguageExtractor`);
     } else {
       // Parse JavaScript/TypeScript/JSX/TSX file
       const parser = new JavaScriptParser();

@@ -7,6 +7,7 @@ import traverse from '@babel/traverse';
 import * as t from '@babel/types';
 import { SvelteActionLanguageExtractor } from '../../../../src/parsers/SvelteActionLanguageExtractor';
 import { VueActionLanguageExtractor } from '../../../../src/parsers/VueActionLanguageExtractor';
+import { AngularActionLanguageExtractor } from '../../../../src/parsers/AngularActionLanguageExtractor';
 
 // Dynamically import Monaco to avoid SSR issues
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
@@ -1550,6 +1551,158 @@ const toggle = () => {
       'Screen readers are not informed about the visibility state change',
       'Add aria-hidden that matches v-show condition'
     ]
+  },
+
+  // ====== Angular Examples ======
+  'angular-ngmodel-no-label': {
+    title: 'Angular [(ngModel)] Without Label',
+    description: 'Input with [(ngModel)] lacks accessible label',
+    category: 'angular',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'login.component.html',
+          content: `<!-- ❌ Bad: [(ngModel)] without label -->
+<div class="login-form">
+  <input [(ngModel)]="username" placeholder="Username" />
+  <input [(ngModel)]="password" type="password" placeholder="Password" />
+  <button (click)="login()">Login</button>
+</div>
+
+<!-- ✅ Good: Proper labels -->
+<!--
+<div class="login-form">
+  <label for="username-input">Username</label>
+  <input id="username-input" [(ngModel)]="username" />
+
+  <label for="password-input">Password</label>
+  <input id="password-input" [(ngModel)]="password" type="password" />
+
+  <button (click)="login()">Login</button>
+</div>
+
+<!-- OR with aria-label -->
+<div class="login-form">
+  <input [(ngModel)]="username" aria-label="Username" placeholder="Username" />
+  <input [(ngModel)]="password" type="password" aria-label="Password" placeholder="Password" />
+  <button (click)="login()">Login</button>
+</div>
+-->`
+        }
+      ],
+      css: []
+    },
+    issues: [
+      'angular-ngmodel-no-label: Input with [(ngModel)] lacks accessible label',
+      'Screen readers cannot identify the purpose of these form inputs',
+      'Users with cognitive disabilities cannot see persistent labels'
+    ]
+  },
+  'angular-click-no-keyboard': {
+    title: 'Angular (click) Without Keyboard',
+    description: 'Non-interactive element with (click) needs keyboard handler',
+    category: 'angular',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'card.component.html',
+          content: `<!-- ❌ Bad: (click) on div without keyboard handler -->
+<div class="card" (click)="openDetails()">
+  <h3>{{ title }}</h3>
+  <p>{{ description }}</p>
+</div>
+
+<!-- ✅ Good: Proper button or interactive div with keyboard handler -->
+<!--
+<button class="card" (click)="openDetails()">
+  <h3>{{ title }}</h3>
+  <p>{{ description }}</p>
+</button>
+
+<!-- OR make div interactive -->
+<div
+  class="card"
+  (click)="openDetails()"
+  (keydown)="handleKeydown($event)"
+  tabindex="0"
+  role="button"
+  [attr.aria-label]="'Open details for ' + title"
+>
+  <h3>{{ title }}</h3>
+  <p>{{ description }}</p>
+</div>
+-->`
+        }
+      ],
+      css: []
+    },
+    issues: [
+      'angular-click-no-keyboard: Non-interactive element with (click) lacks keyboard handler',
+      'Keyboard-only users cannot interact with this element',
+      'Missing role="button" and tabindex="0"'
+    ]
+  },
+  'angular-visibility-no-aria': {
+    title: 'Angular *ngIf Visibility Without ARIA',
+    description: '*ngIf directive affecting visibility without ARIA communication',
+    category: 'angular',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'dropdown.component.html',
+          content: `<!-- ❌ Bad: *ngIf without aria-expanded -->
+<div class="dropdown">
+  <button (click)="toggle()">
+    {{ isOpen ? 'Hide' : 'Show' }} Menu
+  </button>
+
+  <div *ngIf="isOpen" class="dropdown-menu">
+    <ul>
+      <li>Menu Item 1</li>
+      <li>Menu Item 2</li>
+      <li>Menu Item 3</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ✅ Good: aria-expanded and role -->
+<!--
+<div class="dropdown">
+  <button
+    (click)="toggle()"
+    [attr.aria-expanded]="isOpen"
+    aria-controls="dropdown-menu"
+  >
+    {{ isOpen ? 'Hide' : 'Show' }} Menu
+  </button>
+
+  <div
+    *ngIf="isOpen"
+    id="dropdown-menu"
+    class="dropdown-menu"
+    role="region"
+    aria-live="polite"
+  >
+    <ul>
+      <li>Menu Item 1</li>
+      <li>Menu Item 2</li>
+      <li>Menu Item 3</li>
+    </ul>
+  </div>
+</div>
+-->`
+        }
+      ],
+      css: []
+    },
+    issues: [
+      'angular-visibility-no-aria: *ngIf directive affects visibility but lacks ARIA communication',
+      'Screen readers are not informed about the visibility state change',
+      'Add aria-expanded and aria-live for proper announcement'
+    ]
   }
 };
 
@@ -1615,6 +1768,13 @@ export default function Playground() {
     // Handle Vue files: use the real VueActionLanguageExtractor
     if (filename.endsWith('.vue')) {
       const extractor = new VueActionLanguageExtractor();
+      const model = extractor.parse(code, filename);
+      return model.nodes;
+    }
+
+    // Handle Angular files: use the real AngularActionLanguageExtractor
+    if (filename.endsWith('.html') || filename.endsWith('.component.ts')) {
+      const extractor = new AngularActionLanguageExtractor();
       const model = extractor.parse(code, filename);
       return model.nodes;
     }
@@ -2384,6 +2544,13 @@ export default function Playground() {
                       <option key={key} value={key}>{ex.title}</option>
                     ))}
                 </optgroup>
+                <optgroup label="Angular Examples (.html)">
+                  {Object.entries(EXAMPLES)
+                    .filter(([_, ex]) => ex.category === 'angular')
+                    .map(([key, ex]) => (
+                      <option key={key} value={key}>{ex.title}</option>
+                    ))}
+                </optgroup>
                 <optgroup label="JavaScript-Only Examples">
                   {Object.entries(EXAMPLES)
                     .filter(([_, ex]) => ex.category === 'js-only')
@@ -2414,6 +2581,11 @@ export default function Playground() {
               {currentExample.category === 'vue' && (
                 <span className="inline-block mt-2 bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold">
                   🟢 Vue
+                </span>
+              )}
+              {currentExample.category === 'angular' && (
+                <span className="inline-block mt-2 bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-semibold">
+                  🅰️ Angular
                 </span>
               )}
             </div>
