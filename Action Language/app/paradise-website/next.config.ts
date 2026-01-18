@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
       path: false,
       os: false,
     };
+
+    // Configure module resolution to prefer TypeScript files over JavaScript
+    config.resolve.extensions = ['.ts', '.tsx', '.js', '.jsx', '.json'];
+
     return config;
   },
   transpilePackages: ['@babel/parser', '@babel/traverse', '@babel/types'],

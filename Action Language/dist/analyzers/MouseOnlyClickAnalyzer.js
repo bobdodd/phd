@@ -53,6 +53,10 @@ class MouseOnlyClickAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
             if (this.hasInferredNativeKeyboardSupport(selector)) {
                 continue;
             }
+            const tagName = clickHandler.metadata?.tagName;
+            if (tagName && this.hasInferredNativeKeyboardSupport(tagName)) {
+                continue;
+            }
             const hasKeyboardHandler = this.hasKeyboardHandlerForSelector(model, selector);
             if (!hasKeyboardHandler) {
                 const message = `Element with selector "${selector}" has click handler but no keyboard handler (file-scope analysis - may be false positive if handler is in another file)`;

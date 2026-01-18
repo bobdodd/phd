@@ -151,6 +151,12 @@ export class MouseOnlyClickAnalyzer extends BaseAnalyzer {
         continue;
       }
 
+      // Also check metadata.tagName (from framework extractors like Angular, Vue, Svelte)
+      const tagName = clickHandler.metadata?.tagName;
+      if (tagName && this.hasInferredNativeKeyboardSupport(tagName)) {
+        continue;
+      }
+
       // Check if same element has keyboard handler in this file
       const hasKeyboardHandler = this.hasKeyboardHandlerForSelector(
         model,
