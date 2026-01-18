@@ -45,8 +45,33 @@ export default function FrameworksPage() {
                 </ul>
               </div>
 
+              {/* Svelte */}
+              <div className="bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-200 rounded-xl p-8">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="text-5xl">⚡</div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-orange-900">Svelte</h3>
+                    <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
+                      Full Support
+                    </span>
+                  </div>
+                </div>
+                <p className="text-gray-700 mb-4">
+                  Native support for Svelte components with reactive patterns and directive validation.
+                </p>
+                <ul className="space-y-2 text-sm text-gray-700">
+                  <li>✅ .svelte file parsing (script, template, style blocks)</li>
+                  <li>✅ Svelte directives (bind:, on:, class:, use:, transition:, animate:)</li>
+                  <li>✅ Reactive statements ($: syntax)</li>
+                  <li>✅ Store subscriptions ($store syntax)</li>
+                  <li>✅ Lifecycle hooks (onMount, onDestroy)</li>
+                  <li>✅ Two-way binding accessibility</li>
+                  <li>✅ Component instance references</li>
+                </ul>
+              </div>
+
               {/* Vanilla JavaScript */}
-              <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-200 rounded-xl p-8">
+              <div className="bg-gradient-to-br from-yellow-50 to-amber-50 border-2 border-yellow-200 rounded-xl p-8">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="text-5xl">📜</div>
                   <div>

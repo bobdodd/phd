@@ -955,7 +955,7 @@ closeBtn.addEventListener('click', function() {
   'svelte-bind-no-label': {
     title: 'Svelte bind: Without Label',
     description: 'Svelte two-way binding without accessible labels',
-    category: 'framework',
+    category: 'svelte',
     files: {
       html: [],
       javascript: [
@@ -1043,7 +1043,7 @@ closeBtn.addEventListener('click', function() {
   'svelte-click-keyboard': {
     title: 'Svelte on:click Without Keyboard',
     description: 'Non-interactive element with on:click needs keyboard handler',
-    category: 'framework',
+    category: 'svelte',
     files: {
       html: [],
       javascript: [
@@ -1140,7 +1140,7 @@ closeBtn.addEventListener('click', function() {
   'svelte-class-visibility': {
     title: 'Svelte class: Visibility Without ARIA',
     description: 'Conditional class affecting visibility without ARIA communication',
-    category: 'framework',
+    category: 'svelte',
     files: {
       html: [],
       javascript: [
@@ -1232,7 +1232,7 @@ closeBtn.addEventListener('click', function() {
   'svelte-reactive-focus': {
     title: 'Svelte Reactive Focus Without Cleanup',
     description: 'Reactive statement manages focus without cleanup',
-    category: 'framework',
+    category: 'svelte',
     files: {
       html: [],
       javascript: [
@@ -2147,6 +2147,13 @@ export default function Playground() {
                       <option key={key} value={key}>{ex.title}</option>
                     ))}
                 </optgroup>
+                <optgroup label="Svelte Examples (.svelte)">
+                  {Object.entries(EXAMPLES)
+                    .filter(([_, ex]) => ex.category === 'svelte')
+                    .map(([key, ex]) => (
+                      <option key={key} value={key}>{ex.title}</option>
+                    ))}
+                </optgroup>
                 <optgroup label="JavaScript-Only Examples">
                   {Object.entries(EXAMPLES)
                     .filter(([_, ex]) => ex.category === 'js-only')
@@ -2162,6 +2169,16 @@ export default function Playground() {
               {currentExample.category === 'multi-model' && (
                 <span className="inline-block mt-2 bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold">
                   Multi-Model
+                </span>
+              )}
+              {currentExample.category === 'react' && (
+                <span className="inline-block mt-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold">
+                  ⚛️ React
+                </span>
+              )}
+              {currentExample.category === 'svelte' && (
+                <span className="inline-block mt-2 bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-xs font-semibold">
+                  ⚡ Svelte
                 </span>
               )}
             </div>
