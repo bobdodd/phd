@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "highlight.js/styles/github-dark.css";
 import Navigation from "./components/Navigation";
 
 export const metadata: Metadata = {

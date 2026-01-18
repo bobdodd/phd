@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeHighlight from 'rehype-highlight';
 import { parse, ParserOptions } from '@babel/parser';
 import traverse from '@babel/traverse';
 import * as t from '@babel/types';
@@ -29,6 +32,13 @@ import { DocumentModel } from '../../../../src/models/DocumentModel';
 
 // Dynamically import Monaco to avoid SSR issues
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
+
+// Extend Window type for Monaco
+declare global {
+  interface Window {
+    monaco: any;
+  }
+}
 
 // File structure for multi-file support
 interface CodeFile {
@@ -1806,6 +1816,8 @@ export default function Playground() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [monacoEditor, setMonacoEditor] = useState<any>(null);
   const [selectedIssueIndex, setSelectedIssueIndex] = useState<number | null>(null);
+  const [selectedDocIssue, setSelectedDocIssue] = useState<any>(null);
+  const [docContent, setDocContent] = useState<string>('');
 
   // Analyze code whenever files change
   useEffect(() => {
@@ -2635,6 +2647,28 @@ export default function Playground() {
     }, 100);
   };
 
+  const showDocumentation = async (issue: any) => {
+    setSelectedDocIssue(issue);
+
+    try {
+      const response = await fetch(`/docs/issues/${issue.type}.md`);
+      if (response.ok) {
+        const content = await response.text();
+        setDocContent(content);
+      } else {
+        setDocContent(`# Documentation Not Available\n\nDocumentation for **${issue.type}** is not yet available.`);
+      }
+    } catch (error) {
+      console.error('Error loading documentation:', error);
+      setDocContent(`# Error Loading Documentation\n\nCould not load documentation for **${issue.type}**.`);
+    }
+  };
+
+  const closeDocumentation = () => {
+    setSelectedDocIssue(null);
+    setDocContent('');
+  };
+
   const addFile = (fileType: 'html' | 'javascript' | 'css') => {
     setFiles(prev => {
       const fileCount = prev[fileType].length + 1;
@@ -3194,14 +3228,25 @@ export default function Playground() {
                             </div>
                           </div>
                           <p className="text-sm font-semibold mb-2">{issue.message}</p>
-                          <div className="flex items-center gap-4 text-xs text-gray-600">
-                            <span>WCAG: {issue.wcag.join(', ')}</span>
-                            {issue.location && (
-                              <span className="bg-gray-200 px-2 py-1 rounded">{issue.location}</span>
-                            )}
-                            {issue.line && (
-                              <span className="text-blue-600 font-semibold">Click to jump →</span>
-                            )}
+                          <div className="flex items-center justify-between gap-4 text-xs text-gray-600">
+                            <div className="flex items-center gap-4">
+                              <span>WCAG: {issue.wcag.join(', ')}</span>
+                              {issue.location && (
+                                <span className="bg-gray-200 px-2 py-1 rounded">{issue.location}</span>
+                              )}
+                              {issue.line && (
+                                <span className="text-blue-600 font-semibold">Click to jump →</span>
+                              )}
+                            </div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                showDocumentation(issue);
+                              }}
+                              className="bg-purple-100 hover:bg-purple-200 text-purple-800 px-3 py-1 rounded font-semibold transition-colors"
+                            >
+                              📖 View Docs
+                            </button>
                           </div>
                         </div>
                       ))}
@@ -3387,6 +3432,87 @@ export default function Playground() {
           </div>
         </div>
       </section>
+
+      {/* Documentation Modal */}
+      {selectedDocIssue && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={closeDocumentation}
+        >
+          <div
+            className="bg-white rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="bg-paradise-purple text-white p-6 flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold mb-1">{selectedDocIssue.type}</h2>
+                <p className="text-purple-100 text-sm">{selectedDocIssue.message}</p>
+              </div>
+              <button
+                onClick={closeDocumentation}
+                className="text-white hover:bg-white/20 rounded-full p-2 transition-colors"
+                aria-label="Close documentation"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="prose prose-sm max-w-none">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeHighlight]}
+                  components={{
+                    h1: ({node, ...props}) => <h1 className="text-3xl font-bold mb-4 text-gray-900" {...props} />,
+                    h2: ({node, ...props}) => <h2 className="text-2xl font-bold mt-6 mb-3 text-gray-800" {...props} />,
+                    h3: ({node, ...props}) => <h3 className="text-xl font-semibold mt-4 mb-2 text-gray-800" {...props} />,
+                    p: ({node, ...props}) => <p className="mb-4 text-gray-700 leading-relaxed" {...props} />,
+                    ul: ({node, ...props}) => <ul className="list-disc pl-6 mb-4 space-y-2" {...props} />,
+                    ol: ({node, ...props}) => <ol className="list-decimal pl-6 mb-4 space-y-2" {...props} />,
+                    li: ({node, ...props}) => <li className="text-gray-700" {...props} />,
+                    code: ({node, inline, ...props}: any) =>
+                      inline ? (
+                        <code className="bg-gray-100 text-red-600 px-1.5 py-0.5 rounded text-sm font-mono" {...props} />
+                      ) : (
+                        <code className="block bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm font-mono" {...props} />
+                      ),
+                    pre: ({node, ...props}) => <pre className="mb-4 rounded-lg overflow-hidden" {...props} />,
+                    blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-paradise-purple pl-4 italic text-gray-600 my-4" {...props} />,
+                    a: ({node, ...props}) => <a className="text-paradise-blue hover:underline" target="_blank" rel="noopener noreferrer" {...props} />,
+                    hr: ({node, ...props}) => <hr className="my-8 border-gray-300" {...props} />,
+                  }}
+                >
+                  {docContent}
+                </ReactMarkdown>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="bg-gray-50 p-4 flex items-center justify-between border-t">
+              <div className="flex items-center gap-4 text-sm text-gray-600">
+                <span className={`px-3 py-1 rounded font-semibold ${
+                  selectedDocIssue.severity === 'error'
+                    ? 'bg-red-100 text-red-800'
+                    : 'bg-yellow-100 text-yellow-800'
+                }`}>
+                  {selectedDocIssue.severity.toUpperCase()}
+                </span>
+                <span>WCAG: {selectedDocIssue.wcag.join(', ')}</span>
+              </div>
+              <button
+                onClick={closeDocumentation}
+                className="bg-paradise-purple text-white px-6 py-2 rounded-lg font-semibold hover:bg-paradise-purple/90 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
