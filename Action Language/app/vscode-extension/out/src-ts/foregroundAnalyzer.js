@@ -52,6 +52,9 @@ const FocusManagementAnalyzer_1 = require("../lib/analyzers/FocusManagementAnaly
 const KeyboardNavigationAnalyzer_1 = require("../lib/analyzers/KeyboardNavigationAnalyzer");
 const ARIASemanticAnalyzer_1 = require("../lib/analyzers/ARIASemanticAnalyzer");
 const WidgetPatternAnalyzer_1 = require("../lib/analyzers/WidgetPatternAnalyzer");
+const ReactPortalAnalyzer_1 = require("../lib/analyzers/ReactPortalAnalyzer");
+const ReactStopPropagationAnalyzer_1 = require("../lib/analyzers/ReactStopPropagationAnalyzer");
+const ReactHooksA11yAnalyzer_1 = require("../lib/analyzers/ReactHooksA11yAnalyzer");
 class ForegroundAnalyzer {
     constructor(diagnosticCollection, projectManager, codeActionProvider, outputChannel) {
         this.diagnosticCollection = diagnosticCollection;
@@ -68,7 +71,10 @@ class ForegroundAnalyzer {
             new FocusManagementAnalyzer_1.FocusManagementAnalyzer(),
             new KeyboardNavigationAnalyzer_1.KeyboardNavigationAnalyzer(),
             new ARIASemanticAnalyzer_1.ARIASemanticAnalyzer(),
-            new WidgetPatternAnalyzer_1.WidgetPatternAnalyzer()
+            new WidgetPatternAnalyzer_1.WidgetPatternAnalyzer(),
+            new ReactPortalAnalyzer_1.ReactPortalAnalyzer(),
+            new ReactStopPropagationAnalyzer_1.ReactStopPropagationAnalyzer(),
+            new ReactHooksA11yAnalyzer_1.ReactHooksA11yAnalyzer()
         ];
         console.log('[ForegroundAnalyzer] Initialized with', this.analyzers.length, 'analyzers');
     }

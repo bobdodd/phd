@@ -11,7 +11,8 @@ Paradise eliminates false positives by analyzing HTML, JavaScript, and CSS toget
 - **Zero False Positives**: Cross-file analysis eliminates 88% of false positives from traditional tools
 - **Dual-Mode Analysis**: Instant feedback (<100ms) with progressive enhancement as project analysis completes
 - **Multi-File Understanding**: Analyzes HTML + JavaScript + CSS together to understand complete UI patterns
-- **13 Production Analyzers**: Comprehensive detection across keyboard, ARIA, focus, and widget patterns
+- **16 Production Analyzers**: Comprehensive detection across keyboard, ARIA, focus, and widget patterns
+- **React Support**: Native JSX/TSX analysis with React Hooks accessibility validation
 - **Project-Wide Awareness**: Detects handlers split across files, orphaned event handlers, incomplete ARIA relationships
 - **WCAG 2.1 Mapped**: All issues linked to relevant WCAG success criteria with direct documentation links
 - **Confidence Scoring**: Transparent about analysis completeness (HIGH/MEDIUM/LOW confidence)
@@ -48,6 +49,21 @@ Open File → Instant File-Scope Analysis (MEDIUM confidence)
               ↓
          Zero false positives!
 ```
+
+### React/JSX Support
+
+Paradise provides first-class support for React applications:
+
+- **JSX/TSX Parsing**: Natively understands React components and JSX syntax
+- **Virtual DOM Analysis**: Extracts component structure for accessibility validation
+- **React Patterns**: Detects portals, context usage, ref forwarding, synthetic events
+- **Hooks Validation**: Comprehensive React Hooks accessibility analysis:
+  - **useEffect**: Detects missing cleanup for focus management and event listeners
+  - **useRef**: Validates focus trap implementations and ARIA labeling
+  - **useContext**: Checks for proper screen reader announcements
+  - **useState**: Validates dynamic ARIA attribute management
+
+**Supported File Types**: `.jsx`, `.tsx`, `.js` (with JSX), `.ts` (with JSX)
 
 ## Installation
 
@@ -164,30 +180,33 @@ Click the status bar to see analysis output.
 
 ## Analyzers
 
-Paradise includes **13 production-ready analyzers**:
+Paradise includes **16 production-ready analyzers**:
 
-### Multi-Model Analyzers (5)
+### Multi-Model Analyzers (9)
 
-Require HTML context for zero false positives:
+Require HTML/JSX context for zero false positives:
 
 1. **MouseOnlyClickAnalyzer** - Detects click handlers without keyboard equivalents
 2. **OrphanedEventHandlerAnalyzer** - Detects handlers attached to non-existent elements
 3. **MissingAriaConnectionAnalyzer** - Validates aria-labelledby, aria-describedby, aria-controls
 4. **VisibilityFocusConflictAnalyzer** - Detects focusable elements hidden by CSS
 5. **FocusOrderConflictAnalyzer** - Detects chaotic tabindex patterns
+6. **ARIASemanticAnalyzer** - Validates ARIA widget patterns
+7. **WidgetPatternAnalyzer** - Detects 21+ common widget accessibility issues
+8. **KeyboardNavigationAnalyzer** - Validates keyboard navigation patterns
+9. **FocusManagementAnalyzer** - Validates focus changes and restoration
 
-### JavaScript-Only Analyzers (8)
+### React Analyzers (3)
 
-Work with or without HTML context:
+React-specific accessibility patterns:
 
-1. **StaticAriaAnalyzer** - Detects ARIA attributes set once and never updated
-2. **FocusManagementAnalyzer** - Validates focus changes and restoration
-3. **MissingLabelAnalyzer** - Detects form inputs without labels
-4. **MissingAltTextAnalyzer** - Detects images without alt text
-5. **TabIndexAnalyzer** - Detects positive tabindex values
-6. **RedundantRoleAnalyzer** - Detects redundant ARIA roles
-7. **ContextChangeAnalyzer** - Detects unexpected context changes
-8. **FormValidationAnalyzer** - Validates error message patterns
+1. **ReactPortalAnalyzer** - Detects portal accessibility issues (modals, dialogs, tooltips)
+2. **ReactStopPropagationAnalyzer** - Detects stopPropagation() blocking assistive tech
+3. **ReactHooksA11yAnalyzer** - Validates React Hooks accessibility patterns:
+   - useEffect cleanup for focus management
+   - useRef focus trap implementations
+   - useContext accessibility state announcements
+   - useState ARIA attribute management
 
 ## WCAG Coverage
 

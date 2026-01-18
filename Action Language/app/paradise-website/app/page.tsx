@@ -49,11 +49,11 @@ export default function Home() {
             <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-gray-500">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-paradise-green rounded-full"></div>
-                <span>13+ built-in analyzers</span>
+                <span>16 built-in analyzers</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-paradise-blue rounded-full"></div>
-                <span>Full React support</span>
+                <span>React Hooks analysis</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-paradise-purple rounded-full"></div>
@@ -61,7 +61,7 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-paradise-orange rounded-full"></div>
-                <span>21 ARIA widget patterns</span>
+                <span>JSX/TSX support</span>
               </div>
             </div>
           </div>

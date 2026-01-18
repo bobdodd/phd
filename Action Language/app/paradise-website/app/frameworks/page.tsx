@@ -122,6 +122,153 @@ export default function FrameworksPage() {
             <h2 className="text-4xl font-bold mb-8 text-blue-600">React-Specific Features</h2>
 
             <div className="space-y-8">
+              {/* React Hooks Accessibility Analysis - NEW */}
+              <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-8 border-2 border-blue-300 shadow-lg">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-4xl">🎣</span>
+                  <h3 className="text-2xl font-bold text-blue-900">React Hooks Accessibility Analyzer</h3>
+                  <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">NEW</span>
+                </div>
+                <p className="text-gray-800 mb-6 text-lg">
+                  Comprehensive accessibility validation for React Hooks patterns - the <strong>first accessibility analyzer specifically designed for React Hooks</strong>.
+                </p>
+
+                <div className="grid md:grid-cols-2 gap-6 mb-6">
+                  {/* useEffect Analysis */}
+                  <div className="bg-white rounded-lg p-6 shadow">
+                    <h4 className="text-xl font-bold text-blue-900 mb-3 flex items-center gap-2">
+                      <code className="bg-blue-100 px-2 py-1 rounded text-sm">useEffect</code>
+                      Focus & Cleanup
+                    </h4>
+                    <ul className="space-y-3 text-sm text-gray-700">
+                      <li className="flex items-start gap-2">
+                        <span className="text-red-500">⚠️</span>
+                        <div>
+                          <strong>Missing cleanup for focus management</strong>
+                          <p className="text-xs text-gray-600 mt-1">Detects <code>.focus()</code> or <code>.blur()</code> without cleanup function</p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-red-500">🚫</span>
+                        <div>
+                          <strong>Event listener leaks</strong>
+                          <p className="text-xs text-gray-600 mt-1">Flags <code>addEventListener</code> without <code>removeEventListener</code></p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-500">💡</span>
+                        <div>
+                          <strong>WCAG: 2.1.1 (Keyboard)</strong>
+                          <p className="text-xs text-gray-600 mt-1">Prevents focus leaks and memory issues</p>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* useRef Analysis */}
+                  <div className="bg-white rounded-lg p-6 shadow">
+                    <h4 className="text-xl font-bold text-purple-900 mb-3 flex items-center gap-2">
+                      <code className="bg-purple-100 px-2 py-1 rounded text-sm">useRef</code>
+                      Focus Traps
+                    </h4>
+                    <ul className="space-y-3 text-sm text-gray-700">
+                      <li className="flex items-start gap-2">
+                        <span className="text-red-500">⛔</span>
+                        <div>
+                          <strong>Focus trap without keyboard handlers</strong>
+                          <p className="text-xs text-gray-600 mt-1">Detects <code>querySelectorAll</code> focus patterns missing Tab/Escape</p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-orange-500">⚠️</span>
+                        <div>
+                          <strong>Programmatic focus without ARIA</strong>
+                          <p className="text-xs text-gray-600 mt-1">Elements receiving <code>ref.current.focus()</code> need labels</p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-500">💡</span>
+                        <div>
+                          <strong>WCAG: 2.1.1, 2.1.2, 2.4.3</strong>
+                          <p className="text-xs text-gray-600 mt-1">Keyboard accessibility & focus order</p>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* useContext Analysis */}
+                  <div className="bg-white rounded-lg p-6 shadow">
+                    <h4 className="text-xl font-bold text-green-900 mb-3 flex items-center gap-2">
+                      <code className="bg-green-100 px-2 py-1 rounded text-sm">useContext</code>
+                      Announcements
+                    </h4>
+                    <ul className="space-y-3 text-sm text-gray-700">
+                      <li className="flex items-start gap-2">
+                        <span className="text-orange-500">⚠️</span>
+                        <div>
+                          <strong>A11y state without live regions</strong>
+                          <p className="text-xs text-gray-600 mt-1">Context managing ARIA needs screen reader announcements</p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-500">✅</span>
+                        <div>
+                          <strong>Auto-detects accessibility contexts</strong>
+                          <p className="text-xs text-gray-600 mt-1">Identifies contexts with "aria", "focus", "announce" keywords</p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-500">💡</span>
+                        <div>
+                          <strong>WCAG: 4.1.3 (Status Messages)</strong>
+                          <p className="text-xs text-gray-600 mt-1">Dynamic changes need announcements</p>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* useState Analysis */}
+                  <div className="bg-white rounded-lg p-6 shadow">
+                    <h4 className="text-xl font-bold text-orange-900 mb-3 flex items-center gap-2">
+                      <code className="bg-orange-100 px-2 py-1 rounded text-sm">useState</code>
+                      ARIA State
+                    </h4>
+                    <ul className="space-y-3 text-sm text-gray-700">
+                      <li className="flex items-start gap-2">
+                        <span className="text-orange-500">⚠️</span>
+                        <div>
+                          <strong>Toggle state without aria-expanded</strong>
+                          <p className="text-xs text-gray-600 mt-1">Detects <code>isOpen</code>, <code>isExpanded</code> state patterns</p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-orange-500">⚠️</span>
+                        <div>
+                          <strong>ARIA attributes without updates</strong>
+                          <p className="text-xs text-gray-600 mt-1">State used in <code>aria-*</code> needs setter function</p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-500">💡</span>
+                        <div>
+                          <strong>WCAG: 4.1.2 (Name, Role, Value)</strong>
+                          <p className="text-xs text-gray-600 mt-1">ARIA must reflect current state</p>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-r">
+                  <p className="text-sm text-green-900 font-semibold mb-2">
+                    🎯 Paradise is the first tool to analyze React Hooks patterns for accessibility issues
+                  </p>
+                  <p className="text-xs text-green-800">
+                    Detects 8 different Hook accessibility patterns including focus leaks, missing cleanup, keyboard traps, and improper ARIA state management.
+                  </p>
+                </div>
+              </div>
+
               {/* React Hooks */}
               <div className="bg-white rounded-xl p-8 border border-gray-200 shadow-sm">
                 <h3 className="text-2xl font-bold mb-4 text-gray-900">React Hooks Detection</h3>

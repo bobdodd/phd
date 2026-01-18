@@ -23,6 +23,9 @@ import { FocusManagementAnalyzer } from '../lib/analyzers/FocusManagementAnalyze
 import { KeyboardNavigationAnalyzer } from '../lib/analyzers/KeyboardNavigationAnalyzer';
 import { ARIASemanticAnalyzer } from '../lib/analyzers/ARIASemanticAnalyzer';
 import { WidgetPatternAnalyzer } from '../lib/analyzers/WidgetPatternAnalyzer';
+import { ReactPortalAnalyzer } from '../lib/analyzers/ReactPortalAnalyzer';
+import { ReactStopPropagationAnalyzer } from '../lib/analyzers/ReactStopPropagationAnalyzer';
+import { ReactHooksA11yAnalyzer } from '../lib/analyzers/ReactHooksA11yAnalyzer';
 import { ParadiseCodeActionProvider } from './codeActionProvider';
 
 export class ForegroundAnalyzer {
@@ -53,7 +56,10 @@ export class ForegroundAnalyzer {
       new FocusManagementAnalyzer(),
       new KeyboardNavigationAnalyzer(),
       new ARIASemanticAnalyzer(),
-      new WidgetPatternAnalyzer()
+      new WidgetPatternAnalyzer(),
+      new ReactPortalAnalyzer(),
+      new ReactStopPropagationAnalyzer(),
+      new ReactHooksA11yAnalyzer()
     ];
 
     console.log('[ForegroundAnalyzer] Initialized with', this.analyzers.length, 'analyzers');

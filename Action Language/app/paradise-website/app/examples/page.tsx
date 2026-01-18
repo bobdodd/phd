@@ -2040,6 +2040,286 @@ function CustomCheckbox({ label, onChange }) {
     ],
     wcag: ['4.1.3'],
     impact: 'Screen reader users were constantly interrupted mid-sentence while typing email addresses. Every keystroke triggered an assertive announcement, making the form nearly unusable and causing users to abandon registration.'
+  },
+
+  // React Hooks Examples
+  {
+    id: 'react-useeffect-focus-cleanup',
+    title: 'useEffect Focus Leak (React)',
+    category: 'framework',
+    language: 'TypeScript',
+    framework: 'React',
+    description: 'useEffect manages focus but forgets cleanup function, causing focus leaks when component unmounts',
+    problem: 'Focus management in useEffect without cleanup causes memory leaks and broken keyboard navigation when modal closes.',
+    before: `// ❌ Focus leak: no cleanup when modal unmounts
+function Modal({ isOpen }: { isOpen: boolean }) {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      modalRef.current?.focus();
+    }
+  }, [isOpen]);
+
+  return (
+    <div ref={modalRef} tabIndex={-1}>
+      {/* Modal content */}
+    </div>
+  );
+}
+
+// Problem: When modal closes, focus is lost
+// Screen reader users don't know where they are`,
+    after: `// ✅ Proper cleanup restores focus
+function Modal({ isOpen }: { isOpen: boolean }) {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      const previouslyFocused = document.activeElement as HTMLElement;
+      modalRef.current?.focus();
+
+      return () => {
+        // Restore focus when unmounting
+        previouslyFocused?.focus();
+      };
+    }
+  }, [isOpen]);
+
+  return (
+    <div
+      ref={modalRef}
+      tabIndex={-1}
+      aria-label="Modal"
+    >
+      {/* Modal content */}
+    </div>
+  );
+}`,
+    issuesFound: [
+      'react-hooks-useeffect-focus-cleanup: Missing cleanup function',
+      'Focus management without restoration',
+      'react-hooks-useref-focus-aria: Element lacks ARIA label'
+    ],
+    wcag: ['2.1.1', '2.4.3', '4.1.2'],
+    impact: 'When modal closed, keyboard users were sent back to top of page instead of their previous location. Screen reader announced "Document" instead of returning to meaningful context. 40% of keyboard users reported difficulty completing multi-step forms.'
+  },
+
+  {
+    id: 'react-useref-focus-trap',
+    title: 'useRef Focus Trap Without Keyboard (React)',
+    category: 'framework',
+    language: 'TypeScript',
+    framework: 'React',
+    description: 'Modal implements focus trap using useRef but forgets keyboard navigation (Tab/Escape)',
+    problem: 'Focus trap without keyboard handlers completely blocks keyboard users from navigating or exiting.',
+    before: `// ❌ Focus trap without keyboard handling
+function Dialog({ onClose }: { onClose: () => void }) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const focusable = dialogRef.current?.querySelectorAll(
+      'button, [href], input'
+    );
+    (focusable?.[0] as HTMLElement)?.focus();
+  }, []);
+
+  return (
+    <div ref={dialogRef}>
+      <h2>Confirm Action</h2>
+      <button onClick={onClose}>Cancel</button>
+      <button onClick={onClose}>Confirm</button>
+    </div>
+  );
+}
+
+// Problem: Tab key escapes dialog, no Escape key support`,
+    after: `// ✅ Proper focus trap with keyboard navigation
+function Dialog({ onClose }: { onClose: () => void }) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    const focusable = dialog.querySelectorAll(
+      'button, [href], input'
+    ) as NodeListOf<HTMLElement>;
+
+    const firstElement = focusable[0];
+    const lastElement = focusable[focusable.length - 1];
+
+    firstElement?.focus();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Tab') {
+        if (e.shiftKey && document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement.focus();
+        } else if (!e.shiftKey && document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      } else if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    dialog.addEventListener('keydown', handleKeyDown);
+    return () => dialog.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
+  return (
+    <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="dialog-title"
+    >
+      <h2 id="dialog-title">Confirm Action</h2>
+      <button onClick={onClose}>Cancel</button>
+      <button onClick={onClose}>Confirm</button>
+    </div>
+  );
+}`,
+    issuesFound: [
+      'react-hooks-useref-focus-trap: Focus trap without keyboard handlers',
+      'Missing Tab key cycling',
+      'Missing Escape key exit',
+      'react-hooks-useeffect-listener-cleanup: addEventListener without cleanup'
+    ],
+    wcag: ['2.1.1', '2.1.2', '2.4.3'],
+    impact: 'Keyboard users were completely trapped when Tab key moved focus outside dialog. No way to exit without mouse. Accessibility audit failed completely. Had to remove feature until fixed.'
+  },
+
+  {
+    id: 'react-usestate-aria-expanded',
+    title: 'useState Toggle Without aria-expanded (React)',
+    category: 'framework',
+    language: 'TypeScript',
+    framework: 'React',
+    description: 'Dropdown menu uses useState for open/closed state but forgets aria-expanded attribute',
+    problem: 'Screen readers cannot tell if dropdown is expanded or collapsed, causing confusion and failed navigation.',
+    before: `// ❌ Toggle state without aria-expanded
+function Dropdown({ items }: { items: string[] }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div>
+      <button onClick={() => setIsOpen(!isOpen)}>
+        Menu
+      </button>
+      {isOpen && (
+        <ul>
+          {items.map(item => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+// Problem: Screen readers don't announce menu state`,
+    after: `// ✅ Proper ARIA state management
+function Dropdown({ items }: { items: string[] }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+        aria-haspopup="true"
+      >
+        Menu
+      </button>
+      {isOpen && (
+        <ul role="menu">
+          {items.map(item => (
+            <li key={item} role="menuitem">
+              {item}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}`,
+    issuesFound: [
+      'react-hooks-usestate-aria-expanded: Toggle state without aria-expanded',
+      'Button controlling content needs aria-haspopup',
+      'Expandable pattern missing ARIA'
+    ],
+    wcag: ['4.1.2'],
+    impact: 'Screen reader users heard "Menu button" with no indication of state. Clicked repeatedly trying to open already-open menu. Support tickets increased 300%. Users thought feature was broken.'
+  },
+
+  {
+    id: 'react-usecontext-announcements',
+    title: 'useContext A11y State Without Announcements (React)',
+    category: 'framework',
+    language: 'TypeScript',
+    framework: 'React',
+    description: 'Context manages accessibility state but forgets to announce changes to screen readers',
+    problem: 'Dynamic state changes in context are invisible to screen readers without aria-live regions.',
+    before: `// ❌ Accessibility context without announcements
+const NotificationContext = createContext<{
+  message: string;
+  setMessage: (msg: string) => void;
+}>({ message: '', setMessage: () => {} });
+
+function NotificationProvider({ children }: { children: ReactNode }) {
+  const [message, setMessage] = useState('');
+
+  return (
+    <NotificationContext.Provider value={{ message, setMessage }}>
+      {children}
+      {message && <div>{message}</div>}
+    </NotificationContext.Provider>
+  );
+}
+
+// Problem: Screen readers don't hear notifications`,
+    after: `// ✅ Context with screen reader announcements
+const NotificationContext = createContext<{
+  message: string;
+  setMessage: (msg: string) => void;
+}>({ message: '', setMessage: () => {} });
+
+function NotificationProvider({ children }: { children: ReactNode }) {
+  const [message, setMessage] = useState('');
+
+  return (
+    <NotificationContext.Provider value={{ message, setMessage }}>
+      {children}
+
+      {/* Announcement region */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {message}
+      </div>
+
+      {/* Visual notification */}
+      {message && (
+        <div className="notification">
+          {message}
+        </div>
+      )}
+    </NotificationContext.Provider>
+  );
+}`,
+    issuesFound: [
+      'react-hooks-usecontext-announcements: Context manages accessibility state without live regions',
+      'Dynamic content changes not announced',
+      'Missing aria-live for notifications'
+    ],
+    wcag: ['4.1.3'],
+    impact: 'Screen reader users completely missed save confirmations, error messages, and status updates. Had to refresh page to check if actions succeeded. Caused data loss from double-submissions.'
   }
 ];
 
