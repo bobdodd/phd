@@ -20,9 +20,9 @@ export default function AnalyzersPage() {
         <div className="mb-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="bg-white rounded-xl shadow-lg p-6 text-center border-2 border-paradise-blue/20">
-              <div className="text-4xl font-bold text-paradise-blue mb-2">16</div>
+              <div className="text-4xl font-bold text-paradise-blue mb-2">14</div>
               <div className="text-gray-600 font-medium">Total Analyzers</div>
-              <div className="text-xs text-gray-500 mt-1">9 JS + 6 Multi-model + 1 React</div>
+              <div className="text-xs text-gray-500 mt-1">Behavioral + Structural + Framework</div>
             </div>
             <div className="bg-white rounded-xl shadow-lg p-6 text-center border-2 border-green-500/20">
               <div className="text-4xl font-bold text-green-600 mb-2">0</div>
@@ -570,6 +570,93 @@ btn.addEventListener('click', handler);
 
               <div className="text-sm text-gray-600 bg-gray-50 rounded p-2 mt-4">
                 <strong>WCAG:</strong> 2.1.1, 2.4.3, 4.1.2 | <strong>Impact:</strong> Focus leaks, broken ARIA, blocked AT
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Phase 4: Structural HTML Analyzers */}
+        <div className="max-w-6xl mx-auto mb-16">
+          <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl shadow-xl p-8 text-white mb-8">
+            <h2 className="text-4xl font-bold mb-4 text-center">Phase 4: Structural HTML Analysis</h2>
+            <p className="text-lg text-center opacity-95 max-w-3xl mx-auto">
+              New analyzers based on auto_a11y_python touchpoints, validating document structure and semantic HTML.
+              These detect common WCAG failures in heading hierarchy, page structure, and HTML semantics.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-1 gap-6">
+            {/* Analyzer 14: HeadingStructureAnalyzer */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border-l-8 border-orange-500">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center text-white text-xl font-bold">14</div>
+                <div>
+                  <h3 className="text-2xl font-bold">HeadingStructureAnalyzer</h3>
+                  <div className="inline-block bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs font-semibold">NEW - Phase 4 (From auto_a11y_python)</div>
+                </div>
+              </div>
+              <p className="text-gray-700 mb-4">
+                Validates heading hierarchy and structure to ensure proper document outline for screen reader navigation.
+                Detects empty headings, skipped levels, missing/multiple H1, and ARIA heading pattern issues.
+              </p>
+
+              <div className="space-y-3 mb-4">
+                {/* H1 Validation */}
+                <div className="bg-red-50 rounded p-3">
+                  <h4 className="font-semibold text-red-900 mb-2">H1 Presence & Uniqueness</h4>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">no-h1-on-page</div>
+                    <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">multiple-h1-headings</div>
+                    <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">page-doesnt-start-with-h1</div>
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">no-headings-on-page</div>
+                  </div>
+                </div>
+
+                {/* Hierarchy Validation */}
+                <div className="bg-orange-50 rounded p-3">
+                  <h4 className="font-semibold text-orange-900 mb-2">Hierarchy & Content</h4>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">heading-levels-skipped</div>
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">empty-heading</div>
+                    <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">hidden-heading</div>
+                    <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">heading-too-long</div>
+                  </div>
+                </div>
+
+                {/* ARIA Patterns */}
+                <div className="bg-purple-50 rounded p-3">
+                  <h4 className="font-semibold text-purple-900 mb-2">ARIA Heading Patterns</h4>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">aria-level-without-role</div>
+                    <div className="bg-blue-100 text-blue-800 px-2 py-1 rounded">heading-near-length-limit</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2">
+                <strong>WCAG:</strong> 1.3.1, 2.4.1, 2.4.6, 2.4.10, 4.1.2 | <strong>Impact:</strong> Screen readers rely on headings for navigation
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 mt-8">
+            <h3 className="text-xl font-bold text-blue-900 mb-3">Coming Soon in Phase 4</h3>
+            <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-700">
+              <div>
+                <strong className="text-blue-900">FormAccessibilityAnalyzer</strong>
+                <p className="text-xs mt-1">27 tests: Labels, ARIA references, required indicators, autocomplete</p>
+              </div>
+              <div>
+                <strong className="text-blue-900">ImageAccessibilityAnalyzer</strong>
+                <p className="text-xs mt-1">12 tests: Alt text quality, SVG accessibility, decorative images</p>
+              </div>
+              <div>
+                <strong className="text-blue-900">LandmarkAnalyzer</strong>
+                <p className="text-xs mt-1">8 tests: Main landmark, banner/contentinfo, duplicate names</p>
+              </div>
+              <div>
+                <strong className="text-blue-900">AccessibleNameAnalyzer</strong>
+                <p className="text-xs mt-1">Computes accessible names, detects generic/missing names</p>
               </div>
             </div>
           </div>

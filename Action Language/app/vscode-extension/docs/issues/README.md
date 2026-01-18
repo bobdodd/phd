@@ -162,6 +162,58 @@ Each help page includes:
   - Severity: Error
   - Quick Fix: ✗ Manual fix required
 
+### Document Structure
+
+- **[no-headings-on-page](no-headings-on-page.md)** - Page contains no heading elements
+  - WCAG: 1.3.1, 2.4.6 (Info and Relationships, Headings and Labels)
+  - Severity: Error
+  - Quick Fix: ✓ Available
+
+- **[no-h1-on-page](no-h1-on-page.md)** - Page has headings but missing H1 element
+  - WCAG: 1.3.1, 2.4.6 (Info and Relationships, Headings and Labels)
+  - Severity: Error
+  - Quick Fix: ✓ Available
+
+- **[multiple-h1-headings](multiple-h1-headings.md)** - Page contains more than one H1 element
+  - WCAG: 1.3.1 (Info and Relationships)
+  - Severity: Warning
+  - Quick Fix: ✓ Available
+
+- **[page-doesnt-start-with-h1](page-doesnt-start-with-h1.md)** - First heading on page is not H1
+  - WCAG: 1.3.1, 2.4.6 (Info and Relationships, Headings and Labels)
+  - Severity: Warning
+  - Quick Fix: ✓ Available
+
+- **[heading-levels-skipped](heading-levels-skipped.md)** - Heading hierarchy has gaps (e.g., H1 to H3)
+  - WCAG: 1.3.1 (Info and Relationships)
+  - Severity: Error
+  - Quick Fix: ✓ Available
+
+- **[empty-heading](empty-heading.md)** - Heading element contains no text content
+  - WCAG: 2.4.6, 1.3.1 (Headings and Labels, Info and Relationships)
+  - Severity: Error
+  - Quick Fix: ✓ Available
+
+- **[hidden-heading](hidden-heading.md)** - Heading hidden with display:none or visibility:hidden
+  - WCAG: 1.3.1 (Info and Relationships)
+  - Severity: Warning
+  - Quick Fix: ✓ Available
+
+- **[heading-too-long](heading-too-long.md)** - Heading exceeds 60 characters
+  - WCAG: 2.4.6 (Headings and Labels)
+  - Severity: Warning
+  - Quick Fix: ✗ Manual review recommended
+
+- **[heading-near-length-limit](heading-near-length-limit.md)** - Heading approaching 60 character limit (40-60 chars)
+  - WCAG: 2.4.6 (Headings and Labels)
+  - Severity: Info
+  - Quick Fix: ✗ Manual review recommended
+
+- **[aria-level-without-role](aria-level-without-role.md)** - Element has aria-level but missing role="heading"
+  - WCAG: 4.1.2 (Name, Role, Value)
+  - Severity: Error
+  - Quick Fix: ✓ Available
+
 ### React-Specific
 
 - **[react-portal-accessibility](react-portal-accessibility.md)** - Portal renders outside parent DOM hierarchy
@@ -208,6 +260,16 @@ Each help page includes:
 | focus-restoration-missing | ✅ | 2.4.3 | Warning |
 | focus-order-conflict | ✅ | 2.4.3 | Warning |
 | visibility-focus-conflict | ✅ | 2.4.7 | Error |
+| no-headings-on-page | ✅ | 1.3.1, 2.4.6 | Error |
+| no-h1-on-page | ✅ | 1.3.1, 2.4.6 | Error |
+| multiple-h1-headings | ✅ | 1.3.1 | Warning |
+| page-doesnt-start-with-h1 | ✅ | 1.3.1, 2.4.6 | Warning |
+| heading-levels-skipped | ✅ | 1.3.1 | Error |
+| empty-heading | ✅ | 2.4.6, 1.3.1 | Error |
+| hidden-heading | ✅ | 1.3.1 | Warning |
+| heading-too-long | ✅ | 2.4.6 | Warning |
+| heading-near-length-limit | ✅ | 2.4.6 | Info |
+| aria-level-without-role | ✅ | 4.1.2 | Error |
 | react-portal-accessibility | ✅ | Various | Warning |
 | react-stop-propagation | ✅ | 2.1.1 | Warning/Error |
 
@@ -228,8 +290,11 @@ Paradise maps issues to WCAG 2.1 success criteria:
 - **[2.1.1 Keyboard](https://www.w3.org/WAI/WCAG21/Understanding/keyboard)** - All functionality available via keyboard
 - **[2.1.2 No Keyboard Trap](https://www.w3.org/WAI/WCAG21/Understanding/no-keyboard-trap)** - Users can navigate away using keyboard alone
 - **[2.1.4 Character Key Shortcuts](https://www.w3.org/WAI/WCAG21/Understanding/character-key-shortcuts)** - Single-character shortcuts can be turned off or remapped
+- **[2.4.1 Bypass Blocks](https://www.w3.org/WAI/WCAG21/Understanding/bypass-blocks)** - Mechanism to skip repeated content blocks
 - **[2.4.3 Focus Order](https://www.w3.org/WAI/WCAG21/Understanding/focus-order)** - Navigation order is logical and intuitive
+- **[2.4.6 Headings and Labels](https://www.w3.org/WAI/WCAG21/Understanding/headings-and-labels)** - Headings and labels describe topic or purpose
 - **[2.4.7 Focus Visible](https://www.w3.org/WAI/WCAG21/Understanding/focus-visible)** - Keyboard focus indicator is visible
+- **[2.4.10 Section Headings](https://www.w3.org/WAI/WCAG21/Understanding/section-headings)** - Section headings organize content
 - **[2.5.3 Label in Name](https://www.w3.org/WAI/WCAG21/Understanding/label-in-name)** - Accessible names contain the visible text label
 - **[4.1.2 Name, Role, Value](https://www.w3.org/WAI/WCAG21/Understanding/name-role-value)** - UI components have accessible names and roles
 - **[4.1.3 Status Messages](https://www.w3.org/WAI/WCAG21/Understanding/status-messages)** - Status messages are announced to assistive technologies

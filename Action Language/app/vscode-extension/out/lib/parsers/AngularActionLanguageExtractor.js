@@ -61,7 +61,7 @@ class AngularActionLanguageExtractor {
         if (!source.includes('@Component') && !source.includes('template:')) {
             return source;
         }
-        const inlineTemplateMatch = source.match(/template:\s*`([^`]*)`/s);
+        const inlineTemplateMatch = source.match(/template:\s*`([\s\S]*?)`/);
         if (inlineTemplateMatch) {
             return inlineTemplateMatch[1].trim();
         }

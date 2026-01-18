@@ -27,6 +27,7 @@ import { ReactA11yAnalyzer } from '../lib/analyzers/ReactA11yAnalyzer';
 import { SvelteReactivityAnalyzer } from '../lib/analyzers/SvelteReactivityAnalyzer';
 import { VueReactivityAnalyzer } from '../lib/analyzers/VueReactivityAnalyzer';
 import { AngularReactivityAnalyzer } from '../lib/analyzers/AngularReactivityAnalyzer';
+import { HeadingStructureAnalyzer } from '../lib/analyzers/HeadingStructureAnalyzer';
 import { ParadiseCodeActionProvider } from './codeActionProvider';
 
 export class ForegroundAnalyzer {
@@ -61,7 +62,8 @@ export class ForegroundAnalyzer {
       new ReactA11yAnalyzer(),
       new SvelteReactivityAnalyzer(),
       new VueReactivityAnalyzer(),
-      new AngularReactivityAnalyzer()
+      new AngularReactivityAnalyzer(),
+      new HeadingStructureAnalyzer()
     ];
 
     this.outputChannel.appendLine(`[ForegroundAnalyzer] Initialized with ${this.analyzers.length} analyzers`);

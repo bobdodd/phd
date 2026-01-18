@@ -56,6 +56,7 @@ const ReactA11yAnalyzer_1 = require("../lib/analyzers/ReactA11yAnalyzer");
 const SvelteReactivityAnalyzer_1 = require("../lib/analyzers/SvelteReactivityAnalyzer");
 const VueReactivityAnalyzer_1 = require("../lib/analyzers/VueReactivityAnalyzer");
 const AngularReactivityAnalyzer_1 = require("../lib/analyzers/AngularReactivityAnalyzer");
+const HeadingStructureAnalyzer_1 = require("../lib/analyzers/HeadingStructureAnalyzer");
 class ForegroundAnalyzer {
     constructor(diagnosticCollection, projectManager, codeActionProvider, outputChannel) {
         this.diagnosticCollection = diagnosticCollection;
@@ -76,7 +77,8 @@ class ForegroundAnalyzer {
             new ReactA11yAnalyzer_1.ReactA11yAnalyzer(),
             new SvelteReactivityAnalyzer_1.SvelteReactivityAnalyzer(),
             new VueReactivityAnalyzer_1.VueReactivityAnalyzer(),
-            new AngularReactivityAnalyzer_1.AngularReactivityAnalyzer()
+            new AngularReactivityAnalyzer_1.AngularReactivityAnalyzer(),
+            new HeadingStructureAnalyzer_1.HeadingStructureAnalyzer()
         ];
         this.outputChannel.appendLine(`[ForegroundAnalyzer] Initialized with ${this.analyzers.length} analyzers`);
     }

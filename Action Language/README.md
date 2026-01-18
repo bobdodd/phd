@@ -8,7 +8,7 @@ Paradise is an accessibility analysis tool that eliminates false positives by an
 
 - **Zero false positives** for handlers split across multiple files
 - **88% reduction** in overall false positive rate
-- **13 production analyzers** including framework-specific analyzers for React, Vue, Svelte, and Angular
+- **14 production analyzers** including framework-specific analyzers for React, Vue, Svelte, and Angular
 - **Multi-file analysis** - HTML + JavaScript + CSS analyzed together
 - **Framework-aware analysis** - Detects issues in React, Vue, Svelte, and Angular patterns
 - **Real-time analysis** with VS Code extension
@@ -88,6 +88,10 @@ See [SPRINT_1-4_SUMMARY.md](SPRINT_1-4_SUMMARY.md) for complete architecture det
 
 13. **FocusManagementAnalyzer** - Validates focus changes and restoration
 
+**Structural HTML Analyzers** - Validate document structure and semantics:
+
+14. **HeadingStructureAnalyzer** - Validates heading hierarchy, H1 presence, empty headings, and ARIA heading patterns
+
 ## Framework Support
 
 Paradise now includes framework-aware analysis for React, Vue, Svelte, and Angular:
@@ -134,7 +138,7 @@ Try Paradise in your browser: [paradise-website/app/playground](app/paradise-web
 ### Paradise Website
 Complete documentation: [paradise-website/](app/paradise-website/)
 - Architecture guide
-- All 13 analyzers documented
+- All 14 analyzers documented
 - API reference
 - Examples and tutorials
 

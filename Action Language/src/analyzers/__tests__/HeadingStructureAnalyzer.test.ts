@@ -1,0 +1,422 @@
+/**
+ * Tests for HeadingStructureAnalyzer
+ */
+
+import { HeadingStructureAnalyzer } from '../HeadingStructureAnalyzer';
+import { DocumentModel } from '../../models/DocumentModel';
+import { HTMLParser } from '../../parsers/HTMLParser';
+import { AnalyzerContext } from '../BaseAnalyzer';
+
+describe('HeadingStructureAnalyzer', () => {
+  let analyzer: HeadingStructureAnalyzer;
+  let parser: HTMLParser;
+
+  beforeEach(() => {
+    analyzer = new HeadingStructureAnalyzer();
+    parser = new HTMLParser();
+  });
+
+  describe('Empty Headings', () => {
+    it('should detect empty h1 element', () => {
+      const html = '<h1></h1>';
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'file', dom: domModel, javascript: [] }),
+        scope: 'file'
+      };
+
+      const issues = analyzer.analyze(context);
+      const emptyHeading = issues.find(i => i.type === 'empty-heading');
+
+      expect(emptyHeading).toBeDefined();
+      expect(emptyHeading?.severity).toBe('error');
+      expect(emptyHeading?.wcagCriteria).toContain('2.4.6');
+    });
+
+    it('should detect empty h2 with whitespace', () => {
+      const html = '<h1>Title</h1><h2>   </h2>';
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'file', dom: domModel, javascript: [] }),
+        scope: 'file'
+      };
+
+      const issues = analyzer.analyze(context);
+      const emptyHeading = issues.find(i => i.type === 'empty-heading');
+
+      expect(emptyHeading).toBeDefined();
+    });
+
+    it('should not flag heading with text content', () => {
+      const html = '<h1>Page Title</h1>';
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'file', dom: domModel, javascript: [] }),
+        scope: 'file'
+      };
+
+      const issues = analyzer.analyze(context);
+      const emptyHeading = issues.find(i => i.type === 'empty-heading');
+
+      expect(emptyHeading).toBeUndefined();
+    });
+  });
+
+  describe('H1 Presence and Uniqueness', () => {
+    it('should detect missing H1', () => {
+      const html = '<h2>Section Title</h2><h3>Subsection</h3>';
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'page', dom: domModel, javascript: [] }),
+        scope: 'page'
+      };
+
+      const issues = analyzer.analyze(context);
+      const noH1 = issues.find(i => i.type === 'no-h1-on-page');
+
+      expect(noH1).toBeDefined();
+      expect(noH1?.severity).toBe('error');
+      expect(noH1?.wcagCriteria).toContain('1.3.1');
+      expect(noH1?.wcagCriteria).toContain('2.4.6');
+    });
+
+    it('should detect multiple H1 elements', () => {
+      const html = '<h1>First Title</h1><h2>Section</h2><h1>Second Title</h1>';
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'page', dom: domModel, javascript: [] }),
+        scope: 'page'
+      };
+
+      const issues = analyzer.analyze(context);
+      const multipleH1 = issues.find(i => i.type === 'multiple-h1-headings');
+
+      expect(multipleH1).toBeDefined();
+      expect(multipleH1?.severity).toBe('warning');
+      expect(multipleH1?.wcagCriteria).toContain('1.3.1');
+    });
+
+    it('should not flag single H1', () => {
+      const html = '<h1>Page Title</h1><h2>Section</h2>';
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'page', dom: domModel, javascript: [] }),
+        scope: 'page'
+      };
+
+      const issues = analyzer.analyze(context);
+      const h1Issue = issues.find(i =>
+        i.type === 'no-h1-on-page' || i.type === 'multiple-h1-headings'
+      );
+
+      expect(h1Issue).toBeUndefined();
+    });
+
+    it('should detect page not starting with H1', () => {
+      const html = '<h2>First Heading</h2><h1>Title</h1>';
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'page', dom: domModel, javascript: [] }),
+        scope: 'page'
+      };
+
+      const issues = analyzer.analyze(context);
+      const noStartH1 = issues.find(i => i.type === 'page-doesnt-start-with-h1');
+
+      expect(noStartH1).toBeDefined();
+      expect(noStartH1?.severity).toBe('warning');
+    });
+  });
+
+  describe('Heading Hierarchy', () => {
+    it('should detect skipped heading level (H1 to H3)', () => {
+      const html = '<h1>Title</h1><h3>Subsection</h3>';
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'file', dom: domModel, javascript: [] }),
+        scope: 'file'
+      };
+
+      const issues = analyzer.analyze(context);
+      const skipped = issues.find(i => i.type === 'heading-levels-skipped');
+
+      expect(skipped).toBeDefined();
+      expect(skipped?.severity).toBe('error');
+      expect(skipped?.message).toContain('H2');
+      expect(skipped?.wcagCriteria).toContain('1.3.1');
+    });
+
+    it('should detect multiple skipped levels (H1 to H4)', () => {
+      const html = '<h1>Title</h1><h4>Deep Section</h4>';
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'file', dom: domModel, javascript: [] }),
+        scope: 'file'
+      };
+
+      const issues = analyzer.analyze(context);
+      const skipped = issues.find(i => i.type === 'heading-levels-skipped');
+
+      expect(skipped).toBeDefined();
+      expect(skipped?.message).toContain('H2');
+      expect(skipped?.message).toContain('H3');
+    });
+
+    it('should allow proper sequential hierarchy', () => {
+      const html = '<h1>Title</h1><h2>Section</h2><h3>Subsection</h3>';
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'file', dom: domModel, javascript: [] }),
+        scope: 'file'
+      };
+
+      const issues = analyzer.analyze(context);
+      const skipped = issues.find(i => i.type === 'heading-levels-skipped');
+
+      expect(skipped).toBeUndefined();
+    });
+
+    it('should allow decreasing levels without error', () => {
+      const html = '<h1>Title</h1><h2>Section 1</h2><h3>Subsection 1.1</h3><h3>Subsection 1.2</h3><h2>Section 2</h2><h4>Deep item</h4>';
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'file', dom: domModel, javascript: [] }),
+        scope: 'file'
+      };
+
+      const issues = analyzer.analyze(context);
+      // The H2 -> H4 jump should be caught
+      const skipped = issues.filter(i => i.type === 'heading-levels-skipped');
+
+      expect(skipped.length).toBe(1);
+      expect(skipped[0].message).toContain('H2');
+      expect(skipped[0].message).toContain('H4');
+    });
+  });
+
+  describe('No Headings', () => {
+    it('should detect page with no headings', () => {
+      const html = '<div>Content without headings</div>';
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'file', dom: domModel, javascript: [] }),
+        scope: 'file'
+      };
+
+      const issues = analyzer.analyze(context);
+      const noHeadings = issues.find(i => i.type === 'no-headings-on-page');
+
+      expect(noHeadings).toBeDefined();
+      expect(noHeadings?.severity).toBe('error');
+      expect(noHeadings?.wcagCriteria).toContain('1.3.1');
+      expect(noHeadings?.wcagCriteria).toContain('2.4.6');
+    });
+  });
+
+  describe('Heading Length', () => {
+    it('should warn about very long headings', () => {
+      const longText = 'A'.repeat(80);
+      const html = `<h1>${longText}</h1>`;
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'file', dom: domModel, javascript: [] }),
+        scope: 'file'
+      };
+
+      const issues = analyzer.analyze(context);
+      const tooLong = issues.find(i => i.type === 'heading-too-long');
+
+      expect(tooLong).toBeDefined();
+      expect(tooLong?.severity).toBe('warning');
+      expect(tooLong?.wcagCriteria).toContain('2.4.6');
+    });
+
+    it('should provide info for near-limit headings', () => {
+      const nearLimitText = 'A'.repeat(45);
+      const html = `<h1>${nearLimitText}</h1>`;
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'file', dom: domModel, javascript: [] }),
+        scope: 'file'
+      };
+
+      const issues = analyzer.analyze(context);
+      const nearLimit = issues.find(i => i.type === 'heading-near-length-limit');
+
+      expect(nearLimit).toBeDefined();
+      expect(nearLimit?.severity).toBe('info');
+    });
+
+    it('should not flag short headings', () => {
+      const html = '<h1>Short Title</h1>';
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'file', dom: domModel, javascript: [] }),
+        scope: 'file'
+      };
+
+      const issues = analyzer.analyze(context);
+      const lengthIssue = issues.find(i =>
+        i.type === 'heading-too-long' || i.type === 'heading-near-length-limit'
+      );
+
+      expect(lengthIssue).toBeUndefined();
+    });
+  });
+
+  describe('Hidden Headings', () => {
+    it('should detect heading with display:none', () => {
+      const html = '<h1 style="display:none">Hidden Title</h1>';
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'file', dom: domModel, javascript: [] }),
+        scope: 'file'
+      };
+
+      const issues = analyzer.analyze(context);
+      const hidden = issues.find(i => i.type === 'hidden-heading');
+
+      expect(hidden).toBeDefined();
+      expect(hidden?.severity).toBe('warning');
+      expect(hidden?.wcagCriteria).toContain('1.3.1');
+    });
+
+    it('should detect heading with visibility:hidden', () => {
+      const html = '<h2 style="visibility:hidden">Hidden Section</h2>';
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'file', dom: domModel, javascript: [] }),
+        scope: 'file'
+      };
+
+      const issues = analyzer.analyze(context);
+      const hidden = issues.find(i => i.type === 'hidden-heading');
+
+      expect(hidden).toBeDefined();
+    });
+
+    it('should detect heading with hidden class', () => {
+      const html = '<h1 class="hidden">Hidden Title</h1>';
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'file', dom: domModel, javascript: [] }),
+        scope: 'file'
+      };
+
+      const issues = analyzer.analyze(context);
+      const hidden = issues.find(i => i.type === 'hidden-heading');
+
+      expect(hidden).toBeDefined();
+    });
+
+    it('should not flag visible headings', () => {
+      const html = '<h1>Visible Title</h1>';
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'file', dom: domModel, javascript: [] }),
+        scope: 'file'
+      };
+
+      const issues = analyzer.analyze(context);
+      const hidden = issues.find(i => i.type === 'hidden-heading');
+
+      expect(hidden).toBeUndefined();
+    });
+  });
+
+  describe('ARIA Heading Patterns', () => {
+    it('should detect aria-level without role', () => {
+      const html = '<div aria-level="2">Section Title</div>';
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'file', dom: domModel, javascript: [] }),
+        scope: 'file'
+      };
+
+      const issues = analyzer.analyze(context);
+      const ariaIssue = issues.find(i => i.type === 'aria-level-without-role');
+
+      expect(ariaIssue).toBeDefined();
+      expect(ariaIssue?.severity).toBe('error');
+      expect(ariaIssue?.wcagCriteria).toContain('4.1.2');
+    });
+
+    it('should allow aria-level with role="heading"', () => {
+      const html = '<div role="heading" aria-level="2">Section Title</div>';
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'file', dom: domModel, javascript: [] }),
+        scope: 'file'
+      };
+
+      const issues = analyzer.analyze(context);
+      const ariaIssue = issues.find(i => i.type === 'aria-level-without-role');
+
+      expect(ariaIssue).toBeUndefined();
+    });
+
+    it('should treat role="heading" as valid heading in hierarchy', () => {
+      const html = `
+        <h1>Title</h1>
+        <div role="heading" aria-level="2">Section</div>
+        <h3>Subsection</h3>
+      `;
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'file', dom: domModel, javascript: [] }),
+        scope: 'file'
+      };
+
+      const issues = analyzer.analyze(context);
+      const skipped = issues.find(i => i.type === 'heading-levels-skipped');
+
+      expect(skipped).toBeUndefined();
+    });
+  });
+
+  describe('Complex Scenarios', () => {
+    it('should handle document with multiple issues', () => {
+      const html = `
+        <h2>First Section</h2>
+        <h4>Skipped H3</h4>
+        <h1>Late H1</h1>
+        <h1>Duplicate H1</h1>
+        <h3></h3>
+      `;
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'page', dom: domModel, javascript: [] }),
+        scope: 'page'
+      };
+
+      const issues = analyzer.analyze(context);
+
+      // Should have: no-start-h1, heading-levels-skipped, multiple-h1, empty-heading
+      expect(issues.length).toBeGreaterThan(0);
+      expect(issues.find(i => i.type === 'page-doesnt-start-with-h1')).toBeDefined();
+      expect(issues.find(i => i.type === 'heading-levels-skipped')).toBeDefined();
+      expect(issues.find(i => i.type === 'multiple-h1-headings')).toBeDefined();
+      expect(issues.find(i => i.type === 'empty-heading')).toBeDefined();
+    });
+
+    it('should handle perfect heading structure', () => {
+      const html = `
+        <h1>Page Title</h1>
+        <h2>Section 1</h2>
+        <h3>Subsection 1.1</h3>
+        <h3>Subsection 1.2</h3>
+        <h2>Section 2</h2>
+        <h3>Subsection 2.1</h3>
+      `;
+      const domModel = parser.parse(html, 'test.html');
+      const context: AnalyzerContext = {
+        documentModel: new DocumentModel({ scope: 'page', dom: domModel, javascript: [] }),
+        scope: 'page'
+      };
+
+      const issues = analyzer.analyze(context);
+
+      expect(issues.length).toBe(0);
+    });
+  });
+});
