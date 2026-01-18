@@ -8,7 +8,7 @@ export default function FrameworksPage() {
           </h1>
           <p className="text-2xl mb-4 max-w-3xl">
             Paradise provides comprehensive accessibility analysis for modern JavaScript frameworks
-            including React, with extensibility for Vue, Angular, Svelte, and more.
+            including React, Vue, and Svelte, with extensibility for Angular and more.
           </p>
         </div>
       </section>
@@ -95,25 +95,27 @@ export default function FrameworksPage() {
               </div>
 
               {/* Vue */}
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-8 opacity-75">
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-8">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="text-5xl">🟢</div>
                   <div>
                     <h3 className="text-2xl font-bold text-green-900">Vue.js</h3>
-                    <span className="inline-block bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold">
-                      Planned
+                    <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
+                      Full Support
                     </span>
                   </div>
                 </div>
                 <p className="text-gray-700 mb-4">
-                  Vue Single File Components (SFC) support planned for future release.
+                  Native support for Vue Single File Components with directive validation and reactivity analysis.
                 </p>
-                <ul className="space-y-2 text-sm text-gray-600">
-                  <li>⏳ SFC template parsing</li>
-                  <li>⏳ Vue 3 Composition API</li>
-                  <li>⏳ v-on event directives</li>
-                  <li>⏳ Ref and reactive patterns</li>
-                  <li>⏳ Teleport detection</li>
+                <ul className="space-y-2 text-sm text-gray-700">
+                  <li>✅ .vue file parsing (template, script, style blocks)</li>
+                  <li>✅ Vue directives (v-on/@, v-model, v-bind/:, v-if, v-show)</li>
+                  <li>✅ Ref-based focus management</li>
+                  <li>✅ Dynamic class and attribute bindings</li>
+                  <li>✅ Two-way binding accessibility (v-model)</li>
+                  <li>✅ Conditional rendering patterns</li>
+                  <li>✅ Event handler validation</li>
                 </ul>
               </div>
 
@@ -808,6 +810,287 @@ export default function FrameworksPage() {
             </div>
           </div>
 
+          {/* Vue-Specific Features */}
+          <div id="vue-features" className="scroll-mt-8">
+            <h2 className="text-4xl font-bold mb-8 text-green-600">Vue-Specific Features</h2>
+
+            <div className="space-y-8">
+              {/* Vue Reactivity Accessibility Analyzer - NEW */}
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-8 border-2 border-green-300 shadow-lg">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-4xl">🟢</span>
+                  <h3 className="text-2xl font-bold text-green-900">Vue Reactivity Accessibility Analyzer</h3>
+                  <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">NEW</span>
+                </div>
+                <p className="text-gray-800 mb-6 text-lg">
+                  Comprehensive accessibility validation for Vue reactive patterns and directives - the <strong>first accessibility analyzer specifically designed for Vue</strong>.
+                </p>
+
+                <div className="grid md:grid-cols-2 gap-6 mb-6">
+                  {/* v-model Directive */}
+                  <div className="bg-white rounded-lg p-6 shadow">
+                    <h4 className="text-xl font-bold text-green-900 mb-3 flex items-center gap-2">
+                      <code className="bg-green-100 px-2 py-1 rounded text-sm">v-model</code>
+                      Two-Way Binding
+                    </h4>
+                    <ul className="space-y-3 text-sm text-gray-700">
+                      <li className="flex items-start gap-2">
+                        <span className="text-red-500">⚠️</span>
+                        <div>
+                          <strong>v-model without labels</strong>
+                          <p className="text-xs text-gray-600 mt-1">Detects form inputs with v-model lacking aria-label or <code>&lt;label&gt;</code></p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-500">✅</span>
+                        <div>
+                          <strong>Validates proper labeling</strong>
+                          <p className="text-xs text-gray-600 mt-1">Checks for aria-label, aria-labelledby, or associated labels</p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-500">💡</span>
+                        <div>
+                          <strong>WCAG: 4.1.2, 1.3.1</strong>
+                          <p className="text-xs text-gray-600 mt-1">Name, Role, Value & Info and Relationships</p>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* @click / v-on Event Handlers */}
+                  <div className="bg-white rounded-lg p-6 shadow">
+                    <h4 className="text-xl font-bold text-emerald-900 mb-3 flex items-center gap-2">
+                      <code className="bg-emerald-100 px-2 py-1 rounded text-sm">@click</code>
+                      Event Handlers
+                    </h4>
+                    <ul className="space-y-3 text-sm text-gray-700">
+                      <li className="flex items-start gap-2">
+                        <span className="text-red-500">⛔</span>
+                        <div>
+                          <strong>@click without keyboard handler</strong>
+                          <p className="text-xs text-gray-600 mt-1">Non-interactive elements need @keydown + role/tabindex</p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-500">✅</span>
+                        <div>
+                          <strong>Validates interactive semantics</strong>
+                          <p className="text-xs text-gray-600 mt-1">Checks for proper role and tabindex on custom controls</p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-500">💡</span>
+                        <div>
+                          <strong>WCAG: 2.1.1, 2.1.2</strong>
+                          <p className="text-xs text-gray-600 mt-1">Keyboard & No Keyboard Trap</p>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* v-show / v-if Directives */}
+                  <div className="bg-white rounded-lg p-6 shadow">
+                    <h4 className="text-xl font-bold text-teal-900 mb-3 flex items-center gap-2">
+                      <code className="bg-teal-100 px-2 py-1 rounded text-sm">v-show</code>
+                      Visibility Control
+                    </h4>
+                    <ul className="space-y-3 text-sm text-gray-700">
+                      <li className="flex items-start gap-2">
+                        <span className="text-orange-500">⚠️</span>
+                        <div>
+                          <strong>Visibility changes without ARIA</strong>
+                          <p className="text-xs text-gray-600 mt-1">v-show/v-if need <code>aria-hidden</code> or <code>aria-expanded</code></p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-teal-500">🔍</span>
+                        <div>
+                          <strong>Auto-detects conditional rendering</strong>
+                          <p className="text-xs text-gray-600 mt-1">Identifies v-if, v-else-if, v-else, v-show patterns</p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-500">💡</span>
+                        <div>
+                          <strong>WCAG: 4.1.2, 4.1.3</strong>
+                          <p className="text-xs text-gray-600 mt-1">ARIA state & Status Messages</p>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* :class / Ref Focus */}
+                  <div className="bg-white rounded-lg p-6 shadow">
+                    <h4 className="text-xl font-bold text-lime-900 mb-3 flex items-center gap-2">
+                      <code className="bg-lime-100 px-2 py-1 rounded text-sm">$refs</code>
+                      Focus Management
+                    </h4>
+                    <ul className="space-y-3 text-sm text-gray-700">
+                      <li className="flex items-start gap-2">
+                        <span className="text-orange-500">⚠️</span>
+                        <div>
+                          <strong>Ref focus without cleanup</strong>
+                          <p className="text-xs text-gray-600 mt-1">$refs.element.focus() needs onBeforeUnmount cleanup</p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-lime-500">🔄</span>
+                        <div>
+                          <strong>Dynamic :class bindings</strong>
+                          <p className="text-xs text-gray-600 mt-1">Class bindings affecting visibility need ARIA sync</p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-500">💡</span>
+                        <div>
+                          <strong>WCAG: 2.4.3, 2.1.2</strong>
+                          <p className="text-xs text-gray-600 mt-1">Focus Order & No Keyboard Trap</p>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-r">
+                  <p className="text-sm text-green-900 font-semibold mb-2">
+                    🎯 Paradise is the first tool to analyze Vue reactive patterns for accessibility issues
+                  </p>
+                  <p className="text-xs text-green-800">
+                    Detects 5 different Vue accessibility patterns including v-model without labels, @click without keyboard handlers, v-show/v-if visibility changes, and ref-based focus management.
+                  </p>
+                </div>
+              </div>
+
+              {/* Vue Component Structure */}
+              <div className="bg-white rounded-xl p-8 border border-gray-200 shadow-sm">
+                <h3 className="text-2xl font-bold mb-4 text-gray-900">Vue SFC Parsing</h3>
+                <p className="text-gray-700 mb-4">
+                  Paradise natively understands Vue Single File Component structure:
+                </p>
+
+                <div className="bg-gray-50 p-6 rounded-lg mb-6">
+                  <pre className="font-mono text-sm text-gray-800 overflow-x-auto">
+{`<template>
+  <button
+    @click="increment"
+    @keydown="handleKey"
+    :aria-label="buttonLabel"
+  >
+    Count: {{ count }}
+  </button>
+
+  <div v-show="isOpen" :aria-hidden="!isOpen">
+    Content
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+
+const count = ref(0);
+const isOpen = ref(false);
+
+const increment = () => count.value++;
+</script>
+
+<style scoped>
+[aria-hidden="true"] { display: none; }
+</style>`}
+                  </pre>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="border-l-4 border-green-500 pl-4">
+                    <h4 className="font-bold text-gray-900 mb-2">&lt;template&gt; Block</h4>
+                    <ul className="text-sm text-gray-700 space-y-1">
+                      <li>• Parses Vue directives</li>
+                      <li>• Builds virtual DOM tree</li>
+                      <li>• Validates ARIA attributes</li>
+                    </ul>
+                  </div>
+                  <div className="border-l-4 border-emerald-500 pl-4">
+                    <h4 className="font-bold text-gray-900 mb-2">&lt;script&gt; Block</h4>
+                    <ul className="text-sm text-gray-700 space-y-1">
+                      <li>• Detects ref patterns</li>
+                      <li>• Analyzes lifecycle hooks</li>
+                      <li>• Tracks reactive state</li>
+                    </ul>
+                  </div>
+                  <div className="border-l-4 border-teal-500 pl-4">
+                    <h4 className="font-bold text-gray-900 mb-2">&lt;style&gt; Block</h4>
+                    <ul className="text-sm text-gray-700 space-y-1">
+                      <li>• Cross-references with template</li>
+                      <li>• Detects visibility CSS</li>
+                      <li>• Scoped style analysis</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Example: Vue Dropdown */}
+              <div className="bg-white rounded-xl p-8 border border-gray-200 shadow-sm">
+                <h3 className="text-2xl font-bold mb-4 text-gray-900">Example: Accessible Vue Dropdown</h3>
+                <p className="text-gray-700 mb-6">
+                  Paradise validates proper use of Vue directives for accessibility:
+                </p>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-bold text-red-900 mb-3">❌ Inaccessible</h4>
+                    <div className="bg-red-50 p-4 rounded-lg font-mono text-sm mb-4">
+                      <pre className="text-gray-800 whitespace-pre-wrap">
+{`<template>
+  <div @click="toggle">
+    Toggle
+  </div>
+
+  <div v-show="isOpen">
+    Dropdown content
+  </div>
+</template>`}
+                      </pre>
+                    </div>
+                    <div className="space-y-2 text-sm text-gray-700">
+                      <p>⚠️ <strong>@click on div without keyboard handler</strong></p>
+                      <p>⚠️ <strong>No role or tabindex on interactive element</strong></p>
+                      <p>⚠️ <strong>v-show without aria-hidden</strong></p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-bold text-green-900 mb-3">✅ Accessible</h4>
+                    <div className="bg-green-50 p-4 rounded-lg font-mono text-sm mb-4">
+                      <pre className="text-gray-800 whitespace-pre-wrap">
+{`<template>
+  <button
+    :aria-expanded="isOpen"
+    @click="toggle"
+    @keydown="handleKey"
+  >
+    Toggle
+  </button>
+
+  <div
+    v-show="isOpen"
+    :aria-hidden="!isOpen"
+  >
+    Dropdown content
+  </div>
+</template>`}
+                      </pre>
+                    </div>
+                    <div className="space-y-2 text-sm text-gray-700">
+                      <p>✅ <strong>Proper button element</strong></p>
+                      <p>✅ <strong>aria-expanded tracks state</strong></p>
+                      <p>✅ <strong>aria-hidden matches visibility</strong></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Extending Paradise */}
           <div id="extending" className="scroll-mt-8">
             <h2 className="text-4xl font-bold mb-8 text-purple-600">Extending Paradise for New Frameworks</h2>
@@ -925,8 +1208,8 @@ export default function FrameworksPage() {
                     <th className="px-6 py-4 text-left font-semibold">Feature</th>
                     <th className="px-6 py-4 text-center font-semibold">React</th>
                     <th className="px-6 py-4 text-center font-semibold">Svelte</th>
+                    <th className="px-6 py-4 text-center font-semibold">Vue</th>
                     <th className="px-6 py-4 text-center font-semibold">Vanilla JS</th>
-                    <th className="px-6 py-4 text-center font-semibold">Vue (Planned)</th>
                     <th className="px-6 py-4 text-center font-semibold">Angular (Planned)</th>
                   </tr>
                 </thead>
@@ -936,7 +1219,7 @@ export default function FrameworksPage() {
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">✅</td>
-                    <td className="px-6 py-4 text-center">⏳</td>
+                    <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">⏳</td>
                   </tr>
                   <tr className="bg-gray-50">
@@ -944,7 +1227,7 @@ export default function FrameworksPage() {
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">✅</td>
-                    <td className="px-6 py-4 text-center">⏳</td>
+                    <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">⏳</td>
                   </tr>
                   <tr>
@@ -952,30 +1235,31 @@ export default function FrameworksPage() {
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">✅</td>
-                    <td className="px-6 py-4 text-center">⏳</td>
+                    <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">⏳</td>
                   </tr>
                   <tr className="bg-gray-50">
                     <td className="px-6 py-4 font-medium text-gray-900">Reactivity/State Management</td>
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">✅</td>
+                    <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">N/A</td>
-                    <td className="px-6 py-4 text-center">⏳</td>
                     <td className="px-6 py-4 text-center">⏳</td>
                   </tr>
                   <tr>
                     <td className="px-6 py-4 font-medium text-gray-900">Two-Way Data Binding</td>
                     <td className="px-6 py-4 text-center">N/A</td>
                     <td className="px-6 py-4 text-center">✅</td>
+                    <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">N/A</td>
-                    <td className="px-6 py-4 text-center">⏳</td>
                     <td className="px-6 py-4 text-center">⏳</td>
                   </tr>
                   <tr>
                     <td className="px-6 py-4 font-medium text-gray-900">Synthetic Event Issues</td>
                     <td className="px-6 py-4 text-center">✅</td>
+                    <td className="px-6 py-4 text-center">N/A</td>
+                    <td className="px-6 py-4 text-center">N/A</td>
                     <td className="px-6 py-4 text-center">✅</td>
-                    <td className="px-6 py-4 text-center">⏳</td>
                     <td className="px-6 py-4 text-center">⏳</td>
                   </tr>
                 </tbody>

@@ -1344,6 +1344,212 @@ closeBtn.addEventListener('click', function() {
       'Missing role="dialog" and aria-modal',
       'Missing Escape key handler'
     ]
+  },
+  'vue-model-no-label': {
+    title: 'Vue v-model Without Label',
+    description: 'Vue two-way binding without accessible labels',
+    category: 'vue',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'LoginForm.vue',
+          content: `<template>
+  <!-- ❌ Bad: v-model without labels -->
+  <div class="login-form">
+    <input v-model="email" type="email" placeholder="Email" />
+    <input v-model="password" type="password" placeholder="Password" />
+    <button @click="login">Login</button>
+  </div>
+
+  <!-- ✅ Good: Properly labeled inputs -->
+  <!--
+  <div class="login-form">
+    <label for="email-input">Email</label>
+    <input
+      id="email-input"
+      v-model="email"
+      type="email"
+      placeholder="your@email.com"
+    />
+
+    <label for="password-input">Password</label>
+    <input
+      id="password-input"
+      v-model="password"
+      type="password"
+      placeholder="Your password"
+    />
+
+    <button @click="login">Login</button>
+  </div>
+  -->
+</template>
+
+<script setup>
+import { ref } from 'vue';
+
+const email = ref('');
+const password = ref('');
+
+const login = () => {
+  console.log('Login with:', email.value, password.value);
+};
+</script>`
+        }
+      ],
+      css: []
+    },
+    issues: [
+      'vue-model-no-label: Input with v-model lacks accessible label',
+      'Screen readers cannot identify the purpose of these form inputs',
+      'Users with cognitive disabilities cannot see persistent labels'
+    ]
+  },
+  'vue-click-no-keyboard': {
+    title: 'Vue @click Without Keyboard',
+    description: 'Non-interactive element with @click needs keyboard handler',
+    category: 'vue',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'Card.vue',
+          content: `<template>
+  <!-- ❌ Bad: @click on div without keyboard handler -->
+  <div class="card" @click="openDetails">
+    <h3>{{ title }}</h3>
+    <p>{{ description }}</p>
+  </div>
+
+  <!-- ✅ Good: Proper button or interactive div with keyboard handler -->
+  <!--
+  <div
+    class="card"
+    role="button"
+    tabindex="0"
+    @click="openDetails"
+    @keydown="handleKeydown"
+  >
+    <h3>{{ title }}</h3>
+    <p>{{ description }}</p>
+  </div>
+  -->
+</template>
+
+<script setup>
+import { defineProps } from 'vue';
+
+const props = defineProps({
+  title: String,
+  description: String
+});
+
+const openDetails = () => {
+  console.log('Opening details for:', props.title);
+};
+
+const handleKeydown = (e) => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    openDetails();
+  }
+};
+</script>
+
+<style scoped>
+.card {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  cursor: pointer;
+}
+</style>`
+        }
+      ],
+      css: []
+    },
+    issues: [
+      'vue-click-no-keyboard: Non-interactive element with @click lacks keyboard handler',
+      'Keyboard-only users cannot interact with this element',
+      'Missing role="button" and tabindex="0"'
+    ]
+  },
+  'vue-visibility-no-aria': {
+    title: 'Vue v-show Visibility Without ARIA',
+    description: 'v-show directive affecting visibility without ARIA communication',
+    category: 'vue',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'Dropdown.vue',
+          content: `<template>
+  <!-- ❌ Bad: v-show without aria-hidden -->
+  <div class="dropdown">
+    <button @click="toggle">
+      {{ isOpen ? 'Hide' : 'Show' }} Menu
+    </button>
+
+    <div v-show="isOpen" class="dropdown-menu">
+      <ul>
+        <li>Menu Item 1</li>
+        <li>Menu Item 2</li>
+        <li>Menu Item 3</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ✅ Good: aria-expanded and aria-hidden -->
+  <!--
+  <div class="dropdown">
+    <button
+      @click="toggle"
+      :aria-expanded="isOpen"
+    >
+      {{ isOpen ? 'Hide' : 'Show' }} Menu
+    </button>
+
+    <div
+      v-show="isOpen"
+      :aria-hidden="!isOpen"
+      class="dropdown-menu"
+    >
+      <ul>
+        <li>Menu Item 1</li>
+        <li>Menu Item 2</li>
+        <li>Menu Item 3</li>
+      </ul>
+    </div>
+  </div>
+  -->
+</template>
+
+<script setup>
+import { ref } from 'vue';
+
+const isOpen = ref(false);
+
+const toggle = () => {
+  isOpen.value = !isOpen.value;
+};
+</script>
+
+<style scoped>
+.dropdown-menu {
+  margin-top: 0.5rem;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+}
+</style>`
+        }
+      ],
+      css: []
+    },
+    issues: [
+      'vue-visibility-no-aria: v-show directive affects visibility but lacks ARIA communication',
+      'Screen readers are not informed about the visibility state change',
+      'Add aria-hidden that matches v-show condition'
+    ]
   }
 };
 
@@ -2171,6 +2377,13 @@ export default function Playground() {
                       <option key={key} value={key}>{ex.title}</option>
                     ))}
                 </optgroup>
+                <optgroup label="Vue Examples (.vue)">
+                  {Object.entries(EXAMPLES)
+                    .filter(([_, ex]) => ex.category === 'vue')
+                    .map(([key, ex]) => (
+                      <option key={key} value={key}>{ex.title}</option>
+                    ))}
+                </optgroup>
                 <optgroup label="JavaScript-Only Examples">
                   {Object.entries(EXAMPLES)
                     .filter(([_, ex]) => ex.category === 'js-only')
@@ -2196,6 +2409,11 @@ export default function Playground() {
               {currentExample.category === 'svelte' && (
                 <span className="inline-block mt-2 bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-xs font-semibold">
                   ⚡ Svelte
+                </span>
+              )}
+              {currentExample.category === 'vue' && (
+                <span className="inline-block mt-2 bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold">
+                  🟢 Vue
                 </span>
               )}
             </div>
