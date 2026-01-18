@@ -9,6 +9,14 @@ import { SvelteActionLanguageExtractor } from '../../../../src/parsers/SvelteAct
 import { VueActionLanguageExtractor } from '../../../../src/parsers/VueActionLanguageExtractor';
 import { AngularActionLanguageExtractor } from '../../../../src/parsers/AngularActionLanguageExtractor';
 import { MouseOnlyClickAnalyzer } from '../../../../src/analyzers/MouseOnlyClickAnalyzer';
+import { AngularReactivityAnalyzer } from '../../../../src/analyzers/AngularReactivityAnalyzer';
+import { VueReactivityAnalyzer } from '../../../../src/analyzers/VueReactivityAnalyzer';
+import { SvelteReactivityAnalyzer } from '../../../../src/analyzers/SvelteReactivityAnalyzer';
+import { ReactHooksA11yAnalyzer } from '../../../../src/analyzers/ReactHooksA11yAnalyzer';
+import { FocusManagementAnalyzer } from '../../../../src/analyzers/FocusManagementAnalyzer';
+import { KeyboardNavigationAnalyzer } from '../../../../src/analyzers/KeyboardNavigationAnalyzer';
+import { ARIASemanticAnalyzer } from '../../../../src/analyzers/ARIASemanticAnalyzer';
+import { WidgetPatternAnalyzer } from '../../../../src/analyzers/WidgetPatternAnalyzer';
 import { ActionLanguageModelImpl } from '../../../../src/models/ActionLanguageModel';
 
 // Dynamically import Monaco to avoid SSR issues
@@ -2157,33 +2165,108 @@ export default function Playground() {
   const detectIssues = (nodes: any[], currentFiles: ExampleFiles) => {
     const detected: any[] = [];
 
-    // Use real MouseOnlyClickAnalyzer
-    const analyzer = new MouseOnlyClickAnalyzer();
+    // Create ActionLanguage model for analyzers that need it
     const actionLanguageModel = new ActionLanguageModelImpl(nodes, 'playground.js');
 
-    try {
-      const analyzerIssues = analyzer.analyze({
-        actionLanguageModel,
-        scope: 'file'
-      });
+    // Initialize all analyzers
+    const analyzers = [
+      new MouseOnlyClickAnalyzer(),
+      new FocusManagementAnalyzer(),
+      new KeyboardNavigationAnalyzer(),
+      new ARIASemanticAnalyzer(),
+      new WidgetPatternAnalyzer(),
+      new ReactHooksA11yAnalyzer(),
+    ];
 
-      // Convert real issues to playground format
-      for (const issue of analyzerIssues) {
-        detected.push({
-          type: issue.type,
-          severity: issue.severity,
-          wcag: issue.wcagCriteria || [],
-          message: issue.message,
-          location: issue.locations?.[0]?.file || 'JavaScript'
+    // Run all ActionLanguage-based analyzers
+    for (const analyzer of analyzers) {
+      try {
+        const analyzerIssues = analyzer.analyze({
+          actionLanguageModel,
+          scope: 'file'
         });
+
+        // Convert real issues to playground format
+        for (const issue of analyzerIssues) {
+          detected.push({
+            type: issue.type,
+            severity: issue.severity,
+            wcag: issue.wcagCriteria || [],
+            message: issue.message,
+            location: issue.locations?.[0]?.file || 'JavaScript'
+          });
+        }
+      } catch (error) {
+        console.error(`Analyzer error (${analyzer.name}):`, error);
       }
-    } catch (error) {
-      console.error('Analyzer error:', error);
+    }
+
+    // Run framework-specific analyzers on template HTML
+    const allHtml = currentFiles.html.map(f => f.content).join('\n');
+    const allJs = currentFiles.javascript.map(f => f.content).join('\n');
+
+    // Angular analyzer
+    if (allHtml.includes('[(ngModel)]') || allHtml.includes('(click)') || allHtml.includes('*ngIf')) {
+      try {
+        const angularAnalyzer = new AngularReactivityAnalyzer();
+        const angularIssues = angularAnalyzer.analyze(allHtml, 'component.html');
+
+        for (const issue of angularIssues) {
+          detected.push({
+            type: issue.type,
+            severity: issue.severity,
+            wcag: issue.wcagCriteria || [],
+            message: issue.message,
+            location: issue.locations?.[0]?.file || 'HTML'
+          });
+        }
+      } catch (error) {
+        console.error('AngularReactivityAnalyzer error:', error);
+      }
+    }
+
+    // Vue analyzer
+    if (allHtml.includes('v-model') || allHtml.includes('@click') || allHtml.includes('v-if')) {
+      try {
+        const vueAnalyzer = new VueReactivityAnalyzer();
+        const vueIssues = vueAnalyzer.analyze(allHtml, 'component.vue');
+
+        for (const issue of vueIssues) {
+          detected.push({
+            type: issue.type,
+            severity: issue.severity,
+            wcag: issue.wcagCriteria || [],
+            message: issue.message,
+            location: issue.locations?.[0]?.file || 'HTML'
+          });
+        }
+      } catch (error) {
+        console.error('VueReactivityAnalyzer error:', error);
+      }
+    }
+
+    // Svelte analyzer
+    if (allHtml.includes('bind:') || allHtml.includes('on:click') || allHtml.includes('{#if')) {
+      try {
+        const svelteAnalyzer = new SvelteReactivityAnalyzer();
+        const svelteIssues = svelteAnalyzer.analyze(allHtml, 'component.svelte');
+
+        for (const issue of svelteIssues) {
+          detected.push({
+            type: issue.type,
+            severity: issue.severity,
+            wcag: issue.wcagCriteria || [],
+            message: issue.message,
+            location: issue.locations?.[0]?.file || 'HTML'
+          });
+        }
+      } catch (error) {
+        console.error('SvelteReactivityAnalyzer error:', error);
+      }
     }
 
     // Extract element IDs from HTML
     const htmlElementIds = new Set<string>();
-    const allHtml = currentFiles.html.map(f => f.content).join('\n');
     if (allHtml) {
       const idMatches = allHtml.matchAll(/id=["']([^"']+)["']/g);
       for (const match of idMatches) {
