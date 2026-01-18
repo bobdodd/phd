@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { parse, ParserOptions } from '@babel/parser';
 import traverse from '@babel/traverse';
 import * as t from '@babel/types';
+import { SvelteActionLanguageExtractor } from '../../../../src/parsers/SvelteActionLanguageExtractor';
 
 // Dynamically import Monaco to avoid SSR issues
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
@@ -1397,9 +1398,11 @@ export default function Playground() {
    * This uses proper AST traversal instead of regex patterns
    */
   const parseToActionLanguage = (code: string, filename: string = 'playground.js') => {
-    // Handle Svelte files: extract DOM and convert directives to ActionLanguage nodes
+    // Handle Svelte files: use the real SvelteActionLanguageExtractor
     if (filename.endsWith('.svelte')) {
-      return parseSvelteToActionLanguage(code, filename);
+      const extractor = new SvelteActionLanguageExtractor();
+      const model = extractor.parse(code, filename);
+      return model.nodes;
     }
 
     const nodes: any[] = [];
@@ -1773,99 +1776,6 @@ export default function Playground() {
 
       return parts.join('.');
     }
-  };
-
-  /**
-   * Parse Svelte file to extract ActionLanguage nodes from directives.
-   * Converts Svelte's on: directives into ActionLanguage event handler nodes.
-   */
-  const parseSvelteToActionLanguage = (code: string, filename: string) => {
-    const nodes: any[] = [];
-    let nodeCounter = 0;
-
-    // Use parse5 to extract HTML structure (same as SvelteDOMExtractor)
-    const extractTemplate = (source: string): string => {
-      let template = source.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
-      template = template.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
-      return template.trim();
-    };
-
-    const template = extractTemplate(code);
-    if (!template) return nodes;
-
-    try {
-      const document = parse(template, { sourceCodeLocationInfo: true });
-
-      // Find body element
-      const html = document.childNodes.find((node: any) => node.nodeName === 'html');
-      if (!html) return nodes;
-
-      const body = html.childNodes?.find((node: any) => node.nodeName === 'body');
-      if (!body) return nodes;
-
-      // Traverse all elements and extract Svelte directives
-      const traverseElements = (node: any, depth: number = 0) => {
-        if (!node) return;
-
-        // Process element nodes
-        if (node.tagName && node.attrs) {
-          const tagName = node.tagName;
-          const elementId = node.attrs.find((attr: any) => attr.name === 'id')?.value;
-          const elementSelector = elementId ? `#${elementId}` : tagName;
-
-          // Extract event handlers from on: directives
-          const eventHandlers: Map<string, any> = new Map();
-
-          for (const attr of node.attrs) {
-            // on:click, on:keydown, etc.
-            if (attr.name.startsWith('on:')) {
-              const eventType = attr.name.substring(3); // Remove 'on:' prefix
-              eventHandlers.set(eventType, attr);
-            }
-          }
-
-          // Convert on: directives to ActionLanguage event handler nodes
-          for (const [eventType, attr] of eventHandlers.entries()) {
-            nodes.push({
-              id: `svelte_action_${++nodeCounter}`,
-              nodeType: 'action',
-              actionType: 'eventHandler',
-              event: eventType,
-              element: {
-                selector: elementSelector,
-                binding: elementSelector
-              },
-              location: {
-                file: filename,
-                line: node.sourceCodeLocation?.startLine || 0,
-                column: node.sourceCodeLocation?.startCol || 0
-              },
-              metadata: {
-                framework: 'svelte',
-                directive: `on:${eventType}`,
-                tagName: tagName
-              }
-            });
-          }
-        }
-
-        // Recursively process children
-        if (node.childNodes) {
-          for (const child of node.childNodes) {
-            traverseElements(child, depth + 1);
-          }
-        }
-      };
-
-      // Start traversal from body
-      traverseElements(body);
-
-    } catch (error) {
-      console.error(`Failed to parse Svelte template in ${filename}:`, error);
-    }
-
-    console.log(`Extracted ${nodes.length} ActionLanguage nodes from Svelte file ${filename}`);
-    return nodes;
   };
 
   const detectIssues = (nodes: any[], currentFiles: ExampleFiles) => {
