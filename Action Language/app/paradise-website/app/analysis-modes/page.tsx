@@ -55,18 +55,68 @@ export default function AnalysisModesPage() {
         </div>
       </section>
 
+      {/* Table of Contents */}
+      <section className="container mx-auto px-6 py-12">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-3xl font-bold mb-8 text-gray-900 text-center">Quick Navigation</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <a href="#file-mode" className="group relative overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+              <div className="text-4xl font-bold mb-2">1</div>
+              <div className="text-lg font-semibold">File Mode</div>
+              <div className="text-sm opacity-90 mt-2">Single file analysis</div>
+            </a>
+
+            <a href="#smart-mode" className="group relative overflow-hidden bg-gradient-to-br from-paradise-blue to-paradise-purple hover:from-paradise-purple hover:to-paradise-blue text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+              <div className="text-4xl font-bold mb-2">2</div>
+              <div className="text-lg font-semibold">Smart Mode ⭐</div>
+              <div className="text-sm opacity-90 mt-2">Recommended</div>
+            </a>
+
+            <a href="#project-mode" className="group relative overflow-hidden bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+              <div className="text-4xl font-bold mb-2">3</div>
+              <div className="text-lg font-semibold">Project Mode</div>
+              <div className="text-sm opacity-90 mt-2">Full workspace</div>
+            </a>
+
+            <a href="#configuration" className="group relative overflow-hidden bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+              <div className="text-4xl font-bold mb-2">4</div>
+              <div className="text-lg font-semibold">Configuration</div>
+              <div className="text-sm opacity-90 mt-2">Settings guide</div>
+            </a>
+
+            <a href="#performance" className="group relative overflow-hidden bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+              <div className="text-4xl font-bold mb-2">5</div>
+              <div className="text-lg font-semibold">Performance</div>
+              <div className="text-sm opacity-90 mt-2">Optimization tips</div>
+            </a>
+
+            <a href="#troubleshooting" className="group relative overflow-hidden bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+              <div className="text-4xl font-bold mb-2">6</div>
+              <div className="text-lg font-semibold">Troubleshooting</div>
+              <div className="text-sm opacity-90 mt-2">Common issues</div>
+            </a>
+
+            <a href="#faqs" className="group relative overflow-hidden bg-gradient-to-br from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+              <div className="text-4xl font-bold mb-2">7</div>
+              <div className="text-lg font-semibold">FAQs</div>
+              <div className="text-sm opacity-90 mt-2">Frequently asked</div>
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* Three Modes Explanation */}
-      <section className="container mx-auto px-6 pb-16">
+      <section className="container mx-auto px-6 pb-16 scroll-mt-8">
         <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">The Three Analysis Modes</h2>
 
         {/* File Mode */}
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+        <div id="file-mode" className="bg-white rounded-xl shadow-lg p-8 mb-8 scroll-mt-8">
           <div className="flex items-start gap-4 mb-6">
             <div className="bg-gray-100 text-gray-700 w-12 h-12 rounded-lg flex items-center justify-center text-xl font-bold flex-shrink-0">
               1
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">File Mode</h3>
+              <h3 className="text-2xl font-bold text-blue-600 mb-2">File Mode</h3>
               <p className="text-gray-600">Analyzes only the currently open file without looking at other files</p>
             </div>
           </div>
@@ -110,13 +160,13 @@ document.getElementById('submit').addEventListener('keydown', handleKeyboard);`}
         </div>
 
         {/* Smart Mode */}
-        <div className="bg-gradient-to-br from-paradise-blue/10 to-paradise-purple/10 rounded-xl shadow-lg p-8 mb-8 border-2 border-paradise-blue">
+        <div id="smart-mode" className="bg-gradient-to-br from-paradise-blue/10 to-paradise-purple/10 rounded-xl shadow-lg p-8 mb-8 border-2 border-paradise-blue scroll-mt-8">
           <div className="flex items-start gap-4 mb-6">
             <div className="bg-paradise-blue text-white w-12 h-12 rounded-lg flex items-center justify-center text-xl font-bold flex-shrink-0">
               2
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Smart Mode ⭐ (Recommended)</h3>
+              <h3 className="text-2xl font-bold text-paradise-blue mb-2">Smart Mode ⭐ (Recommended)</h3>
               <p className="text-gray-700">Uses dual-phase approach: instant analysis + background enhancement</p>
             </div>
           </div>
@@ -195,13 +245,13 @@ document.getElementById('submit').addEventListener('keydown', handleKeyboard);`}
         </div>
 
         {/* Project Mode */}
-        <div className="bg-white rounded-xl shadow-lg p-8">
+        <div id="project-mode" className="bg-white rounded-xl shadow-lg p-8 scroll-mt-8">
           <div className="flex items-start gap-4 mb-6">
             <div className="bg-gray-700 text-white w-12 h-12 rounded-lg flex items-center justify-center text-xl font-bold flex-shrink-0">
               3
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Project Mode</h3>
+              <h3 className="text-2xl font-bold text-purple-600 mb-2">Project Mode</h3>
               <p className="text-gray-600">Analyzes entire workspace upfront before showing results</p>
             </div>
           </div>
@@ -272,9 +322,9 @@ document.getElementById('submit').addEventListener('keydown', handleKeyboard);`}
       </section>
 
       {/* Configuration Guide */}
-      <section className="bg-gray-100 py-16">
+      <section id="configuration" className="bg-gray-100 py-16 scroll-mt-8">
         <div className="container mx-auto px-6">
-          <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Configuration Guide</h2>
+          <h2 className="text-4xl font-bold text-green-600 mb-12 text-center">Configuration Guide</h2>
 
           <div className="max-w-4xl mx-auto space-y-8">
             {/* Basic Settings */}
@@ -357,8 +407,8 @@ document.getElementById('submit').addEventListener('keydown', handleKeyboard);`}
       </section>
 
       {/* Performance Optimization */}
-      <section className="container mx-auto px-6 py-16">
-        <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Performance Optimization</h2>
+      <section id="performance" className="container mx-auto px-6 py-16 scroll-mt-8">
+        <h2 className="text-4xl font-bold text-orange-600 mb-12 text-center">Performance Optimization</h2>
 
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="bg-white rounded-xl shadow-lg p-8">
@@ -415,9 +465,9 @@ document.getElementById('submit').addEventListener('keydown', handleKeyboard);`}
       </section>
 
       {/* Troubleshooting */}
-      <section className="bg-gray-100 py-16">
+      <section id="troubleshooting" className="bg-gray-100 py-16 scroll-mt-8">
         <div className="container mx-auto px-6">
-          <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Troubleshooting</h2>
+          <h2 className="text-4xl font-bold text-red-600 mb-12 text-center">Troubleshooting</h2>
 
           <div className="max-w-4xl mx-auto space-y-6">
             <div className="bg-white rounded-xl shadow-lg p-8">
@@ -486,8 +536,8 @@ document.getElementById('submit').addEventListener('keydown', handleKeyboard);`}
       </section>
 
       {/* FAQs */}
-      <section className="container mx-auto px-6 py-16">
-        <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Frequently Asked Questions</h2>
+      <section id="faqs" className="container mx-auto px-6 py-16 scroll-mt-8">
+        <h2 className="text-4xl font-bold text-indigo-600 mb-12 text-center">Frequently Asked Questions</h2>
 
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="bg-white rounded-xl shadow-lg p-8">
