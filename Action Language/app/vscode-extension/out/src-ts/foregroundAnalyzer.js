@@ -55,6 +55,7 @@ const WidgetPatternAnalyzer_1 = require("../lib/analyzers/WidgetPatternAnalyzer"
 const ReactPortalAnalyzer_1 = require("../lib/analyzers/ReactPortalAnalyzer");
 const ReactStopPropagationAnalyzer_1 = require("../lib/analyzers/ReactStopPropagationAnalyzer");
 const ReactHooksA11yAnalyzer_1 = require("../lib/analyzers/ReactHooksA11yAnalyzer");
+const SvelteReactivityAnalyzer_1 = require("../lib/analyzers/SvelteReactivityAnalyzer");
 class ForegroundAnalyzer {
     constructor(diagnosticCollection, projectManager, codeActionProvider, outputChannel) {
         this.diagnosticCollection = diagnosticCollection;
@@ -74,7 +75,8 @@ class ForegroundAnalyzer {
             new WidgetPatternAnalyzer_1.WidgetPatternAnalyzer(),
             new ReactPortalAnalyzer_1.ReactPortalAnalyzer(),
             new ReactStopPropagationAnalyzer_1.ReactStopPropagationAnalyzer(),
-            new ReactHooksA11yAnalyzer_1.ReactHooksA11yAnalyzer()
+            new ReactHooksA11yAnalyzer_1.ReactHooksA11yAnalyzer(),
+            new SvelteReactivityAnalyzer_1.SvelteReactivityAnalyzer()
         ];
         console.log('[ForegroundAnalyzer] Initialized with', this.analyzers.length, 'analyzers');
     }

@@ -10,6 +10,7 @@ export declare class HTMLParser {
     private buildTagLocationMap;
     private offsetToLineColumn;
     private convertNode;
+    private findElementLocation;
     private convertElement;
     private convertTextNode;
     private convertCommentNode;

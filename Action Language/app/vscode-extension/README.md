@@ -11,8 +11,9 @@ Paradise eliminates false positives by analyzing HTML, JavaScript, and CSS toget
 - **Zero False Positives**: Cross-file analysis eliminates 88% of false positives from traditional tools
 - **Dual-Mode Analysis**: Instant feedback (<100ms) with progressive enhancement as project analysis completes
 - **Multi-File Understanding**: Analyzes HTML + JavaScript + CSS together to understand complete UI patterns
-- **16 Production Analyzers**: Comprehensive detection across keyboard, ARIA, focus, and widget patterns
+- **17 Production Analyzers**: Comprehensive detection across keyboard, ARIA, focus, and widget patterns
 - **React Support**: Native JSX/TSX analysis with React Hooks accessibility validation
+- **Svelte Support**: Native .svelte component analysis with reactivity pattern validation
 - **Project-Wide Awareness**: Detects handlers split across files, orphaned event handlers, incomplete ARIA relationships
 - **WCAG 2.1 Mapped**: All issues linked to relevant WCAG success criteria with direct documentation links
 - **Confidence Scoring**: Transparent about analysis completeness (HIGH/MEDIUM/LOW confidence)
@@ -64,6 +65,30 @@ Paradise provides first-class support for React applications:
   - **useState**: Validates dynamic ARIA attribute management
 
 **Supported File Types**: `.jsx`, `.tsx`, `.js` (with JSX), `.ts` (with JSX)
+
+### Svelte Support
+
+Paradise includes native Svelte component analysis:
+
+- **Svelte Parsing**: Natively understands Svelte components and template syntax
+- **Reactive Patterns**: Detects accessibility issues in Svelte-specific patterns
+- **Directive Validation**: Comprehensive analysis of Svelte directives:
+  - **bind:**: Validates two-way binding with proper ARIA labeling (bind:value, bind:checked, bind:group)
+  - **on:**: Checks event handlers for keyboard alternatives (on:click requires on:keydown)
+  - **class:**: Detects visibility changes without ARIA communication
+  - **$: reactive statements**: Validates focus management with cleanup
+  - **Store subscriptions**: Checks for aria-live announcements on state changes
+
+**Supported File Types**: `.svelte`
+
+**Key Detections**:
+
+- bind:value without accessible labels → **Error** (WCAG 4.1.2)
+- bind:group without fieldset/legend → **Warning** (WCAG 1.3.1)
+- on:click without keyboard handler on non-interactive elements → **Error** (WCAG 2.1.1)
+- class:hidden without aria-hidden/aria-expanded → **Warning** (WCAG 4.1.2)
+- Reactive focus management without cleanup → **Warning** (WCAG 2.4.3)
+- Store managing a11y state without aria-live → **Warning** (WCAG 4.1.3)
 
 ## Installation
 

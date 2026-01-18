@@ -49,11 +49,11 @@ export default function Home() {
             <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-gray-500">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-paradise-green rounded-full"></div>
-                <span>16 built-in analyzers</span>
+                <span>17 built-in analyzers</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-paradise-blue rounded-full"></div>
-                <span>React Hooks analysis</span>
+                <span>React & Svelte support</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-paradise-purple rounded-full"></div>
@@ -61,7 +61,7 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-paradise-orange rounded-full"></div>
-                <span>JSX/TSX support</span>
+                <span>JSX/TSX/.svelte files</span>
               </div>
             </div>
           </div>
@@ -81,7 +81,7 @@ export default function Home() {
                 Analyze source code, not final builds
               </h2>
               <p className="text-lg text-gray-600">
-                Paradise reads your JSX, TypeScript, and JavaScript files directly—catching issues before you even save the file
+                Paradise reads your React, Svelte, TypeScript, and JavaScript files directly—catching issues before you even save the file
               </p>
             </div>
 

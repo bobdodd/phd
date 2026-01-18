@@ -29,6 +29,7 @@
     "onLanguage:typescriptreact",
     "onLanguage:html",
     "onLanguage:css",
+    "onLanguage:svelte",
     "onCommand:paradise.analyzeFile"
   ],
   "main": "./out/src-ts/extension.js",
@@ -84,6 +85,7 @@
             "**/*.ts",
             "**/*.jsx",
             "**/*.tsx",
+            "**/*.svelte",
             "**/*.css"
           ],
           "description": "File patterns to include in project analysis"

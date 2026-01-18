@@ -24,6 +24,9 @@ class MouseOnlyClickAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
             return issues;
         const interactiveElements = documentModel.getInteractiveElements();
         for (const elementContext of interactiveElements) {
+            if (this.hasNativeKeyboardSupport(elementContext.element)) {
+                continue;
+            }
             if (elementContext.hasClickHandler &&
                 !elementContext.hasKeyboardHandler) {
                 const element = elementContext.element;
@@ -56,6 +59,36 @@ class MouseOnlyClickAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
             }
         }
         return issues;
+    }
+    hasNativeKeyboardSupport(element) {
+        const tagName = element.tagName.toLowerCase();
+        const nativeInteractive = [
+            'button',
+            'a',
+            'input',
+            'select',
+            'textarea',
+            'summary',
+        ];
+        if (nativeInteractive.includes(tagName)) {
+            return true;
+        }
+        const role = element.attributes.role;
+        const rolesWithNativeKeyboard = [
+            'button',
+            'link',
+            'menuitem',
+            'menuitemcheckbox',
+            'menuitemradio',
+            'option',
+            'radio',
+            'switch',
+            'tab',
+        ];
+        if (role && rolesWithNativeKeyboard.includes(role)) {
+            return true;
+        }
+        return false;
     }
     hasKeyboardHandlerForSelector(model, selector) {
         const handlers = Array.isArray(model)

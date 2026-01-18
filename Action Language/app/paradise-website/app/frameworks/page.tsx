@@ -494,6 +494,295 @@ export default function FrameworksPage() {
             </div>
           </div>
 
+          {/* Svelte-Specific Features */}
+          <div id="svelte-features" className="scroll-mt-8">
+            <h2 className="text-4xl font-bold mb-8 text-orange-600">Svelte-Specific Features</h2>
+
+            <div className="space-y-8">
+              {/* Svelte Reactivity Accessibility Analyzer - NEW */}
+              <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-8 border-2 border-orange-300 shadow-lg">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-4xl">⚡</span>
+                  <h3 className="text-2xl font-bold text-orange-900">Svelte Reactivity Accessibility Analyzer</h3>
+                  <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">NEW</span>
+                </div>
+                <p className="text-gray-800 mb-6 text-lg">
+                  Comprehensive accessibility validation for Svelte reactive patterns and directives - the <strong>first accessibility analyzer specifically designed for Svelte</strong>.
+                </p>
+
+                <div className="grid md:grid-cols-2 gap-6 mb-6">
+                  {/* bind: Directives */}
+                  <div className="bg-white rounded-lg p-6 shadow">
+                    <h4 className="text-xl font-bold text-orange-900 mb-3 flex items-center gap-2">
+                      <code className="bg-orange-100 px-2 py-1 rounded text-sm">bind:</code>
+                      Two-Way Binding
+                    </h4>
+                    <ul className="space-y-3 text-sm text-gray-700">
+                      <li className="flex items-start gap-2">
+                        <span className="text-red-500">⚠️</span>
+                        <div>
+                          <strong>bind:value without labels</strong>
+                          <p className="text-xs text-gray-600 mt-1">Detects <code>bind:value</code> and <code>bind:checked</code> without aria-label</p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-orange-500">⚠️</span>
+                        <div>
+                          <strong>bind:group without fieldset</strong>
+                          <p className="text-xs text-gray-600 mt-1">Radio/checkbox groups need <code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code></p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-500">💡</span>
+                        <div>
+                          <strong>WCAG: 4.1.2, 1.3.1</strong>
+                          <p className="text-xs text-gray-600 mt-1">Proper labeling and grouping</p>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* on: Event Handlers */}
+                  <div className="bg-white rounded-lg p-6 shadow">
+                    <h4 className="text-xl font-bold text-red-900 mb-3 flex items-center gap-2">
+                      <code className="bg-red-100 px-2 py-1 rounded text-sm">on:</code>
+                      Event Handlers
+                    </h4>
+                    <ul className="space-y-3 text-sm text-gray-700">
+                      <li className="flex items-start gap-2">
+                        <span className="text-red-500">⛔</span>
+                        <div>
+                          <strong>on:click without keyboard handler</strong>
+                          <p className="text-xs text-gray-600 mt-1">Non-interactive elements need <code>on:keydown</code> + role/tabindex</p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-500">✅</span>
+                        <div>
+                          <strong>Validates interactive semantics</strong>
+                          <p className="text-xs text-gray-600 mt-1">Checks for proper role and tabindex on custom controls</p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-500">💡</span>
+                        <div>
+                          <strong>WCAG: 2.1.1, 2.1.2</strong>
+                          <p className="text-xs text-gray-600 mt-1">Keyboard accessibility for all interactive elements</p>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* class: Directives */}
+                  <div className="bg-white rounded-lg p-6 shadow">
+                    <h4 className="text-xl font-bold text-yellow-900 mb-3 flex items-center gap-2">
+                      <code className="bg-yellow-100 px-2 py-1 rounded text-sm">class:</code>
+                      Conditional Classes
+                    </h4>
+                    <ul className="space-y-3 text-sm text-gray-700">
+                      <li className="flex items-start gap-2">
+                        <span className="text-orange-500">⚠️</span>
+                        <div>
+                          <strong>Visibility changes without ARIA</strong>
+                          <p className="text-xs text-gray-600 mt-1">class:hidden needs <code>aria-hidden</code> or <code>aria-expanded</code></p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-yellow-500">⚡</span>
+                        <div>
+                          <strong>Auto-detects visibility patterns</strong>
+                          <p className="text-xs text-gray-600 mt-1">Identifies hidden, visible, show, hide, open, closed classes</p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-500">💡</span>
+                        <div>
+                          <strong>WCAG: 4.1.2, 4.1.3</strong>
+                          <p className="text-xs text-gray-600 mt-1">Screen readers need state communication</p>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* $: Reactive Statements */}
+                  <div className="bg-white rounded-lg p-6 shadow">
+                    <h4 className="text-xl font-bold text-purple-900 mb-3 flex items-center gap-2">
+                      <code className="bg-purple-100 px-2 py-1 rounded text-sm">$:</code>
+                      Reactive Statements
+                    </h4>
+                    <ul className="space-y-3 text-sm text-gray-700">
+                      <li className="flex items-start gap-2">
+                        <span className="text-orange-500">⚠️</span>
+                        <div>
+                          <strong>Focus management without cleanup</strong>
+                          <p className="text-xs text-gray-600 mt-1">Reactive <code>.focus()</code> needs onDestroy cleanup</p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-purple-500">🔄</span>
+                        <div>
+                          <strong>Store subscriptions without announcements</strong>
+                          <p className="text-xs text-gray-600 mt-1">Accessibility state stores need <code>aria-live</code> regions</p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-500">💡</span>
+                        <div>
+                          <strong>WCAG: 2.4.3, 4.1.3</strong>
+                          <p className="text-xs text-gray-600 mt-1">Focus restoration and dynamic announcements</p>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-r">
+                  <p className="text-sm text-green-900 font-semibold mb-2">
+                    🎯 Paradise is the first tool to analyze Svelte reactive patterns for accessibility issues
+                  </p>
+                  <p className="text-xs text-green-800">
+                    Detects 6 different Svelte accessibility patterns including bind: without labels, on: without keyboard handlers, class: visibility changes, and reactive focus management.
+                  </p>
+                </div>
+              </div>
+
+              {/* Svelte Component Structure */}
+              <div className="bg-white rounded-xl p-8 border border-gray-200 shadow-sm">
+                <h3 className="text-2xl font-bold mb-4 text-gray-900">Svelte Component Parsing</h3>
+                <p className="text-gray-700 mb-4">
+                  Paradise natively understands Svelte's three-block component structure:
+                </p>
+
+                <div className="bg-gray-50 p-6 rounded-lg mb-6">
+                  <pre className="font-mono text-sm text-gray-800 overflow-x-auto">
+{`<script>
+  let count = 0;
+  let isOpen = false;
+
+  $: if (isOpen) {
+    // Reactive statement - Paradise checks focus management
+  }
+</script>
+
+<button
+  on:click={() => count++}
+  on:keydown={(e) => {
+    if (e.key === 'Enter') count++;
+  }}
+  aria-label="Increment counter"
+>
+  Count: {count}
+</button>
+
+<div class:hidden={!isOpen} aria-hidden={!isOpen}>
+  Content
+</div>
+
+<style>
+  .hidden { display: none; }
+</style>`}
+                  </pre>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="border-l-4 border-orange-500 pl-4">
+                    <h4 className="font-bold text-gray-900 mb-2">&lt;script&gt; Block</h4>
+                    <ul className="text-sm text-gray-700 space-y-1">
+                      <li>• Extracts reactive declarations ($:)</li>
+                      <li>• Detects store subscriptions</li>
+                      <li>• Analyzes lifecycle hooks</li>
+                    </ul>
+                  </div>
+                  <div className="border-l-4 border-red-500 pl-4">
+                    <h4 className="font-bold text-gray-900 mb-2">Template Block</h4>
+                    <ul className="text-sm text-gray-700 space-y-1">
+                      <li>• Parses Svelte directives</li>
+                      <li>• Builds virtual DOM tree</li>
+                      <li>• Validates ARIA attributes</li>
+                    </ul>
+                  </div>
+                  <div className="border-l-4 border-yellow-500 pl-4">
+                    <h4 className="font-bold text-gray-900 mb-2">&lt;style&gt; Block</h4>
+                    <ul className="text-sm text-gray-700 space-y-1">
+                      <li>• Cross-references with template</li>
+                      <li>• Detects visibility CSS</li>
+                      <li>• Scoped style analysis</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Example: Svelte Dropdown */}
+              <div className="bg-white rounded-xl p-8 border border-gray-200 shadow-sm">
+                <h3 className="text-2xl font-bold mb-4 text-gray-900">Example: Accessible Svelte Dropdown</h3>
+                <p className="text-gray-700 mb-6">
+                  Paradise validates proper use of Svelte directives for accessibility:
+                </p>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-bold text-red-900 mb-3">❌ Inaccessible</h4>
+                    <div className="bg-red-50 p-4 rounded-lg font-mono text-sm mb-4">
+                      <pre className="text-gray-800 whitespace-pre-wrap">
+{`<script>
+  let isOpen = false;
+</script>
+
+<div on:click={() => isOpen = !isOpen}>
+  Toggle
+</div>
+
+<div class:hidden={!isOpen}>
+  Dropdown content
+</div>`}
+                      </pre>
+                    </div>
+                    <div className="space-y-2 text-sm text-gray-700">
+                      <p>⚠️ <strong>on:click on div without keyboard handler</strong></p>
+                      <p>⚠️ <strong>No role or tabindex on interactive element</strong></p>
+                      <p>⚠️ <strong>class:hidden without aria-hidden</strong></p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-bold text-green-900 mb-3">✅ Accessible</h4>
+                    <div className="bg-green-50 p-4 rounded-lg font-mono text-sm mb-4">
+                      <pre className="text-gray-800 whitespace-pre-wrap">
+{`<script>
+  let isOpen = false;
+
+  function handleKeydown(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      isOpen = !isOpen;
+    }
+  }
+</script>
+
+<button
+  aria-expanded={isOpen}
+  on:click={() => isOpen = !isOpen}
+  on:keydown={handleKeydown}
+>
+  Toggle
+</button>
+
+<div class:hidden={!isOpen} aria-hidden={!isOpen}>
+  Dropdown content
+</div>`}
+                      </pre>
+                    </div>
+                    <div className="space-y-2 text-sm text-gray-700">
+                      <p>✅ <strong>Proper button element</strong></p>
+                      <p>✅ <strong>aria-expanded tracks state</strong></p>
+                      <p>✅ <strong>aria-hidden matches visibility</strong></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Extending Paradise */}
           <div id="extending" className="scroll-mt-8">
             <h2 className="text-4xl font-bold mb-8 text-purple-600">Extending Paradise for New Frameworks</h2>
@@ -610,6 +899,7 @@ export default function FrameworksPage() {
                   <tr>
                     <th className="px-6 py-4 text-left font-semibold">Feature</th>
                     <th className="px-6 py-4 text-center font-semibold">React</th>
+                    <th className="px-6 py-4 text-center font-semibold">Svelte</th>
                     <th className="px-6 py-4 text-center font-semibold">Vanilla JS</th>
                     <th className="px-6 py-4 text-center font-semibold">Vue (Planned)</th>
                     <th className="px-6 py-4 text-center font-semibold">Angular (Planned)</th>
@@ -620,11 +910,13 @@ export default function FrameworksPage() {
                     <td className="px-6 py-4 font-medium text-gray-900">Event Handler Detection</td>
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">✅</td>
+                    <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">⏳</td>
                     <td className="px-6 py-4 text-center">⏳</td>
                   </tr>
                   <tr className="bg-gray-50">
                     <td className="px-6 py-4 font-medium text-gray-900">Focus Management</td>
+                    <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">⏳</td>
@@ -634,25 +926,21 @@ export default function FrameworksPage() {
                     <td className="px-6 py-4 font-medium text-gray-900">ARIA Updates</td>
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">✅</td>
+                    <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">⏳</td>
                     <td className="px-6 py-4 text-center">⏳</td>
                   </tr>
                   <tr className="bg-gray-50">
-                    <td className="px-6 py-4 font-medium text-gray-900">Portal/Teleport Detection</td>
+                    <td className="px-6 py-4 font-medium text-gray-900">Reactivity/State Management</td>
+                    <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">N/A</td>
                     <td className="px-6 py-4 text-center">⏳</td>
                     <td className="px-6 py-4 text-center">⏳</td>
                   </tr>
                   <tr>
-                    <td className="px-6 py-4 font-medium text-gray-900">Context/Provide-Inject</td>
-                    <td className="px-6 py-4 text-center">✅</td>
+                    <td className="px-6 py-4 font-medium text-gray-900">Two-Way Data Binding</td>
                     <td className="px-6 py-4 text-center">N/A</td>
-                    <td className="px-6 py-4 text-center">⏳</td>
-                    <td className="px-6 py-4 text-center">⏳</td>
-                  </tr>
-                  <tr className="bg-gray-50">
-                    <td className="px-6 py-4 font-medium text-gray-900">Ref Forwarding</td>
                     <td className="px-6 py-4 text-center">✅</td>
                     <td className="px-6 py-4 text-center">N/A</td>
                     <td className="px-6 py-4 text-center">⏳</td>

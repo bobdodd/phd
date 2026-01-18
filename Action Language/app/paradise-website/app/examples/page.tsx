@@ -2320,6 +2320,327 @@ function NotificationProvider({ children }: { children: ReactNode }) {
     ],
     wcag: ['4.1.3'],
     impact: 'Screen reader users completely missed save confirmations, error messages, and status updates. Had to refresh page to check if actions succeeded. Caused data loss from double-submissions.'
+  },
+
+  // Svelte Examples
+  {
+    id: 'svelte-bind-no-label',
+    title: 'bind:value Without Label (Svelte)',
+    category: 'framework',
+    language: 'Svelte',
+    framework: 'Svelte',
+    description: 'Svelte bind: directive creates two-way data binding, but Paradise detects when bound inputs lack accessible labels.',
+    beforeCode: `<script>
+  let email = '';
+  let password = '';
+</script>
+
+<div class="login-form">
+  <input
+    type="email"
+    bind:value={email}
+    placeholder="Email"
+  />
+
+  <input
+    type="password"
+    bind:value={password}
+    placeholder="Password"
+  />
+
+  <button on:click={handleLogin}>
+    Log in
+  </button>
+</div>`,
+    afterCode: `<script>
+  let email = '';
+  let password = '';
+</script>
+
+<div class="login-form">
+  <label for="email-input">Email</label>
+  <input
+    id="email-input"
+    type="email"
+    bind:value={email}
+    aria-required="true"
+  />
+
+  <label for="password-input">Password</label>
+  <input
+    id="password-input"
+    type="password"
+    bind:value={password}
+    aria-required="true"
+  />
+
+  <button on:click={handleLogin}>
+    Log in
+  </button>
+</div>`,
+    issuesFound: [
+      'svelte-bind-no-label: Input with bind:value lacks accessible label',
+      'Placeholder text is not a replacement for labels',
+      'Missing aria-required for required fields'
+    ],
+    wcag: ['4.1.2', '1.3.1', '3.3.2'],
+    impact: 'Screen reader users couldn\'t identify input fields. Placeholders disappear when typing, leaving no indication of field purpose. 35% of form abandonment by keyboard users.'
+  },
+
+  {
+    id: 'svelte-click-no-keyboard',
+    title: 'on:click Without Keyboard (Svelte)',
+    category: 'framework',
+    language: 'Svelte',
+    framework: 'Svelte',
+    description: 'Svelte on: directives handle events, but Paradise detects when click handlers on non-interactive elements lack keyboard alternatives.',
+    beforeCode: `<script>
+  let count = 0;
+
+  function increment() {
+    count++;
+  }
+</script>
+
+<div class="counter" on:click={increment}>
+  <span class="count">{count}</span>
+  <span class="label">Clicks</span>
+</div>
+
+<style>
+  .counter {
+    cursor: pointer;
+    padding: 20px;
+    border: 1px solid #ccc;
+  }
+</style>`,
+    afterCode: `<script>
+  let count = 0;
+
+  function increment() {
+    count++;
+  }
+
+  function handleKeydown(event) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      increment();
+    }
+  }
+</script>
+
+<div
+  class="counter"
+  role="button"
+  tabindex="0"
+  aria-label="Increment counter"
+  on:click={increment}
+  on:keydown={handleKeydown}
+>
+  <span class="count" aria-live="polite">{count}</span>
+  <span class="label">Clicks</span>
+</div>
+
+<style>
+  .counter {
+    cursor: pointer;
+    padding: 20px;
+    border: 1px solid #ccc;
+  }
+
+  .counter:focus {
+    outline: 2px solid #0066cc;
+    outline-offset: 2px;
+  }
+</style>`,
+    issuesFound: [
+      'svelte-click-no-keyboard: on:click on div without keyboard handler',
+      'Non-interactive element needs role and tabindex',
+      'Missing keyboard event handler (on:keydown)',
+      'Dynamic count changes not announced'
+    ],
+    wcag: ['2.1.1', '2.1.2', '4.1.2'],
+    impact: 'Keyboard users couldn\'t interact with counter. Tab key skipped over it entirely. Represented 22% of interactive elements in dashboard that were keyboard-inaccessible.'
+  },
+
+  {
+    id: 'svelte-class-visibility',
+    title: 'class: Visibility Without ARIA (Svelte)',
+    category: 'framework',
+    language: 'Svelte',
+    framework: 'Svelte',
+    description: 'Svelte class: directive conditionally applies CSS classes, but Paradise detects when visibility changes aren\'t communicated to screen readers.',
+    beforeCode: `<script>
+  let isOpen = false;
+</script>
+
+<button on:click={() => isOpen = !isOpen}>
+  Toggle Menu
+</button>
+
+<nav class:hidden={!isOpen}>
+  <a href="/home">Home</a>
+  <a href="/about">About</a>
+  <a href="/contact">Contact</a>
+</nav>
+
+<style>
+  .hidden {
+    display: none;
+  }
+</style>`,
+    afterCode: `<script>
+  let isOpen = false;
+
+  function handleToggleKeydown(event) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      isOpen = !isOpen;
+    }
+  }
+</script>
+
+<button
+  aria-expanded={isOpen}
+  aria-controls="main-nav"
+  on:click={() => isOpen = !isOpen}
+  on:keydown={handleToggleKeydown}
+>
+  Toggle Menu
+</button>
+
+<nav
+  id="main-nav"
+  class:hidden={!isOpen}
+  aria-hidden={!isOpen}
+>
+  <a href="/home">Home</a>
+  <a href="/about">About</a>
+  <a href="/contact">Contact</a>
+</nav>
+
+<style>
+  .hidden {
+    display: none;
+  }
+</style>`,
+    issuesFound: [
+      'svelte-class-visibility-no-aria: class:hidden affects visibility without ARIA',
+      'Missing aria-expanded on toggle button',
+      'Missing aria-hidden to match visibility state',
+      'Missing aria-controls relationship'
+    ],
+    wcag: ['4.1.2', '4.1.3'],
+    impact: 'Screen reader users heard "Toggle Menu" button but had no indication whether menu was open or closed. Navigation appeared in reading order even when visually hidden, causing confusion.'
+  },
+
+  {
+    id: 'svelte-reactive-focus',
+    title: 'Reactive Focus Without Cleanup (Svelte)',
+    category: 'framework',
+    language: 'Svelte',
+    framework: 'Svelte',
+    description: 'Svelte reactive statements ($:) can manage focus, but Paradise detects when focus changes lack proper cleanup and restoration.',
+    beforeCode: `<script>
+  import { onMount } from 'svelte';
+
+  let isModalOpen = false;
+  let modalElement;
+
+  $: if (isModalOpen && modalElement) {
+    modalElement.focus();
+  }
+
+  function openModal() {
+    isModalOpen = true;
+  }
+
+  function closeModal() {
+    isModalOpen = false;
+  }
+</script>
+
+<button on:click={openModal}>
+  Open Modal
+</button>
+
+{#if isModalOpen}
+  <div
+    bind:this={modalElement}
+    class="modal"
+    tabindex="-1"
+  >
+    <h2>Modal Title</h2>
+    <p>Modal content...</p>
+
+    <button on:click={closeModal}>
+      Close
+    </button>
+  </div>
+{/if}`,
+    afterCode: `<script>
+  import { onMount, onDestroy } from 'svelte';
+
+  let isModalOpen = false;
+  let modalElement;
+  let previousFocus;
+
+  $: if (isModalOpen && modalElement) {
+    // Store previous focus before moving
+    previousFocus = document.activeElement;
+    modalElement.focus();
+  }
+
+  function openModal() {
+    isModalOpen = true;
+  }
+
+  function closeModal() {
+    isModalOpen = false;
+    // Restore focus when closing
+    if (previousFocus) {
+      previousFocus.focus();
+    }
+  }
+
+  function handleModalKeydown(event) {
+    if (event.key === 'Escape') {
+      closeModal();
+    }
+  }
+</script>
+
+<button on:click={openModal} aria-haspopup="dialog">
+  Open Modal
+</button>
+
+{#if isModalOpen}
+  <div
+    bind:this={modalElement}
+    class="modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-title"
+    tabindex="-1"
+    on:keydown={handleModalKeydown}
+  >
+    <h2 id="modal-title">Modal Title</h2>
+    <p>Modal content...</p>
+
+    <button on:click={closeModal}>
+      Close
+    </button>
+  </div>
+{/if}`,
+    issuesFound: [
+      'svelte-reactive-focus-no-cleanup: Reactive statement manages focus without cleanup',
+      'Missing focus restoration on modal close',
+      'Missing role="dialog" and aria-modal',
+      'Missing Escape key handler',
+      'Missing aria-labelledby'
+    ],
+    wcag: ['2.4.3', '2.1.2', '4.1.2'],
+    impact: 'Keyboard users got trapped in modal after closing - focus lost to body. Had to tab through entire page to return to action button. 40% reported difficulty completing multi-step workflows.'
   }
 ];
 

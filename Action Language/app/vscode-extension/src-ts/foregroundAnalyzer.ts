@@ -26,6 +26,7 @@ import { WidgetPatternAnalyzer } from '../lib/analyzers/WidgetPatternAnalyzer';
 import { ReactPortalAnalyzer } from '../lib/analyzers/ReactPortalAnalyzer';
 import { ReactStopPropagationAnalyzer } from '../lib/analyzers/ReactStopPropagationAnalyzer';
 import { ReactHooksA11yAnalyzer } from '../lib/analyzers/ReactHooksA11yAnalyzer';
+import { SvelteReactivityAnalyzer } from '../lib/analyzers/SvelteReactivityAnalyzer';
 import { ParadiseCodeActionProvider } from './codeActionProvider';
 
 export class ForegroundAnalyzer {
@@ -59,7 +60,8 @@ export class ForegroundAnalyzer {
       new WidgetPatternAnalyzer(),
       new ReactPortalAnalyzer(),
       new ReactStopPropagationAnalyzer(),
-      new ReactHooksA11yAnalyzer()
+      new ReactHooksA11yAnalyzer(),
+      new SvelteReactivityAnalyzer()
     ];
 
     console.log('[ForegroundAnalyzer] Initialized with', this.analyzers.length, 'analyzers');
