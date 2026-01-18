@@ -24,6 +24,9 @@ import { KeyboardNavigationAnalyzer } from '../lib/analyzers/KeyboardNavigationA
 import { ARIASemanticAnalyzer } from '../lib/analyzers/ARIASemanticAnalyzer';
 import { WidgetPatternAnalyzer } from '../lib/analyzers/WidgetPatternAnalyzer';
 import { ReactA11yAnalyzer } from '../lib/analyzers/ReactA11yAnalyzer';
+import { SvelteReactivityAnalyzer } from '../lib/analyzers/SvelteReactivityAnalyzer';
+import { VueReactivityAnalyzer } from '../lib/analyzers/VueReactivityAnalyzer';
+import { AngularReactivityAnalyzer } from '../lib/analyzers/AngularReactivityAnalyzer';
 import { ParadiseCodeActionProvider } from './codeActionProvider';
 
 export class ForegroundAnalyzer {
@@ -44,7 +47,7 @@ export class ForegroundAnalyzer {
     this.codeActionProvider = codeActionProvider;
     this.outputChannel = outputChannel;
 
-    // Initialize all analyzers (only those with TypeScript definitions)
+    // Initialize all analyzers
     this.analyzers = [
       new MouseOnlyClickAnalyzer(),
       new OrphanedEventHandlerAnalyzer(),
@@ -55,8 +58,10 @@ export class ForegroundAnalyzer {
       new KeyboardNavigationAnalyzer(),
       new ARIASemanticAnalyzer(),
       new WidgetPatternAnalyzer(),
-      new ReactA11yAnalyzer()
-      // Note: Svelte/Vue/Angular analyzers excluded - they don't follow BaseAnalyzer architecture
+      new ReactA11yAnalyzer(),
+      new SvelteReactivityAnalyzer(),
+      new VueReactivityAnalyzer(),
+      new AngularReactivityAnalyzer()
     ];
 
     this.outputChannel.appendLine(`[ForegroundAnalyzer] Initialized with ${this.analyzers.length} analyzers`);

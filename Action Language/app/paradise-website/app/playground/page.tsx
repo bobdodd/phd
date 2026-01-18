@@ -2147,7 +2147,7 @@ export default function Playground() {
             severity: issue.severity,
             wcag: issue.wcagCriteria || [],
             message: issue.message,
-            location: issue.locations?.[0]?.file || 'JavaScript'
+            location: issue.location?.file || 'JavaScript'
           });
         }
       } catch (error) {
@@ -2164,8 +2164,13 @@ export default function Playground() {
     // Angular analyzer
     if (allContent.includes('[(ngModel)]') || allContent.includes('(click)') || allContent.includes('*ngIf')) {
       try {
+        const angularExtractor = new AngularActionLanguageExtractor();
+        const angularModel = angularExtractor.parse(allContent, 'component.html');
         const angularAnalyzer = new AngularReactivityAnalyzer();
-        const angularIssues = angularAnalyzer.analyze(allContent, 'component.html');
+        const angularIssues = angularAnalyzer.analyze({
+          actionLanguageModel: angularModel,
+          scope: 'file'
+        });
 
         for (const issue of angularIssues) {
           detected.push({
@@ -2173,7 +2178,7 @@ export default function Playground() {
             severity: issue.severity,
             wcag: issue.wcagCriteria || [],
             message: issue.message,
-            location: issue.locations?.[0]?.file || 'HTML'
+            location: issue.location?.file || 'HTML'
           });
         }
       } catch (error) {
@@ -2184,8 +2189,13 @@ export default function Playground() {
     // Vue analyzer
     if (allContent.includes('v-model') || allContent.includes('@click') || allContent.includes('v-if')) {
       try {
+        const vueExtractor = new VueActionLanguageExtractor();
+        const vueModel = vueExtractor.parse(allContent, 'component.vue');
         const vueAnalyzer = new VueReactivityAnalyzer();
-        const vueIssues = vueAnalyzer.analyze(allContent, 'component.vue');
+        const vueIssues = vueAnalyzer.analyze({
+          actionLanguageModel: vueModel,
+          scope: 'file'
+        });
 
         for (const issue of vueIssues) {
           detected.push({
@@ -2193,7 +2203,7 @@ export default function Playground() {
             severity: issue.severity,
             wcag: issue.wcagCriteria || [],
             message: issue.message,
-            location: issue.locations?.[0]?.file || 'HTML'
+            location: issue.location?.file || 'HTML'
           });
         }
       } catch (error) {
@@ -2204,8 +2214,13 @@ export default function Playground() {
     // Svelte analyzer
     if (allContent.includes('bind:') || allContent.includes('on:click') || allContent.includes('{#if')) {
       try {
+        const svelteExtractor = new SvelteActionLanguageExtractor();
+        const svelteModel = svelteExtractor.parse(allContent, 'component.svelte');
         const svelteAnalyzer = new SvelteReactivityAnalyzer();
-        const svelteIssues = svelteAnalyzer.analyze(allContent, 'component.svelte');
+        const svelteIssues = svelteAnalyzer.analyze({
+          actionLanguageModel: svelteModel,
+          scope: 'file'
+        });
 
         for (const issue of svelteIssues) {
           detected.push({
@@ -2213,7 +2228,7 @@ export default function Playground() {
             severity: issue.severity,
             wcag: issue.wcagCriteria || [],
             message: issue.message,
-            location: issue.locations?.[0]?.file || 'HTML'
+            location: issue.location?.file || 'HTML'
           });
         }
       } catch (error) {

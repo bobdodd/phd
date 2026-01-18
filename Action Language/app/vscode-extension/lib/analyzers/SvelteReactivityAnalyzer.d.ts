@@ -1,24 +1,9 @@
-import { Issue } from '../models/BaseModel';
-export interface SvelteReactivityIssue extends Issue {
-    pattern: 'bind' | 'on' | 'reactive-statement' | 'class-directive' | 'store';
-    directive?: string;
-    fix: {
-        description: string;
-        code?: string;
-    };
-}
-export declare class SvelteReactivityAnalyzer {
-    analyze(source: string, sourceFile: string): SvelteReactivityIssue[];
+import { BaseAnalyzer, AnalyzerContext, Issue } from './BaseAnalyzer';
+export declare class SvelteReactivityAnalyzer extends BaseAnalyzer {
+    readonly name = "SvelteReactivityAnalyzer";
+    readonly description = "Detects accessibility issues in Svelte-specific reactive patterns (bind:, on:, class:)";
+    analyze(context: AnalyzerContext): Issue[];
     private analyzeBindDirectives;
     private analyzeEventHandlers;
-    private analyzeClassDirectives;
-    private analyzeReactiveStatements;
-    private analyzeStoreSubscriptions;
-    private hasLabelOrAria;
-    private isInFieldset;
-    private isInteractiveElement;
-    private isVisibilityClass;
-    private hasAriaExpandedInParent;
-    private extractReactiveStatements;
+    private analyzeFocusManagement;
 }
-export declare function analyzeSvelteReactivity(source: string, sourceFile: string): SvelteReactivityIssue[];

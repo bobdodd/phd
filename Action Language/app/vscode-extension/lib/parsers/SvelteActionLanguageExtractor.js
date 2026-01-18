@@ -4,34 +4,56 @@ exports.SvelteActionLanguageExtractor = void 0;
 exports.parseSvelteActionLanguage = parseSvelteActionLanguage;
 const parse5_1 = require("parse5");
 const ActionLanguageModel_1 = require("../models/ActionLanguageModel");
+const JavaScriptParser_1 = require("./JavaScriptParser");
 class SvelteActionLanguageExtractor {
     constructor() {
         this.nodeCounter = 0;
     }
     parse(source, sourceFile) {
         const nodes = [];
+        const scriptContent = this.extractScript(source);
+        if (scriptContent) {
+            try {
+                const jsParser = new JavaScriptParser_1.JavaScriptParser();
+                const scriptModel = jsParser.parse(scriptContent, sourceFile);
+                for (const node of scriptModel.nodes) {
+                    nodes.push({
+                        ...node,
+                        metadata: {
+                            ...node.metadata,
+                            framework: 'svelte',
+                            sourceSection: 'script'
+                        }
+                    });
+                }
+            }
+            catch (error) {
+                console.error(`Failed to parse Svelte script in ${sourceFile}:`, error);
+            }
+        }
         const template = this.extractTemplate(source);
-        if (!template.trim()) {
-            return new ActionLanguageModel_1.ActionLanguageModelImpl(nodes, sourceFile);
-        }
-        try {
-            const document = (0, parse5_1.parse)(template, {
-                sourceCodeLocationInfo: true,
-            });
-            const html = document.childNodes.find((node) => node.nodeName === 'html');
-            if (!html) {
-                return new ActionLanguageModel_1.ActionLanguageModelImpl(nodes, sourceFile);
+        if (template.trim()) {
+            try {
+                const document = (0, parse5_1.parse)(template, {
+                    sourceCodeLocationInfo: true,
+                });
+                const html = document.childNodes.find((node) => node.nodeName === 'html');
+                if (html) {
+                    const body = html.childNodes?.find((node) => node.nodeName === 'body');
+                    if (body) {
+                        this.traverseElements(body, nodes, sourceFile);
+                    }
+                }
             }
-            const body = html.childNodes?.find((node) => node.nodeName === 'body');
-            if (!body) {
-                return new ActionLanguageModel_1.ActionLanguageModelImpl(nodes, sourceFile);
+            catch (error) {
+                console.error(`Failed to parse Svelte template in ${sourceFile}:`, error);
             }
-            this.traverseElements(body, nodes, sourceFile);
-        }
-        catch (error) {
-            console.error(`Failed to parse Svelte template in ${sourceFile}:`, error);
         }
         return new ActionLanguageModel_1.ActionLanguageModelImpl(nodes, sourceFile);
+    }
+    extractScript(source) {
+        const scriptMatch = source.match(/<script(?!\s+context="module")[^>]*>([\s\S]*?)<\/script>/i);
+        return scriptMatch ? scriptMatch[1].trim() : '';
     }
     extractTemplate(source) {
         let template = source.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');

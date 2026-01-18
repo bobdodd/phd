@@ -2330,7 +2330,8 @@ function NotificationProvider({ children }: { children: ReactNode }) {
     language: 'Svelte',
     framework: 'Svelte',
     description: 'Svelte bind: directive creates two-way data binding, but Paradise detects when bound inputs lack accessible labels.',
-    beforeCode: `<script>
+    problem: 'Input fields with bind:value use placeholders instead of proper labels, making them inaccessible to screen readers.',
+    before: `<script>
   let email = '';
   let password = '';
 </script>
@@ -2352,7 +2353,7 @@ function NotificationProvider({ children }: { children: ReactNode }) {
     Log in
   </button>
 </div>`,
-    afterCode: `<script>
+    after: `<script>
   let email = '';
   let password = '';
 </script>
@@ -2394,7 +2395,8 @@ function NotificationProvider({ children }: { children: ReactNode }) {
     language: 'Svelte',
     framework: 'Svelte',
     description: 'Svelte on: directives handle events, but Paradise detects when click handlers on non-interactive elements lack keyboard alternatives.',
-    beforeCode: `<script>
+    problem: 'Click handler on non-interactive div makes it keyboard-inaccessible.',
+    before: `<script>
   let count = 0;
 
   function increment() {
@@ -2414,7 +2416,7 @@ function NotificationProvider({ children }: { children: ReactNode }) {
     border: 1px solid #ccc;
   }
 </style>`,
-    afterCode: `<script>
+    after: `<script>
   let count = 0;
 
   function increment() {
@@ -2470,7 +2472,8 @@ function NotificationProvider({ children }: { children: ReactNode }) {
     language: 'Svelte',
     framework: 'Svelte',
     description: 'Svelte class: directive conditionally applies CSS classes, but Paradise detects when visibility changes aren\'t communicated to screen readers.',
-    beforeCode: `<script>
+    problem: 'Visibility changes via class: directive without ARIA attributes leave screen readers unaware.',
+    before: `<script>
   let isOpen = false;
 </script>
 
@@ -2489,7 +2492,7 @@ function NotificationProvider({ children }: { children: ReactNode }) {
     display: none;
   }
 </style>`,
-    afterCode: `<script>
+    after: `<script>
   let isOpen = false;
 
   function handleToggleKeydown(event) {
@@ -2541,7 +2544,8 @@ function NotificationProvider({ children }: { children: ReactNode }) {
     language: 'Svelte',
     framework: 'Svelte',
     description: 'Svelte reactive statements ($:) can manage focus, but Paradise detects when focus changes lack proper cleanup and restoration.',
-    beforeCode: `<script>
+    problem: 'Focus management without cleanup can trap focus or leave it in unexpected places.',
+    before: `<script>
   import { onMount } from 'svelte';
 
   let isModalOpen = false;
@@ -2578,7 +2582,7 @@ function NotificationProvider({ children }: { children: ReactNode }) {
     </button>
   </div>
 {/if}`,
-    afterCode: `<script>
+    after: `<script>
   import { onMount, onDestroy } from 'svelte';
 
   let isModalOpen = false;

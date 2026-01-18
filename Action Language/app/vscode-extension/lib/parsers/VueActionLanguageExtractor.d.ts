@@ -2,6 +2,7 @@ import { ActionLanguageModelImpl } from '../models/ActionLanguageModel';
 export declare class VueActionLanguageExtractor {
     private nodeCounter;
     parse(source: string, sourceFile: string): ActionLanguageModelImpl;
+    private extractScript;
     private extractTemplate;
     private traverseElements;
     private extractEventType;

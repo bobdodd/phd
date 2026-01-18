@@ -1,21 +1,9 @@
-import { Issue } from '../models/BaseModel';
-export interface AngularReactivityIssue extends Issue {
-    pattern: string;
-    directive?: string;
-    binding?: string;
-    fix: {
-        description: string;
-        code?: string;
-    };
-}
-export declare class AngularReactivityAnalyzer {
-    analyze(source: string, sourceFile: string): AngularReactivityIssue[];
-    private analyzeNgModelDirectives;
+import { BaseAnalyzer, AnalyzerContext, Issue } from './BaseAnalyzer';
+export declare class AngularReactivityAnalyzer extends BaseAnalyzer {
+    readonly name = "AngularReactivityAnalyzer";
+    readonly description = "Detects accessibility issues in Angular-specific reactive patterns (ngModel, event bindings)";
+    analyze(context: AnalyzerContext): Issue[];
+    private analyzeNgModel;
     private analyzeEventBindings;
-    private analyzeVisibilityDirectives;
-    private analyzeClassBindings;
-    private hasLabelOrAria;
-    private hasKeyboardHandler;
-    private isVisibilityClass;
+    private analyzeFocusManagement;
 }
-export declare function analyzeAngularReactivity(source: string, sourceFile: string): AngularReactivityIssue[];

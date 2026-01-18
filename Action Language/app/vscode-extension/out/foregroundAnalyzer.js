@@ -53,13 +53,16 @@ const KeyboardNavigationAnalyzer_1 = require("../lib/analyzers/KeyboardNavigatio
 const ARIASemanticAnalyzer_1 = require("../lib/analyzers/ARIASemanticAnalyzer");
 const WidgetPatternAnalyzer_1 = require("../lib/analyzers/WidgetPatternAnalyzer");
 const ReactA11yAnalyzer_1 = require("../lib/analyzers/ReactA11yAnalyzer");
+const SvelteReactivityAnalyzer_1 = require("../lib/analyzers/SvelteReactivityAnalyzer");
+const VueReactivityAnalyzer_1 = require("../lib/analyzers/VueReactivityAnalyzer");
+const AngularReactivityAnalyzer_1 = require("../lib/analyzers/AngularReactivityAnalyzer");
 class ForegroundAnalyzer {
     constructor(diagnosticCollection, projectManager, codeActionProvider, outputChannel) {
         this.diagnosticCollection = diagnosticCollection;
         this.projectManager = projectManager;
         this.codeActionProvider = codeActionProvider;
         this.outputChannel = outputChannel;
-        // Initialize all analyzers (only those with TypeScript definitions)
+        // Initialize all analyzers
         this.analyzers = [
             new MouseOnlyClickAnalyzer_1.MouseOnlyClickAnalyzer(),
             new OrphanedEventHandlerAnalyzer_1.OrphanedEventHandlerAnalyzer(),
@@ -70,8 +73,10 @@ class ForegroundAnalyzer {
             new KeyboardNavigationAnalyzer_1.KeyboardNavigationAnalyzer(),
             new ARIASemanticAnalyzer_1.ARIASemanticAnalyzer(),
             new WidgetPatternAnalyzer_1.WidgetPatternAnalyzer(),
-            new ReactA11yAnalyzer_1.ReactA11yAnalyzer()
-            // Note: Svelte/Vue/Angular analyzers excluded - they don't follow BaseAnalyzer architecture
+            new ReactA11yAnalyzer_1.ReactA11yAnalyzer(),
+            new SvelteReactivityAnalyzer_1.SvelteReactivityAnalyzer(),
+            new VueReactivityAnalyzer_1.VueReactivityAnalyzer(),
+            new AngularReactivityAnalyzer_1.AngularReactivityAnalyzer()
         ];
         this.outputChannel.appendLine(`[ForegroundAnalyzer] Initialized with ${this.analyzers.length} analyzers`);
     }

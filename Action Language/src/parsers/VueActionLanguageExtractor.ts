@@ -20,6 +20,7 @@ import {
   ActionLanguageModelImpl,
   ElementReference,
 } from '../models/ActionLanguageModel';
+import { JavaScriptParser } from './JavaScriptParser';
 
 type Node = DefaultTreeAdapterMap['node'];
 type Element = DefaultTreeAdapterMap['element'];
@@ -55,44 +56,71 @@ export class VueActionLanguageExtractor {
   parse(source: string, sourceFile: string): ActionLanguageModelImpl {
     const nodes: ActionLanguageNode[] = [];
 
-    // Extract the template block
-    const template = this.extractTemplate(source);
+    // Step 1: Extract and parse <script> section using JavaScriptParser
+    const scriptContent = this.extractScript(source);
+    if (scriptContent) {
+      try {
+        const jsParser = new JavaScriptParser();
+        const scriptModel = jsParser.parse(scriptContent, sourceFile);
 
-    if (!template.trim()) {
-      return new ActionLanguageModelImpl(nodes, sourceFile);
+        // Add all ActionLanguage nodes from the script
+        // Mark them as being from Vue context
+        for (const node of scriptModel.nodes) {
+          nodes.push({
+            ...node,
+            metadata: {
+              ...node.metadata,
+              framework: 'vue',
+              sourceSection: 'script'
+            }
+          });
+        }
+      } catch (error) {
+        console.error(`Failed to parse Vue script in ${sourceFile}:`, error);
+      }
     }
 
-    try {
-      // Parse the template as HTML
-      const document = parseHTML(template, {
-        sourceCodeLocationInfo: true,
-      });
+    // Step 2: Extract the template block
+    const template = this.extractTemplate(source);
 
-      // Find body element
-      const html = document.childNodes.find((node: Node) =>
-        node.nodeName === 'html'
-      ) as any;
+    if (template.trim()) {
+      try {
+        // Parse the template as HTML
+        const document = parseHTML(template, {
+          sourceCodeLocationInfo: true,
+        });
 
-      if (!html) {
-        return new ActionLanguageModelImpl(nodes, sourceFile);
+        // Find body element
+        const html = document.childNodes.find((node: Node) =>
+          node.nodeName === 'html'
+        ) as any;
+
+        if (html) {
+          const body = html.childNodes?.find((node: Node) =>
+            node.nodeName === 'body'
+          ) as any;
+
+          if (body) {
+            // Traverse the DOM tree and extract ActionLanguage nodes from directives
+            this.traverseElements(body, nodes, sourceFile);
+          }
+        }
+      } catch (error) {
+        console.error(`Failed to parse Vue template in ${sourceFile}:`, error);
       }
-
-      const body = html.childNodes?.find((node: Node) =>
-        node.nodeName === 'body'
-      ) as any;
-
-      if (!body) {
-        return new ActionLanguageModelImpl(nodes, sourceFile);
-      }
-
-      // Traverse the DOM tree and extract ActionLanguage nodes
-      this.traverseElements(body, nodes, sourceFile);
-
-    } catch (error) {
-      console.error(`Failed to parse Vue template in ${sourceFile}:`, error);
     }
 
     return new ActionLanguageModelImpl(nodes, sourceFile);
+  }
+
+  /**
+   * Extract <script> content from Vue component.
+   * Returns the JavaScript code inside <script> tags.
+   */
+  private extractScript(source: string): string {
+    // Match <script> blocks (both <script> and <script setup>)
+    const scriptMatch = source.match(/<script[^>]*>([\s\S]*?)<\/script>/i);
+    return scriptMatch ? scriptMatch[1].trim() : '';
   }
 
   /**

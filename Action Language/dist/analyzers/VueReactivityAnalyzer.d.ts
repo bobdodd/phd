@@ -1,21 +1,9 @@
-import { Issue } from '../models/BaseModel';
-export interface VueReactivityIssue extends Issue {
-    pattern: 'v-model' | 'v-on' | 'v-show' | 'v-if' | 'v-bind:class' | 'ref';
-    directive?: string;
-    fix: {
-        description: string;
-        code?: string;
-    };
-}
-export declare class VueReactivityAnalyzer {
-    analyze(source: string, sourceFile: string): VueReactivityIssue[];
-    private analyzeModelDirectives;
+import { BaseAnalyzer, AnalyzerContext, Issue } from './BaseAnalyzer';
+export declare class VueReactivityAnalyzer extends BaseAnalyzer {
+    readonly name = "VueReactivityAnalyzer";
+    readonly description = "Detects accessibility issues in Vue-specific reactive patterns (v-model, v-on)";
+    analyze(context: AnalyzerContext): Issue[];
+    private analyzeVModel;
     private analyzeEventHandlers;
-    private analyzeVisibilityDirectives;
-    private analyzeClassBindings;
-    private analyzeRefFocusManagement;
-    private hasLabelOrAria;
-    private isInteractiveElement;
-    private hasAriaExpandedInParent;
+    private analyzeFocusManagement;
 }
-export declare function analyzeVueReactivity(source: string, sourceFile: string): VueReactivityIssue[];

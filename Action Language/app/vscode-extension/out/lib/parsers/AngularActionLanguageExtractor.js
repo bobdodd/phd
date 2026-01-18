@@ -4,6 +4,7 @@ exports.AngularActionLanguageExtractor = void 0;
 exports.parseAngularActionLanguage = parseAngularActionLanguage;
 const parse5_1 = require("parse5");
 const ActionLanguageModel_1 = require("../models/ActionLanguageModel");
+const JavaScriptParser_1 = require("./JavaScriptParser");
 class AngularActionLanguageExtractor {
     constructor() {
         this.nodeCounter = 0;
@@ -13,26 +14,43 @@ class AngularActionLanguageExtractor {
         if (!source || typeof source !== 'string') {
             return new ActionLanguageModel_1.ActionLanguageModelImpl(nodes, sourceFile);
         }
+        const isTypeScriptFile = sourceFile.endsWith('.ts') || source.includes('@Component');
+        if (isTypeScriptFile) {
+            try {
+                const jsParser = new JavaScriptParser_1.JavaScriptParser();
+                const scriptModel = jsParser.parse(source, sourceFile);
+                for (const node of scriptModel.nodes) {
+                    nodes.push({
+                        ...node,
+                        metadata: {
+                            ...node.metadata,
+                            framework: 'angular',
+                            sourceSection: 'component'
+                        }
+                    });
+                }
+            }
+            catch (error) {
+                console.error(`Failed to parse Angular component TypeScript in ${sourceFile}:`, error);
+            }
+        }
         const template = this.extractTemplate(source);
-        if (!template || typeof template !== 'string' || !template.trim()) {
-            return new ActionLanguageModel_1.ActionLanguageModelImpl(nodes, sourceFile);
-        }
-        try {
-            const document = (0, parse5_1.parse)(template, {
-                sourceCodeLocationInfo: true,
-            });
-            const html = document.childNodes.find((node) => node.nodeName === 'html');
-            if (!html) {
-                return new ActionLanguageModel_1.ActionLanguageModelImpl(nodes, sourceFile);
+        if (template && typeof template === 'string' && template.trim()) {
+            try {
+                const document = (0, parse5_1.parse)(template, {
+                    sourceCodeLocationInfo: true,
+                });
+                const html = document.childNodes.find((node) => node.nodeName === 'html');
+                if (html) {
+                    const body = html.childNodes?.find((node) => node.nodeName === 'body');
+                    if (body) {
+                        this.traverseElements(body, nodes, sourceFile);
+                    }
+                }
             }
-            const body = html.childNodes?.find((node) => node.nodeName === 'body');
-            if (!body) {
-                return new ActionLanguageModel_1.ActionLanguageModelImpl(nodes, sourceFile);
+            catch (error) {
+                console.error(`Failed to parse Angular template in ${sourceFile}:`, error);
             }
-            this.traverseElements(body, nodes, sourceFile);
-        }
-        catch (error) {
-            console.error(`Failed to parse Angular template in ${sourceFile}:`, error);
         }
         return new ActionLanguageModel_1.ActionLanguageModelImpl(nodes, sourceFile);
     }

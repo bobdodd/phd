@@ -21,6 +21,7 @@ import {
   ActionLanguageModelImpl,
   ElementReference,
 } from '../models/ActionLanguageModel';
+import { JavaScriptParser } from './JavaScriptParser';
 
 type Node = DefaultTreeAdapterMap['node'];
 type Element = DefaultTreeAdapterMap['element'];
@@ -59,41 +60,58 @@ export class AngularActionLanguageExtractor {
       return new ActionLanguageModelImpl(nodes, sourceFile);
     }
 
-    // Extract the template (inline or from .html file)
-    const template = this.extractTemplate(source);
+    // Step 1: If this is a TypeScript file with a component class, parse the TypeScript
+    const isTypeScriptFile = sourceFile.endsWith('.ts') || source.includes('@Component');
+    if (isTypeScriptFile) {
+      try {
+        const jsParser = new JavaScriptParser();
+        const scriptModel = jsParser.parse(source, sourceFile);
 
-    if (!template || typeof template !== 'string' || !template.trim()) {
-      return new ActionLanguageModelImpl(nodes, sourceFile);
+        // Add all ActionLanguage nodes from the TypeScript
+        // Mark them as being from Angular context
+        for (const node of scriptModel.nodes) {
+          nodes.push({
+            ...node,
+            metadata: {
+              ...node.metadata,
+              framework: 'angular',
+              sourceSection: 'component'
+            }
+          });
+        }
+      } catch (error) {
+        console.error(`Failed to parse Angular component TypeScript in ${sourceFile}:`, error);
+      }
     }
 
-    try {
-      // Parse the template as HTML
-      const document = parseHTML(template, {
-        sourceCodeLocationInfo: true,
-      });
+    // Step 2: Extract the template (inline or from .html file)
+    const template = this.extractTemplate(source);
 
-      // Find body element
-      const html = document.childNodes.find((node: Node) =>
-        node.nodeName === 'html'
-      ) as any;
+    if (template && typeof template === 'string' && template.trim()) {
+      try {
+        // Parse the template as HTML
+        const document = parseHTML(template, {
+          sourceCodeLocationInfo: true,
+        });
 
-      if (!html) {
-        return new ActionLanguageModelImpl(nodes, sourceFile);
+        // Find body element
+        const html = document.childNodes.find((node: Node) =>
+          node.nodeName === 'html'
+        ) as any;
+
+        if (html) {
+          const body = html.childNodes?.find((node: Node) =>
+            node.nodeName === 'body'
+          ) as any;
+
+          if (body) {
+            // Traverse the DOM tree and extract ActionLanguage nodes from directives
+            this.traverseElements(body, nodes, sourceFile);
+          }
+        }
+      } catch (error) {
+        console.error(`Failed to parse Angular template in ${sourceFile}:`, error);
       }
-
-      const body = html.childNodes?.find((node: Node) =>
-        node.nodeName === 'body'
-      ) as any;
-
-      if (!body) {
-        return new ActionLanguageModelImpl(nodes, sourceFile);
-      }
-
-      // Traverse the DOM tree and extract ActionLanguage nodes
-      this.traverseElements(body, nodes, sourceFile);
-
-    } catch (error) {
-      console.error(`Failed to parse Angular template in ${sourceFile}:`, error);
     }
 
     return new ActionLanguageModelImpl(nodes, sourceFile);
@@ -115,7 +133,7 @@ export class AngularActionLanguageExtractor {
     }
 
     // Extract inline template from @Component decorator
-    const inlineTemplateMatch = source.match(/template:\s*`([^`]*)`/s);
+    const inlineTemplateMatch = source.match(/template:\s*`([\s\S]*?)`/);
     if (inlineTemplateMatch) {
       return inlineTemplateMatch[1].trim();
     }
