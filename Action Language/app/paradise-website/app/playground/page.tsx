@@ -951,6 +951,397 @@ closeBtn.addEventListener('click', function() {
       css: []
     },
     issues: ['focus-restoration-missing']
+  },
+  'svelte-bind-no-label': {
+    title: 'Svelte bind: Without Label',
+    description: 'Svelte two-way binding without accessible labels',
+    category: 'framework',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'LoginForm.svelte',
+          content: `<script>
+  let email = '';
+  let password = '';
+  let rememberMe = false;
+
+  function handleLogin() {
+    console.log('Logging in...', { email, password, rememberMe });
+  }
+</script>
+
+<!-- ❌ Bad: bind:value without labels -->
+<div class="login-form">
+  <input
+    type="email"
+    bind:value={email}
+    placeholder="Email"
+  />
+
+  <input
+    type="password"
+    bind:value={password}
+    placeholder="Password"
+  />
+
+  <label>
+    <input
+      type="checkbox"
+      bind:checked={rememberMe}
+    />
+    Remember me
+  </label>
+
+  <button on:click={handleLogin}>
+    Log in
+  </button>
+</div>
+
+<!-- ✅ Good: Proper labels -->
+<!--
+<div class="login-form">
+  <label for="email-input">Email</label>
+  <input
+    id="email-input"
+    type="email"
+    bind:value={email}
+    aria-required="true"
+  />
+
+  <label for="password-input">Password</label>
+  <input
+    id="password-input"
+    type="password"
+    bind:value={password}
+    aria-required="true"
+  />
+
+  <label>
+    <input
+      type="checkbox"
+      bind:checked={rememberMe}
+    />
+    Remember me
+  </label>
+
+  <button on:click={handleLogin}>
+    Log in
+  </button>
+</div>
+-->`
+        }
+      ],
+      css: []
+    },
+    issues: [
+      'svelte-bind-no-label: Input with bind:value lacks accessible label',
+      'Placeholder text is not a replacement for labels',
+      'Missing aria-required for required fields'
+    ]
+  },
+  'svelte-click-keyboard': {
+    title: 'Svelte on:click Without Keyboard',
+    description: 'Non-interactive element with on:click needs keyboard handler',
+    category: 'framework',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'Counter.svelte',
+          content: `<script>
+  let count = 0;
+
+  function increment() {
+    count++;
+  }
+
+  function reset() {
+    count = 0;
+  }
+</script>
+
+<!-- ❌ Bad: on:click on div without keyboard support -->
+<div class="counter-widget">
+  <div class="counter" on:click={increment}>
+    <span class="count">{count}</span>
+    <span class="label">Clicks</span>
+  </div>
+
+  <div class="reset-button" on:click={reset}>
+    Reset
+  </div>
+</div>
+
+<style>
+  .counter, .reset-button {
+    cursor: pointer;
+    padding: 20px;
+    border: 1px solid #ccc;
+  }
+</style>
+
+<!-- ✅ Good: Proper keyboard support -->
+<!--
+<script>
+  let count = 0;
+
+  function increment() {
+    count++;
+  }
+
+  function handleCounterKeydown(event) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      increment();
+    }
+  }
+
+  function reset() {
+    count = 0;
+  }
+
+  function handleResetKeydown(event) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      reset();
+    }
+  }
+</script>
+
+<div class="counter-widget">
+  <div
+    class="counter"
+    role="button"
+    tabindex="0"
+    aria-label="Increment counter"
+    on:click={increment}
+    on:keydown={handleCounterKeydown}
+  >
+    <span class="count" aria-live="polite">{count}</span>
+    <span class="label">Clicks</span>
+  </div>
+
+  <button class="reset-button" on:click={reset}>
+    Reset
+  </button>
+</div>
+-->`
+        }
+      ],
+      css: []
+    },
+    issues: [
+      'svelte-click-no-keyboard: on:click on div without keyboard handler',
+      'Non-interactive element needs role and tabindex',
+      'Missing keyboard event handler (on:keydown)'
+    ]
+  },
+  'svelte-class-visibility': {
+    title: 'Svelte class: Visibility Without ARIA',
+    description: 'Conditional class affecting visibility without ARIA communication',
+    category: 'framework',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'Dropdown.svelte',
+          content: `<script>
+  let isOpen = false;
+
+  function toggleMenu() {
+    isOpen = !isOpen;
+  }
+</script>
+
+<!-- ❌ Bad: class:hidden without ARIA -->
+<div class="dropdown">
+  <button on:click={toggleMenu}>
+    Toggle Menu
+  </button>
+
+  <nav class:hidden={!isOpen}>
+    <a href="/home">Home</a>
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
+  </nav>
+</div>
+
+<style>
+  .hidden {
+    display: none;
+  }
+</style>
+
+<!-- ✅ Good: Proper ARIA communication -->
+<!--
+<script>
+  let isOpen = false;
+
+  function toggleMenu() {
+    isOpen = !isOpen;
+  }
+
+  function handleToggleKeydown(event) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      toggleMenu();
+    } else if (event.key === 'Escape' && isOpen) {
+      isOpen = false;
+    }
+  }
+</script>
+
+<div class="dropdown">
+  <button
+    aria-expanded={isOpen}
+    aria-controls="main-nav"
+    on:click={toggleMenu}
+    on:keydown={handleToggleKeydown}
+  >
+    Toggle Menu
+  </button>
+
+  <nav
+    id="main-nav"
+    class:hidden={!isOpen}
+    aria-hidden={!isOpen}
+  >
+    <a href="/home">Home</a>
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
+  </nav>
+</div>
+
+<style>
+  .hidden {
+    display: none;
+  }
+</style>
+-->`
+        }
+      ],
+      css: []
+    },
+    issues: [
+      'svelte-class-visibility-no-aria: class:hidden affects visibility without ARIA',
+      'Missing aria-expanded on toggle button',
+      'Missing aria-hidden to match visibility state'
+    ]
+  },
+  'svelte-reactive-focus': {
+    title: 'Svelte Reactive Focus Without Cleanup',
+    description: 'Reactive statement manages focus without cleanup',
+    category: 'framework',
+    files: {
+      html: [],
+      javascript: [
+        {
+          name: 'Modal.svelte',
+          content: `<script>
+  let isModalOpen = false;
+  let modalElement;
+
+  // ❌ Bad: Reactive focus without cleanup
+  $: if (isModalOpen && modalElement) {
+    modalElement.focus();
+  }
+
+  function openModal() {
+    isModalOpen = true;
+  }
+
+  function closeModal() {
+    isModalOpen = false;
+  }
+</script>
+
+<button on:click={openModal}>
+  Open Modal
+</button>
+
+{#if isModalOpen}
+  <div
+    bind:this={modalElement}
+    class="modal"
+    tabindex="-1"
+  >
+    <h2>Modal Title</h2>
+    <p>Modal content goes here...</p>
+
+    <button on:click={closeModal}>
+      Close
+    </button>
+  </div>
+{/if}
+
+<!-- ✅ Good: Proper focus management with cleanup -->
+<!--
+<script>
+  import { onDestroy } from 'svelte';
+
+  let isModalOpen = false;
+  let modalElement;
+  let previousFocus;
+
+  $: if (isModalOpen && modalElement) {
+    // Store previous focus before moving
+    previousFocus = document.activeElement;
+    modalElement.focus();
+  }
+
+  function openModal() {
+    isModalOpen = true;
+  }
+
+  function closeModal() {
+    isModalOpen = false;
+    // Restore focus when closing
+    if (previousFocus) {
+      previousFocus.focus();
+    }
+  }
+
+  function handleModalKeydown(event) {
+    if (event.key === 'Escape') {
+      closeModal();
+    }
+  }
+</script>
+
+<button on:click={openModal} aria-haspopup="dialog">
+  Open Modal
+</button>
+
+{#if isModalOpen}
+  <div
+    bind:this={modalElement}
+    class="modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-title"
+    tabindex="-1"
+    on:keydown={handleModalKeydown}
+  >
+    <h2 id="modal-title">Modal Title</h2>
+    <p>Modal content goes here...</p>
+
+    <button on:click={closeModal}>
+      Close
+    </button>
+  </div>
+{/if}
+-->`
+        }
+      ],
+      css: []
+    },
+    issues: [
+      'svelte-reactive-focus-no-cleanup: Reactive statement manages focus without cleanup',
+      'Missing focus restoration on modal close',
+      'Missing role="dialog" and aria-modal',
+      'Missing Escape key handler'
+    ]
   }
 };
 
