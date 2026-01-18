@@ -91,4 +91,3 @@ export declare class CSSModelImpl implements CSSModel {
     private selectorMatches;
     private compareSpecificity;
 }
-//# sourceMappingURL=CSSModel.d.ts.map

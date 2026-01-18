@@ -201,4 +201,3 @@ function analyzeAngularReactivity(source, sourceFile) {
     const analyzer = new AngularReactivityAnalyzer();
     return analyzer.analyze(source, sourceFile);
 }
-//# sourceMappingURL=AngularReactivityAnalyzer.js.map

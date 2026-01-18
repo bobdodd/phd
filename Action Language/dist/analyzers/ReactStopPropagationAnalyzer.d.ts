@@ -1,17 +1,8 @@
-import { Issue } from '../models/BaseModel';
-import { SyntheticEventUsage } from '../parsers/ReactPatternDetector';
-export interface ReactStopPropagationIssue extends Issue {
-    syntheticEvent: SyntheticEventUsage;
-    fix: {
-        description: string;
-        code?: string;
-    };
+import { BaseAnalyzer, AnalyzerContext, Issue } from './BaseAnalyzer';
+export declare class ReactStopPropagationAnalyzer extends BaseAnalyzer {
+    readonly name = "react-stop-propagation";
+    readonly description = "Detects event.stopPropagation() usage that can block assistive technology";
+    analyze(context: AnalyzerContext): Issue[];
+    private createMessage;
+    private createFix;
 }
-export declare class ReactStopPropagationAnalyzer {
-    analyze(source: string, sourceFile: string): ReactStopPropagationIssue[];
-    private buildMessage;
-    private buildFix;
-    hasStopPropagation(source: string): boolean;
-}
-export declare function analyzeReactStopPropagation(source: string, sourceFile: string): ReactStopPropagationIssue[];
-//# sourceMappingURL=ReactStopPropagationAnalyzer.d.ts.map

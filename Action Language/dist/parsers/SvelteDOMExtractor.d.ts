@@ -32,4 +32,3 @@ export declare class SvelteDOMExtractor {
     private generateId;
 }
 export declare function extractSvelteDOM(source: string, sourceFile: string): DOMModelImpl | null;
-//# sourceMappingURL=SvelteDOMExtractor.d.ts.map

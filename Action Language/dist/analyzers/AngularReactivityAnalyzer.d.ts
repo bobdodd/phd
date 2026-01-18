@@ -19,4 +19,3 @@ export declare class AngularReactivityAnalyzer {
     private isVisibilityClass;
 }
 export declare function analyzeAngularReactivity(source: string, sourceFile: string): AngularReactivityIssue[];
-//# sourceMappingURL=AngularReactivityAnalyzer.d.ts.map

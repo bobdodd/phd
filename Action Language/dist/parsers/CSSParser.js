@@ -206,4 +206,3 @@ class CSSParser {
     }
 }
 exports.CSSParser = CSSParser;
-//# sourceMappingURL=CSSParser.js.map

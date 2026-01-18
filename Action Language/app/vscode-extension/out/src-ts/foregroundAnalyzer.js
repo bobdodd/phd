@@ -43,6 +43,8 @@ exports.ForegroundAnalyzer = void 0;
 const vscode = __importStar(require("vscode"));
 const JavaScriptParser_1 = require("../lib/parsers/JavaScriptParser");
 const SvelteActionLanguageExtractor_1 = require("../lib/parsers/SvelteActionLanguageExtractor");
+const VueActionLanguageExtractor_1 = require("../lib/parsers/VueActionLanguageExtractor");
+const AngularActionLanguageExtractor_1 = require("../lib/parsers/AngularActionLanguageExtractor");
 // Import analyzers
 const MouseOnlyClickAnalyzer_1 = require("../lib/analyzers/MouseOnlyClickAnalyzer");
 const OrphanedEventHandlerAnalyzer_1 = require("../lib/analyzers/OrphanedEventHandlerAnalyzer");
@@ -57,6 +59,8 @@ const ReactPortalAnalyzer_1 = require("../lib/analyzers/ReactPortalAnalyzer");
 const ReactStopPropagationAnalyzer_1 = require("../lib/analyzers/ReactStopPropagationAnalyzer");
 const ReactHooksA11yAnalyzer_1 = require("../lib/analyzers/ReactHooksA11yAnalyzer");
 const SvelteReactivityAnalyzer_1 = require("../lib/analyzers/SvelteReactivityAnalyzer");
+const VueReactivityAnalyzer_1 = require("../lib/analyzers/VueReactivityAnalyzer");
+const AngularReactivityAnalyzer_1 = require("../lib/analyzers/AngularReactivityAnalyzer");
 class ForegroundAnalyzer {
     constructor(diagnosticCollection, projectManager, codeActionProvider, outputChannel) {
         this.diagnosticCollection = diagnosticCollection;
@@ -77,7 +81,9 @@ class ForegroundAnalyzer {
             new ReactPortalAnalyzer_1.ReactPortalAnalyzer(),
             new ReactStopPropagationAnalyzer_1.ReactStopPropagationAnalyzer(),
             new ReactHooksA11yAnalyzer_1.ReactHooksA11yAnalyzer(),
-            new SvelteReactivityAnalyzer_1.SvelteReactivityAnalyzer()
+            new SvelteReactivityAnalyzer_1.SvelteReactivityAnalyzer(),
+            new VueReactivityAnalyzer_1.VueReactivityAnalyzer(),
+            new AngularReactivityAnalyzer_1.AngularReactivityAnalyzer()
         ];
         console.log('[ForegroundAnalyzer] Initialized with', this.analyzers.length, 'analyzers');
     }
@@ -213,6 +219,18 @@ class ForegroundAnalyzer {
             const parser = new SvelteActionLanguageExtractor_1.SvelteActionLanguageExtractor();
             model = parser.parse(content, document.uri.fsPath);
             this.outputChannel.appendLine(`[ForegroundAnalyzer] Parsed Svelte file with SvelteActionLanguageExtractor`);
+        }
+        else if (document.languageId === 'vue') {
+            // Parse Vue file
+            const parser = new VueActionLanguageExtractor_1.VueActionLanguageExtractor();
+            model = parser.parse(content, document.uri.fsPath);
+            this.outputChannel.appendLine(`[ForegroundAnalyzer] Parsed Vue file with VueActionLanguageExtractor`);
+        }
+        else if (document.fileName.endsWith('.html') || document.fileName.endsWith('.component.ts')) {
+            // Parse Angular file (templates or component files)
+            const parser = new AngularActionLanguageExtractor_1.AngularActionLanguageExtractor();
+            model = parser.parse(content, document.uri.fsPath);
+            this.outputChannel.appendLine(`[ForegroundAnalyzer] Parsed Angular file with AngularActionLanguageExtractor`);
         }
         else {
             // Parse JavaScript/TypeScript/JSX/TSX file

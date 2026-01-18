@@ -14,4 +14,3 @@ export declare class SvelteActionLanguageExtractor {
     private generateId;
 }
 export declare function parseSvelteActionLanguage(source: string, sourceFile: string): ActionLanguageModelImpl;
-//# sourceMappingURL=SvelteActionLanguageExtractor.d.ts.map

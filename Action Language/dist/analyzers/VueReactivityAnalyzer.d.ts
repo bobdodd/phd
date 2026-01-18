@@ -19,4 +19,3 @@ export declare class VueReactivityAnalyzer {
     private hasAriaExpandedInParent;
 }
 export declare function analyzeVueReactivity(source: string, sourceFile: string): VueReactivityIssue[];
-//# sourceMappingURL=VueReactivityAnalyzer.d.ts.map

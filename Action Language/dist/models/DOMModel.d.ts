@@ -49,4 +49,3 @@ export declare class DOMModelImpl implements DOMModel {
     private traverseElements;
     private findElement;
 }
-//# sourceMappingURL=DOMModel.d.ts.map

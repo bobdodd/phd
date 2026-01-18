@@ -62,10 +62,15 @@ export class AngularDOMExtractor {
    * ```
    */
   extract(source: string, sourceFile: string): DOMModelImpl | null {
+    // Validate input
+    if (!source || typeof source !== 'string') {
+      return null;
+    }
+
     // Extract template
     const template = this.extractTemplate(source);
 
-    if (!template.trim()) {
+    if (!template || !template.trim()) {
       return null;
     }
 
@@ -107,6 +112,11 @@ export class AngularDOMExtractor {
    * Extract template from Angular component.
    */
   private extractTemplate(source: string): string {
+    // Validate input is actually a string
+    if (!source || typeof source !== 'string') {
+      return '';
+    }
+
     // If it's a .html file, return as-is
     if (!source.includes('@Component') && !source.includes('template:')) {
       return source;

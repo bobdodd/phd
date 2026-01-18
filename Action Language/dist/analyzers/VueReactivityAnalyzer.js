@@ -248,4 +248,3 @@ function analyzeVueReactivity(source, sourceFile) {
     const analyzer = new VueReactivityAnalyzer();
     return analyzer.analyze(source, sourceFile);
 }
-//# sourceMappingURL=VueReactivityAnalyzer.js.map

@@ -20,9 +20,9 @@ export default function AnalyzersPage() {
         <div className="mb-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="bg-white rounded-xl shadow-lg p-6 text-center border-2 border-paradise-blue/20">
-              <div className="text-4xl font-bold text-paradise-blue mb-2">15</div>
+              <div className="text-4xl font-bold text-paradise-blue mb-2">16</div>
               <div className="text-gray-600 font-medium">Total Analyzers</div>
-              <div className="text-xs text-gray-500 mt-1">9 JS-only + 6 Multi-model</div>
+              <div className="text-xs text-gray-500 mt-1">9 JS + 6 Multi-model + 1 React</div>
             </div>
             <div className="bg-white rounded-xl shadow-lg p-6 text-center border-2 border-green-500/20">
               <div className="text-4xl font-bold text-green-600 mb-2">0</div>
@@ -515,6 +515,66 @@ btn.addEventListener('click', handler);
           </div>
         </div>
 
+        {/* Phase 3: React-Specific Analyzers */}
+        <div className="max-w-6xl mx-auto mb-16">
+          <div className="bg-gradient-to-r from-react-blue to-react-cyan rounded-2xl shadow-xl p-8 text-white mb-8">
+            <h2 className="text-4xl font-bold mb-4 text-center">Phase 3: React Framework Analysis</h2>
+            <p className="text-lg text-center opacity-95 max-w-3xl mx-auto">
+              Unified React analyzer detecting accessibility issues in React patterns: useEffect focus management, portals, and event propagation.
+              Follows Paradise architecture using ReactActionLanguageExtractor.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-1 gap-6">
+            {/* Analyzer 16: ReactA11yAnalyzer */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border-l-8 border-react-blue">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-react-blue rounded-lg flex items-center justify-center text-white text-xl font-bold">16</div>
+                <div>
+                  <h3 className="text-2xl font-bold">ReactA11yAnalyzer</h3>
+                  <div className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-semibold">NEW - Unified React Analyzer</div>
+                </div>
+              </div>
+              <p className="text-gray-700 mb-4">
+                Unified analyzer for all React accessibility issues: useEffect focus management, portals, and event propagation.
+              </p>
+
+              <div className="space-y-3">
+                {/* useEffect Focus Management */}
+                <div className="bg-blue-50 rounded p-3">
+                  <h4 className="font-semibold text-blue-900 mb-2">1. useEffect Focus Management</h4>
+                  <p className="text-sm text-gray-700 mb-2">Detects useEffect with .focus() or .blur() that lack cleanup functions.</p>
+                  <div className="text-xs text-gray-600">
+                    <strong>Issue:</strong> <code>react-useeffect-focus-cleanup</code> (WARNING)
+                  </div>
+                </div>
+
+                {/* React Portals */}
+                <div className="bg-cyan-50 rounded p-3">
+                  <h4 className="font-semibold text-cyan-900 mb-2">2. React Portals</h4>
+                  <p className="text-sm text-gray-700 mb-2">Detects ReactDOM.createPortal() that breaks focus management and ARIA.</p>
+                  <div className="text-xs text-gray-600">
+                    <strong>Issue:</strong> <code>react-portal-accessibility</code> (WARNING/ERROR)
+                  </div>
+                </div>
+
+                {/* Event Propagation */}
+                <div className="bg-red-50 rounded p-3">
+                  <h4 className="font-semibold text-red-900 mb-2">3. Event Propagation</h4>
+                  <p className="text-sm text-gray-700 mb-2">Detects stopPropagation() that blocks assistive technology.</p>
+                  <div className="text-xs text-gray-600">
+                    <strong>Issues:</strong> <code>react-stopPropagation</code> (WARNING), <code>react-stopImmediatePropagation</code> (ERROR)
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2 mt-4">
+                <strong>WCAG:</strong> 2.1.1, 2.4.3, 4.1.2 | <strong>Impact:</strong> Focus leaks, broken ARIA, blocked AT
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Summary Table */}
         <div className="max-w-6xl mx-auto mb-16">
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
@@ -707,6 +767,21 @@ btn.addEventListener('click', handler);
                     </td>
                     <td className="px-6 py-4 text-sm font-mono text-gray-600">4.1.2, 4.1.3, 2.5.3</td>
                   </tr>
+                  <tr className="hover:bg-gray-50 bg-cyan-50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">16</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      ReactA11yAnalyzer
+                      <span className="inline-block ml-2 px-2 py-0.5 text-xs font-semibold rounded-full bg-react-cyan text-white">UNIFIED</span>
+                      <span className="block text-xs text-gray-500 mt-1">(3 detection types: useEffect focus, portals, event propagation)</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-react-blue/20 text-react-blue px-2 py-1 rounded">Phase 3</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">2.1.1, 2.4.3, 4.1.2</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -716,9 +791,9 @@ btn.addEventListener('click', handler);
         {/* CTA */}
         <div className="max-w-4xl mx-auto text-center">
           <div className="bg-gradient-to-r from-paradise-blue to-paradise-purple rounded-2xl shadow-2xl p-12 text-white">
-            <h2 className="text-3xl font-bold mb-4">Experience All 15 Analyzers</h2>
+            <h2 className="text-3xl font-bold mb-4">Experience All 16 Analyzers</h2>
             <p className="text-lg opacity-95 mb-8">
-              Try Paradise's complete analyzer suite - from JavaScript-only to multi-model - and see how
+              Try Paradise's complete analyzer suite - from JavaScript-only to multi-model to unified React analysis - and see how
               the evolution eliminates false positives while catching more real issues.
             </p>
             <div className="flex gap-4 justify-center flex-wrap">

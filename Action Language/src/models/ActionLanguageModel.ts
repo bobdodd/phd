@@ -29,7 +29,10 @@ export interface ElementReference {
   selector: string;
 
   /** Variable/object binding in JavaScript (e.g., "button", "buttonRef") */
-  binding: string;
+  binding?: string;
+
+  /** Element ID from HTML/DOM (e.g., "submit-btn") */
+  id?: string;
 
   /** Optional: Resolved element from DOMModel (populated during merge) */
   resolvedElement?: any; // DOMElement
@@ -43,12 +46,14 @@ export type ActionType =
   | 'focusChange'
   | 'ariaStateChange'
   | 'domManipulation'
-  | 'navigation';
+  | 'navigation'
+  | 'portal'
+  | 'eventPropagation';
 
 /**
  * Timing information for actions.
  */
-export type TimingType = 'immediate' | 'delayed' | 'conditional';
+export type TimingType = 'immediate' | 'delayed' | 'conditional' | 'deferred';
 
 /**
  * ActionLanguage node representing a UI interaction pattern.

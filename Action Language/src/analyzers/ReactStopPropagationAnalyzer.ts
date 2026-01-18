@@ -1,168 +1,132 @@
 /**
  * React stopPropagation Analyzer
  *
- * Detects use of stopPropagation() and stopImmediatePropagation() in React event handlers,
+ * Detects usage of event.stopPropagation() and event.stopImmediatePropagation()
  * which can block assistive technology from receiving events.
  *
  * WCAG 2.1 Success Criteria:
- * - 2.1.1 Keyboard (Level A): stopPropagation can prevent keyboard events from reaching AT
- * - 4.1.2 Name, Role, Value (Level A): Can interfere with ARIA state updates
+ * - 2.1.1 Keyboard (Level A): All functionality available via keyboard
+ * - 4.1.2 Name, Role, Value (Level A): Assistive tech can access events
  *
- * Why this matters:
- * - Screen readers and other assistive technologies often rely on event bubbling
- * - stopPropagation() can prevent AT from detecting user interactions
- * - Particularly problematic for focus management and ARIA live regions
+ * This analyzer follows Paradise architecture:
+ * - Extends BaseAnalyzer
+ * - Works with ActionLanguage models
+ * - Analyzes patterns extracted by ReactActionLanguageExtractor
  */
 
-import { Issue } from '../models/BaseModel';
-import { analyzeReactComponent, SyntheticEventUsage } from '../parsers/ReactPatternDetector';
+import {
+  BaseAnalyzer,
+  AnalyzerContext,
+  Issue,
+  IssueFix,
+} from './BaseAnalyzer';
 
-export interface ReactStopPropagationIssue extends Issue {
-  /** The synthetic event usage that caused this issue */
-  syntheticEvent: SyntheticEventUsage;
+export class ReactStopPropagationAnalyzer extends BaseAnalyzer {
+  readonly name = 'react-stop-propagation';
+  readonly description =
+    'Detects event.stopPropagation() usage that can block assistive technology';
 
-  /** Recommended fix */
-  fix: {
-    description: string;
-    code?: string;
-  };
-}
-
-/**
- * Analyzer for detecting stopPropagation accessibility issues in React components.
- */
-export class ReactStopPropagationAnalyzer {
   /**
-   * Analyze React component for stopPropagation issues.
-   *
-   * @param source - React component source code
-   * @param sourceFile - Filename for error reporting
-   * @returns Array of detected issues
-   *
-   * @example
-   * ```typescript
-   * const analyzer = new ReactStopPropagationAnalyzer();
-   * const issues = analyzer.analyze(`
-   *   function Modal() {
-   *     const handleClick = (e) => {
-   *       e.stopPropagation(); // ⚠️ Blocks AT events
-   *       closeModal();
-   *     };
-   *     return <button onClick={handleClick}>Close</button>;
-   *   }
-   * `, 'Modal.tsx');
-   * ```
+   * Analyze for stopPropagation issues.
    */
-  analyze(source: string, sourceFile: string): ReactStopPropagationIssue[] {
-    const issues: ReactStopPropagationIssue[] = [];
+  analyze(context: AnalyzerContext): Issue[] {
+    const issues: Issue[] = [];
 
-    try {
-      const analysis = analyzeReactComponent(source, sourceFile);
-      const problematicEvents = analysis.syntheticEvents.filter(
-        (e) => e.accessibilityConcerns.length > 0
-      );
+    if (!context.actionLanguageModel) {
+      return issues;
+    }
 
-      for (const event of problematicEvents) {
-        // Determine severity based on what methods are used
-        const usesStopPropagation = event.methodsCalled.includes('stopPropagation');
-        const usesStopImmediate = event.methodsCalled.includes('stopImmediatePropagation');
+    const model = context.actionLanguageModel;
 
-        const severity = usesStopImmediate ? 'error' : 'warning';
+    // Find all event propagation actions
+    const propagationActions = model.nodes.filter(
+      (node) =>
+        node.actionType === 'eventPropagation' &&
+        node.metadata?.framework === 'react'
+    );
 
-        // Build detailed message
-        const message = this.buildMessage(event, usesStopImmediate);
-        const fix = this.buildFix(event, usesStopPropagation, usesStopImmediate);
+    for (const action of propagationActions) {
+      const method = action.metadata?.method || 'stopPropagation';
+      const eventParam = action.metadata?.eventParam || 'event';
 
-        issues.push({
-          type: 'react-stop-propagation',
+      // stopImmediatePropagation is more severe
+      const severity = method === 'stopImmediatePropagation' ? 'error' : 'warning';
+
+      const message = this.createMessage(method);
+      const fix = this.createFix(method, eventParam);
+
+      issues.push(
+        this.createIssue(
+          `react-${method}`,
           severity,
           message,
-          confidence: {
-            level: 'HIGH',
-            reason: 'Definitely using stopPropagation in event handler',
-            treeCompleteness: 1.0,
-          },
-          locations: [event.location],
-          wcagCriteria: ['2.1.1', '4.1.2'],
-          syntheticEvent: event,
-          fix,
-        });
-      }
-    } catch (error) {
-      // Parsing failed - might not be valid React code
-      console.error(`React analysis failed for ${sourceFile}:`, error);
+          action.location,
+          ['2.1.1', '4.1.2'],
+          context,
+          { fix }
+        )
+      );
     }
 
     return issues;
   }
 
   /**
-   * Build a detailed message for the issue.
+   * Create message for stopPropagation issue.
    */
-  private buildMessage(_event: SyntheticEventUsage, usesStopImmediate: boolean): string {
-    const method = usesStopImmediate ? 'stopImmediatePropagation()' : 'stopPropagation()';
-
-    let message = `Event handler uses ${method}, which can prevent assistive technology from receiving events.`;
-
-    if (usesStopImmediate) {
-      message += ' This method blocks ALL subsequent listeners, including those from AT.';
+  private createMessage(method: string): string {
+    if (method === 'stopImmediatePropagation') {
+      return `Event handler calls ${method}(), which immediately stops all event propagation. ` +
+        'This is a CRITICAL accessibility issue that can:\n' +
+        '- Block screen reader event listeners completely\n' +
+        '- Prevent keyboard navigation from working\n' +
+        '- Disable browser accessibility features\n' +
+        '- Break assistive technology integration\n\n' +
+        'stopImmediatePropagation should almost never be used. ' +
+        'Use event.preventDefault() instead if you need to prevent default browser behavior.';
     } else {
-      message += ' This can interfere with screen readers and other AT that rely on event bubbling.';
+      return `Event handler calls ${method}(), which prevents parent elements from receiving this event. ` +
+        'This can cause accessibility issues:\n' +
+        '- Screen reader event listeners on parent elements may not fire\n' +
+        '- Keyboard navigation handlers may be blocked\n' +
+        '- Global accessibility event handlers may not work\n\n' +
+        'Consider these alternatives:\n' +
+        '- Use event.preventDefault() to prevent default action without stopping propagation\n' +
+        '- Allow events to bubble for accessibility, stop propagation only when absolutely necessary\n' +
+        '- Check if the event is from assistive technology before stopping propagation';
     }
-
-    return message;
   }
 
   /**
-   * Build a fix recommendation.
+   * Create fix suggestion.
    */
-  private buildFix(
-    event: SyntheticEventUsage,
-    usesStopPropagation: boolean,
-    usesStopImmediate: boolean
-  ): { description: string; code?: string } {
-    if (usesStopImmediate) {
-      return {
-        description:
-          'Remove stopImmediatePropagation() unless absolutely necessary. Consider using stopPropagation() instead, or restructure the component to avoid needing it.',
-        code: `// Instead of:\n${event.eventParamName}.stopImmediatePropagation();\n\n// Consider:\n// 1. Remove it entirely\n// 2. Use conditional logic to prevent duplicate handlers\n// 3. Use event delegation properly`,
-      };
-    }
-
-    if (usesStopPropagation) {
-      return {
-        description:
-          'Remove stopPropagation() if possible. If needed to prevent default behavior, use preventDefault() instead. If you must stop propagation, document why and test thoroughly with screen readers.',
-        code: `// Instead of:\n${event.eventParamName}.stopPropagation();\n\n// Consider:\n${event.eventParamName}.preventDefault(); // Only prevents default, allows bubbling\n\n// Or restructure component to avoid the need`,
-      };
-    }
-
+  private createFix(method: string, eventParam: string): IssueFix {
     return {
-      description: 'Review event handling logic and test with assistive technology.',
+      description: `Replace ${method}() with accessible alternative`,
+      code: `// GOOD: Use preventDefault instead of stopPropagation
+const handleClick = (${eventParam}) => {
+  ${eventParam}.preventDefault(); // Prevents default action, allows propagation
+  // Your handler logic
+};
+
+// ACCEPTABLE: Conditionally stop propagation
+const handleClick = (${eventParam}) => {
+  // Only stop propagation for non-accessibility events
+  const isFromAccessibility =
+    ${eventParam}.detail?.fromScreenReader ||
+    ${eventParam}.detail?.fromKeyboard;
+
+  if (!isFromAccessibility) {
+    ${eventParam}.stopPropagation();
+  }
+
+  // Your handler logic
+};
+
+// BEST: Redesign to avoid needing stopPropagation
+// Often you can restructure your component hierarchy to avoid
+// needing to stop event propagation at all.`,
+      location: { file: '', line: 0, column: 0 },
     };
   }
-
-  /**
-   * Check if a component uses stopPropagation (quick check without full analysis).
-   */
-  hasStopPropagation(source: string): boolean {
-    return (
-      source.includes('stopPropagation()') || source.includes('stopImmediatePropagation()')
-    );
-  }
-}
-
-/**
- * Convenience function to analyze React component for stopPropagation issues.
- *
- * @param source - React component source code
- * @param sourceFile - Filename for error reporting
- * @returns Array of detected issues
- */
-export function analyzeReactStopPropagation(
-  source: string,
-  sourceFile: string
-): ReactStopPropagationIssue[] {
-  const analyzer = new ReactStopPropagationAnalyzer();
-  return analyzer.analyze(source, sourceFile);
 }

@@ -74,4 +74,3 @@ function parseSource(source, filename) {
 function traverseAST(ast, visitors) {
     (0, traverse_1.default)(ast, visitors);
 }
-//# sourceMappingURL=BabelParser.js.map

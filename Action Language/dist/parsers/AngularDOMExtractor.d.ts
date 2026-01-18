@@ -23,4 +23,3 @@ export declare class AngularDOMExtractor {
     private generateId;
 }
 export declare function extractAngularDOM(source: string, sourceFile: string): DOMModelImpl | null;
-//# sourceMappingURL=AngularDOMExtractor.d.ts.map

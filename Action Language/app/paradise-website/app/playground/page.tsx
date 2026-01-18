@@ -8,13 +8,12 @@ import * as t from '@babel/types';
 import { SvelteActionLanguageExtractor } from '../../../../src/parsers/SvelteActionLanguageExtractor';
 import { VueActionLanguageExtractor } from '../../../../src/parsers/VueActionLanguageExtractor';
 import { AngularActionLanguageExtractor } from '../../../../src/parsers/AngularActionLanguageExtractor';
+import { ReactActionLanguageExtractor } from '../../../../src/parsers/ReactActionLanguageExtractor';
 import { MouseOnlyClickAnalyzer } from '../../../../src/analyzers/MouseOnlyClickAnalyzer';
 import { AngularReactivityAnalyzer } from '../../../../src/analyzers/AngularReactivityAnalyzer';
 import { VueReactivityAnalyzer } from '../../../../src/analyzers/VueReactivityAnalyzer';
 import { SvelteReactivityAnalyzer } from '../../../../src/analyzers/SvelteReactivityAnalyzer';
-import { ReactHooksA11yAnalyzer } from '../../../../src/analyzers/ReactHooksA11yAnalyzer';
-import { ReactPortalAnalyzer } from '../../../../src/analyzers/ReactPortalAnalyzer';
-import { ReactStopPropagationAnalyzer } from '../../../../src/analyzers/ReactStopPropagationAnalyzer';
+import { ReactA11yAnalyzer } from '../../../../src/analyzers/ReactA11yAnalyzer';
 import { FocusManagementAnalyzer } from '../../../../src/analyzers/FocusManagementAnalyzer';
 import { FocusOrderConflictAnalyzer } from '../../../../src/analyzers/FocusOrderConflictAnalyzer';
 import { KeyboardNavigationAnalyzer } from '../../../../src/analyzers/KeyboardNavigationAnalyzer';
@@ -354,42 +353,38 @@ function Modal({ isOpen, onClose }) {
     issues: ['react-portal-accessibility', 'react-stop-propagation']
   },
   'react-ref-forwarding': {
-    title: 'React forwardRef + useImperativeHandle',
-    description: 'Proper ref forwarding for focus management',
+    title: 'React Auto-Focus (Missing Cleanup)',
+    description: 'useEffect focus management without cleanup function',
     category: 'react',
     files: {
       html: [],
       javascript: [
         {
-          name: 'FocusableInput.tsx',
-          content: `import React, { useRef, useImperativeHandle } from 'react';
+          name: 'SearchInput.tsx',
+          content: `import React, { useEffect, useRef } from 'react';
 
-const FocusableInput = React.forwardRef((props, ref) => {
+function SearchInput({ isVisible }) {
   const inputRef = useRef();
 
-  useImperativeHandle(ref, () => ({
-    focus: () => {
-      inputRef.current.focus();
-    },
-    blur: () => {
-      inputRef.current.blur();
-    },
-    select: () => {
-      inputRef.current.select();
+  useEffect(() => {
+    if (isVisible) {
+      // ISSUE: Focus without cleanup - where does focus go when hidden?
+      inputRef.current?.focus();
     }
-  }));
+    // Missing: return () => { previousFocus?.focus(); }
+  }, [isVisible]);
 
   return (
     <input
       ref={inputRef}
-      type="text"
-      aria-label={props.label}
-      placeholder={props.placeholder}
+      type="search"
+      placeholder="Search..."
+      aria-label="Search"
     />
   );
-});
+}
 
-export default FocusableInput;`
+export default SearchInput;`
         }
       ],
       css: []
@@ -397,68 +392,29 @@ export default FocusableInput;`
     issues: []
   },
   'react-context-a11y': {
-    title: 'React Context for Accessibility State',
-    description: 'Managing theme and announcements via Context',
+    title: 'React Portal Notification (Missing A11y)',
+    description: 'Portal rendered without proper focus management',
     category: 'react',
     files: {
       html: [],
       javascript: [
         {
-          name: 'AccessibilityProvider.tsx',
-          content: `import React, { useState, useContext } from 'react';
+          name: 'Notification.tsx',
+          content: `import React from 'react';
+import ReactDOM from 'react-dom';
 
-// Context for theme (dark mode affects a11y)
-const ThemeContext = React.createContext();
-
-function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState('light');
-
-  return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
-      {children}
-    </ThemeContext.Provider>
+function Notification({ message, onClose }) {
+  // ISSUE: Portal without focus management or ARIA
+  return ReactDOM.createPortal(
+    <div className="notification">
+      <p>{message}</p>
+      <button onClick={onClose}>Close</button>
+    </div>,
+    document.body
   );
 }
 
-// Context for screen reader announcements
-const AnnouncementContext = React.createContext();
-
-function AccessibilityProvider({ children }) {
-  const announce = (message) => {
-    // Announce to screen readers
-    const liveRegion = document.getElementById('sr-announcements');
-    if (liveRegion) {
-      liveRegion.textContent = message;
-    }
-  };
-
-  return (
-    <AnnouncementContext.Provider value={{ announce }}>
-      {children}
-    </AnnouncementContext.Provider>
-  );
-}
-
-// Component using both contexts
-function ThemedButton() {
-  const { theme, setTheme } = useContext(ThemeContext);
-  const { announce } = useContext(AnnouncementContext);
-
-  const handleToggle = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    announce(\`Theme changed to \${newTheme} mode\`);
-  };
-
-  return (
-    <button
-      onClick={handleToggle}
-      aria-label={\`Toggle theme, current: \${theme}\`}
-    >
-      Toggle Theme
-    </button>
-  );
-}`
+export default Notification;`
         }
       ],
       css: []
@@ -466,45 +422,23 @@ function ThemedButton() {
     issues: []
   },
   'react-focus-trap': {
-    title: 'React Dialog with Focus Trap',
-    description: 'Proper focus management in modal dialog',
+    title: 'React Modal (stopImmediatePropagation)',
+    description: 'Modal that blocks ALL event propagation including accessibility',
     category: 'react',
     files: {
       html: [],
       javascript: [
         {
-          name: 'Dialog.tsx',
-          content: `import React, { useEffect, useRef, useContext } from 'react';
+          name: 'Modal.tsx',
+          content: `import React from 'react';
 
-function Dialog({ isOpen, onClose, title, children }) {
-  const dialogRef = useRef();
-  const closeButtonRef = useRef();
-  const { trapFocus, releaseFocus } = useContext(FocusContext);
+function Modal({ isOpen, onClose, title, children }) {
+  const handleBackdropClick = (e) => {
+    // CRITICAL ISSUE: stopImmediatePropagation blocks accessibility!
+    e.stopImmediatePropagation();
 
-  useEffect(() => {
-    if (isOpen) {
-      // Store previously focused element
-      const previouslyFocused = document.activeElement;
-
-      // Focus the close button
-      closeButtonRef.current?.focus();
-
-      // Trap focus within dialog
-      trapFocus(dialogRef.current);
-
-      return () => {
-        // Release focus trap
-        releaseFocus();
-
-        // Return focus to trigger
-        previouslyFocused?.focus();
-      };
-    }
-  }, [isOpen, trapFocus, releaseFocus]);
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Escape') {
-      e.preventDefault();
+    // Close modal if clicking backdrop
+    if (e.target === e.currentTarget) {
       onClose();
     }
   };
@@ -513,21 +447,24 @@ function Dialog({ isOpen, onClose, title, children }) {
 
   return (
     <div
-      ref={dialogRef}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="dialog-title"
-      onKeyDown={handleKeyDown}
-      tabIndex={-1}
+      className="modal-backdrop"
+      onClick={handleBackdropClick}
     >
-      <h2 id="dialog-title">{title}</h2>
-      <div>{children}</div>
-      <button ref={closeButtonRef} onClick={onClose}>
-        Close
-      </button>
+      <div
+        className="modal-content"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+      >
+        <h2 id="modal-title">{title}</h2>
+        <div>{children}</div>
+        <button onClick={onClose}>Close</button>
+      </div>
     </div>
   );
-}`
+}
+
+export default Modal;`
         }
       ],
       css: []
@@ -1774,6 +1711,13 @@ export default function Playground() {
    * This uses proper AST traversal instead of regex patterns
    */
   const parseToActionLanguage = (code: string, filename: string = 'playground.js') => {
+    // Handle React files: use the real ReactActionLanguageExtractor
+    if (filename.endsWith('.jsx') || filename.endsWith('.tsx') || code.includes('React') || code.includes('useState') || code.includes('useEffect')) {
+      const extractor = new ReactActionLanguageExtractor();
+      const model = extractor.parse(code, filename);
+      return model.nodes;
+    }
+
     // Handle Svelte files: use the real SvelteActionLanguageExtractor
     if (filename.endsWith('.svelte')) {
       const extractor = new SvelteActionLanguageExtractor();
@@ -2185,9 +2129,7 @@ export default function Playground() {
       new OrphanedEventHandlerAnalyzer(),
       new VisibilityFocusConflictAnalyzer(),
       new WidgetPatternAnalyzer(),
-      new ReactHooksA11yAnalyzer(),
-      new ReactPortalAnalyzer(),
-      new ReactStopPropagationAnalyzer(),
+      new ReactA11yAnalyzer(),
     ];
 
     // Run all ActionLanguage-based analyzers

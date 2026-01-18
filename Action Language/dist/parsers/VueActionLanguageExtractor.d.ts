@@ -16,4 +16,3 @@ export declare class VueActionLanguageExtractor {
     private generateId;
 }
 export declare function parseVueActionLanguage(source: string, sourceFile: string): ActionLanguageModelImpl;
-//# sourceMappingURL=VueActionLanguageExtractor.d.ts.map

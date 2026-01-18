@@ -514,7 +514,7 @@ element.removeAttribute('aria-label');`,
 
   // Helper methods
 
-  private getElementKey(element: { selector: string; binding: string }): string {
+  private getElementKey(element: { selector: string; binding?: string }): string {
     return element.binding || element.selector;
   }
 

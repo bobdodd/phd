@@ -1,202 +1,156 @@
 /**
- * React Portal Analyzer
+ * React Portal Accessibility Analyzer
  *
- * Detects use of React portals (ReactDOM.createPortal) and flags potential
- * accessibility issues that arise from rendering content outside the parent
- * component's DOM hierarchy.
+ * Detects accessibility issues with React portals (ReactDOM.createPortal).
+ * Portals render content outside the parent component's DOM hierarchy, which
+ * can create accessibility problems.
  *
  * WCAG 2.1 Success Criteria:
- * - 2.1.1 Keyboard (Level A): Portals can break keyboard navigation order
- * - 2.4.3 Focus Order (Level A): Focus order may not match visual order
- * - 1.3.2 Meaningful Sequence (Level A): Reading order may be disrupted
- * - 4.1.2 Name, Role, Value (Level A): ARIA relationships may break across boundaries
+ * - 2.1.1 Keyboard (Level A): Focus management across portal boundaries
+ * - 2.4.3 Focus Order (Level A): Tab order matches visual order
+ * - 4.1.2 Name, Role, Value (Level A): ARIA relationships work across portals
  *
- * Why this matters:
- * - Portals render content in a different part of the DOM tree
- * - Keyboard tab order follows DOM order, not visual order
- * - ARIA relationships (aria-labelledby, aria-controls) don't cross portal boundaries well
- * - Focus management becomes complex (focus traps, returning focus)
- * - Screen readers may announce portals out of visual context
+ * This analyzer follows Paradise architecture:
+ * - Extends BaseAnalyzer
+ * - Works with ActionLanguage models
+ * - Analyzes patterns extracted by ReactActionLanguageExtractor
  */
 
-import { Issue } from '../models/BaseModel';
-import { analyzeReactComponent, PortalUsage } from '../parsers/ReactPatternDetector';
+import {
+  BaseAnalyzer,
+  AnalyzerContext,
+  Issue,
+  IssueFix,
+} from './BaseAnalyzer';
 
-export interface ReactPortalIssue extends Issue {
-  /** The portal usage that caused this issue */
-  portal: PortalUsage;
+export class ReactPortalAnalyzer extends BaseAnalyzer {
+  readonly name = 'react-portal';
+  readonly description =
+    'Detects accessibility issues with React portals (focus management, ARIA relationships, keyboard navigation)';
 
-  /** Recommended fix */
-  fix: {
-    description: string;
-    code?: string;
-  };
-}
-
-/**
- * Analyzer for detecting portal accessibility issues in React components.
- */
-export class ReactPortalAnalyzer {
   /**
-   * Analyze React component for portal accessibility issues.
-   *
-   * @param source - React component source code
-   * @param sourceFile - Filename for error reporting
-   * @returns Array of detected issues
-   *
-   * @example
-   * ```typescript
-   * const analyzer = new ReactPortalAnalyzer();
-   * const issues = analyzer.analyze(`
-   *   function Modal() {
-   *     return ReactDOM.createPortal(
-   *       <div role="dialog">
-   *         <button>Close</button>
-   *       </div>,
-   *       document.getElementById('modal-root')
-   *     );
-   *   }
-   * `, 'Modal.tsx');
-   * ```
+   * Analyze for React portal accessibility issues.
    */
-  analyze(source: string, sourceFile: string): ReactPortalIssue[] {
-    const issues: ReactPortalIssue[] = [];
+  analyze(context: AnalyzerContext): Issue[] {
+    const issues: Issue[] = [];
 
-    try {
-      const analysis = analyzeReactComponent(source, sourceFile);
-      const portals = analysis.portals;
+    if (!context.actionLanguageModel) {
+      return issues;
+    }
 
-      for (const portal of portals) {
-        const message = this.buildMessage(portal);
-        const fix = this.buildFix(portal);
+    const model = context.actionLanguageModel;
 
-        issues.push({
-          type: 'react-portal-accessibility',
-          severity: 'warning',
+    // Find all portal nodes
+    const portals = model.nodes.filter(
+      (node) =>
+        node.actionType === 'portal' && node.metadata?.framework === 'react'
+    );
+
+    for (const portal of portals) {
+      const container = portal.metadata?.container || 'unknown';
+
+      // Check if portal is rendering into document.body or similar
+      const isBodyPortal =
+        container === 'document.body' ||
+        container.includes('body') ||
+        container === 'document.documentElement';
+
+      const severity = isBodyPortal ? 'warning' : 'error';
+
+      const message = this.createPortalMessage(container, isBodyPortal);
+      const fix = this.createPortalFix(container);
+
+      issues.push(
+        this.createIssue(
+          'react-portal-accessibility',
+          severity,
           message,
-          confidence: {
-            level: 'HIGH',
-            reason: 'Portal detected - accessibility concerns depend on implementation',
-            treeCompleteness: 1.0,
-          },
-          locations: [portal.location],
-          wcagCriteria: ['2.1.1', '2.4.3', '1.3.2', '4.1.2'],
-          portal,
-          fix,
-        });
-      }
-    } catch (error) {
-      console.error(`React portal analysis failed for ${sourceFile}:`, error);
+          portal.location,
+          ['2.1.1', '2.4.3', '4.1.2'],
+          context,
+          { fix }
+        )
+      );
     }
 
     return issues;
   }
 
   /**
-   * Build a detailed message for the portal issue.
+   * Create message for portal issue.
    */
-  private buildMessage(portal: PortalUsage): string {
-    const containerInfo = portal.container
-      ? ` into container "${portal.container}"`
-      : ' into external container';
+  private createPortalMessage(container: string, isBodyPortal: boolean): string {
+    const baseMessage =
+      `React portal renders content into "${container}" outside the parent component hierarchy.`;
 
-    let message = `Portal renders content${containerInfo}, which can cause accessibility issues:\n`;
+    const concerns = [
+      'Focus management: Focus traps may not work correctly',
+      'ARIA relationships: aria-labelledby and aria-controls may break',
+      'Keyboard navigation: Tab order may not match visual order',
+      'Screen readers: Content may be announced out of context',
+    ];
 
-    // Add specific concerns
-    message += '- Keyboard navigation order may not match visual layout\n';
-    message += '- ARIA relationships may not work across portal boundary\n';
-    message += '- Focus management requires manual implementation\n';
-    message += '- Screen readers may announce content out of visual context';
-
-    return message;
+    if (isBodyPortal) {
+      return `${baseMessage}\n\nPotential accessibility concerns:\n${concerns.map((c) => `- ${c}`).join('\n')}\n\nRecommendation: Use a dedicated portal container with proper ARIA attributes.`;
+    } else {
+      return `${baseMessage}\n\nCritical accessibility concerns:\n${concerns.map((c) => `- ${c}`).join('\n')}\n\nEnsure the portal container is properly configured for accessibility.`;
+    }
   }
 
   /**
-   * Build a fix recommendation.
+   * Create fix suggestion for portal issue.
    */
-  private buildFix(_portal: PortalUsage): { description: string; code?: string } {
+  private createPortalFix(container: string): IssueFix {
     return {
-      description:
-        'Ensure portal content is accessible by implementing proper focus management, ARIA live regions for announcements, and testing with keyboard navigation and screen readers.',
-      code: `// Portal accessibility checklist:
-// 1. Focus Management
-//    - Trap focus within modal/dialog portals
-//    - Return focus to trigger element on close
-//    - Set initial focus to appropriate element
+      description: 'Implement accessible portal pattern',
+      code: `// 1. Create a dedicated portal root in your HTML:
+// <div id="portal-root" role="presentation"></div>
 
-const modalRef = useRef<HTMLDivElement>(null);
+// 2. For modal dialogs:
+function AccessibleModal({ isOpen, onClose, children }) {
+  const portalRoot = document.getElementById('portal-root');
 
-useEffect(() => {
-  if (isOpen) {
-    const previouslyFocused = document.activeElement;
-    modalRef.current?.focus();
+  useEffect(() => {
+    if (isOpen) {
+      // Save the currently focused element
+      const previouslyFocused = document.activeElement;
 
-    return () => {
-      // Return focus when closing
-      (previouslyFocused as HTMLElement)?.focus();
+      // Focus the modal
+      modalRef.current?.focus();
+
+      // Add keyboard handler for Escape
+      const handleEscape = (e) => {
+        if (e.key === 'Escape') {
+          onClose();
+        }
+      };
+      document.addEventListener('keydown', handleEscape);
+
+      return () => {
+        // Restore focus when closing
+        previouslyFocused?.focus();
+        document.removeEventListener('keydown', handleEscape);
+      };
+    }
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  return createPortal(
+    <div
+      ref={modalRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+      tabIndex={-1}
+    >
+      <h2 id="modal-title">{/* Modal title */}</h2>
+      {children}
+    </div>,
+    portalRoot
+  );
+}`,
+      location: { file: container, line: 0, column: 0 },
     };
   }
-}, [isOpen]);
-
-// 2. ARIA Attributes
-//    - Add role="dialog" or role="alertdialog"
-//    - Add aria-modal="true"
-//    - Add aria-labelledby pointing to title
-//    - Add aria-describedby for description
-
-<div
-  ref={modalRef}
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="modal-title"
-  aria-describedby="modal-description"
-  tabIndex={-1}
->
-  <h2 id="modal-title">Modal Title</h2>
-  <p id="modal-description">Modal content...</p>
-</div>
-
-// 3. Keyboard Handling
-//    - Handle Escape key to close
-//    - Implement focus trap
-//    - Ensure all interactive elements are reachable
-
-const handleKeyDown = (e: KeyboardEvent) => {
-  if (e.key === 'Escape') {
-    closeModal();
-  }
-  // Add focus trap logic here
-};
-
-// 4. Screen Reader Announcements
-//    - Use aria-live for dynamic content
-//    - Announce modal opening/closing
-
-<div aria-live="polite" aria-atomic="true">
-  {isOpen && "Modal opened"}
-</div>`,
-    };
-  }
-
-  /**
-   * Check if a component uses portals (quick check without full analysis).
-   */
-  hasPortal(source: string): boolean {
-    return source.includes('createPortal');
-  }
-}
-
-/**
- * Convenience function to analyze React component for portal issues.
- *
- * @param source - React component source code
- * @param sourceFile - Filename for error reporting
- * @returns Array of detected issues
- */
-export function analyzeReactPortals(
-  source: string,
-  sourceFile: string
-): ReactPortalIssue[] {
-  const analyzer = new ReactPortalAnalyzer();
-  return analyzer.analyze(source, sourceFile);
 }

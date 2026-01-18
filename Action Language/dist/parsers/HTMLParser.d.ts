@@ -19,4 +19,3 @@ export declare class HTMLParser {
     private generateId;
 }
 export declare function parseHTML(source: string, sourceFile: string): DOMModelImpl;
-//# sourceMappingURL=HTMLParser.d.ts.map

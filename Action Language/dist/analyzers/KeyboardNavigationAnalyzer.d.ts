@@ -17,4 +17,3 @@ export declare class KeyboardNavigationAnalyzer extends BaseAnalyzer {
     private hasArrowHandlersNearby;
     private generateArrowNavigationCode;
 }
-//# sourceMappingURL=KeyboardNavigationAnalyzer.d.ts.map

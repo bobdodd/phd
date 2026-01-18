@@ -216,4 +216,3 @@ function parseVueActionLanguage(source, sourceFile) {
     const extractor = new VueActionLanguageExtractor();
     return extractor.parse(source, sourceFile);
 }
-//# sourceMappingURL=VueActionLanguageExtractor.js.map

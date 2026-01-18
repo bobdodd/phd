@@ -58,4 +58,3 @@ export interface Issue {
     wcagCriteria?: string[];
     fix?: any;
 }
-//# sourceMappingURL=BaseModel.d.ts.map

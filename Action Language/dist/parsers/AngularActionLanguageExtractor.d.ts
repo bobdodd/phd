@@ -16,4 +16,3 @@ export declare class AngularActionLanguageExtractor {
     private generateId;
 }
 export declare function parseAngularActionLanguage(source: string, sourceFile: string): ActionLanguageModelImpl;
-//# sourceMappingURL=AngularActionLanguageExtractor.d.ts.map

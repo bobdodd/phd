@@ -22,4 +22,3 @@ export declare class SvelteReactivityAnalyzer {
     private extractReactiveStatements;
 }
 export declare function analyzeSvelteReactivity(source: string, sourceFile: string): SvelteReactivityIssue[];
-//# sourceMappingURL=SvelteReactivityAnalyzer.d.ts.map

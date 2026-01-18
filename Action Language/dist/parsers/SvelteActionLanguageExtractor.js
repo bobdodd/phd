@@ -185,4 +185,3 @@ function parseSvelteActionLanguage(source, sourceFile) {
     const extractor = new SvelteActionLanguageExtractor();
     return extractor.parse(source, sourceFile);
 }
-//# sourceMappingURL=SvelteActionLanguageExtractor.js.map

@@ -9,8 +9,11 @@ class AngularDOMExtractor {
         this.elementCounter = 0;
     }
     extract(source, sourceFile) {
+        if (!source || typeof source !== 'string') {
+            return null;
+        }
         const template = this.extractTemplate(source);
-        if (!template.trim()) {
+        if (!template || !template.trim()) {
             return null;
         }
         try {
@@ -36,6 +39,9 @@ class AngularDOMExtractor {
         }
     }
     extractTemplate(source) {
+        if (!source || typeof source !== 'string') {
+            return '';
+        }
         if (!source.includes('@Component') && !source.includes('template:')) {
             return source;
         }
@@ -179,4 +185,3 @@ function extractAngularDOM(source, sourceFile) {
     const extractor = new AngularDOMExtractor();
     return extractor.extract(source, sourceFile);
 }
-//# sourceMappingURL=AngularDOMExtractor.js.map

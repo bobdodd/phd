@@ -180,4 +180,3 @@ function extractSvelteDOM(source, sourceFile) {
     const extractor = new SvelteDOMExtractor();
     return extractor.extract(source, sourceFile);
 }
-//# sourceMappingURL=SvelteDOMExtractor.js.map

@@ -334,4 +334,3 @@ element.removeAttribute('aria-label');`,
     }
 }
 exports.ARIASemanticAnalyzer = ARIASemanticAnalyzer;
-//# sourceMappingURL=ARIASemanticAnalyzer.js.map

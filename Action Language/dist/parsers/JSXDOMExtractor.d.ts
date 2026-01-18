@@ -16,4 +16,3 @@ export declare class JSXDOMExtractor {
     private generateId;
 }
 export declare function extractJSXDOM(source: string, sourceFile: string): DOMModelImpl | null;
-//# sourceMappingURL=JSXDOMExtractor.d.ts.map

@@ -217,4 +217,3 @@ function parseHTML(source, sourceFile) {
     const parser = new HTMLParser();
     return parser.parse(source, sourceFile);
 }
-//# sourceMappingURL=HTMLParser.js.map

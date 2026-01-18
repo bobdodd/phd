@@ -173,4 +173,3 @@ function extractVueDOM(source, sourceFile) {
     const extractor = new VueDOMExtractor();
     return extractor.extract(source, sourceFile);
 }
-//# sourceMappingURL=VueDOMExtractor.js.map

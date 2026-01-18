@@ -325,4 +325,3 @@ function analyzeSvelteReactivity(source, sourceFile) {
     const analyzer = new SvelteReactivityAnalyzer();
     return analyzer.analyze(source, sourceFile);
 }
-//# sourceMappingURL=SvelteReactivityAnalyzer.js.map

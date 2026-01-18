@@ -19,4 +19,3 @@ export declare class JavaScriptParser {
     private extractLocation;
     private generateId;
 }
-//# sourceMappingURL=JavaScriptParser.d.ts.map

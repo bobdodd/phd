@@ -54,10 +54,15 @@ export class AngularActionLanguageExtractor {
   parse(source: string, sourceFile: string): ActionLanguageModelImpl {
     const nodes: ActionLanguageNode[] = [];
 
+    // Validate input
+    if (!source || typeof source !== 'string') {
+      return new ActionLanguageModelImpl(nodes, sourceFile);
+    }
+
     // Extract the template (inline or from .html file)
     const template = this.extractTemplate(source);
 
-    if (!template.trim()) {
+    if (!template || typeof template !== 'string' || !template.trim()) {
       return new ActionLanguageModelImpl(nodes, sourceFile);
     }
 
@@ -99,6 +104,11 @@ export class AngularActionLanguageExtractor {
    * Handles both inline templates and separate .html files.
    */
   private extractTemplate(source: string): string {
+    // Validate input is actually a string
+    if (!source || typeof source !== 'string') {
+      return '';
+    }
+
     // If it's a .html file, return as-is
     if (!source.includes('@Component') && !source.includes('template:')) {
       return source;

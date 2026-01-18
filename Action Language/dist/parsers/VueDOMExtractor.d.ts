@@ -24,4 +24,3 @@ export declare class VueDOMExtractor {
     private generateId;
 }
 export declare function extractVueDOM(source: string, sourceFile: string): DOMModelImpl | null;
-//# sourceMappingURL=VueDOMExtractor.d.ts.map

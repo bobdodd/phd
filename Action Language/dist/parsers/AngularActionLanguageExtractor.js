@@ -10,8 +10,11 @@ class AngularActionLanguageExtractor {
     }
     parse(source, sourceFile) {
         const nodes = [];
+        if (!source || typeof source !== 'string') {
+            return new ActionLanguageModel_1.ActionLanguageModelImpl(nodes, sourceFile);
+        }
         const template = this.extractTemplate(source);
-        if (!template.trim()) {
+        if (!template || typeof template !== 'string' || !template.trim()) {
             return new ActionLanguageModel_1.ActionLanguageModelImpl(nodes, sourceFile);
         }
         try {
@@ -34,6 +37,9 @@ class AngularActionLanguageExtractor {
         return new ActionLanguageModel_1.ActionLanguageModelImpl(nodes, sourceFile);
     }
     extractTemplate(source) {
+        if (!source || typeof source !== 'string') {
+            return '';
+        }
         if (!source.includes('@Component') && !source.includes('template:')) {
             return source;
         }
@@ -224,4 +230,3 @@ function parseAngularActionLanguage(source, sourceFile) {
     const extractor = new AngularActionLanguageExtractor();
     return extractor.parse(source, sourceFile);
 }
-//# sourceMappingURL=AngularActionLanguageExtractor.js.map
