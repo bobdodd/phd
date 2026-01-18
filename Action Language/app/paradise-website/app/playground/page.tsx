@@ -6,6 +6,7 @@ import { parse, ParserOptions } from '@babel/parser';
 import traverse from '@babel/traverse';
 import * as t from '@babel/types';
 import { SvelteActionLanguageExtractor } from '../../../../src/parsers/SvelteActionLanguageExtractor';
+import { VueActionLanguageExtractor } from '../../../../src/parsers/VueActionLanguageExtractor';
 
 // Dynamically import Monaco to avoid SSR issues
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
@@ -1401,6 +1402,13 @@ export default function Playground() {
     // Handle Svelte files: use the real SvelteActionLanguageExtractor
     if (filename.endsWith('.svelte')) {
       const extractor = new SvelteActionLanguageExtractor();
+      const model = extractor.parse(code, filename);
+      return model.nodes;
+    }
+
+    // Handle Vue files: use the real VueActionLanguageExtractor
+    if (filename.endsWith('.vue')) {
+      const extractor = new VueActionLanguageExtractor();
       const model = extractor.parse(code, filename);
       return model.nodes;
     }
