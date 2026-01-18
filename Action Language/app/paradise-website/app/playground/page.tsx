@@ -2216,12 +2216,14 @@ export default function Playground() {
     // Run framework-specific analyzers on template HTML
     const allHtml = currentFiles.html.map(f => f.content).join('\n');
     const allJs = currentFiles.javascript.map(f => f.content).join('\n');
+    // Combine both since framework templates can be in either location
+    const allContent = allHtml + '\n' + allJs;
 
     // Angular analyzer
-    if (allHtml.includes('[(ngModel)]') || allHtml.includes('(click)') || allHtml.includes('*ngIf')) {
+    if (allContent.includes('[(ngModel)]') || allContent.includes('(click)') || allContent.includes('*ngIf')) {
       try {
         const angularAnalyzer = new AngularReactivityAnalyzer();
-        const angularIssues = angularAnalyzer.analyze(allHtml, 'component.html');
+        const angularIssues = angularAnalyzer.analyze(allContent, 'component.html');
 
         for (const issue of angularIssues) {
           detected.push({
@@ -2238,10 +2240,10 @@ export default function Playground() {
     }
 
     // Vue analyzer
-    if (allHtml.includes('v-model') || allHtml.includes('@click') || allHtml.includes('v-if')) {
+    if (allContent.includes('v-model') || allContent.includes('@click') || allContent.includes('v-if')) {
       try {
         const vueAnalyzer = new VueReactivityAnalyzer();
-        const vueIssues = vueAnalyzer.analyze(allHtml, 'component.vue');
+        const vueIssues = vueAnalyzer.analyze(allContent, 'component.vue');
 
         for (const issue of vueIssues) {
           detected.push({
@@ -2258,10 +2260,10 @@ export default function Playground() {
     }
 
     // Svelte analyzer
-    if (allHtml.includes('bind:') || allHtml.includes('on:click') || allHtml.includes('{#if')) {
+    if (allContent.includes('bind:') || allContent.includes('on:click') || allContent.includes('{#if')) {
       try {
         const svelteAnalyzer = new SvelteReactivityAnalyzer();
-        const svelteIssues = svelteAnalyzer.analyze(allHtml, 'component.svelte');
+        const svelteIssues = svelteAnalyzer.analyze(allContent, 'component.svelte');
 
         for (const issue of svelteIssues) {
           detected.push({
