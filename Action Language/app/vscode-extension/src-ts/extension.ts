@@ -30,8 +30,6 @@ let analyzeTimer: NodeJS.Timeout | null = null;
  * Activate the extension
  */
 export async function activate(context: vscode.ExtensionContext) {
-  console.log('Paradise Accessibility Analyzer is activating...');
-
   // Create output channel
   outputChannel = vscode.window.createOutputChannel('Paradise');
   context.subscriptions.push(outputChannel);
@@ -249,8 +247,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
   outputChannel.appendLine('Paradise Accessibility Analyzer activated successfully!');
   vscode.window.showInformationMessage('Paradise Accessibility Analyzer is now active');
-
-  console.log('Paradise is now active!');
 }
 
 /**
@@ -268,8 +264,6 @@ export function deactivate() {
   if (projectManager) {
     projectManager.dispose();
   }
-
-  console.log('Paradise deactivated');
 }
 
 /**

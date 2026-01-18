@@ -67,4 +67,3 @@ class BaseAnalyzer {
     }
 }
 exports.BaseAnalyzer = BaseAnalyzer;
-//# sourceMappingURL=BaseAnalyzer.js.map

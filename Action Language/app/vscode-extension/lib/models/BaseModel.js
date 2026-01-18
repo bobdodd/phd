@@ -18,4 +18,3 @@ class ValidationFailedError extends Error {
     }
 }
 exports.ValidationFailedError = ValidationFailedError;
-//# sourceMappingURL=BaseModel.js.map

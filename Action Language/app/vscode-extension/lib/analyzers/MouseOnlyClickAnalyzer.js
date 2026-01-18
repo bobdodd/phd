@@ -202,4 +202,3 @@ document.querySelector('${selector}').addEventListener('keydown', (event) => {
     }
 }
 exports.MouseOnlyClickAnalyzer = MouseOnlyClickAnalyzer;
-//# sourceMappingURL=MouseOnlyClickAnalyzer.js.map

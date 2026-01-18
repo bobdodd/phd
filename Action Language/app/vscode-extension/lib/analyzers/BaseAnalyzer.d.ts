@@ -44,4 +44,3 @@ export declare abstract class BaseAnalyzer {
     }): Issue;
     private computeConfidence;
 }
-//# sourceMappingURL=BaseAnalyzer.d.ts.map

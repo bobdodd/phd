@@ -225,4 +225,3 @@ function extractJSXDOM(source, sourceFile) {
     const extractor = new JSXDOMExtractor();
     return extractor.extract(source, sourceFile);
 }
-//# sourceMappingURL=JSXDOMExtractor.js.map

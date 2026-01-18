@@ -13,14 +13,11 @@ class HTMLParser {
         this.tagLocationMap = new Map();
     }
     parse(source, sourceFile) {
-        console.log(`[HTMLParser] parse() called for ${sourceFile.split('/').pop()}, source length: ${source.length}`);
         this.sourceFile = sourceFile;
         this.sourceContent = source;
         this.elementCounter = 0;
         this.buildLineStarts(source);
-        console.log(`[HTMLParser] Built ${this.lineStarts.length} line starts`);
         this.buildTagLocationMap(source);
-        console.log(`[HTMLParser] Built tag location map with ${this.tagLocationMap.size} entries`);
         const root = (0, node_html_parser_1.parse)(source, {
             comment: true,
             blockTextElements: {
@@ -92,41 +89,51 @@ class HTMLParser {
             },
         };
     }
+    findElementLocation(tagName, attributes, node) {
+        const nodeWithRange = node;
+        if (nodeWithRange.range && Array.isArray(nodeWithRange.range) &&
+            nodeWithRange.range.length >= 2 && nodeWithRange.range[0] > 0) {
+            const startOffset = nodeWithRange.range[0];
+            const searchStart = Math.max(0, startOffset - 200);
+            const searchRegion = this.sourceContent.substring(searchStart, startOffset + 50);
+            const classAttr = attributes.class;
+            let pattern;
+            if (classAttr) {
+                pattern = new RegExp(`<${tagName}[^>]*class\\s*=\\s*["'][^"']*${classAttr.split(' ')[0]}[^"']*["'][^>]*>`, 'gi');
+            }
+            else {
+                pattern = new RegExp(`<${tagName}(?:\\s|>)`, 'gi');
+            }
+            const match = pattern.exec(searchRegion);
+            if (match) {
+                const tagOffset = searchStart + match.index + 1;
+                return this.offsetToLineColumn(tagOffset);
+            }
+        }
+        for (const [key, loc] of this.tagLocationMap.entries()) {
+            if (key.startsWith(`${tagName}@`)) {
+                return loc;
+            }
+        }
+        return null;
+    }
     convertElement(node, parent) {
         const tagName = node.rawTagName || 'div';
         const attributes = this.extractAttributes(node);
         let location;
-        const nodeWithRange = node;
-        if (tagName === 'button') {
-            const descriptor = Object.getOwnPropertyDescriptor(nodeWithRange, 'range');
-            console.log(`[HTMLParser] Button element:`, {
-                hasRange: !!nodeWithRange.range,
-                range: nodeWithRange.range,
-                rangeDescriptor: descriptor,
-                lineStartsLength: this.lineStarts.length,
-                sourceContentLength: this.sourceContent.length
-            });
-        }
-        if (nodeWithRange.range && Array.isArray(nodeWithRange.range) && nodeWithRange.range.length >= 2 && nodeWithRange.range[0] >= 0) {
-            const startOffset = nodeWithRange.range[0];
-            const tagStartMatch = this.sourceContent.substring(startOffset, startOffset + 100).match(/<(\w+)/);
-            const tagNameStart = tagStartMatch ? startOffset + tagStartMatch.index + 1 : startOffset;
-            const tagLocation = this.offsetToLineColumn(tagNameStart);
-            location = this.createLocation(tagLocation.line, tagLocation.column, tagName.length);
-            if (tagName === 'button') {
-                console.log(`[HTMLParser] Button at offset ${startOffset}: line ${tagLocation.line}, column ${tagLocation.column}`);
-            }
+        const tagNameLower = tagName.toLowerCase();
+        const id = attributes.id;
+        const key = id ? `${tagNameLower}#${id}` : null;
+        const mapLocation = key ? this.tagLocationMap.get(key) : null;
+        if (mapLocation) {
+            location = this.createLocation(mapLocation.line, mapLocation.column, tagName.length);
         }
         else {
-            const id = attributes.id;
-            const key = id ? `${tagName}#${id}` : null;
-            const mapLocation = key ? this.tagLocationMap.get(key) : null;
-            if (mapLocation) {
-                location = this.createLocation(mapLocation.line, mapLocation.column, tagName.length);
-                console.log(`[HTMLParser] Using map location for ${tagName}${id ? '#' + id : ''}: line ${mapLocation.line}, column ${mapLocation.column}`);
+            const foundLocation = this.findElementLocation(tagNameLower, attributes, node);
+            if (foundLocation) {
+                location = this.createLocation(foundLocation.line, foundLocation.column, tagName.length);
             }
             else {
-                console.log(`[HTMLParser] No location found for ${tagName}${id ? '#' + id : ''}, using fallback (1, 0)`);
                 location = this.createLocation(1, 0);
             }
         }
@@ -210,4 +217,3 @@ function parseHTML(source, sourceFile) {
     const parser = new HTMLParser();
     return parser.parse(source, sourceFile);
 }
-//# sourceMappingURL=HTMLParser.js.map

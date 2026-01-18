@@ -32,7 +32,7 @@
     "onLanguage:svelte",
     "onCommand:paradise.analyzeFile"
   ],
-  "main": "./out/src-ts/extension.js",
+  "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
@@ -174,7 +174,8 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
+    "compile": "tsc -p ./ && npm run copy-lib",
+    "copy-lib": "rsync -a lib/ out/lib/",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile",
     "test": "node ./out/src-ts/test/runTest.js",

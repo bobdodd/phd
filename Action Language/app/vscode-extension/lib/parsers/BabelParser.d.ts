@@ -6,4 +6,3 @@ export declare function parseSource(source: string, filename?: string): t.File;
 export declare function traverseAST(ast: t.Node, visitors: any): void;
 export { t as types };
 export type { NodePath };
-//# sourceMappingURL=BabelParser.d.ts.map

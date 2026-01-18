@@ -10,4 +10,3 @@ export declare class CSSParser {
     private extractLocation;
     private generateId;
 }
-//# sourceMappingURL=CSSParser.d.ts.map

@@ -2,32 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.KeyboardNavigationAnalyzer = void 0;
 const BaseAnalyzer_1 = require("./BaseAnalyzer");
-/**
- * KeyboardNavigationAnalyzer
- *
- * Detects 7 types of keyboard navigation issues:
- * 1. potential-keyboard-trap - Focus trapped without Escape handler
- * 2. screen-reader-conflict - Single-character shortcuts conflict with screen readers
- * 3. screen-reader-arrow-conflict - Arrow keys interfere with browse mode
- * 4. deprecated-keycode - Using event.keyCode instead of event.key
- * 5. tab-without-shift - Tab key without Shift consideration
- * 6. missing-escape-handler - Modal/dialog without Escape key
- * 7. missing-arrow-navigation - ARIA widget without arrow key handlers
- *
- * WCAG: 2.1.1 (Keyboard), 2.1.2 (No Keyboard Trap), 2.1.4 (Character Key Shortcuts), 4.1.2
- */
 class KeyboardNavigationAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
     constructor() {
         super(...arguments);
         this.name = 'KeyboardNavigationAnalyzer';
         this.description = 'Detects 7 types of keyboard navigation issues including keyboard traps, screen reader conflicts, and missing arrow navigation';
-        // Screen reader navigation keys that should not be used as single-character shortcuts
         this.screenReaderKeys = new Set([
             'h', 'b', 'k', 't', 'l', 'f', 'g', 'd', 'e', 'r', 'i', 'm',
             'n', 'p', 'q', 's', 'x', 'c', 'v', 'z', 'o', 'a', 'u',
             '1', '2', '3', '4', '5', '6',
         ]);
-        // ARIA roles that require arrow key navigation
         this.arrowNavigationRoles = new Set([
             'listbox',
             'menu',
@@ -38,18 +22,15 @@ class KeyboardNavigationAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
             'treegrid',
             'grid',
         ]);
-        // Interactive ARIA roles that should be in modals/dialogs
         this.modalRoles = new Set(['dialog', 'alertdialog']);
     }
     analyze(context) {
         const issues = [];
-        // Document-scope analysis (preferred)
         if (context.documentModel && context.documentModel.javascript.length > 0) {
             for (const jsModel of context.documentModel.javascript) {
                 issues.push(...this.analyzeKeyboardPatterns(jsModel.nodes, context));
             }
         }
-        // File-scope fallback
         else if (context.actionLanguageModel) {
             issues.push(...this.analyzeKeyboardPatterns(context.actionLanguageModel.nodes, context));
         }
@@ -57,36 +38,21 @@ class KeyboardNavigationAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
     }
     analyzeKeyboardPatterns(nodes, context) {
         const issues = [];
-        // Detect keyboard traps
         issues.push(...this.detectKeyboardTrap(nodes, context));
-        // Detect screen reader conflicts
         issues.push(...this.detectScreenReaderConflict(nodes, context));
-        // Detect deprecated keyCode usage
         issues.push(...this.detectDeprecatedKeyCode(nodes, context));
-        // Detect Tab without Shift consideration
         issues.push(...this.detectTabWithoutShift(nodes, context));
-        // Detect missing Escape handlers in modals
         issues.push(...this.detectMissingEscapeHandler(nodes, context));
-        // Detect missing arrow navigation in ARIA widgets
         issues.push(...this.detectMissingArrowNavigation(nodes, context));
         return issues;
     }
-    /**
-     * Detect potential keyboard traps.
-     *
-     * Pattern: Tab key preventDefault without Escape handler
-     * Problem: Users can't exit focus trap with keyboard
-     * WCAG: 2.1.2 (No Keyboard Trap)
-     */
     detectKeyboardTrap(nodes, context) {
         const issues = [];
-        // Find Tab key handlers that call preventDefault
         const tabHandlers = nodes.filter((node) => node.actionType === 'eventHandler' &&
             node.event === 'keydown' &&
             node.metadata?.keysHandled?.includes('Tab') &&
             node.metadata?.callsPreventDefault === true);
         for (const tabHandler of tabHandlers) {
-            // Check if there's an Escape handler nearby
             const hasEscapeHandler = this.hasEscapeHandlerNearby(nodes, tabHandler);
             if (!hasEscapeHandler) {
                 const message = `Potential keyboard trap detected. Tab key is intercepted with preventDefault, but no Escape key handler found. Users may become trapped and unable to navigate away. Add an Escape handler or allow Tab to work normally.`;
@@ -110,13 +76,6 @@ element.addEventListener('keydown', (event) => {
         }
         return issues;
     }
-    /**
-     * Detect single-character keyboard shortcuts that conflict with screen readers.
-     *
-     * Pattern: Single letter key handler (e.g., 'h', 'k', 'b')
-     * Problem: Conflicts with screen reader navigation keys
-     * WCAG: 2.1.4 (Character Key Shortcuts)
-     */
     detectScreenReaderConflict(nodes, context) {
         const issues = [];
         for (const node of nodes) {
@@ -124,11 +83,9 @@ element.addEventListener('keydown', (event) => {
                 node.event === 'keydown' &&
                 node.metadata?.keysHandled) {
                 for (const key of node.metadata.keysHandled) {
-                    // Check if it's a single character that conflicts with screen readers
                     if (key.length === 1 &&
                         this.screenReaderKeys.has(key.toLowerCase()) &&
-                        !node.metadata?.requiresModifier // No Ctrl/Alt/Shift required
-                    ) {
+                        !node.metadata?.requiresModifier) {
                         const message = `Single-character shortcut "${key}" conflicts with screen reader navigation. Keys like h, k, b, t are used by screen readers to navigate by headings, links, buttons, etc. Use modifier keys (Ctrl, Alt, or Shift) or allow users to remap shortcuts.`;
                         const fix = {
                             description: 'Require modifier key for shortcut',
@@ -154,13 +111,6 @@ if (event.key === userShortcut.key && event.ctrlKey === userShortcut.ctrl) {
         }
         return issues;
     }
-    /**
-     * Detect deprecated keyCode usage.
-     *
-     * Pattern: event.keyCode or event.which
-     * Problem: Deprecated, should use event.key
-     * WCAG: 4.1.2 (future-proofing)
-     */
     detectDeprecatedKeyCode(nodes, context) {
         const issues = [];
         for (const node of nodes) {
@@ -193,12 +143,6 @@ if (event.key === 'Enter') { ... }
         }
         return issues;
     }
-    /**
-     * Detect Tab key handling without Shift consideration.
-     *
-     * Pattern: if (event.key === 'Tab') without checking event.shiftKey
-     * Problem: May miss backward navigation (Shift+Tab)
-     */
     detectTabWithoutShift(nodes, context) {
         const issues = [];
         for (const node of nodes) {
@@ -230,16 +174,8 @@ element.addEventListener('keydown', (event) => {
         }
         return issues;
     }
-    /**
-     * Detect modals/dialogs without Escape key handlers.
-     *
-     * Pattern: Modal/dialog role without Escape handler
-     * Problem: Users expect Escape to close modals
-     * WCAG: 2.1.1 (Keyboard)
-     */
     detectMissingEscapeHandler(nodes, context) {
         const issues = [];
-        // Look for modal/dialog indicators in DOM manipulations or roles
         const modalPatterns = nodes.filter((node) => {
             const selector = node.element.selector?.toLowerCase() || '';
             const binding = node.element.binding?.toLowerCase() || '';
@@ -251,7 +187,6 @@ element.addEventListener('keydown', (event) => {
                 binding.includes('dialog'));
         });
         for (const modalNode of modalPatterns) {
-            // Check if there's an Escape handler for this modal
             const hasEscapeHandler = this.hasEscapeHandlerNearby(nodes, modalNode);
             if (!hasEscapeHandler) {
                 const message = `Modal or dialog without Escape key handler. Users expect to be able to press Escape to close modals. Add a keydown handler that listens for the Escape key.`;
@@ -288,19 +223,10 @@ function Modal({ isOpen, onClose }) {
         }
         return issues;
     }
-    /**
-     * Detect ARIA widgets without arrow key navigation.
-     *
-     * Pattern: Element with ARIA role requiring arrow keys, but no arrow handlers
-     * Problem: Screen reader users expect arrow keys to work in these widgets
-     * WCAG: 2.1.1 (Keyboard), 4.1.2 (Name, Role, Value)
-     */
     detectMissingArrowNavigation(nodes, context) {
         const issues = [];
-        // Look for ARIA roles that require arrow navigation
         const ariaWidgets = nodes.filter((node) => node.metadata?.role && this.arrowNavigationRoles.has(node.metadata.role));
         for (const widget of ariaWidgets) {
-            // Check if there are arrow key handlers for this widget
             const hasArrowHandlers = this.hasArrowHandlersNearby(nodes, widget);
             if (!hasArrowHandlers) {
                 const role = widget.metadata?.role || 'unknown';
@@ -315,9 +241,7 @@ function Modal({ isOpen, onClose }) {
         }
         return issues;
     }
-    // Helper methods
     hasEscapeHandlerNearby(nodes, targetNode) {
-        // Look for Escape key handler within 10 lines
         return nodes.some((node) => node.actionType === 'eventHandler' &&
             node.event === 'keydown' &&
             node.metadata?.keysHandled?.includes('Escape') &&
@@ -447,4 +371,3 @@ element.addEventListener('keydown', (event) => {
     }
 }
 exports.KeyboardNavigationAnalyzer = KeyboardNavigationAnalyzer;
-//# sourceMappingURL=KeyboardNavigationAnalyzer.js.map

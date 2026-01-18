@@ -26,4 +26,3 @@ export declare class WidgetPatternAnalyzer extends BaseAnalyzer {
     private validateProgressbarPattern;
     private validateTooltipPattern;
 }
-//# sourceMappingURL=WidgetPatternAnalyzer.d.ts.map

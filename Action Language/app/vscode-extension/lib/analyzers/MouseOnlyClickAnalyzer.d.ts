@@ -13,4 +13,3 @@ export declare class MouseOnlyClickAnalyzer extends BaseAnalyzer {
     private generateFileScopeFix;
     private getElementSelector;
 }
-//# sourceMappingURL=MouseOnlyClickAnalyzer.d.ts.map

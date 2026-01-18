@@ -995,4 +995,3 @@ trigger.addEventListener('blur', () => {
     }
 }
 exports.WidgetPatternAnalyzer = WidgetPatternAnalyzer;
-//# sourceMappingURL=WidgetPatternAnalyzer.js.map

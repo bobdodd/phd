@@ -95,4 +95,3 @@ export declare function analyzeReactComponent(source: string, sourceFile: string
     portals: PortalUsage[];
     contexts: ContextUsage[];
 };
-//# sourceMappingURL=ReactPatternDetector.d.ts.map

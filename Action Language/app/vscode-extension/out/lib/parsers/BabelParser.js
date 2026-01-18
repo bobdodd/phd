@@ -1,17 +1,4 @@
 "use strict";
-/**
- * Babel Parser Configuration for Paradise
- *
- * This module configures Babel to parse JavaScript, TypeScript, and JSX source files.
- * Babel is used instead of Acorn because it provides robust support for:
- * - JSX and TSX syntax (React components)
- * - TypeScript types and interfaces
- * - Modern JavaScript features (optional chaining, nullish coalescing, etc.)
- * - Decorators (Angular, NestJS)
- *
- * This configuration is used by the ActionLanguage parser to extract UI interaction
- * patterns from source code.
- */
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -56,50 +43,20 @@ const parser_1 = require("@babel/parser");
 const traverse_1 = __importDefault(require("@babel/traverse"));
 const t = __importStar(require("@babel/types"));
 exports.types = t;
-/**
- * Babel parser configuration for parsing JavaScript/TypeScript/JSX.
- *
- * Plugins enabled:
- * - jsx: React JSX support (<button>, <dialog>, etc.)
- * - typescript: TypeScript syntax and types
- * - decorators: Angular/NestJS decorators
- * - classProperties: Class field declarations
- * - objectRestSpread: Object spread/rest (...props)
- * - optionalChaining: Optional chaining operator (?.)
- * - nullishCoalescingOperator: Nullish coalescing operator (??)
- */
 exports.BABEL_CONFIG = {
     sourceType: 'module',
     plugins: [
-        'jsx', // React JSX support
-        'typescript', // TypeScript support
-        ['decorators', { decoratorsBeforeExport: true }], // Angular/NestJS decorators
-        'classProperties', // Class field declarations
-        'objectRestSpread', // Object spread/rest
-        'optionalChaining', // Optional chaining (?.)
-        'nullishCoalescingOperator', // Nullish coalescing (??)
+        'jsx',
+        'typescript',
+        ['decorators', { decoratorsBeforeExport: true }],
+        'classProperties',
+        'objectRestSpread',
+        'optionalChaining',
+        'nullishCoalescingOperator',
     ],
-    // Preserve location information for error reporting
     ranges: true,
     tokens: false,
 };
-/**
- * Parse JavaScript/TypeScript/JSX source code into a Babel AST.
- *
- * @param source - Source code to parse
- * @param filename - Optional filename for better error messages
- * @returns Babel File AST
- * @throws SyntaxError if source code cannot be parsed
- *
- * @example
- * ```typescript
- * const ast = parseSource(`
- *   function MyComponent() {
- *     return <button onClick={handleClick}>Click me</button>;
- *   }
- * `, 'MyComponent.tsx');
- * ```
- */
 function parseSource(source, filename) {
     try {
         return (0, parser_1.parse)(source, {
@@ -114,25 +71,6 @@ function parseSource(source, filename) {
         throw error;
     }
 }
-/**
- * Traverse a Babel AST with visitor functions.
- *
- * This is a re-export of @babel/traverse for convenience.
- *
- * @example
- * ```typescript
- * const ast = parseSource(source);
- * traverseAST(ast, {
- *   JSXElement(path) {
- *     console.log('Found JSX element:', path.node.openingElement.name);
- *   },
- *   CallExpression(path) {
- *     console.log('Found function call:', path.node.callee);
- *   }
- * });
- * ```
- */
 function traverseAST(ast, visitors) {
     (0, traverse_1.default)(ast, visitors);
 }
-//# sourceMappingURL=BabelParser.js.map

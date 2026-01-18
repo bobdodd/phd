@@ -9,11 +9,8 @@ import * as vscode from 'vscode';
 import { DocumentModel } from '../lib/models/DocumentModel';
 import { ActionLanguageModel } from '../lib/models/ActionLanguageModel';
 import { JavaScriptParser } from '../lib/parsers/JavaScriptParser';
-import { SvelteActionLanguageExtractor } from '../lib/parsers/SvelteActionLanguageExtractor';
-import { VueActionLanguageExtractor } from '../lib/parsers/VueActionLanguageExtractor';
-import { AngularActionLanguageExtractor } from '../lib/parsers/AngularActionLanguageExtractor';
 import { Issue } from '../lib/analyzers/BaseAnalyzer';
-import { AnalysisResult, AnalysisScope, ExtensionConfig } from './types';
+import { AnalysisResult, AnalysisScope } from './types';
 import { ProjectModelManager } from './projectModelManager';
 
 // Import analyzers
@@ -26,12 +23,7 @@ import { FocusManagementAnalyzer } from '../lib/analyzers/FocusManagementAnalyze
 import { KeyboardNavigationAnalyzer } from '../lib/analyzers/KeyboardNavigationAnalyzer';
 import { ARIASemanticAnalyzer } from '../lib/analyzers/ARIASemanticAnalyzer';
 import { WidgetPatternAnalyzer } from '../lib/analyzers/WidgetPatternAnalyzer';
-import { ReactPortalAnalyzer } from '../lib/analyzers/ReactPortalAnalyzer';
-import { ReactStopPropagationAnalyzer } from '../lib/analyzers/ReactStopPropagationAnalyzer';
-import { ReactHooksA11yAnalyzer } from '../lib/analyzers/ReactHooksA11yAnalyzer';
-import { SvelteReactivityAnalyzer } from '../lib/analyzers/SvelteReactivityAnalyzer';
-import { VueReactivityAnalyzer } from '../lib/analyzers/VueReactivityAnalyzer';
-import { AngularReactivityAnalyzer } from '../lib/analyzers/AngularReactivityAnalyzer';
+import { ReactA11yAnalyzer } from '../lib/analyzers/ReactA11yAnalyzer';
 import { ParadiseCodeActionProvider } from './codeActionProvider';
 
 export class ForegroundAnalyzer {
@@ -63,15 +55,11 @@ export class ForegroundAnalyzer {
       new KeyboardNavigationAnalyzer(),
       new ARIASemanticAnalyzer(),
       new WidgetPatternAnalyzer(),
-      new ReactPortalAnalyzer(),
-      new ReactStopPropagationAnalyzer(),
-      new ReactHooksA11yAnalyzer(),
-      new SvelteReactivityAnalyzer(),
-      new VueReactivityAnalyzer(),
-      new AngularReactivityAnalyzer()
+      new ReactA11yAnalyzer()
+      // Note: Svelte/Vue/Angular analyzers excluded - they don't follow BaseAnalyzer architecture
     ];
 
-    console.log('[ForegroundAnalyzer] Initialized with', this.analyzers.length, 'analyzers');
+    this.outputChannel.appendLine(`[ForegroundAnalyzer] Initialized with ${this.analyzers.length} analyzers`);
   }
 
   /**
@@ -228,26 +216,11 @@ export class ForegroundAnalyzer {
     const content = document.getText();
     let model: ActionLanguageModel;
 
-    if (document.languageId === 'svelte') {
-      // Parse Svelte file
-      const parser = new SvelteActionLanguageExtractor();
-      model = parser.parse(content, document.uri.fsPath);
-      this.outputChannel.appendLine(`[ForegroundAnalyzer] Parsed Svelte file with SvelteActionLanguageExtractor`);
-    } else if (document.languageId === 'vue') {
-      // Parse Vue file
-      const parser = new VueActionLanguageExtractor();
-      model = parser.parse(content, document.uri.fsPath);
-      this.outputChannel.appendLine(`[ForegroundAnalyzer] Parsed Vue file with VueActionLanguageExtractor`);
-    } else if (document.fileName.endsWith('.html') || document.fileName.endsWith('.component.ts')) {
-      // Parse Angular file (templates or component files)
-      const parser = new AngularActionLanguageExtractor();
-      model = parser.parse(content, document.uri.fsPath);
-      this.outputChannel.appendLine(`[ForegroundAnalyzer] Parsed Angular file with AngularActionLanguageExtractor`);
-    } else {
-      // Parse JavaScript/TypeScript/JSX/TSX file
-      const parser = new JavaScriptParser();
-      model = parser.parse(content, document.uri.fsPath);
-    }
+    // Note: Only JavaScript/TypeScript/JSX/TSX parsing supported
+    // Svelte/Vue/Angular parsing excluded - those analyzers don't follow BaseAnalyzer architecture
+    const parser = new JavaScriptParser();
+    model = parser.parse(content, document.uri.fsPath);
+    this.outputChannel.appendLine(`[ForegroundAnalyzer] Parsed file with JavaScriptParser`);
 
     // Run analyzers with file-scope context
     const allIssues: Issue[] = [];

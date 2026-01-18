@@ -1,30 +1,4 @@
 "use strict";
-/**
- * Focus Order Conflict Analyzer
- *
- * Detects problematic tabindex usage that creates confusing focus order.
- * This analyzer requires DocumentModel to see all focusable elements together.
- *
- * Issues detected:
- * 1. Positive tabindex values (anti-pattern - creates unpredictable order)
- * 2. Multiple elements with same positive tabindex
- * 3. Gaps in tabindex sequence
- * 4. Mixing positive and default focus order
- *
- * Best practice:
- * - Use tabindex="0" to add elements to natural tab order
- * - Use tabindex="-1" to make elements programmatically focusable only
- * - Avoid positive tabindex values (tabindex="1", "2", etc.)
- *
- * Example issue:
- * ```html
- * <button tabindex="2">First visually</button>
- * <button tabindex="1">Second visually</button>
- * <!-- Tab order: Second, First - confusing! -->
- * ```
- *
- * This analyzer REQUIRES DocumentModel to see all elements together.
- */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FocusOrderConflictAnalyzer = void 0;
 const BaseAnalyzer_1 = require("./BaseAnalyzer");
@@ -34,11 +8,6 @@ class FocusOrderConflictAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
         this.name = 'focus-order-conflict';
         this.description = 'Detects problematic tabindex usage that creates confusing focus order';
     }
-    /**
-     * Analyze for focus order conflicts.
-     *
-     * REQUIRES DocumentModel.
-     */
     analyze(context) {
         if (!this.supportsDocumentModel(context)) {
             return [];
@@ -47,20 +16,16 @@ class FocusOrderConflictAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
         const documentModel = context.documentModel;
         if (!documentModel.dom)
             return issues;
-        // Get all focusable elements
         const focusableElements = documentModel.dom.flatMap((fragment) => fragment.getFocusableElements());
-        // Check for positive tabindex values (anti-pattern)
         for (const element of focusableElements) {
             const tabindex = this.getTabIndex(element);
             if (tabindex !== null && tabindex > 0) {
                 const message = `Element <${element.tagName}> uses positive tabindex="${tabindex}". Positive tabindex values create unpredictable focus order and should be avoided. Use tabindex="0" instead (WCAG 2.4.3).`;
-                issues.push(this.createIssue('positive-tabindex', 'warning', message, element.location, ['2.4.3'], // WCAG 2.4.3: Focus Order
-                context, {
+                issues.push(this.createIssue('positive-tabindex', 'warning', message, element.location, ['2.4.3'], context, {
                     elementContext: documentModel.getElementContext(element),
                 }));
             }
         }
-        // Check for duplicate positive tabindex values
         const tabindexMap = new Map();
         for (const element of focusableElements) {
             const tabindex = this.getTabIndex(element);
@@ -71,7 +36,6 @@ class FocusOrderConflictAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
                 tabindexMap.get(tabindex).push(element);
             }
         }
-        // Report duplicates
         for (const [tabindex, elements] of tabindexMap.entries()) {
             if (elements.length > 1) {
                 for (const element of elements) {
@@ -91,9 +55,6 @@ class FocusOrderConflictAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
         }
         return issues;
     }
-    /**
-     * Get numeric tabindex value from element.
-     */
     getTabIndex(element) {
         const tabindexStr = element.attributes.tabindex;
         if (tabindexStr === undefined) {
@@ -104,4 +65,3 @@ class FocusOrderConflictAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
     }
 }
 exports.FocusOrderConflictAnalyzer = FocusOrderConflictAnalyzer;
-//# sourceMappingURL=FocusOrderConflictAnalyzer.js.map

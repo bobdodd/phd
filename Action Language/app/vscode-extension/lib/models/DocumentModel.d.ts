@@ -53,4 +53,3 @@ export interface SourceCollection {
 export declare class DocumentModelBuilder {
     build(sources: SourceCollection, scope: AnalysisScope): DocumentModel;
 }
-//# sourceMappingURL=DocumentModel.d.ts.map

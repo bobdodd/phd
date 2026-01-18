@@ -2,54 +2,32 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ARIASemanticAnalyzer = void 0;
 const BaseAnalyzer_1 = require("./BaseAnalyzer");
-/**
- * ARIASemanticAnalyzer
- *
- * Detects 8 types of ARIA semantic issues:
- * 1. invalid-role - Using a role that doesn't exist in ARIA spec
- * 2. interactive-role-static - Interactive role without event handler
- * 3. aria-expanded-static - aria-expanded set but never updated
- * 4. dialog-missing-label - Dialog without aria-label/aria-labelledby
- * 5. missing-required-aria - Role requires specific ARIA attributes
- * 6. assertive-live-region - aria-live="assertive" overuse
- * 7. aria-hidden-true - aria-hidden on interactive elements
- * 8. aria-label-overuse - aria-label overriding visible text
- *
- * WCAG: 4.1.2, 4.1.3, 2.5.3, 2.1.1
- */
 class ARIASemanticAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
     constructor() {
         super(...arguments);
         this.name = 'ARIASemanticAnalyzer';
         this.description = 'Detects 8 types of ARIA semantic issues including invalid roles, missing required attributes, and static aria-expanded values';
-        // ARIA 1.2 valid roles
         this.validRoles = new Set([
-            // Widget roles
             'alert', 'alertdialog', 'button', 'checkbox', 'dialog', 'gridcell',
             'link', 'log', 'marquee', 'menuitem', 'menuitemcheckbox', 'menuitemradio',
             'option', 'progressbar', 'radio', 'scrollbar', 'searchbox', 'slider',
             'spinbutton', 'status', 'switch', 'tab', 'tabpanel', 'textbox',
             'timer', 'tooltip', 'treeitem',
-            // Composite widget roles
             'combobox', 'grid', 'listbox', 'menu', 'menubar', 'radiogroup',
             'tablist', 'tree', 'treegrid',
-            // Document structure roles
             'application', 'article', 'cell', 'columnheader', 'definition',
             'directory', 'document', 'feed', 'figure', 'group', 'heading',
             'img', 'list', 'listitem', 'math', 'none', 'note', 'presentation',
             'row', 'rowgroup', 'rowheader', 'separator', 'table', 'term',
             'toolbar',
-            // Landmark roles
             'banner', 'complementary', 'contentinfo', 'form', 'main',
             'navigation', 'region', 'search'
         ]);
-        // Interactive roles that require event handlers
         this.interactiveRoles = new Set([
             'button', 'link', 'checkbox', 'radio', 'switch', 'tab',
             'menuitem', 'menuitemcheckbox', 'menuitemradio', 'option',
             'slider', 'spinbutton', 'textbox', 'searchbox', 'combobox'
         ]);
-        // Roles that require specific ARIA attributes
         this.requiredAttributes = new Map([
             ['checkbox', ['aria-checked']],
             ['radio', ['aria-checked']],
@@ -69,7 +47,6 @@ class ARIASemanticAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
             return issues;
         }
         const nodes = context.actionLanguageModel.nodes;
-        // Detect all issue types
         issues.push(...this.detectInvalidRole(nodes, context));
         issues.push(...this.detectInteractiveRoleStatic(nodes, context));
         issues.push(...this.detectAriaExpandedStatic(nodes, context));
@@ -80,10 +57,6 @@ class ARIASemanticAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
         issues.push(...this.detectAriaLabelOveruse(nodes, context));
         return issues;
     }
-    /**
-     * Issue 1: invalid-role
-     * Detects usage of roles that don't exist in ARIA spec
-     */
     detectInvalidRole(nodes, context) {
         const issues = [];
         for (const node of nodes) {
@@ -110,17 +83,10 @@ class ARIASemanticAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
         }
         return issues;
     }
-    /**
-     * Issue 2: interactive-role-static
-     * Detects interactive roles without event handlers
-     */
     detectInteractiveRoleStatic(nodes, context) {
         const issues = [];
-        // Track elements with interactive roles
         const elementsWithRoles = new Map();
-        // Track elements with event handlers
         const elementsWithHandlers = new Set();
-        // First pass: collect roles and handlers
         for (const node of nodes) {
             const elementKey = this.getElementKey(node.element);
             if (node.actionType === 'ariaStateChange' &&
@@ -132,7 +98,6 @@ class ARIASemanticAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
                 elementsWithHandlers.add(elementKey);
             }
         }
-        // Second pass: check for missing handlers
         for (const [elementKey, { node, role }] of elementsWithRoles) {
             if (!elementsWithHandlers.has(elementKey)) {
                 const expectedEvents = this.getExpectedHandlers(role);
@@ -149,30 +114,22 @@ class ARIASemanticAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
         }
         return issues;
     }
-    /**
-     * Issue 3: aria-expanded-static
-     * Detects aria-expanded that is set but never updated
-     */
     detectAriaExpandedStatic(nodes, context) {
         const issues = [];
-        // Track aria-expanded initial sets and updates
         const expandedInitialSets = new Map();
         const expandedUpdates = new Set();
         for (const node of nodes) {
             if (node.actionType === 'ariaStateChange' &&
                 node.metadata.attribute === 'aria-expanded') {
                 const elementKey = this.getElementKey(node.element);
-                // Track initial set (usually 'immediate' timing)
                 if (node.timing === 'immediate' && !expandedInitialSets.has(elementKey)) {
                     expandedInitialSets.set(elementKey, node);
                 }
                 else {
-                    // Any subsequent update marks element as dynamic
                     expandedUpdates.add(elementKey);
                 }
             }
         }
-        // Check for elements with initial set but no updates
         for (const [elementKey, node] of expandedInitialSets) {
             if (!expandedUpdates.has(elementKey)) {
                 const fix = {
@@ -189,13 +146,8 @@ element.addEventListener('click', () => {
         }
         return issues;
     }
-    /**
-     * Issue 4: dialog-missing-label
-     * Detects dialog/alertdialog without accessible label
-     */
     detectDialogMissingLabel(nodes, context) {
         const issues = [];
-        // Track dialog roles and their labels
         const dialogElements = new Map();
         const elementsWithLabels = new Set();
         for (const node of nodes) {
@@ -211,7 +163,6 @@ element.addEventListener('click', () => {
                 }
             }
         }
-        // Check for dialogs without labels
         for (const [elementKey, node] of dialogElements) {
             if (!elementsWithLabels.has(elementKey)) {
                 const role = node.metadata.value;
@@ -229,17 +180,10 @@ element.setAttribute('aria-label', 'Confirmation Dialog');`,
         }
         return issues;
     }
-    /**
-     * Issue 5: missing-required-aria
-     * Detects roles missing required ARIA attributes
-     */
     detectMissingRequiredAria(nodes, context) {
         const issues = [];
-        // Track elements with roles that require attributes
         const elementsWithRoles = new Map();
-        // Track which ARIA attributes each element has
         const elementAttributes = new Map();
-        // First pass: collect roles and attributes
         for (const node of nodes) {
             if (node.actionType === 'ariaStateChange') {
                 const elementKey = this.getElementKey(node.element);
@@ -251,7 +195,6 @@ element.setAttribute('aria-label', 'Confirmation Dialog');`,
                     }
                 }
                 else if (node.metadata.attribute) {
-                    // Track ARIA attributes
                     if (!elementAttributes.has(elementKey)) {
                         elementAttributes.set(elementKey, new Set());
                     }
@@ -259,7 +202,6 @@ element.setAttribute('aria-label', 'Confirmation Dialog');`,
                 }
             }
         }
-        // Second pass: check for missing required attributes
         for (const [elementKey, { node, role, requiredAttrs }] of elementsWithRoles) {
             const elementAttrs = elementAttributes.get(elementKey) || new Set();
             const missing = requiredAttrs.filter(attr => !elementAttrs.has(attr));
@@ -267,7 +209,6 @@ element.setAttribute('aria-label', 'Confirmation Dialog');`,
                 const fix = {
                     description: `Add required ARIA attributes for role="${role}"`,
                     code: missing.map(attr => {
-                        // Provide sensible default values
                         if (attr === 'aria-checked')
                             return `element.setAttribute('${attr}', 'false');`;
                         if (attr === 'aria-selected')
@@ -291,10 +232,6 @@ element.setAttribute('aria-label', 'Confirmation Dialog');`,
         }
         return issues;
     }
-    /**
-     * Issue 6: assertive-live-region
-     * Detects aria-live="assertive" which should be used sparingly
-     */
     detectAssertiveLiveRegion(nodes, context) {
         const issues = [];
         for (const node of nodes) {
@@ -311,15 +248,9 @@ element.setAttribute('aria-label', 'Confirmation Dialog');`,
         }
         return issues;
     }
-    /**
-     * Issue 7: aria-hidden-true
-     * Detects aria-hidden="true" on focusable/interactive elements
-     */
     detectAriaHiddenTrue(nodes, context) {
         const issues = [];
-        // Track elements with aria-hidden="true"
         const hiddenElements = new Map();
-        // Track focusable/interactive elements
         const interactiveElements = new Set();
         for (const node of nodes) {
             const elementKey = this.getElementKey(node.element);
@@ -332,7 +263,6 @@ element.setAttribute('aria-label', 'Confirmation Dialog');`,
                 interactiveElements.add(elementKey);
             }
         }
-        // Check for hidden interactive elements
         for (const [elementKey, node] of hiddenElements) {
             if (interactiveElements.has(elementKey)) {
                 const fix = {
@@ -350,10 +280,6 @@ element.removeAttribute('aria-hidden');
         }
         return issues;
     }
-    /**
-     * Issue 8: aria-label-overuse
-     * Detects aria-label potentially overriding visible text
-     */
     detectAriaLabelOveruse(nodes, context) {
         const issues = [];
         for (const node of nodes) {
@@ -375,7 +301,6 @@ element.removeAttribute('aria-label');`,
         }
         return issues;
     }
-    // Helper methods
     getElementKey(element) {
         return element.binding || element.selector;
     }
@@ -387,7 +312,7 @@ element.removeAttribute('aria-label');`,
                 similar.push(validRole);
             }
         }
-        return similar.slice(0, 3); // Max 3 suggestions
+        return similar.slice(0, 3);
     }
     getExpectedHandlers(role) {
         const handlerMap = {
@@ -409,4 +334,3 @@ element.removeAttribute('aria-label');`,
     }
 }
 exports.ARIASemanticAnalyzer = ARIASemanticAnalyzer;
-//# sourceMappingURL=ARIASemanticAnalyzer.js.map

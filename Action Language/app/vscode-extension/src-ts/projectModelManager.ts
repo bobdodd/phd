@@ -29,7 +29,6 @@ export class ProjectModelManager {
     if (this.outputChannel) {
       this.outputChannel.appendLine(message);
     }
-    console.log(message);
   }
 
   /**
@@ -149,6 +148,8 @@ export class ProjectModelManager {
     // For each HTML file, detect which JS/CSS files it uses
     for (const htmlFile of files.htmlFiles) {
       const content = await this.readFile(htmlFile);
+      if (content === null) continue; // Skip if HTML file doesn't exist
+
       const linkedJS = this.extractScriptLinks(content, htmlFile);
       const linkedCSS = this.extractStyleLinks(content, htmlFile);
 
@@ -234,18 +235,26 @@ export class ProjectModelManager {
     try {
       // Read all sources for this page
       const htmlContent = await this.readFile(page.htmlFile);
-      const jsContents = await Promise.all(
-        page.linkedJS.map(async uri => ({
-          content: await this.readFile(uri),
-          file: uri.fsPath
-        }))
-      );
-      const cssContents = await Promise.all(
-        page.linkedCSS.map(async uri => ({
-          content: await this.readFile(uri),
-          file: uri.fsPath
-        }))
-      );
+      if (htmlContent === null) {
+        // HTML file doesn't exist, skip
+        return;
+      }
+
+      // Read JS files, skipping any that don't exist
+      const jsContents = (await Promise.all(
+        page.linkedJS.map(async uri => {
+          const content = await this.readFile(uri);
+          return content !== null ? { content, file: uri.fsPath } : null;
+        })
+      )).filter((item): item is { content: string; file: string } => item !== null);
+
+      // Read CSS files, skipping any that don't exist
+      const cssContents = (await Promise.all(
+        page.linkedCSS.map(async uri => {
+          const content = await this.readFile(uri);
+          return content !== null ? { content, file: uri.fsPath } : null;
+        })
+      )).filter((item): item is { content: string; file: string } => item !== null);
 
       // Build DocumentModel using DocumentModelBuilder
       const builder = new DocumentModelBuilder();
@@ -264,10 +273,11 @@ export class ProjectModelManager {
 
       // Cache parsed models
       this.cachePageModels(page);
-
-      console.log('[ProjectModelManager] Built model for page:', page.htmlFile.fsPath);
     } catch (error) {
-      console.error(`[ProjectModelManager] Failed to build model for ${page.htmlFile.fsPath}:`, error);
+      // Only log if it's not a missing file error
+      if (error && (error as any).code !== 'FileNotFound' && (error as any).code !== 'ENOENT') {
+        console.error(`[ProjectModelManager] Failed to build model for ${page.htmlFile.fsPath}:`, error);
+      }
     }
   }
 
@@ -309,7 +319,6 @@ export class ProjectModelManager {
    * Handle file change event
    */
   private async onFileChanged(uri: vscode.Uri): Promise<void> {
-    console.log('[ProjectModelManager] File changed:', uri.fsPath);
 
     // Find which page(s) this file belongs to
     const affectedPages = this.findPagesForFile(uri);
@@ -339,7 +348,6 @@ export class ProjectModelManager {
    * Handle file creation event
    */
   private async onFileCreated(uri: vscode.Uri): Promise<void> {
-    console.log('[ProjectModelManager] File created:', uri.fsPath);
     // Re-discover files to pick up new file
     // For now, just treat as changed
     await this.onFileChanged(uri);
@@ -349,7 +357,6 @@ export class ProjectModelManager {
    * Handle file deletion event
    */
   private async onFileDeleted(uri: vscode.Uri): Promise<void> {
-    console.log('[ProjectModelManager] File deleted:', uri.fsPath);
 
     // Remove from cache
     this.parseCache.delete(uri.fsPath);
@@ -418,8 +425,6 @@ export class ProjectModelManager {
   private async processUpdateQueue(): Promise<void> {
     if (this.updateQueue.size === 0) return;
 
-    console.log('[ProjectModelManager] Processing', this.updateQueue.size, 'queued updates');
-
     for (const uri of this.updateQueue) {
       await this.onFileChanged(uri);
     }
@@ -428,18 +433,26 @@ export class ProjectModelManager {
   }
 
   /**
-   * Read file content
+   * Read file content, returns null if file doesn't exist
    */
-  private async readFile(uri: vscode.Uri): Promise<string> {
-    const bytes = await vscode.workspace.fs.readFile(uri);
-    return Buffer.from(bytes).toString('utf8');
+  private async readFile(uri: vscode.Uri): Promise<string | null> {
+    try {
+      const bytes = await vscode.workspace.fs.readFile(uri);
+      return Buffer.from(bytes).toString('utf8');
+    } catch (error: any) {
+      // Silently skip missing files (they might be referenced but not exist)
+      if (error.code === 'FileNotFound' || error.code === 'ENOENT') {
+        return null;
+      }
+      // Re-throw other errors
+      throw error;
+    }
   }
 
   /**
    * Dispose of all resources
    */
   dispose(): void {
-    console.log('[ProjectModelManager] Disposing...');
 
     for (const watcher of this.fileWatchers) {
       watcher.dispose();

@@ -5,4 +5,3 @@ export declare class FocusOrderConflictAnalyzer extends BaseAnalyzer {
     analyze(context: AnalyzerContext): Issue[];
     private getTabIndex;
 }
-//# sourceMappingURL=FocusOrderConflictAnalyzer.d.ts.map

@@ -282,4 +282,3 @@ class JavaScriptParser {
     }
 }
 exports.JavaScriptParser = JavaScriptParser;
-//# sourceMappingURL=JavaScriptParser.js.map

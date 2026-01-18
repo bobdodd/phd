@@ -1,17 +1,4 @@
 "use strict";
-/**
- * CSS Parser for Paradise
- *
- * Parses CSS stylesheets and extracts rules with accessibility impact.
- * Uses css-tree for robust CSS parsing.
- *
- * Key features:
- * - Parses CSS to AST and transforms to CSSModel
- * - Calculates selector specificity
- * - Identifies accessibility-relevant properties
- * - Detects pseudo-classes (:focus, :hover, etc.)
- * - Handles @media queries
- */
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -49,32 +36,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CSSParser = void 0;
 const csstree = __importStar(require("css-tree"));
 const CSSModel_1 = require("../models/CSSModel");
-/**
- * CSS Parser
- *
- * Parses CSS stylesheets into CSSModel.
- */
 class CSSParser {
     constructor() {
         this.ruleCounter = 0;
     }
-    /**
-     * Parse CSS source into CSSModel.
-     *
-     * @param source - CSS source code
-     * @param sourceFile - Filename for error reporting
-     * @returns CSSModel
-     *
-     * @example
-     * ```typescript
-     * const parser = new CSSParser();
-     * const model = parser.parse(`
-     *   .button:focus {
-     *     outline: 2px solid blue;
-     *   }
-     * `, 'styles.css');
-     * ```
-     */
     parse(source, sourceFile) {
         const rules = [];
         try {
@@ -82,7 +47,6 @@ class CSSParser {
                 positions: true,
                 filename: sourceFile,
             });
-            // Walk the AST and extract rules
             csstree.walk(ast, {
                 visit: 'Rule',
                 enter: (node) => {
@@ -95,25 +59,16 @@ class CSSParser {
         }
         catch (error) {
             console.error(`CSS parsing error in ${sourceFile}:`, error);
-            // Return empty model on parse error
         }
         return new CSSModel_1.CSSModelImpl(rules, sourceFile);
     }
-    /**
-     * Extract a CSS rule from AST node.
-     */
     extractRule(node, sourceFile) {
         if (!node.prelude || !node.block)
             return null;
-        // Extract selector
         const selector = csstree.generate(node.prelude);
-        // Extract properties
         const properties = this.extractProperties(node.block);
-        // Calculate specificity
         const specificity = this.calculateSpecificity(selector);
-        // Detect pseudo-classes
         const pseudoClass = this.detectPseudoClass(selector);
-        // Analyze accessibility impact
         const impact = this.analyzeAccessibilityImpact(properties, pseudoClass);
         return {
             id: this.generateId(),
@@ -129,9 +84,6 @@ class CSSParser {
             ...impact,
         };
     }
-    /**
-     * Extract properties from CSS block.
-     */
     extractProperties(block) {
         const properties = {};
         if (!block.children)
@@ -145,49 +97,27 @@ class CSSParser {
         });
         return properties;
     }
-    /**
-     * Calculate CSS selector specificity.
-     * Returns [inline, id, class, element] where higher is more specific.
-     *
-     * Examples:
-     * - "button" → [0, 0, 0, 1]
-     * - ".btn" → [0, 0, 1, 0]
-     * - "#submit" → [0, 1, 0, 0]
-     * - "button.btn:focus" → [0, 0, 2, 1]
-     * - "#submit.primary:hover" → [0, 1, 2, 0]
-     */
     calculateSpecificity(selector) {
         let inline = 0;
         let id = 0;
-        let classLike = 0; // classes, attributes, pseudo-classes
+        let classLike = 0;
         let element = 0;
-        // Remove spaces and normalize
         const normalized = selector.replace(/\s+/g, '');
-        // Count IDs (#)
         id = (normalized.match(/#[a-zA-Z][\w-]*/g) || []).length;
-        // Count classes (.)
         classLike += (normalized.match(/\.[a-zA-Z][\w-]*/g) || []).length;
-        // Count attributes ([...])
         classLike += (normalized.match(/\[[^\]]+\]/g) || []).length;
-        // Count pseudo-classes (:hover, :focus, but not ::before)
         const pseudoClasses = normalized.match(/:[^:][a-zA-Z-]+/g) || [];
         classLike += pseudoClasses.length;
-        // Count elements (tags)
-        // Remove IDs, classes, and pseudo-elements first
         const withoutIdClassPseudo = normalized
             .replace(/#[a-zA-Z][\w-]*/g, '')
             .replace(/\.[a-zA-Z][\w-]*/g, '')
             .replace(/:[^:][a-zA-Z-]+/g, '')
             .replace(/::[a-zA-Z-]+/g, '')
             .replace(/\[[^\]]+\]/g, '');
-        // Count remaining tag names
         const elements = withoutIdClassPseudo.match(/[a-zA-Z][\w-]*/g) || [];
         element = elements.length;
         return [inline, id, classLike, element];
     }
-    /**
-     * Detect pseudo-class in selector.
-     */
     detectPseudoClass(selector) {
         if (selector.includes(':focus-visible'))
             return 'focus-visible';
@@ -205,9 +135,6 @@ class CSSParser {
             return 'checked';
         return undefined;
     }
-    /**
-     * Analyze accessibility impact of CSS properties.
-     */
     analyzeAccessibilityImpact(properties, pseudoClass) {
         const focusProperties = [
             'outline',
@@ -259,9 +186,6 @@ class CSSParser {
             pseudoClass,
         };
     }
-    /**
-     * Extract source location from CSS AST node.
-     */
     extractLocation(node, sourceFile) {
         if (node.loc) {
             return {
@@ -277,12 +201,8 @@ class CSSParser {
             column: 0,
         };
     }
-    /**
-     * Generate unique ID for a rule.
-     */
     generateId() {
         return `css_rule_${++this.ruleCounter}`;
     }
 }
 exports.CSSParser = CSSParser;
-//# sourceMappingURL=CSSParser.js.map

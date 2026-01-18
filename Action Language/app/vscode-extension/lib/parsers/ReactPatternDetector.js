@@ -605,4 +605,3 @@ function analyzeReactComponent(source, sourceFile) {
         contexts: detector.getContexts(),
     };
 }
-//# sourceMappingURL=ReactPatternDetector.js.map

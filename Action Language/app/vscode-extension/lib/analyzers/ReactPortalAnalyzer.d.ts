@@ -1,17 +1,8 @@
-import { Issue } from '../models/BaseModel';
-import { PortalUsage } from '../parsers/ReactPatternDetector';
-export interface ReactPortalIssue extends Issue {
-    portal: PortalUsage;
-    fix: {
-        description: string;
-        code?: string;
-    };
+import { BaseAnalyzer, AnalyzerContext, Issue } from './BaseAnalyzer';
+export declare class ReactPortalAnalyzer extends BaseAnalyzer {
+    readonly name = "react-portal";
+    readonly description = "Detects accessibility issues with React portals (focus management, ARIA relationships, keyboard navigation)";
+    analyze(context: AnalyzerContext): Issue[];
+    private createPortalMessage;
+    private createPortalFix;
 }
-export declare class ReactPortalAnalyzer {
-    analyze(source: string, sourceFile: string): ReactPortalIssue[];
-    private buildMessage;
-    private buildFix;
-    hasPortal(source: string): boolean;
-}
-export declare function analyzeReactPortals(source: string, sourceFile: string): ReactPortalIssue[];
-//# sourceMappingURL=ReactPortalAnalyzer.d.ts.map

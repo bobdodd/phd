@@ -51,4 +51,3 @@ class OrphanedEventHandlerAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
     }
 }
 exports.OrphanedEventHandlerAnalyzer = OrphanedEventHandlerAnalyzer;
-//# sourceMappingURL=OrphanedEventHandlerAnalyzer.js.map

@@ -5,4 +5,3 @@ export declare class OrphanedEventHandlerAnalyzer extends BaseAnalyzer {
     analyze(context: AnalyzerContext): Issue[];
     private elementExistsInDOM;
 }
-//# sourceMappingURL=OrphanedEventHandlerAnalyzer.d.ts.map

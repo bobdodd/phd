@@ -1,11 +1,12 @@
 import { Model, ModelNode, ValidationResult } from './BaseModel';
 export interface ElementReference {
     selector: string;
-    binding: string;
+    binding?: string;
+    id?: string;
     resolvedElement?: any;
 }
-export type ActionType = 'eventHandler' | 'focusChange' | 'ariaStateChange' | 'domManipulation' | 'navigation';
-export type TimingType = 'immediate' | 'delayed' | 'conditional';
+export type ActionType = 'eventHandler' | 'focusChange' | 'ariaStateChange' | 'domManipulation' | 'navigation' | 'portal' | 'eventPropagation';
+export type TimingType = 'immediate' | 'delayed' | 'conditional' | 'deferred';
 export interface ActionLanguageNode extends ModelNode {
     nodeType: 'action';
     actionType: ActionType;
@@ -51,4 +52,3 @@ export declare class ActionLanguageModelImpl implements ActionLanguageModel {
     getAllFocusActions(): ActionLanguageNode[];
     getAllAriaActions(): ActionLanguageNode[];
 }
-//# sourceMappingURL=ActionLanguageModel.d.ts.map

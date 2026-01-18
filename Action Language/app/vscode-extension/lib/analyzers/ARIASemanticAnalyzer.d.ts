@@ -18,4 +18,3 @@ export declare class ARIASemanticAnalyzer extends BaseAnalyzer {
     private getSimilarRoles;
     private getExpectedHandlers;
 }
-//# sourceMappingURL=ARIASemanticAnalyzer.d.ts.map
