@@ -2,14 +2,15 @@
 
 Paradise is an accessibility analysis tool that eliminates false positives by analyzing HTML, JavaScript, and CSS together using a multi-model architecture.
 
-**Status**: Production-ready with VS Code extension (Sprints 1-5 of 6 complete)
+**Status**: Production-ready with VS Code extension and framework support
 
 ## Key Features
 
 - **Zero false positives** for handlers split across multiple files
 - **88% reduction** in overall false positive rate
-- **13 production analyzers** (8 JavaScript-only + 5 multi-model)
+- **13 production analyzers** including framework-specific analyzers for React, Vue, Svelte, and Angular
 - **Multi-file analysis** - HTML + JavaScript + CSS analyzed together
+- **Framework-aware analysis** - Detects issues in React, Vue, Svelte, and Angular patterns
 - **Real-time analysis** with VS Code extension
 - **WCAG 2.1 AA/AAA compliance** checking
 
@@ -63,28 +64,56 @@ See [SPRINT_1-4_SUMMARY.md](SPRINT_1-4_SUMMARY.md) for complete architecture det
 
 ## Analyzers
 
-### Multi-Model Analyzers (Phase 2)
+### Core Analyzers
 
-Require HTML context for cross-file analysis:
+**Multi-Model Analyzers** - Require HTML context for cross-file analysis:
 
-1. **MouseOnlyClickAnalyzer** (Enhanced) - Eliminates false positives for handlers in separate files
-2. **OrphanedEventHandlerAnalyzer** (New) - Detects handlers attached to non-existent elements
-3. **MissingAriaConnectionAnalyzer** (New) - Validates aria-labelledby, aria-describedby, aria-controls
-4. **VisibilityFocusConflictAnalyzer** (New) - Detects focusable elements hidden by CSS
-5. **FocusOrderConflictAnalyzer** (Enhanced) - Detects chaotic tabindex patterns
+1. **MouseOnlyClickAnalyzer** - Eliminates false positives for handlers in separate files
+2. **OrphanedEventHandlerAnalyzer** - Detects handlers attached to non-existent elements
+3. **MissingAriaConnectionAnalyzer** - Validates aria-labelledby, aria-describedby, aria-controls
+4. **VisibilityFocusConflictAnalyzer** - Detects focusable elements hidden by CSS
+5. **FocusOrderConflictAnalyzer** - Detects chaotic tabindex patterns
+6. **KeyboardNavigationAnalyzer** - Validates keyboard navigation patterns
+7. **ARIASemanticAnalyzer** - Validates ARIA usage and semantics
+8. **WidgetPatternAnalyzer** - Detects incomplete ARIA widget patterns (23 patterns)
 
-### JavaScript-Only Analyzers (Phase 1)
+**Framework-Specific Analyzers** - Detect issues in framework reactive patterns:
 
-Work with or without HTML context:
+9. **ReactA11yAnalyzer** - React hooks, portals, and event propagation patterns
+10. **SvelteReactivityAnalyzer** - Svelte bind:, on:, and class: directives
+11. **VueReactivityAnalyzer** - Vue v-model, v-on, and reactivity patterns
+12. **AngularReactivityAnalyzer** - Angular [(ngModel)], event bindings, and directives
 
-6. **StaticAriaAnalyzer** - Detects ARIA attributes set once and never updated
-7. **FocusManagementAnalyzer** - Validates focus changes and restoration
-8. **MissingLabelAnalyzer** - Detects form inputs without labels
-9. **MissingAltTextAnalyzer** - Detects images without alt text
-10. **TabIndexAnalyzer** - Detects positive tabindex values
-11. **RedundantRoleAnalyzer** - Detects redundant ARIA roles
-12. **ContextChangeAnalyzer** - Detects unexpected context changes
-13. **FormValidationAnalyzer** - Validates error message patterns
+**JavaScript Analyzers** - Work with or without HTML context:
+
+13. **FocusManagementAnalyzer** - Validates focus changes and restoration
+
+## Framework Support
+
+Paradise now includes framework-aware analysis for React, Vue, Svelte, and Angular:
+
+### Architecture
+
+Framework extractors parse component files into ActionLanguage nodes:
+- **React**: JSX event handlers, hooks (useEffect, useRef), portals, event propagation
+- **Svelte**: `bind:`, `on:`, `class:` directives, reactive statements, `<script>` sections
+- **Vue**: `v-model`, `v-on`/`@`, `v-if`, `<script>` sections (Composition & Options API)
+- **Angular**: `[(ngModel)]`, `(event)`, `*ngIf`, `*ngFor`, component TypeScript
+
+All framework code is unified through ActionLanguage, enabling:
+- Consistent analysis across vanilla JS and all frameworks
+- Detection of framework-specific accessibility anti-patterns
+- Focus management and cleanup validation in component lifecycles
+- ARIA state synchronization with reactive bindings
+
+### Framework Analyzers
+
+Each framework analyzer detects patterns specific to that framework:
+
+**React**: Missing cleanup in useEffect, portal accessibility, stopPropagation issues
+**Svelte**: bind: without labels, on:click without keyboard, class: visibility changes
+**Vue**: v-model without labels, @click without keyboard, reactive focus management
+**Angular**: [(ngModel)] without labels, (click) without keyboard, ngOnDestroy cleanup
 
 ## Demo & Documentation
 
