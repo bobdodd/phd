@@ -1804,6 +1804,8 @@ export default function Playground() {
   const [issues, setIssues] = useState<any[]>([]);
   const [activeResultTab, setActiveResultTab] = useState<'issues' | 'actionlanguage' | 'models'>('issues');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [monacoEditor, setMonacoEditor] = useState<any>(null);
+  const [selectedIssueIndex, setSelectedIssueIndex] = useState<number | null>(null);
 
   // Analyze code whenever files change
   useEffect(() => {
@@ -2279,7 +2281,9 @@ export default function Playground() {
             severity: issue.severity,
             wcag: issue.wcagCriteria || [],
             message: issue.message,
-            location: issue.location?.file || 'JavaScript'
+            location: issue.location?.file || 'JavaScript',
+            line: issue.location?.line,
+            column: issue.location?.column
           });
         }
       } catch (error) {
@@ -2313,7 +2317,9 @@ export default function Playground() {
             severity: issue.severity,
             wcag: issue.wcagCriteria || [],
             message: issue.message,
-            location: issue.location?.file || 'HTML'
+            location: issue.location?.file || 'HTML',
+            line: issue.location?.line,
+            column: issue.location?.column
           });
         }
       } catch (error) {
@@ -2342,7 +2348,9 @@ export default function Playground() {
             severity: issue.severity,
             wcag: issue.wcagCriteria || [],
             message: issue.message,
-            location: issue.location?.file || 'HTML'
+            location: issue.location?.file || 'HTML',
+            line: issue.location?.line,
+            column: issue.location?.column
           });
         }
       } catch (error) {
@@ -2367,7 +2375,9 @@ export default function Playground() {
             severity: issue.severity,
             wcag: issue.wcagCriteria || [],
             message: issue.message,
-            location: issue.location?.file || 'HTML'
+            location: issue.location?.file || 'HTML',
+            line: issue.location?.line,
+            column: issue.location?.column
           });
         }
       } catch (error) {
@@ -2392,7 +2402,9 @@ export default function Playground() {
             severity: issue.severity,
             wcag: issue.wcagCriteria || [],
             message: issue.message,
-            location: issue.location?.file || 'HTML'
+            location: issue.location?.file || 'HTML',
+            line: issue.location?.line,
+            column: issue.location?.column
           });
         }
       } catch (error) {
@@ -2571,6 +2583,56 @@ export default function Playground() {
         i === index ? { ...file, content } : file
       )
     }));
+  };
+
+  const jumpToIssue = (issue: any, issueIndex: number) => {
+    if (!monacoEditor || !issue.line) return;
+
+    // Switch to the appropriate file tab based on issue location
+    if (issue.location === 'HTML' || issue.location?.includes('HTML')) {
+      setActiveFileTab('html');
+    } else if (issue.location === 'JavaScript' || issue.location?.includes('JavaScript')) {
+      setActiveFileTab('javascript');
+    } else if (issue.location === 'CSS' || issue.location?.includes('CSS')) {
+      setActiveFileTab('css');
+    }
+
+    // Highlight the selected issue
+    setSelectedIssueIndex(issueIndex);
+
+    // Give React time to switch tabs before jumping
+    setTimeout(() => {
+      if (!monacoEditor) return;
+
+      // Jump to the line
+      monacoEditor.revealLineInCenter(issue.line);
+
+      // Set cursor position
+      monacoEditor.setPosition({
+        lineNumber: issue.line,
+        column: issue.column || 1
+      });
+
+      // Highlight the line with a decoration
+      const decorations = monacoEditor.deltaDecorations([], [
+        {
+          range: new window.monaco.Range(issue.line, 1, issue.line, 1000),
+          options: {
+            isWholeLine: true,
+            className: 'bg-red-100',
+            glyphMarginClassName: 'text-red-500'
+          }
+        }
+      ]);
+
+      // Focus the editor
+      monacoEditor.focus();
+
+      // Clear decoration after 3 seconds
+      setTimeout(() => {
+        monacoEditor.deltaDecorations(decorations, []);
+      }, 3000);
+    }, 100);
   };
 
   const addFile = (fileType: 'html' | 'javascript' | 'css') => {
@@ -2950,6 +3012,7 @@ export default function Playground() {
                     language={getLanguageForTab(activeFileTab)}
                     value={currentFile.content}
                     onChange={(value) => updateFile(activeFileTab, value || '')}
+                    onMount={(editor) => setMonacoEditor(editor)}
                     theme="vs-light"
                     options={{
                       minimap: { enabled: false },
@@ -3098,27 +3161,46 @@ export default function Playground() {
                       {issues.map((issue, idx) => (
                         <div
                           key={idx}
-                          className={`rounded-lg p-4 border-l-4 ${
+                          onClick={() => jumpToIssue(issue, idx)}
+                          className={`rounded-lg p-4 border-l-4 transition-all ${
                             issue.severity === 'error'
                               ? 'bg-red-50 border-red-500'
                               : 'bg-yellow-50 border-yellow-500'
+                          } ${
+                            issue.line
+                              ? 'cursor-pointer hover:shadow-lg hover:scale-[1.02]'
+                              : ''
+                          } ${
+                            selectedIssueIndex === idx
+                              ? 'ring-2 ring-blue-500 shadow-lg'
+                              : ''
                           }`}
                         >
                           <div className="flex items-start justify-between mb-2">
                             <span className="font-mono text-sm bg-white px-3 py-1 rounded font-semibold">
                               {issue.type}
                             </span>
-                            <span className={`text-xs font-bold px-2 py-1 rounded ${
-                              issue.severity === 'error' ? 'bg-red-200 text-red-800' : 'bg-yellow-200 text-yellow-800'
-                            }`}>
-                              {issue.severity.toUpperCase()}
-                            </span>
+                            <div className="flex items-center gap-2">
+                              {issue.line && (
+                                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded font-mono">
+                                  Line {issue.line}
+                                </span>
+                              )}
+                              <span className={`text-xs font-bold px-2 py-1 rounded ${
+                                issue.severity === 'error' ? 'bg-red-200 text-red-800' : 'bg-yellow-200 text-yellow-800'
+                              }`}>
+                                {issue.severity.toUpperCase()}
+                              </span>
+                            </div>
                           </div>
                           <p className="text-sm font-semibold mb-2">{issue.message}</p>
                           <div className="flex items-center gap-4 text-xs text-gray-600">
                             <span>WCAG: {issue.wcag.join(', ')}</span>
                             {issue.location && (
                               <span className="bg-gray-200 px-2 py-1 rounded">{issue.location}</span>
+                            )}
+                            {issue.line && (
+                              <span className="text-blue-600 font-semibold">Click to jump →</span>
                             )}
                           </div>
                         </div>
