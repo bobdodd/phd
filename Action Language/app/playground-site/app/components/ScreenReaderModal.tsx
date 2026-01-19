@@ -67,18 +67,68 @@ export default function ScreenReaderModal({
     };
   }, [isOpen, onClose]);
 
-  // Focus trap
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Save original overflow style
+    const originalOverflow = document.body.style.overflow;
+
+    // Prevent scrolling on the body
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      // Restore original overflow when modal closes
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isOpen]);
+
+  // Focus management and trap
   useEffect(() => {
     if (!isOpen) return;
 
     const modalElement = modalRef.current;
     if (!modalElement) return;
 
-    // Focus the modal when it opens
-    const firstFocusable = modalElement.querySelector<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    firstFocusable?.focus();
+    // Store the element that had focus before modal opened
+    const previouslyFocusedElement = document.activeElement as HTMLElement;
+
+    // Focus the modal container initially
+    modalElement.focus();
+
+    // Focus trap implementation
+    const handleTabKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+
+      const focusableElements = modalElement.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+
+      const firstFocusable = focusableElements[0];
+      const lastFocusable = focusableElements[focusableElements.length - 1];
+
+      if (e.shiftKey) {
+        // Shift + Tab (backwards)
+        if (document.activeElement === firstFocusable) {
+          e.preventDefault();
+          lastFocusable?.focus();
+        }
+      } else {
+        // Tab (forwards)
+        if (document.activeElement === lastFocusable) {
+          e.preventDefault();
+          firstFocusable?.focus();
+        }
+      }
+    };
+
+    modalElement.addEventListener('keydown', handleTabKey);
+
+    return () => {
+      modalElement.removeEventListener('keydown', handleTabKey);
+      // Restore focus when modal closes
+      previouslyFocusedElement?.focus();
+    };
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -95,6 +145,7 @@ export default function ScreenReaderModal({
         ref={modalRef}
         className="bg-white rounded-xl shadow-2xl w-full h-[90vh] max-w-[95vw] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
+        tabIndex={-1}
       >
         {/* Modal Header */}
         <div className="bg-gradient-to-r from-purple-700 to-purple-900 text-white px-8 py-6 flex items-center justify-between flex-shrink-0">
