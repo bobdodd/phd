@@ -715,12 +715,46 @@ export default function Home() {
       const parser = new DOMParser();
       const doc = parser.parseFromString(content, 'text/html');
 
-      // Extract inline styles
+      // Extract inline styles and external CSS
       const styleElements = doc.querySelectorAll('style');
+      const linkElements = doc.querySelectorAll('link[rel="stylesheet"]');
       let cssContent = '';
+
+      // Get inline styles
       styleElements.forEach(style => {
         cssContent += style.textContent + '\n\n';
       });
+
+      // Load external CSS files
+      for (const link of Array.from(linkElements)) {
+        const href = link.getAttribute('href');
+        if (href) {
+          try {
+            let cssUrl = href;
+
+            if (categoryKey === 'widget-patterns') {
+              // Replace ../../css/ with /demo-content/widget-patterns/css/
+              cssUrl = href.replace(/^\.\.\/\.\.\//g, '/demo-content/widget-patterns/');
+            } else {
+              // For other categories, resolve normally relative to the HTML file
+              cssUrl = new URL(href, window.location.origin + filePath).pathname;
+            }
+
+            console.log('Fetching external CSS:', cssUrl);
+            const cssResponse = await fetch(cssUrl);
+
+            if (cssResponse.ok) {
+              const externalCssContent = await cssResponse.text();
+              console.log('Loaded external CSS, length:', externalCssContent.length, 'chars');
+              cssContent += `/* From: ${href} */\n${externalCssContent}\n\n`;
+            } else {
+              console.warn('Failed to fetch CSS:', cssUrl, 'Status:', cssResponse.status);
+            }
+          } catch (err) {
+            console.error('Exception loading external CSS:', href, err);
+          }
+        }
+      }
 
       // Extract both inline and external scripts
       const scriptElements = doc.querySelectorAll('script');
@@ -782,9 +816,10 @@ export default function Home() {
 
       console.log('Total JS content length after loading all scripts:', jsContent.length);
 
-      // Remove scripts and styles from HTML for cleaner view
+      // Remove scripts, styles, and link elements from HTML for cleaner view
       styleElements.forEach(el => el.remove());
       scriptElements.forEach(el => el.remove());
+      linkElements.forEach(el => el.remove());
 
       const htmlContent = doc.documentElement.outerHTML;
 
