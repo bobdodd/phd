@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import PreviewIframe from './PreviewIframe';
 import { AccessibilityNode, SRMessage, NavigationMode } from '../../lib/screen-reader/types';
 import { VirtualScreenReader } from '../../lib/screen-reader/VirtualScreenReader';
@@ -59,15 +59,15 @@ export default function ScreenReaderModal({
     };
   }, [isOpen]);
 
-  // Handle iframe DOM ready
-  const handleDomReady = (iframeDoc: Document) => {
+  // Handle iframe DOM ready (wrapped in useCallback to prevent infinite loop)
+  const handleDomReady = useCallback((iframeDoc: Document) => {
     iframeDocRef.current = iframeDoc;
 
     // Build accessibility tree and load into screen reader
     if (screenReaderRef.current) {
       screenReaderRef.current.loadDocument(iframeDoc);
     }
-  };
+  }, []); // No dependencies - screenReaderRef.current is accessed directly
 
   // Handle keyboard navigation
   useEffect(() => {
