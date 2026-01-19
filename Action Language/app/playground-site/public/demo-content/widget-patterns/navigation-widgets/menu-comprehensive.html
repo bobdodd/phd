@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu Pattern Demo - Paradise Widget Patterns</title>
+  <link rel="stylesheet" href="../../../css/demo.css">
+  <style>
+    .menu-container {
+      position: relative;
+      display: inline-block;
+      margin: 20px 0;
+    }
+
+    .menu-button {
+      padding: 12px 24px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #0066cc;
+      color: white;
+      border: 1px solid #0055aa;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .menu-button:hover {
+      background: #0055aa;
+    }
+
+    .menu-button:focus {
+      outline: 2px solid #003d7a;
+      outline-offset: 2px;
+    }
+
+    [role="menu"] {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      list-style: none;
+      padding: 4px 0;
+      margin: 0;
+      min-width: 200px;
+      z-index: 1000;
+    }
+
+    [role="menu"][hidden] {
+      display: none;
+    }
+
+    [role="menuitem"] {
+      padding: 10px 16px;
+      cursor: pointer;
+      white-space: nowrap;
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      font-size: 14px;
+    }
+
+    [role="menuitem"]:hover,
+    [role="menuitem"]:focus {
+      background: #0066cc;
+      color: white;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="../../index.html">Home</a> &gt;
+      <a href="#navigation">Navigation Widgets</a> &gt;
+      <span>Menu</span>
+    </nav>
+
+    <header>
+      <h1>📋 Menu Pattern</h1>
+      <p class="subtitle">Dropdown menu with arrow navigation and Enter/Space activation</p>
+
+      <div class="pattern-info">
+        <span class="complexity-badge high">High Complexity</span>
+        <span class="wcag-badge">WCAG 2.1.1, 4.1.2</span>
+      </div>
+    </header>
+
+    <section class="pattern-description">
+      <h2>What is a Menu?</h2>
+      <p>A menu is a widget that offers a list of choices to the user, such as actions or settings. Menus are often triggered by a button and require careful keyboard navigation implementation.</p>
+
+      <div class="key-requirements">
+        <h3>Complete Menu Pattern Requires:</h3>
+        <ul>
+          <li><code>role="menu"</code> on menu container</li>
+          <li><code>role="menuitem"</code> on each item</li>
+          <li><code>aria-haspopup="true"</code> on trigger button</li>
+          <li><code>aria-expanded</code> on trigger (true/false)</li>
+          <li><strong>Arrow Down/Up:</strong> Navigate menu items</li>
+          <li><strong>Enter/Space:</strong> Activate menu item</li>
+          <li><strong>Escape:</strong> Close menu and return focus</li>
+          <li><strong>First character navigation:</strong> Type letter to jump to item</li>
+          <li><strong>Outside click:</strong> Close menu</li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="comparison">
+      <!-- LEFT SIDE - ACCESSIBLE -->
+      <section class="example good">
+        <h2>✅ Accessible Implementation</h2>
+        <p>Complete menu with arrow navigation, Enter/Space activation, and Escape handler.</p>
+
+        <div class="menu-container">
+          <button class="menu-button"
+                  id="good-menu-button"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  aria-controls="good-menu">
+            Actions ▼
+          </button>
+
+          <ul role="menu" id="good-menu" aria-labelledby="good-menu-button" hidden>
+            <li role="none">
+              <button role="menuitem" id="good-edit">Edit Document</button>
+            </li>
+            <li role="none">
+              <button role="menuitem" id="good-duplicate">Duplicate</button>
+            </li>
+            <li role="none">
+              <button role="menuitem" id="good-archive">Archive</button>
+            </li>
+            <li role="none">
+              <button role="menuitem" id="good-delete">Delete</button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis Results</h3>
+          <div class="result-box success">
+            <strong>✅ Complete Menu Pattern Detected</strong>
+            <p>0 issues found</p>
+          </div>
+
+          <h4>Validation Checklist:</h4>
+          <ul class="validation-results">
+            <li class="check-pass">✓ <code>role="menu"</code> present</li>
+            <li class="check-pass">✓ <code>role="menuitem"</code> on items</li>
+            <li class="check-pass">✓ <code>aria-haspopup="true"</code> on button</li>
+            <li class="check-pass">✓ <code>aria-expanded</code> state management</li>
+            <li class="check-pass">✓ Arrow Down/Up navigation detected</li>
+            <li class="check-pass">✓ Enter/Space activation detected</li>
+            <li class="check-pass">✓ Escape handler detected</li>
+            <li class="check-pass">✓ Focus management (menu items)</li>
+          </ul>
+        </div>
+
+        <details class="code-sample">
+          <summary>View Complete HTML</summary>
+          <pre><code>&lt;div class="menu-container"&gt;
+  &lt;button aria-haspopup="true"
+          aria-expanded="false"
+          aria-controls="menu"&gt;
+    Actions
+  &lt;/button&gt;
+
+  &lt;ul role="menu" aria-labelledby="menu-button"&gt;
+    &lt;li role="none"&gt;
+      &lt;button role="menuitem"&gt;Edit&lt;/button&gt;
+    &lt;/li&gt;
+    &lt;li role="none"&gt;
+      &lt;button role="menuitem"&gt;Duplicate&lt;/button&gt;
+    &lt;/li&gt;
+    &lt;li role="none"&gt;
+      &lt;button role="menuitem"&gt;Delete&lt;/button&gt;
+    &lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+        </details>
+
+        <details class="code-sample">
+          <summary>View Complete JavaScript</summary>
+          <pre><code>// Complete menu implementation
+const button = document.getElementById('menu-button');
+const menu = document.getElementById('menu');
+const items = menu.querySelectorAll('[role="menuitem"]');
+
+function openMenu() {
+  button.setAttribute('aria-expanded', 'true');
+  menu.removeAttribute('hidden');
+  items[0].focus(); // Focus first item
+}
+
+function closeMenu() {
+  button.setAttribute('aria-expanded', 'false');
+  menu.setAttribute('hidden', '');
+  button.focus(); // Return focus to button
+}
+
+// Button opens/closes menu
+button.addEventListener('click', () => {
+  if (button.getAttribute('aria-expanded') === 'true') {
+    closeMenu();
+  } else {
+    openMenu();
+  }
+});
+
+// Arrow navigation
+menu.addEventListener('keydown', (event) => {
+  const itemsArray = Array.from(items);
+  const currentIndex = itemsArray.indexOf(document.activeElement);
+
+  if (event.key === 'ArrowDown') {
+    event.preventDefault();
+    const nextIndex = (currentIndex + 1) % items.length;
+    items[nextIndex].focus();
+  } else if (event.key === 'ArrowUp') {
+    event.preventDefault();
+    const prevIndex = currentIndex === 0
+      ? items.length - 1
+      : currentIndex - 1;
+    items[prevIndex].focus();
+  } else if (event.key === 'Escape') {
+    event.preventDefault();
+    closeMenu();
+  }
+});
+
+// Enter/Space activates item
+items.forEach(item => {
+  item.addEventListener('click', () => {
+    console.log('Activated:', item.textContent);
+    closeMenu();
+  });
+});</code></pre>
+        </details>
+      </section>
+
+      <!-- RIGHT SIDE - INACCESSIBLE -->
+      <section class="example bad">
+        <h2>❌ Inaccessible Implementation</h2>
+        <p>Menu missing ARIA attributes and keyboard navigation.</p>
+
+        <div class="menu-container">
+          <button class="menu-button" id="bad-menu-button">
+            Actions ▼
+          </button>
+
+          <ul id="bad-menu" hidden>
+            <li>
+              <button id="bad-edit">Edit Document</button>
+            </li>
+            <li>
+              <button id="bad-duplicate">Duplicate</button>
+            </li>
+            <li>
+              <button id="bad-archive">Archive</button>
+            </li>
+            <li>
+              <button id="bad-delete">Delete</button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis Results</h3>
+          <div class="result-box error">
+            <strong>❌ Incomplete Menu Pattern</strong>
+            <p>8 issues found</p>
+          </div>
+
+          <h4>Issues Detected:</h4>
+          <ul class="issues-list">
+            <li class="issue-error">
+              <strong>Missing <code>role="menu"</code></strong>
+              <p>Container not announced as menu</p>
+            </li>
+            <li class="issue-error">
+              <strong>Missing <code>role="menuitem"</code></strong>
+              <p>Items not identified as menu items</p>
+            </li>
+            <li class="issue-error">
+              <strong>Missing <code>aria-haspopup="true"</code></strong>
+              <p>Button doesn't indicate it opens a menu</p>
+            </li>
+            <li class="issue-error">
+              <strong>Missing <code>aria-expanded</code></strong>
+              <p>Menu state not communicated</p>
+            </li>
+            <li class="issue-error">
+              <strong>No arrow navigation</strong>
+              <p>Cannot navigate items with keyboard</p>
+            </li>
+            <li class="issue-error">
+              <strong>No Enter/Space on items</strong>
+              <p>Cannot activate with keyboard</p>
+            </li>
+            <li class="issue-error">
+              <strong>No Escape handler</strong>
+              <p>Cannot close menu with keyboard</p>
+            </li>
+            <li class="issue-error">
+              <strong>No focus management</strong>
+              <p>Focus doesn't move to menu when opened</p>
+            </li>
+          </ul>
+
+          <h4>Validation Checklist:</h4>
+          <ul class="validation-results">
+            <li class="check-fail">✗ <code>role="menu"</code> missing</li>
+            <li class="check-fail">✗ <code>role="menuitem"</code> missing</li>
+            <li class="check-fail">✗ <code>aria-haspopup</code> missing</li>
+            <li class="check-fail">✗ <code>aria-expanded</code> missing</li>
+            <li class="check-fail">✗ No arrow navigation</li>
+            <li class="check-fail">✗ No Enter/Space activation</li>
+            <li class="check-fail">✗ No Escape handler</li>
+            <li class="check-fail">✗ No focus management</li>
+          </ul>
+        </div>
+
+        <details class="code-sample">
+          <summary>View Incomplete HTML</summary>
+          <pre><code>&lt;!-- INCOMPLETE: Missing ARIA attributes --&gt;
+&lt;div class="menu-container"&gt;
+  &lt;button&gt;Actions&lt;/button&gt;
+
+  &lt;ul hidden&gt;
+    &lt;li&gt;&lt;button&gt;Edit&lt;/button&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;button&gt;Duplicate&lt;/button&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;button&gt;Delete&lt;/button&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+        </details>
+
+        <details class="code-sample">
+          <summary>View Incomplete JavaScript</summary>
+          <pre><code>// INCOMPLETE: Only show/hide, no accessibility
+const button = document.getElementById('bad-menu-button');
+const menu = document.getElementById('bad-menu');
+
+button.addEventListener('click', () => {
+  if (menu.hasAttribute('hidden')) {
+    menu.removeAttribute('hidden');
+  } else {
+    menu.setAttribute('hidden', '');
+  }
+
+  // ❌ MISSING: aria-expanded update
+  // ❌ MISSING: Focus management
+  // ❌ MISSING: Arrow navigation
+  // ❌ MISSING: Enter/Space handlers
+  // ❌ MISSING: Escape handler
+});</code></pre>
+        </details>
+      </section>
+    </div>
+
+    <section class="testing-panel">
+      <h2>🧪 Interactive Testing</h2>
+      <p>Test both implementations with keyboard navigation:</p>
+
+      <div class="testing-instructions">
+        <h3>Keyboard Testing Steps:</h3>
+        <ol>
+          <li>Tab to menu button</li>
+          <li>Press <kbd>Enter</kbd> or <kbd>Space</kbd> to open menu</li>
+          <li><strong>Accessible:</strong> Focus moves to first menu item</li>
+          <li><strong>Inaccessible:</strong> Focus stays on button</li>
+          <li>Press <kbd>↓</kbd> to navigate down</li>
+          <li><strong>Accessible:</strong> Focus moves to next item</li>
+          <li><strong>Inaccessible:</strong> Nothing happens</li>
+          <li>Press <kbd>Escape</kbd> to close</li>
+          <li><strong>Accessible:</strong> Menu closes, focus returns to button</li>
+          <li><strong>Inaccessible:</strong> Nothing happens</li>
+        </ol>
+
+        <h3>Screen Reader Testing:</h3>
+        <ul>
+          <li><strong>Accessible:</strong> Announces "button, has popup, collapsed/expanded"</li>
+          <li><strong>Inaccessible:</strong> Only announces "button"</li>
+          <li><strong>Accessible:</strong> Announces "menu" when opened</li>
+          <li><strong>Inaccessible:</strong> Announces generic list</li>
+          <li><strong>Accessible:</strong> Each item announced as "menuitem"</li>
+          <li><strong>Inaccessible:</strong> Items announced as buttons without context</li>
+        </ul>
+
+        <div class="testing-checklist">
+          <h4>Test Checklist:</h4>
+          <label><input type="checkbox"> Tab to button</label>
+          <label><input type="checkbox"> Open with Enter/Space</label>
+          <label><input type="checkbox"> Focus moves to menu (accessible only)</label>
+          <label><input type="checkbox"> Arrow Down navigates (accessible only)</label>
+          <label><input type="checkbox"> Arrow Up navigates (accessible only)</label>
+          <label><input type="checkbox"> Enter activates item (accessible only)</label>
+          <label><input type="checkbox"> Escape closes menu (accessible only)</label>
+          <label><input type="checkbox"> Focus returns to button (accessible only)</label>
+        </div>
+      </div>
+    </section>
+
+    <section class="explanation">
+      <h2>🎯 What Paradise Detects</h2>
+      <p>Paradise validates the <strong>complete menu pattern</strong> in 8 steps:</p>
+
+      <ol class="detection-steps">
+        <li>
+          <strong>Role Detection</strong>
+          <p>Verifies <code>role="menu"</code> and <code>role="menuitem"</code> present</p>
+        </li>
+        <li>
+          <strong>Button Attributes</strong>
+          <p>Checks <code>aria-haspopup="true"</code> and <code>aria-expanded</code></p>
+        </li>
+        <li>
+          <strong>ARIA Relationships</strong>
+          <p>Validates <code>aria-controls</code> points to menu, <code>aria-labelledby</code> links back</p>
+        </li>
+        <li>
+          <strong>Arrow Navigation</strong>
+          <p>Detects keydown handlers for ArrowUp/ArrowDown</p>
+        </li>
+        <li>
+          <strong>Activation Handlers</strong>
+          <p>Verifies Enter/Space handlers on menu items</p>
+        </li>
+        <li>
+          <strong>Escape Handler</strong>
+          <p>Checks for Escape key to close menu</p>
+        </li>
+        <li>
+          <strong>Focus Management</strong>
+          <p>Validates focus moves to menu on open, returns to button on close</p>
+        </li>
+        <li>
+          <strong>State Management</strong>
+          <p>Confirms aria-expanded updates when menu opens/closes</p>
+        </li>
+      </ol>
+
+      <div class="insight-box">
+        <h3>💡 Why This Matters</h3>
+        <p>Keyboard and screen reader users depend on proper menu implementation to access actions. Without arrow navigation, they must Tab through every item (slow and frustrating). Without role="menu", screen readers don't announce the context, leaving users confused about what they're navigating.</p>
+      </div>
+    </section>
+
+    <section class="comparison-section">
+      <h2>🔍 Why Other Tools Miss This</h2>
+
+      <div class="tool-comparison">
+        <div class="comparison-item">
+          <h3>Traditional Tool Output</h3>
+          <pre><code>✓ Button is keyboard accessible
+✓ Menu can be toggled
+
+Result: All checks pass! ✅</code></pre>
+          <p class="comparison-note">But keyboard users cannot navigate or use the menu.</p>
+        </div>
+
+        <div class="comparison-item">
+          <h3>Paradise Output</h3>
+          <pre><code>✓ Button detected
+✗ Missing role="menu"
+✗ Missing role="menuitem"
+✗ Missing aria-haspopup
+✗ Missing aria-expanded
+✗ No arrow navigation
+✗ No activation handlers
+✗ No Escape handler
+
+Result: Incomplete pattern ❌</code></pre>
+          <p class="comparison-note">Paradise catches all missing keyboard behavior.</p>
+        </div>
+      </div>
+
+      <div class="why-box">
+        <h3>The Difference</h3>
+        <ul>
+          <li><strong>Other tools:</strong> Check if button exists and menu can toggle</li>
+          <li><strong>Paradise:</strong> Validates complete menu pattern including navigation</li>
+          <li><strong>Result:</strong> Paradise prevents menus that work for mouse users but fail for keyboard users</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="wcag-mapping">
+      <h2>📋 WCAG Success Criteria</h2>
+      <p>Complete menu pattern satisfies:</p>
+      <ul class="wcag-list">
+        <li>
+          <strong>2.1.1 Keyboard (Level A)</strong>
+          <p>Arrow navigation, Enter/Space activation, Escape to close</p>
+        </li>
+        <li>
+          <strong>4.1.2 Name, Role, Value (Level A)</strong>
+          <p><code>role="menu"</code>, <code>role="menuitem"</code>, <code>aria-haspopup</code>, <code>aria-expanded</code></p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="resources">
+      <h2>📚 Additional Resources</h2>
+      <ul>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/menubar/" target="_blank">WAI-ARIA: Menu Pattern</a></li>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/" target="_blank">WAI-ARIA: Keyboard Interface</a></li>
+      </ul>
+    </section>
+
+    <nav class="demo-nav">
+      <a href="tabs.html" class="nav-prev">← Previous: Tabs</a>
+      <a href="../../index.html" class="nav-home">🏠 All Patterns</a>
+      <a href="tree.html" class="nav-next">Next: Tree →</a>
+    </nav>
+  </div>
+
+  <script src="../../js/accessible/menu-complete.js"></script>
+  <script src="../../js/inaccessible/menu-incomplete.js"></script>
+</body>
+</html>

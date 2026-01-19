@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tooltip Pattern - Comprehensive Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        header {
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #2563eb;
+        }
+
+        h1 {
+            color: #1e40af;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 1.2em;
+        }
+
+        .intro {
+            background: #eff6ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #2563eb;
+        }
+
+        .intro h2 {
+            color: #1e40af;
+            margin-bottom: 10px;
+        }
+
+        .intro ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .intro li {
+            margin: 5px 0;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #1e40af;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .implementation {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .implementation.accessible {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .implementation.inaccessible {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .implementation-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid currentColor;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-right: 15px;
+        }
+
+        .badge.accessible {
+            background: #10b981;
+            color: white;
+        }
+
+        .badge.inaccessible {
+            background: #ef4444;
+            color: white;
+        }
+
+        .implementation-header h3 {
+            font-size: 1.5em;
+            color: #1e3a8a;
+        }
+
+        .demo-container {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            margin: 20px 0;
+            min-height: 200px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .demo-item {
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .demo-item h4 {
+            color: #1e40af;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        /* Tooltip trigger styles */
+        .tooltip-trigger {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #2563eb;
+            color: white;
+            border: 2px solid #2563eb;
+            border-radius: 6px;
+            cursor: help;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .tooltip-trigger:hover {
+            background: #1d4ed8;
+            border-color: #1d4ed8;
+        }
+
+        .tooltip-trigger:focus {
+            outline: 3px solid #93c5fd;
+            outline-offset: 2px;
+        }
+
+        .tooltip-trigger.with-icon::after {
+            content: "ⓘ";
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        /* Accessible tooltip styles */
+        .tooltip {
+            position: absolute;
+            background: #1e293b;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            line-height: 1.4;
+            max-width: 250px;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+            pointer-events: none;
+        }
+
+        .tooltip.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .tooltip::before {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
+
+        /* Tooltip positioning */
+        .tooltip.top {
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-8px);
+            margin-bottom: 8px;
+        }
+
+        .tooltip.top::before {
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 8px 8px 0 8px;
+            border-color: #1e293b transparent transparent transparent;
+        }
+
+        .tooltip.bottom {
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(8px);
+            margin-top: 8px;
+        }
+
+        .tooltip.bottom::before {
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 0 8px 8px 8px;
+            border-color: transparent transparent #1e293b transparent;
+        }
+
+        .tooltip.left {
+            right: 100%;
+            top: 50%;
+            transform: translateY(-50%) translateX(-8px);
+            margin-right: 8px;
+        }
+
+        .tooltip.left::before {
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 8px 0 8px 8px;
+            border-color: transparent transparent transparent #1e293b;
+        }
+
+        .tooltip.right {
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%) translateX(8px);
+            margin-left: 8px;
+        }
+
+        .tooltip.right::before {
+            right: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 8px 8px 8px 0;
+            border-color: transparent #1e293b transparent transparent;
+        }
+
+        /* Inaccessible tooltip styles */
+        .bad-tooltip {
+            position: absolute;
+            background: #1e293b;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            white-space: nowrap;
+            z-index: 999;
+            display: none;
+        }
+
+        /* Form demo styles */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .help-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 50%;
+            font-size: 0.8em;
+            cursor: help;
+            border: none;
+            position: relative;
+        }
+
+        .help-icon:focus {
+            outline: 3px solid #93c5fd;
+            outline-offset: 2px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        /* Icon button styles */
+        .icon-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: #64748b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.2em;
+            position: relative;
+            transition: background 0.2s;
+        }
+
+        .icon-button:hover {
+            background: #475569;
+        }
+
+        .icon-button:focus {
+            outline: 3px solid #94a3b8;
+            outline-offset: 2px;
+        }
+
+        /* Features list */
+        .features {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .features h4 {
+            color: #1e40af;
+            margin-bottom: 10px;
+        }
+
+        .features ul {
+            margin-left: 20px;
+        }
+
+        .features li {
+            margin: 5px 0;
+            color: #475569;
+        }
+
+        .features.good li::marker {
+            color: #10b981;
+        }
+
+        .features.bad li::marker {
+            color: #ef4444;
+        }
+
+        /* Code display */
+        .code-display {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .code-display code {
+            color: #e2e8f0;
+        }
+
+        .code-keyword {
+            color: #c084fc;
+        }
+
+        .code-string {
+            color: #34d399;
+        }
+
+        .code-attribute {
+            color: #60a5fa;
+        }
+
+        .code-comment {
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        /* Info boxes */
+        .info-box {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid;
+        }
+
+        .info-box.success {
+            background: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+
+        .info-box.error {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+
+        .info-box.warning {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+
+        .info-box.info {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+
+        /* Paradise detection banner */
+        .paradise-banner {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .paradise-banner h4 {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .paradise-banner ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .paradise-banner li {
+            margin: 5px 0;
+        }
+
+        /* Comparison table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .comparison-table th {
+            background: #1e40af;
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table .check {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .comparison-table .cross {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        /* Toolbar demo */
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            padding: 15px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* Text with inline tooltips */
+        .inline-tooltip-trigger {
+            color: #2563eb;
+            text-decoration: underline;
+            text-decoration-style: dotted;
+            cursor: help;
+            position: relative;
+            border: none;
+            background: none;
+            font: inherit;
+            padding: 0;
+        }
+
+        .inline-tooltip-trigger:focus {
+            outline: 2px solid #2563eb;
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
+
+        /* Context sections */
+        .context-section {
+            margin: 30px 0;
+            padding: 25px;
+            background: #fefce8;
+            border-radius: 8px;
+            border: 2px solid #fbbf24;
+        }
+
+        .context-section h3 {
+            color: #92400e;
+            margin-bottom: 15px;
+        }
+
+        .context-section p {
+            color: #78350f;
+            line-height: 1.8;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tooltip {
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Tooltip Pattern</h1>
+            <p class="subtitle">Comprehensive Accessibility Demonstration</p>
+        </header>
+
+        <div class="intro">
+            <h2>About Tooltips</h2>
+            <p>Tooltips provide supplementary information about an element when users hover over or focus on it. They are commonly used for help text, definitions, and additional context without cluttering the interface.</p>
+
+            <h3 style="margin-top: 15px; color: #1e40af;">Accessibility Requirements:</h3>
+            <ul>
+                <li><strong>role="tooltip"</strong> on the tooltip element</li>
+                <li><strong>aria-describedby</strong> on trigger element pointing to tooltip ID</li>
+                <li>Show on both hover and focus events</li>
+                <li>Hide on blur and Escape key press</li>
+                <li>Tooltip appears near trigger element</li>
+                <li>Keyboard focusable triggers</li>
+                <li>Escape key dismisses tooltip</li>
+            </ul>
+        </div>
+
+        <!-- ACCESSIBLE IMPLEMENTATION -->
+        <section class="section">
+            <h2 class="section-title">Accessible Implementation</h2>
+
+            <div class="implementation accessible">
+                <div class="implementation-header">
+                    <span class="badge accessible">ACCESSIBLE</span>
+                    <h3>Fully ARIA-Compliant Tooltip Pattern</h3>
+                </div>
+
+                <div class="info-box success">
+                    <strong>Screen Reader Accessible:</strong> This implementation uses proper ARIA attributes, keyboard support, and semantic HTML to ensure all users can access tooltip information.
+                </div>
+
+                <div class="features good">
+                    <h4>Implemented Features:</h4>
+                    <ul>
+                        <li>role="tooltip" attribute on tooltip elements</li>
+                        <li>aria-describedby links trigger to tooltip</li>
+                        <li>Shows on mouseenter and focus events</li>
+                        <li>Hides on mouseleave and blur events</li>
+                        <li>Escape key dismisses active tooltip</li>
+                        <li>Dynamic positioning (top, bottom, left, right)</li>
+                        <li>Keyboard focusable triggers</li>
+                        <li>Proper focus management</li>
+                    </ul>
+                </div>
+
+                <!-- Basic Tooltips Demo -->
+                <div class="demo-item">
+                    <h4>Basic Tooltips with Different Positions</h4>
+                    <div class="demo-container" style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; align-items: center;">
+                        <button class="tooltip-trigger accessible-tooltip" data-tooltip-position="top" data-tooltip-text="This tooltip appears above the button">
+                            Top Tooltip
+                        </button>
+
+                        <button class="tooltip-trigger accessible-tooltip" data-tooltip-position="bottom" data-tooltip-text="This tooltip appears below the button">
+                            Bottom Tooltip
+                        </button>
+
+                        <button class="tooltip-trigger accessible-tooltip" data-tooltip-position="left" data-tooltip-text="This tooltip appears to the left">
+                            Left Tooltip
+                        </button>
+
+                        <button class="tooltip-trigger accessible-tooltip" data-tooltip-position="right" data-tooltip-text="This tooltip appears to the right">
+                            Right Tooltip
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Form with Help Tooltips -->
+                <div class="demo-item">
+                    <h4>Form with Help Tooltips</h4>
+                    <div class="demo-container">
+                        <form>
+                            <div class="form-group">
+                                <label for="username-acc" class="form-label">
+                                    Username
+                                    <button type="button" class="help-icon accessible-tooltip" data-tooltip-position="right" data-tooltip-text="Username must be 3-20 characters and contain only letters, numbers, and underscores" aria-label="Username help">?</button>
+                                </label>
+                                <input type="text" id="username-acc" class="form-input" placeholder="Enter username">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email-acc" class="form-label">
+                                    Email Address
+                                    <button type="button" class="help-icon accessible-tooltip" data-tooltip-position="right" data-tooltip-text="We'll never share your email with anyone else" aria-label="Email privacy information">?</button>
+                                </label>
+                                <input type="email" id="email-acc" class="form-input" placeholder="user@example.com">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password-acc" class="form-label">
+                                    Password
+                                    <button type="button" class="help-icon accessible-tooltip" data-tooltip-position="right" data-tooltip-text="Must be at least 8 characters with uppercase, lowercase, number, and special character" aria-label="Password requirements">?</button>
+                                </label>
+                                <input type="password" id="password-acc" class="form-input" placeholder="Enter password">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Icon Toolbar with Tooltips -->
+                <div class="demo-item">
+                    <h4>Icon Toolbar with Descriptive Tooltips</h4>
+                    <div class="demo-container">
+                        <div class="toolbar">
+                            <button class="icon-button accessible-tooltip" data-tooltip-position="bottom" data-tooltip-text="Save document (Ctrl+S)" aria-label="Save">
+                                💾
+                            </button>
+                            <button class="icon-button accessible-tooltip" data-tooltip-position="bottom" data-tooltip-text="Print document (Ctrl+P)" aria-label="Print">
+                                🖨️
+                            </button>
+                            <button class="icon-button accessible-tooltip" data-tooltip-position="bottom" data-tooltip-text="Share with others" aria-label="Share">
+                                📤
+                            </button>
+                            <button class="icon-button accessible-tooltip" data-tooltip-position="bottom" data-tooltip-text="Download as PDF" aria-label="Download">
+                                📥
+                            </button>
+                            <button class="icon-button accessible-tooltip" data-tooltip-position="bottom" data-tooltip-text="Delete document (Del)" aria-label="Delete">
+                                🗑️
+                            </button>
+                            <button class="icon-button accessible-tooltip" data-tooltip-position="bottom" data-tooltip-text="Settings and preferences" aria-label="Settings">
+                                ⚙️
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inline Text Tooltips -->
+                <div class="demo-item">
+                    <h4>Inline Text with Definition Tooltips</h4>
+                    <div class="demo-container">
+                        <p style="font-size: 1.1em; line-height: 1.8;">
+                            Web accessibility, often abbreviated as
+                            <button class="inline-tooltip-trigger accessible-tooltip" data-tooltip-position="top" data-tooltip-text="Assistive technologies help people with disabilities use computers">
+                                A11Y
+                            </button>, ensures that websites are usable by people with disabilities using
+                            <button class="inline-tooltip-trigger accessible-tooltip" data-tooltip-position="top" data-tooltip-text="Examples include screen readers, voice recognition software, and keyboard navigation tools">
+                                assistive technologies
+                            </button>. Following
+                            <button class="inline-tooltip-trigger accessible-tooltip" data-tooltip-position="top" data-tooltip-text="Web Content Accessibility Guidelines - international standards for web accessibility">
+                                WCAG
+                            </button> guidelines helps create inclusive digital experiences.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Code Example -->
+                <div class="code-display">
+<span class="code-comment">&lt;!-- HTML Structure --&gt;</span>
+<span class="code-keyword">&lt;button</span> <span class="code-attribute">class</span>=<span class="code-string">"tooltip-trigger accessible-tooltip"</span>
+        <span class="code-attribute">data-tooltip-position</span>=<span class="code-string">"top"</span>
+        <span class="code-attribute">data-tooltip-text</span>=<span class="code-string">"Helpful information here"</span><span class="code-keyword">&gt;</span>
+    Hover or focus me
+<span class="code-keyword">&lt;/button&gt;</span>
+
+<span class="code-comment">&lt;!-- Tooltip dynamically created with: --&gt;</span>
+<span class="code-keyword">&lt;div</span> <span class="code-attribute">role</span>=<span class="code-string">"tooltip"</span>
+     <span class="code-attribute">id</span>=<span class="code-string">"tooltip-[unique-id]"</span>
+     <span class="code-attribute">class</span>=<span class="code-string">"tooltip top"</span><span class="code-keyword">&gt;</span>
+    Helpful information here
+<span class="code-keyword">&lt;/div&gt;</span>
+
+<span class="code-comment">&lt;!-- Trigger gets aria-describedby --&gt;</span>
+<span class="code-keyword">&lt;button</span> <span class="code-attribute">aria-describedby</span>=<span class="code-string">"tooltip-[unique-id]"</span><span class="code-keyword">&gt;</span>...<span class="code-keyword">&lt;/button&gt;</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- INACCESSIBLE IMPLEMENTATION -->
+        <section class="section">
+            <h2 class="section-title">Inaccessible Implementation</h2>
+
+            <div class="implementation inaccessible">
+                <div class="implementation-header">
+                    <span class="badge inaccessible">INACCESSIBLE</span>
+                    <h3>Common Tooltip Anti-Patterns</h3>
+                </div>
+
+                <div class="paradise-banner">
+                    <h4>Paradise Static Analyzer Detection: 4 Issues Found</h4>
+                    <ul>
+                        <li><strong>Missing role="tooltip":</strong> Tooltip elements lack proper ARIA role</li>
+                        <li><strong>No aria-describedby:</strong> Triggers don't reference tooltip content</li>
+                        <li><strong>Missing keyboard support:</strong> No focus event handlers</li>
+                        <li><strong>No Escape key handler:</strong> Cannot dismiss tooltip with keyboard</li>
+                    </ul>
+                </div>
+
+                <div class="info-box error">
+                    <strong>Accessibility Issues:</strong> This implementation relies solely on mouse hover, provides no ARIA attributes, and lacks keyboard support, making it unusable for screen reader users and keyboard-only users.
+                </div>
+
+                <div class="features bad">
+                    <h4>Problems with this Implementation:</h4>
+                    <ul>
+                        <li>No role="tooltip" attribute</li>
+                        <li>Missing aria-describedby connection</li>
+                        <li>Only works on mouseenter/mouseleave</li>
+                        <li>No focus/blur event handlers</li>
+                        <li>No Escape key support</li>
+                        <li>Screen readers cannot access tooltip content</li>
+                        <li>Keyboard users cannot trigger tooltips</li>
+                        <li>Generic div elements without semantic meaning</li>
+                    </ul>
+                </div>
+
+                <!-- Basic Bad Tooltips -->
+                <div class="demo-item">
+                    <h4>Mouse-Only Tooltips (Bad)</h4>
+                    <div class="demo-container" style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                        <button class="tooltip-trigger inaccessible-tooltip" data-bad-tooltip="Only shows on hover, not focus">
+                            Hover Only
+                        </button>
+
+                        <button class="tooltip-trigger inaccessible-tooltip" data-bad-tooltip="No ARIA attributes">
+                            No ARIA
+                        </button>
+
+                        <button class="tooltip-trigger inaccessible-tooltip" data-bad-tooltip="Screen readers cannot access this">
+                            Inaccessible
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bad Form Tooltips -->
+                <div class="demo-item">
+                    <h4>Inaccessible Form Help (Bad)</h4>
+                    <div class="demo-container">
+                        <form>
+                            <div class="form-group">
+                                <label for="username-bad" class="form-label">
+                                    Username
+                                    <span class="help-icon inaccessible-tooltip" data-bad-tooltip="This help text is not accessible" style="cursor: help;">?</span>
+                                </label>
+                                <input type="text" id="username-bad" class="form-input" placeholder="Enter username">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email-bad" class="form-label">
+                                    Email Address
+                                    <span class="help-icon inaccessible-tooltip" data-bad-tooltip="No keyboard access to this tooltip" style="cursor: help;">?</span>
+                                </label>
+                                <input type="email" id="email-bad" class="form-input" placeholder="user@example.com">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Code Example -->
+                <div class="code-display">
+<span class="code-comment">&lt;!-- BAD: No ARIA attributes --&gt;</span>
+<span class="code-keyword">&lt;button</span> <span class="code-attribute">class</span>=<span class="code-string">"tooltip-trigger"</span><span class="code-keyword">&gt;</span>
+    Hover me
+<span class="code-keyword">&lt;/button&gt;</span>
+<span class="code-keyword">&lt;div</span> <span class="code-attribute">class</span>=<span class="code-string">"bad-tooltip"</span><span class="code-keyword">&gt;</span>
+    Hidden tooltip text
+<span class="code-keyword">&lt;/div&gt;</span>
+
+<span class="code-comment">// BAD: Only mouseenter, no focus support</span>
+button.addEventListener(<span class="code-string">'mouseenter'</span>, showTooltip);
+button.addEventListener(<span class="code-string">'mouseleave'</span>, hideTooltip);
+<span class="code-comment">// Missing: focus, blur, Escape key handlers</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMPARISON SECTION -->
+        <section class="section">
+            <h2 class="section-title">Feature Comparison</h2>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Accessible</th>
+                        <th>Inaccessible</th>
+                        <th>Impact</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>role="tooltip"</strong></td>
+                        <td class="check">✓</td>
+                        <td class="cross">✗</td>
+                        <td>Screen readers identify element as tooltip</td>
+                    </tr>
+                    <tr>
+                        <td><strong>aria-describedby</strong></td>
+                        <td class="check">✓</td>
+                        <td class="cross">✗</td>
+                        <td>Links trigger to tooltip content</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hover Support</strong></td>
+                        <td class="check">✓</td>
+                        <td class="check">✓</td>
+                        <td>Mouse users can see tooltips</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Focus Support</strong></td>
+                        <td class="check">✓</td>
+                        <td class="cross">✗</td>
+                        <td>Keyboard users can trigger tooltips</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Blur Handling</strong></td>
+                        <td class="check">✓</td>
+                        <td class="cross">✗</td>
+                        <td>Tooltip hides when focus leaves</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Escape Key</strong></td>
+                        <td class="check">✓</td>
+                        <td class="cross">✗</td>
+                        <td>Users can dismiss tooltip</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Keyboard Focusable</strong></td>
+                        <td class="check">✓</td>
+                        <td class="cross">✗</td>
+                        <td>Element reachable via keyboard</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Screen Reader Accessible</strong></td>
+                        <td class="check">✓</td>
+                        <td class="cross">✗</td>
+                        <td>Content announced to screen readers</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- TESTING SECTION -->
+        <section class="section">
+            <h2 class="section-title">Testing Instructions</h2>
+
+            <div class="context-section">
+                <h3>Keyboard Testing</h3>
+                <p>
+                    <strong>1. Tab Navigation:</strong> Press Tab to navigate to tooltip triggers. In the accessible version, tooltips should appear on focus. In the inaccessible version, they won't.
+                    <br><br>
+                    <strong>2. Escape Key:</strong> When a tooltip is visible, press Escape. The accessible version should hide the tooltip; the inaccessible version won't respond.
+                    <br><br>
+                    <strong>3. Focus Management:</strong> Tab away from a trigger with a visible tooltip. The accessible version should hide it automatically.
+                </p>
+            </div>
+
+            <div class="context-section" style="background: #fef2f2; border-color: #ef4444;">
+                <h3 style="color: #991b1b;">Screen Reader Testing</h3>
+                <p style="color: #7f1d1d;">
+                    <strong>Accessible Version:</strong> When you focus on a trigger, the screen reader should announce the button label followed by the tooltip description (via aria-describedby).
+                    <br><br>
+                    <strong>Inaccessible Version:</strong> Screen readers will only announce the button label. Tooltip content remains hidden and inaccessible.
+                    <br><br>
+                    <strong>Test with:</strong> NVDA (Windows), JAWS (Windows), VoiceOver (macOS/iOS), TalkBack (Android)
+                </p>
+            </div>
+
+            <div class="context-section" style="background: #eff6ff; border-color: #3b82f6;">
+                <h3 style="color: #1e40af;">Mouse Testing</h3>
+                <p style="color: #1e3a8a;">
+                    Both implementations should work with mouse hover. However, only the accessible version provides equivalent keyboard access, which is required for WCAG compliance.
+                </p>
+            </div>
+        </section>
+
+        <!-- BEST PRACTICES -->
+        <section class="section">
+            <h2 class="section-title">Best Practices</h2>
+
+            <div class="info-box info">
+                <h4 style="margin-bottom: 10px;">Essential Requirements for Accessible Tooltips:</h4>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>Always use <strong>role="tooltip"</strong> on the tooltip element</li>
+                    <li>Connect trigger to tooltip using <strong>aria-describedby</strong></li>
+                    <li>Ensure triggers are keyboard focusable (button elements or tabindex="0")</li>
+                    <li>Show tooltip on both mouseenter and focus events</li>
+                    <li>Hide tooltip on both mouseleave and blur events</li>
+                    <li>Implement Escape key to dismiss visible tooltips</li>
+                    <li>Position tooltips near their triggers</li>
+                    <li>Keep tooltip content concise and relevant</li>
+                    <li>Don't hide essential information in tooltips</li>
+                    <li>Use sufficient color contrast (4.5:1 for text)</li>
+                </ul>
+            </div>
+
+            <div class="info-box warning">
+                <h4 style="margin-bottom: 10px;">Common Mistakes to Avoid:</h4>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>Using title attribute alone (inconsistent screen reader support)</li>
+                    <li>Making tooltips only appear on hover</li>
+                    <li>Forgetting to make tooltip triggers focusable</li>
+                    <li>Not providing Escape key functionality</li>
+                    <li>Putting critical information only in tooltips</li>
+                    <li>Using tooltips on non-interactive elements without making them focusable</li>
+                    <li>Not connecting tooltip to trigger with aria-describedby</li>
+                    <li>Missing role="tooltip" attribute</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- WCAG REFERENCE -->
+        <section class="section">
+            <h2 class="section-title">WCAG 2.1 Criteria</h2>
+
+            <div class="demo-grid">
+                <div class="info-box success">
+                    <h4>1.3.1 Info and Relationships (Level A)</h4>
+                    <p>Information, structure, and relationships conveyed through presentation must be programmatically determined. The accessible implementation uses role="tooltip" and aria-describedby to establish proper relationships.</p>
+                </div>
+
+                <div class="info-box success">
+                    <h4>2.1.1 Keyboard (Level A)</h4>
+                    <p>All functionality must be available from a keyboard. The accessible implementation allows keyboard users to trigger and dismiss tooltips using focus and Escape key.</p>
+                </div>
+
+                <div class="info-box success">
+                    <h4>4.1.2 Name, Role, Value (Level A)</h4>
+                    <p>For all user interface components, the name and role must be programmatically determined. The accessible implementation provides proper role and associated descriptions.</p>
+                </div>
+
+                <div class="info-box success">
+                    <h4>2.1.2 No Keyboard Trap (Level A)</h4>
+                    <p>Keyboard focus can be moved away from a component using only a keyboard interface. The accessible implementation allows users to tab away and use Escape to dismiss.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="../../js/accessible/tooltip-complete.js"></script>
+    <script src="../../js/inaccessible/tooltip-incomplete.js"></script>
+</body>
+</html>

@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listbox Pattern Demo - Paradise Widget Patterns</title>
+  <link rel="stylesheet" href="../../../css/demo.css">
+  <style>
+    .listbox-container {
+      margin: 20px 0;
+      max-width: 400px;
+    }
+
+    .listbox-label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    [role="listbox"] {
+      border: 2px solid #666;
+      border-radius: 4px;
+      padding: 8px;
+      background: white;
+      min-height: 200px;
+      max-height: 300px;
+      overflow-y: auto;
+      list-style: none;
+      margin: 0;
+    }
+
+    [role="listbox"]:focus {
+      outline: 3px solid #0066cc;
+      outline-offset: 2px;
+      border-color: #0066cc;
+    }
+
+    [role="option"] {
+      padding: 10px 12px;
+      cursor: pointer;
+      border-radius: 3px;
+      margin: 2px 0;
+      display: flex;
+      align-items: center;
+      transition: background 0.15s;
+    }
+
+    [role="option"]:hover {
+      background: #e6f2ff;
+    }
+
+    [role="option"]:focus {
+      outline: 2px solid #0066cc;
+      outline-offset: -2px;
+      background: #cce5ff;
+    }
+
+    [role="option"][aria-selected="true"] {
+      background: #0066cc;
+      color: white;
+      font-weight: bold;
+    }
+
+    [role="option"][aria-selected="true"]::before {
+      content: "✓ ";
+      margin-right: 8px;
+      font-weight: bold;
+    }
+
+    [role="option"][aria-selected="true"]:hover {
+      background: #0055aa;
+    }
+
+    .color-swatch {
+      width: 24px;
+      height: 24px;
+      border-radius: 3px;
+      border: 2px solid #333;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+
+    [role="option"][aria-selected="true"] .color-swatch {
+      border-color: white;
+    }
+
+    .selection-output {
+      margin-top: 16px;
+      padding: 12px;
+      background: #f5f5f5;
+      border-radius: 4px;
+      border-left: 4px solid #0066cc;
+    }
+
+    .selection-output strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .selection-output .selected-items {
+      font-family: 'Courier New', monospace;
+      color: #0066cc;
+    }
+
+    .bad-listbox-container .listbox-label {
+      color: inherit;
+    }
+
+    .bad-listbox {
+      border: 2px solid #666;
+      border-radius: 4px;
+      padding: 8px;
+      background: white;
+      min-height: 200px;
+      max-height: 300px;
+      overflow-y: auto;
+      list-style: none;
+      margin: 0;
+    }
+
+    .bad-listbox:focus {
+      outline: 2px solid #999;
+      outline-offset: 2px;
+    }
+
+    .bad-option {
+      padding: 10px 12px;
+      cursor: pointer;
+      border-radius: 3px;
+      margin: 2px 0;
+      display: flex;
+      align-items: center;
+      transition: background 0.15s;
+    }
+
+    .bad-option:hover {
+      background: #e6e6e6;
+    }
+
+    .bad-option.selected {
+      background: #999;
+      color: white;
+    }
+
+    .bad-option.selected::before {
+      content: "✓ ";
+      margin-right: 8px;
+    }
+
+    .keyboard-hints {
+      margin-top: 12px;
+      padding: 10px;
+      background: #e6f7ff;
+      border-radius: 4px;
+      font-size: 14px;
+      border: 1px solid #91d5ff;
+    }
+
+    .keyboard-hints strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #0066cc;
+    }
+
+    .keyboard-hints ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .keyboard-hints li {
+      margin: 4px 0;
+    }
+
+    kbd {
+      display: inline-block;
+      padding: 2px 6px;
+      font-family: monospace;
+      font-size: 12px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .multi-select-container {
+      margin-top: 40px;
+    }
+
+    .listbox-instructions {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 4px;
+      padding: 12px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .listbox-instructions strong {
+      color: #856404;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="../../index.html">Home</a> &gt;
+      <a href="#input-widgets">Input Widgets</a> &gt;
+      <span>Listbox</span>
+    </nav>
+
+    <header>
+      <h1>🎨 Listbox Pattern</h1>
+      <p class="subtitle">Single and multi-select lists with full keyboard navigation</p>
+
+      <div class="pattern-info">
+        <span class="complexity-badge medium">Medium Complexity</span>
+        <span class="wcag-badge">WCAG 2.1.1, 4.1.2</span>
+      </div>
+    </header>
+
+    <section class="pattern-description">
+      <h2>What is a Listbox?</h2>
+      <p>A listbox is a widget that allows users to select one or more options from a list. Unlike native HTML select elements, ARIA listboxes provide greater visual and functional flexibility, supporting both single and multiple selections with full keyboard navigation.</p>
+
+      <div class="key-requirements">
+        <h3>Complete Listbox Pattern Requires:</h3>
+        <ul>
+          <li><code>role="listbox"</code> on container element</li>
+          <li><code>role="option"</code> on each selectable item</li>
+          <li><code>aria-selected="true"</code> on selected items</li>
+          <li><code>aria-selected="false"</code> on unselected items</li>
+          <li><code>aria-multiselectable="true"</code> for multi-select mode</li>
+          <li><code>aria-labelledby</code> or <code>aria-label</code> for accessible name</li>
+          <li><code>tabindex="0"</code> on listbox for keyboard focus</li>
+          <li><strong>Arrow Down/Up:</strong> Navigate between options</li>
+          <li><strong>Home/End:</strong> Jump to first/last option</li>
+          <li><strong>Space:</strong> Toggle selection (multi-select mode)</li>
+          <li><strong>Enter:</strong> Activate/select option</li>
+          <li><strong>Type-ahead:</strong> Jump to matching option by typing</li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="comparison">
+      <!-- LEFT SIDE - ACCESSIBLE -->
+      <section class="example good">
+        <h2>✅ Accessible Implementation</h2>
+        <p>Complete listbox with full keyboard navigation and ARIA attributes.</p>
+
+        <div class="listbox-instructions">
+          <strong>Try it:</strong> Click or use Tab to focus the listbox, then use arrow keys to navigate, Enter or Space to select, Home/End to jump, or type letters to search.
+        </div>
+
+        <!-- Single Select Example -->
+        <div class="listbox-container">
+          <label id="good-color-label" class="listbox-label">
+            Choose a color:
+          </label>
+          <ul role="listbox"
+              id="good-color-listbox"
+              aria-labelledby="good-color-label"
+              tabindex="0">
+            <li role="option" id="good-red" aria-selected="false">
+              <span class="color-swatch" style="background: #e74c3c;"></span>
+              Red
+            </li>
+            <li role="option" id="good-blue" aria-selected="false">
+              <span class="color-swatch" style="background: #3498db;"></span>
+              Blue
+            </li>
+            <li role="option" id="good-green" aria-selected="false">
+              <span class="color-swatch" style="background: #2ecc71;"></span>
+              Green
+            </li>
+            <li role="option" id="good-yellow" aria-selected="false">
+              <span class="color-swatch" style="background: #f39c12;"></span>
+              Yellow
+            </li>
+            <li role="option" id="good-purple" aria-selected="false">
+              <span class="color-swatch" style="background: #9b59b6;"></span>
+              Purple
+            </li>
+            <li role="option" id="good-orange" aria-selected="false">
+              <span class="color-swatch" style="background: #e67e22;"></span>
+              Orange
+            </li>
+            <li role="option" id="good-pink" aria-selected="false">
+              <span class="color-swatch" style="background: #ff69b4;"></span>
+              Pink
+            </li>
+            <li role="option" id="good-teal" aria-selected="false">
+              <span class="color-swatch" style="background: #1abc9c;"></span>
+              Teal
+            </li>
+          </ul>
+
+          <div class="selection-output">
+            <strong>Selected Color:</strong>
+            <span id="good-selection" class="selected-items">None</span>
+          </div>
+
+          <div class="keyboard-hints">
+            <strong>Keyboard shortcuts:</strong>
+            <ul>
+              <li><kbd>↑</kbd> <kbd>↓</kbd> Navigate options</li>
+              <li><kbd>Home</kbd> <kbd>End</kbd> First/Last option</li>
+              <li><kbd>Enter</kbd> or <kbd>Space</kbd> Select option</li>
+              <li><kbd>Type letter</kbd> Jump to matching option</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Multi-Select Example -->
+        <div class="multi-select-container">
+          <div class="listbox-container">
+            <label id="good-features-label" class="listbox-label">
+              Choose features (multi-select):
+            </label>
+            <ul role="listbox"
+                id="good-features-listbox"
+                aria-labelledby="good-features-label"
+                aria-multiselectable="true"
+                tabindex="0">
+              <li role="option" id="good-wifi" aria-selected="false">
+                📶 Wi-Fi
+              </li>
+              <li role="option" id="good-bluetooth" aria-selected="false">
+                📡 Bluetooth
+              </li>
+              <li role="option" id="good-gps" aria-selected="false">
+                🗺️ GPS
+              </li>
+              <li role="option" id="good-camera" aria-selected="false">
+                📷 Camera
+              </li>
+              <li role="option" id="good-nfc" aria-selected="false">
+                📱 NFC
+              </li>
+              <li role="option" id="good-usbc" aria-selected="false">
+                🔌 USB-C
+              </li>
+            </ul>
+
+            <div class="selection-output">
+              <strong>Selected Features:</strong>
+              <span id="good-multi-selection" class="selected-items">None</span>
+            </div>
+
+            <div class="keyboard-hints">
+              <strong>Multi-select mode:</strong>
+              <ul>
+                <li><kbd>Space</kbd> Toggle selection (keep others selected)</li>
+                <li><kbd>Enter</kbd> Select only this option (clear others)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis Results</h3>
+          <div class="result-box success">
+            <strong>✅ Complete Listbox Pattern Detected</strong>
+            <p>0 issues found</p>
+          </div>
+
+          <h4>Validation Checklist:</h4>
+          <ul class="validation-results">
+            <li class="check-pass">✓ <code>role="listbox"</code> present</li>
+            <li class="check-pass">✓ <code>role="option"</code> on all items</li>
+            <li class="check-pass">✓ <code>aria-selected</code> on all options</li>
+            <li class="check-pass">✓ <code>aria-multiselectable="true"</code> for multi-select</li>
+            <li class="check-pass">✓ <code>aria-labelledby</code> provides accessible name</li>
+            <li class="check-pass">✓ <code>tabindex="0"</code> for keyboard focus</li>
+            <li class="check-pass">✓ Arrow Up/Down navigation detected</li>
+            <li class="check-pass">✓ Home/End navigation detected</li>
+            <li class="check-pass">✓ Space for selection toggle (multi-select)</li>
+            <li class="check-pass">✓ Enter for selection</li>
+            <li class="check-pass">✓ Type-ahead search implemented</li>
+            <li class="check-pass">✓ Focus management (roving tabindex pattern)</li>
+          </ul>
+        </div>
+
+        <details class="code-sample">
+          <summary>View Complete HTML (Single Select)</summary>
+          <pre><code>&lt;label id="color-label"&gt;Choose a color:&lt;/label&gt;
+&lt;ul role="listbox"
+    aria-labelledby="color-label"
+    tabindex="0"&gt;
+  &lt;li role="option" aria-selected="false"&gt;Red&lt;/li&gt;
+  &lt;li role="option" aria-selected="false"&gt;Blue&lt;/li&gt;
+  &lt;li role="option" aria-selected="false"&gt;Green&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+        </details>
+
+        <details class="code-sample">
+          <summary>View Complete HTML (Multi-Select)</summary>
+          <pre><code>&lt;label id="features-label"&gt;Choose features:&lt;/label&gt;
+&lt;ul role="listbox"
+    aria-labelledby="features-label"
+    aria-multiselectable="true"
+    tabindex="0"&gt;
+  &lt;li role="option" aria-selected="false"&gt;Wi-Fi&lt;/li&gt;
+  &lt;li role="option" aria-selected="false"&gt;Bluetooth&lt;/li&gt;
+  &lt;li role="option" aria-selected="false"&gt;GPS&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+        </details>
+
+        <details class="code-sample">
+          <summary>View Complete JavaScript (Key Features)</summary>
+          <pre><code>// Complete listbox implementation
+const listbox = document.querySelector('[role="listbox"]');
+const options = listbox.querySelectorAll('[role="option"]');
+
+// Arrow navigation
+listbox.addEventListener('keydown', (e) => {
+  const current = document.activeElement;
+  const index = Array.from(options).indexOf(current);
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    const next = options[Math.min(index + 1, options.length - 1)];
+    next.focus();
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    const prev = options[Math.max(index - 1, 0)];
+    prev.focus();
+  } else if (e.key === 'Home') {
+    e.preventDefault();
+    options[0].focus();
+  } else if (e.key === 'End') {
+    e.preventDefault();
+    options[options.length - 1].focus();
+  } else if (e.key === ' ' || e.key === 'Enter') {
+    e.preventDefault();
+    selectOption(current);
+  }
+});
+
+function selectOption(option) {
+  const isMulti = listbox.getAttribute('aria-multiselectable') === 'true';
+
+  if (!isMulti) {
+    // Single select: clear others
+    options.forEach(opt => opt.setAttribute('aria-selected', 'false'));
+  }
+
+  // Toggle selection
+  const selected = option.getAttribute('aria-selected') === 'true';
+  option.setAttribute('aria-selected', String(!selected));
+}
+
+// Type-ahead search
+let searchString = '';
+let searchTimeout;
+
+listbox.addEventListener('keydown', (e) => {
+  if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+    searchString += e.key.toLowerCase();
+
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => searchString = '', 500);
+
+    const match = Array.from(options).find(opt =>
+      opt.textContent.toLowerCase().startsWith(searchString)
+    );
+
+    if (match) match.focus();
+  }
+});</code></pre>
+        </details>
+      </section>
+
+      <!-- RIGHT SIDE - INACCESSIBLE -->
+      <section class="example bad">
+        <h2>❌ Inaccessible Implementation</h2>
+        <p>Listbox missing ARIA roles, attributes, and keyboard navigation.</p>
+
+        <div class="listbox-instructions">
+          <strong>Try it:</strong> Notice how keyboard navigation doesn't work, and screen readers won't announce the selection state properly.
+        </div>
+
+        <!-- Single Select Example -->
+        <div class="bad-listbox-container">
+          <label id="bad-color-label" class="listbox-label">
+            Choose a color:
+          </label>
+          <ul class="bad-listbox" id="bad-color-listbox">
+            <li class="bad-option" data-value="red">
+              <span class="color-swatch" style="background: #e74c3c;"></span>
+              Red
+            </li>
+            <li class="bad-option" data-value="blue">
+              <span class="color-swatch" style="background: #3498db;"></span>
+              Blue
+            </li>
+            <li class="bad-option" data-value="green">
+              <span class="color-swatch" style="background: #2ecc71;"></span>
+              Green
+            </li>
+            <li class="bad-option" data-value="yellow">
+              <span class="color-swatch" style="background: #f39c12;"></span>
+              Yellow
+            </li>
+            <li class="bad-option" data-value="purple">
+              <span class="color-swatch" style="background: #9b59b6;"></span>
+              Purple
+            </li>
+            <li class="bad-option" data-value="orange">
+              <span class="color-swatch" style="background: #e67e22;"></span>
+              Orange
+            </li>
+            <li class="bad-option" data-value="pink">
+              <span class="color-swatch" style="background: #ff69b4;"></span>
+              Pink
+            </li>
+            <li class="bad-option" data-value="teal">
+              <span class="color-swatch" style="background: #1abc9c;"></span>
+              Teal
+            </li>
+          </ul>
+
+          <div class="selection-output">
+            <strong>Selected Color:</strong>
+            <span id="bad-selection" class="selected-items">None</span>
+          </div>
+        </div>
+
+        <!-- Multi-Select Example -->
+        <div class="multi-select-container">
+          <div class="bad-listbox-container">
+            <label id="bad-features-label" class="listbox-label">
+              Choose features (multi-select):
+            </label>
+            <ul class="bad-listbox" id="bad-features-listbox">
+              <li class="bad-option" data-value="wifi">
+                📶 Wi-Fi
+              </li>
+              <li class="bad-option" data-value="bluetooth">
+                📡 Bluetooth
+              </li>
+              <li class="bad-option" data-value="gps">
+                🗺️ GPS
+              </li>
+              <li class="bad-option" data-value="camera">
+                📷 Camera
+              </li>
+              <li class="bad-option" data-value="nfc">
+                📱 NFC
+              </li>
+              <li class="bad-option" data-value="usbc">
+                🔌 USB-C
+              </li>
+            </ul>
+
+            <div class="selection-output">
+              <strong>Selected Features:</strong>
+              <span id="bad-multi-selection" class="selected-items">None</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis Results</h3>
+          <div class="result-box error">
+            <strong>❌ Incomplete Listbox Pattern</strong>
+            <p>6 issues found</p>
+          </div>
+
+          <h4>Issues Detected:</h4>
+          <ul class="issues-list">
+            <li class="issue-error">
+              <strong>Missing <code>role="listbox"</code></strong>
+              <p>Container not identified as a listbox to assistive technologies</p>
+            </li>
+            <li class="issue-error">
+              <strong>Missing <code>role="option"</code></strong>
+              <p>Items not announced as selectable options</p>
+            </li>
+            <li class="issue-error">
+              <strong>Missing <code>aria-selected</code></strong>
+              <p>Selection state not communicated to screen readers</p>
+            </li>
+            <li class="issue-error">
+              <strong>Missing <code>tabindex="0"</code></strong>
+              <p>Listbox cannot receive keyboard focus</p>
+            </li>
+            <li class="issue-error">
+              <strong>No keyboard navigation</strong>
+              <p>Arrow keys, Home/End, type-ahead not implemented</p>
+            </li>
+            <li class="issue-error">
+              <strong>No <code>aria-multiselectable</code></strong>
+              <p>Multi-select mode not announced to screen readers</p>
+            </li>
+          </ul>
+
+          <h4>Validation Checklist:</h4>
+          <ul class="validation-results">
+            <li class="check-fail">✗ <code>role="listbox"</code> missing</li>
+            <li class="check-fail">✗ <code>role="option"</code> missing</li>
+            <li class="check-fail">✗ <code>aria-selected</code> missing</li>
+            <li class="check-fail">✗ <code>aria-multiselectable</code> missing</li>
+            <li class="check-fail">✗ <code>tabindex="0"</code> missing</li>
+            <li class="check-fail">✗ No keyboard navigation</li>
+          </ul>
+        </div>
+
+        <details class="code-sample">
+          <summary>View Incomplete HTML</summary>
+          <pre><code>&lt;!-- INCOMPLETE: Missing ARIA roles and attributes --&gt;
+&lt;label&gt;Choose a color:&lt;/label&gt;
+&lt;ul class="listbox"&gt;
+  &lt;li class="option"&gt;Red&lt;/li&gt;
+  &lt;li class="option"&gt;Blue&lt;/li&gt;
+  &lt;li class="option"&gt;Green&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+        </details>
+
+        <details class="code-sample">
+          <summary>View Incomplete JavaScript</summary>
+          <pre><code>// INCOMPLETE: Only click support, no accessibility
+const listbox = document.querySelector('.listbox');
+const options = listbox.querySelectorAll('.option');
+
+options.forEach(option => {
+  option.addEventListener('click', () => {
+    // Clear selection
+    options.forEach(opt => opt.classList.remove('selected'));
+
+    // Select clicked option
+    option.classList.add('selected');
+
+    // ❌ MISSING: aria-selected updates
+    // ❌ MISSING: Arrow key navigation
+    // ❌ MISSING: Home/End support
+    // ❌ MISSING: Space/Enter activation
+    // ❌ MISSING: Type-ahead search
+    // ❌ MISSING: Focus management
+  });
+});</code></pre>
+        </details>
+      </section>
+    </div>
+
+    <section class="testing-panel">
+      <h2>🧪 Interactive Testing</h2>
+      <p>Test both implementations with keyboard and screen reader:</p>
+
+      <div class="testing-instructions">
+        <h3>Keyboard Testing Steps:</h3>
+        <ol>
+          <li><strong>Focus the listbox:</strong> Tab to the listbox</li>
+          <li><strong>Accessible:</strong> Receives focus, shows focus indicator</li>
+          <li><strong>Inaccessible:</strong> Cannot receive keyboard focus</li>
+          <li><strong>Navigate options:</strong> Press <kbd>↓</kbd> and <kbd>↑</kbd></li>
+          <li><strong>Accessible:</strong> Focus moves through options</li>
+          <li><strong>Inaccessible:</strong> Nothing happens</li>
+          <li><strong>Select option:</strong> Press <kbd>Enter</kbd> or <kbd>Space</kbd></li>
+          <li><strong>Accessible:</strong> Option selected, aria-selected updates</li>
+          <li><strong>Inaccessible:</strong> Nothing happens</li>
+          <li><strong>Jump to end:</strong> Press <kbd>End</kbd></li>
+          <li><strong>Accessible:</strong> Focus moves to last option</li>
+          <li><strong>Inaccessible:</strong> Nothing happens</li>
+          <li><strong>Type-ahead:</strong> Press <kbd>P</kbd> to find "Purple"</li>
+          <li><strong>Accessible:</strong> Focus jumps to Purple</li>
+          <li><strong>Inaccessible:</strong> Nothing happens</li>
+        </ol>
+
+        <h3>Multi-Select Testing:</h3>
+        <ol>
+          <li><strong>Toggle selection:</strong> Press <kbd>Space</kbd> on multiple items</li>
+          <li><strong>Accessible:</strong> Multiple items can be selected</li>
+          <li><strong>Inaccessible:</strong> No keyboard support</li>
+          <li><strong>Clear and select:</strong> Press <kbd>Enter</kbd> on item</li>
+          <li><strong>Accessible:</strong> Clears others, selects current item</li>
+          <li><strong>Inaccessible:</strong> No keyboard support</li>
+        </ol>
+
+        <h3>Screen Reader Testing:</h3>
+        <ul>
+          <li><strong>Accessible:</strong> Announces "listbox, Choose a color"</li>
+          <li><strong>Inaccessible:</strong> Announces generic "list"</li>
+          <li><strong>Accessible:</strong> Each item announced as "Red, option, not selected"</li>
+          <li><strong>Inaccessible:</strong> Items announced without context or state</li>
+          <li><strong>Accessible (multi):</strong> Announces "listbox, multi-selectable"</li>
+          <li><strong>Inaccessible (multi):</strong> Multi-select mode not announced</li>
+          <li><strong>Accessible:</strong> When selected, announces "Red, option, selected"</li>
+          <li><strong>Inaccessible:</strong> Selection state not announced</li>
+        </ul>
+
+        <div class="testing-checklist">
+          <h4>Test Checklist:</h4>
+          <label><input type="checkbox"> Tab to listbox (accessible only)</label>
+          <label><input type="checkbox"> Arrow keys navigate (accessible only)</label>
+          <label><input type="checkbox"> Home/End jump to first/last (accessible only)</label>
+          <label><input type="checkbox"> Enter/Space select option (accessible only)</label>
+          <label><input type="checkbox"> Type letters for type-ahead (accessible only)</label>
+          <label><input type="checkbox"> Space toggles in multi-select (accessible only)</label>
+          <label><input type="checkbox"> Screen reader announces roles correctly</label>
+          <label><input type="checkbox"> Selection state announced properly</label>
+        </div>
+      </div>
+    </section>
+
+    <section class="explanation">
+      <h2>🎯 What Paradise Detects</h2>
+      <p>Paradise validates the <strong>complete listbox pattern</strong> in multiple steps:</p>
+
+      <ol class="detection-steps">
+        <li>
+          <strong>Role Detection</strong>
+          <p>Verifies <code>role="listbox"</code> on container and <code>role="option"</code> on all items</p>
+        </li>
+        <li>
+          <strong>Selection State</strong>
+          <p>Checks that all options have <code>aria-selected="true"</code> or <code>aria-selected="false"</code></p>
+        </li>
+        <li>
+          <strong>Multi-Select Mode</strong>
+          <p>For multi-select listboxes, validates <code>aria-multiselectable="true"</code> attribute</p>
+        </li>
+        <li>
+          <strong>Accessible Name</strong>
+          <p>Ensures listbox has <code>aria-labelledby</code> or <code>aria-label</code> for accessible name</p>
+        </li>
+        <li>
+          <strong>Keyboard Focus</strong>
+          <p>Validates <code>tabindex="0"</code> or other focusable pattern on listbox</p>
+        </li>
+        <li>
+          <strong>Arrow Navigation</strong>
+          <p>Detects keydown handlers for ArrowUp/ArrowDown navigation</p>
+        </li>
+        <li>
+          <strong>Home/End Navigation</strong>
+          <p>Checks for Home/End key handlers to jump to first/last option</p>
+        </li>
+        <li>
+          <strong>Selection Handlers</strong>
+          <p>Verifies Space and Enter key handlers for option selection</p>
+        </li>
+        <li>
+          <strong>Type-Ahead Search</strong>
+          <p>Optionally detects type-ahead functionality for quick navigation</p>
+        </li>
+        <li>
+          <strong>Focus Management</strong>
+          <p>Validates proper focus movement between options</p>
+        </li>
+      </ol>
+
+      <div class="insight-box">
+        <h3>💡 Why This Matters</h3>
+        <p>Keyboard-only and screen reader users cannot use a listbox without proper ARIA roles and keyboard support. Without <code>role="listbox"</code> and <code>role="option"</code>, screen readers announce it as a generic list. Without <code>aria-selected</code>, users don't know which option is selected. Without arrow navigation, users must Tab through every item, making selection cumbersome and frustrating. A properly implemented listbox provides an efficient, accessible selection experience for all users.</p>
+      </div>
+    </section>
+
+    <section class="comparison-section">
+      <h2>🔍 Why Other Tools Miss This</h2>
+
+      <div class="tool-comparison">
+        <div class="comparison-item">
+          <h3>Traditional Tool Output</h3>
+          <pre><code>✓ List is present
+✓ Items are clickable
+✓ Visual selection indicator exists
+
+Result: All checks pass! ✅</code></pre>
+          <p class="comparison-note">But keyboard users cannot navigate or select options.</p>
+        </div>
+
+        <div class="comparison-item">
+          <h3>Paradise Output</h3>
+          <pre><code>✓ List structure detected
+✗ Missing role="listbox"
+✗ Missing role="option" on items
+✗ Missing aria-selected attributes
+✗ Missing tabindex for focus
+✗ No arrow key navigation
+✗ No selection handlers
+
+Result: Incomplete pattern ❌</code></pre>
+          <p class="comparison-note">Paradise catches all missing accessibility features.</p>
+        </div>
+      </div>
+
+      <div class="why-box">
+        <h3>The Difference</h3>
+        <ul>
+          <li><strong>Other tools:</strong> Check if list exists and items can be clicked</li>
+          <li><strong>Paradise:</strong> Validates complete listbox pattern with roles, states, and keyboard behavior</li>
+          <li><strong>Result:</strong> Paradise prevents listboxes that work for mouse users but completely fail for keyboard and screen reader users</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="wcag-mapping">
+      <h2>📋 WCAG Success Criteria</h2>
+      <p>Complete listbox pattern satisfies:</p>
+      <ul class="wcag-list">
+        <li>
+          <strong>2.1.1 Keyboard (Level A)</strong>
+          <p>Arrow navigation, Home/End, Space/Enter selection, type-ahead search</p>
+        </li>
+        <li>
+          <strong>4.1.2 Name, Role, Value (Level A)</strong>
+          <p><code>role="listbox"</code>, <code>role="option"</code>, <code>aria-selected</code>, <code>aria-multiselectable</code>, accessible name</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="resources">
+      <h2>📚 Additional Resources</h2>
+      <ul>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/listbox/" target="_blank">WAI-ARIA: Listbox Pattern</a></li>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/" target="_blank">WAI-ARIA: Keyboard Interface</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/listbox_role" target="_blank">MDN: Listbox Role</a></li>
+      </ul>
+    </section>
+
+    <nav class="demo-nav">
+      <a href="combobox-comprehensive.html" class="nav-prev">← Previous: Combobox</a>
+      <a href="../../index.html" class="nav-home">🏠 All Patterns</a>
+      <a href="slider-comprehensive.html" class="nav-next">Next: Slider →</a>
+    </nav>
+  </div>
+
+  <script src="../../js/accessible/listbox-complete.js"></script>
+  <script src="../../js/inaccessible/listbox-incomplete.js"></script>
+</body>
+</html>

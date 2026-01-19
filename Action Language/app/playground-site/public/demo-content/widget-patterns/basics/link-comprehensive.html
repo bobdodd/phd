@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Link Pattern - Paradise Widget Patterns</title>
+  <link rel="stylesheet" href="../../../css/demo.css">
+  <style>
+    .link-demo {
+      margin: 2rem 0;
+    }
+
+    .link-container {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 1.5rem;
+      background: #f9f9f9;
+    }
+
+    .link-examples {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .link-example-item {
+      padding: 1rem;
+      background: white;
+      border-radius: 4px;
+      border-left: 3px solid #0066cc;
+    }
+
+    .link-example-item h4 {
+      margin-top: 0;
+      color: #333;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Accessible link styles */
+    .accessible-links a {
+      color: #0066cc;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 2px;
+    }
+
+    .accessible-links a:hover {
+      color: #0052a3;
+      text-decoration-thickness: 2px;
+    }
+
+    .accessible-links a:focus {
+      outline: 2px solid #0066cc;
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+
+    .accessible-links a:active {
+      color: #003d7a;
+    }
+
+    .accessible-links a:visited {
+      color: #551a8b;
+    }
+
+    /* External link icon */
+    .accessible-links a[target="_blank"]::after {
+      content: " ↗";
+      font-size: 0.8em;
+      vertical-align: super;
+      margin-left: 0.2em;
+    }
+
+    /* Icon link styles */
+    .icon-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 4px;
+    }
+
+    .icon-link svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    .icon-link:focus {
+      outline: 2px solid #0066cc;
+      outline-offset: 2px;
+    }
+
+    /* Button-styled link */
+    .btn-link {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: #0066cc;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+
+    .btn-link:hover {
+      background: #0052a3;
+      color: white;
+    }
+
+    .btn-link:focus {
+      outline: 2px solid #0066cc;
+      outline-offset: 2px;
+    }
+
+    .btn-link:active {
+      background: #003d7a;
+    }
+
+    /* Card link */
+    .card-link {
+      display: block;
+      padding: 1.5rem;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s;
+    }
+
+    .card-link:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-color: #0066cc;
+      transform: translateY(-2px);
+    }
+
+    .card-link:focus {
+      outline: 2px solid #0066cc;
+      outline-offset: 2px;
+    }
+
+    .card-link h5 {
+      margin: 0 0 0.5rem 0;
+      color: #0066cc;
+    }
+
+    .card-link p {
+      margin: 0;
+      color: #666;
+    }
+
+    /* Bad link styles */
+    .bad-links {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .bad-link-item {
+      padding: 1rem;
+      background: white;
+      border-radius: 4px;
+      border-left: 3px solid #dc3545;
+    }
+
+    .bad-link-item h4 {
+      margin-top: 0;
+      color: #dc3545;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Fake links using divs/spans */
+    .fake-link {
+      color: #0066cc;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .fake-link:hover {
+      color: #0052a3;
+    }
+
+    /* Icon-only without label */
+    .icon-only {
+      display: inline-flex;
+      padding: 0.5rem;
+      color: #0066cc;
+      cursor: pointer;
+    }
+
+    .icon-only svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    /* No href link */
+    .no-href {
+      color: #0066cc;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .issue-count {
+      display: inline-block;
+      background: #dc3545;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
+
+    .detection-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .detection-item {
+      background: #f0f7ff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid #0066cc;
+    }
+
+    .detection-item h4 {
+      margin-top: 0;
+      color: #0066cc;
+    }
+
+    .detection-item ul {
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+
+    .detection-item li {
+      margin: 0.5rem 0;
+    }
+
+    .comparison-table {
+      margin: 2rem 0;
+    }
+
+    .comparison-table table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: white;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 1rem;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+
+    .comparison-table th {
+      background: #0066cc;
+      color: white;
+      font-weight: 600;
+    }
+
+    .comparison-table td {
+      background: white;
+    }
+
+    .comparison-table tr:nth-child(even) td {
+      background: #f9f9f9;
+    }
+
+    .tool-limitation {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+
+    .paradise-advantage {
+      background: #d1f2eb;
+      border-left: 4px solid #28a745;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+
+    .wcag-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .wcag-list li {
+      background: #f8f9fa;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-left: 4px solid #0066cc;
+      border-radius: 4px;
+    }
+
+    .wcag-list strong {
+      color: #0066cc;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="../../index.html">Home</a> &gt;
+      <a href="#basics">Basic Patterns</a> &gt;
+      <span>Link</span>
+    </nav>
+
+    <header>
+      <h1>Link Pattern</h1>
+      <p class="subtitle">Accessible navigation and hyperlinks</p>
+      <div class="pattern-info">
+        <span class="complexity-badge low">Low Complexity</span>
+        <span class="wcag-badge">WCAG 2.1.1, 2.4.4, 2.4.9, 4.1.2</span>
+      </div>
+    </header>
+
+    <section class="pattern-description">
+      <h2>Complete Link Pattern Requires:</h2>
+      <ul>
+        <li><code>&lt;a&gt;</code> element (not div or span with onclick)</li>
+        <li><code>href</code> attribute with valid destination</li>
+        <li><strong>Descriptive link text:</strong> Text that makes sense out of context</li>
+        <li><strong>Avoid "click here":</strong> Link text should describe the destination</li>
+        <li><code>aria-label</code> for icon-only links (no visible text)</li>
+        <li><code>aria-describedby</code> for additional context when needed</li>
+        <li><code>target="_blank"</code> should warn user (opens in new window/tab)</li>
+        <li><code>role="link"</code> only if NOT using &lt;a&gt; element</li>
+        <li><strong>Keyboard focusable:</strong> Native for &lt;a&gt; with href</li>
+        <li><strong>Visual indicators:</strong> Underline, color change, or other clear indication</li>
+        <li><strong>Focus visible:</strong> Clear focus indicator for keyboard navigation</li>
+      </ul>
+    </section>
+
+    <div class="comparison">
+      <section class="example good">
+        <h2>Accessible Links</h2>
+        <p>Complete link patterns with proper semantics and ARIA.</p>
+
+        <div class="link-demo">
+          <div class="link-container accessible-links">
+            <div class="link-examples">
+
+              <div class="link-example-item">
+                <h4>Basic Text Link</h4>
+                <p>
+                  Read our <a href="#privacy-policy">privacy policy</a> to learn how we protect your data.
+                </p>
+              </div>
+
+              <div class="link-example-item">
+                <h4>External Link (Opens New Window)</h4>
+                <p>
+                  Visit the <a href="https://www.w3.org/WAI/" target="_blank" rel="noopener noreferrer" aria-label="W3C Web Accessibility Initiative (opens in new window)">W3C Web Accessibility Initiative</a> for more resources.
+                </p>
+              </div>
+
+              <div class="link-example-item">
+                <h4>Descriptive Link Text (Not "Click Here")</h4>
+                <p>
+                  <a href="#download-report">Download the 2026 Annual Report (PDF, 2.5MB)</a>
+                </p>
+              </div>
+
+              <div class="link-example-item">
+                <h4>Icon Link with Aria-Label</h4>
+                <p>
+                  <a href="https://github.com" class="icon-link" aria-label="Visit our GitHub repository">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.19 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                    </svg>
+                    <span>GitHub</span>
+                  </a>
+                </p>
+              </div>
+
+              <div class="link-example-item">
+                <h4>Icon-Only Link (Aria-Label Required)</h4>
+                <p>
+                  Connect with us:
+                  <a href="#twitter" class="icon-link" aria-label="Follow us on Twitter">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                      <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/>
+                    </svg>
+                  </a>
+                  <a href="#facebook" class="icon-link" aria-label="Like us on Facebook">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                      <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
+                    </svg>
+                  </a>
+                </p>
+              </div>
+
+              <div class="link-example-item">
+                <h4>Link with Additional Context (aria-describedby)</h4>
+                <p>
+                  <a href="#article" aria-describedby="article-date">Understanding WCAG 2.2</a>
+                  <span id="article-date" class="text-muted"> - Published January 15, 2026</span>
+                </p>
+              </div>
+
+              <div class="link-example-item">
+                <h4>Button-Styled Link (Still a Link)</h4>
+                <p>
+                  <a href="#get-started" class="btn-link">Get Started</a>
+                </p>
+              </div>
+
+              <div class="link-example-item">
+                <h4>Card Link (Entire Card is Clickable)</h4>
+                <a href="#course-details" class="card-link">
+                  <h5>Web Accessibility Course</h5>
+                  <p>Learn how to build accessible websites that everyone can use.</p>
+                </a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis: Complete Pattern</h3>
+          <pre class="analysis-result success">
+Analysis complete: 0 issues found
+
+Pattern Requirements Met:
+✓ All links use &lt;a&gt; element
+✓ All links have href attribute
+✓ Descriptive link text (no "click here")
+✓ Icon-only links have aria-label
+✓ External links indicate new window
+✓ target="_blank" includes rel="noopener noreferrer"
+✓ Links with additional context use aria-describedby
+✓ All links keyboard focusable
+✓ Clear focus indicators present
+✓ Visual link indicators (underline/color)
+
+WCAG 2.1.1 (Keyboard): PASS
+WCAG 2.4.4 (Link Purpose - In Context): PASS
+WCAG 2.4.9 (Link Purpose - Link Only): PASS
+WCAG 4.1.2 (Name, Role, Value): PASS
+          </pre>
+        </div>
+
+        <div class="testing-instructions">
+          <h3>Testing Instructions</h3>
+          <ol>
+            <li><strong>Tab:</strong> Navigate between links, verify all are focusable</li>
+            <li><strong>Enter:</strong> Activate focused link</li>
+            <li><strong>Screen Reader:</strong> Should announce "link" and descriptive text</li>
+            <li><strong>Screen Reader:</strong> Icon-only links should announce meaningful label</li>
+            <li><strong>Screen Reader:</strong> External links should indicate "opens in new window"</li>
+            <li><strong>Visual:</strong> Links have clear visual indicators (underline, color)</li>
+            <li><strong>Visual:</strong> Focus indicator is clearly visible</li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="example bad">
+        <h2>Inaccessible Links <span class="issue-count">5 Issues</span></h2>
+        <p>Links missing semantic structure, labels, or using wrong elements.</p>
+
+        <div class="link-demo">
+          <div class="link-container bad-links">
+
+            <div class="bad-link-item">
+              <h4>Issue 1: Fake Link Using Div/Span</h4>
+              <p>
+                Read our <span class="fake-link" onclick="navigate('privacy')">privacy policy</span> to learn more.
+              </p>
+              <small><strong>Problem:</strong> Not a real link, not keyboard accessible, no role</small>
+            </div>
+
+            <div class="bad-link-item">
+              <h4>Issue 2: Non-Descriptive Link Text</h4>
+              <p>
+                To download the report, <a href="#download" class="no-href">click here</a>.
+              </p>
+              <small><strong>Problem:</strong> "Click here" doesn't describe destination</small>
+            </div>
+
+            <div class="bad-link-item">
+              <h4>Issue 3: Icon-Only Link Without Label</h4>
+              <p>
+                Connect with us:
+                <a href="#twitter" class="icon-link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/>
+                  </svg>
+                </a>
+              </p>
+              <small><strong>Problem:</strong> No aria-label, screen readers can't identify purpose</small>
+            </div>
+
+            <div class="bad-link-item">
+              <h4>Issue 4: Link Without href</h4>
+              <p>
+                <a class="no-href" onclick="handleClick()">Open Settings</a>
+              </p>
+              <small><strong>Problem:</strong> No href attribute, not keyboard accessible</small>
+            </div>
+
+            <div class="bad-link-item">
+              <h4>Issue 5: External Link Without Warning</h4>
+              <p>
+                Visit the <a href="https://example.com" target="_blank">external site</a> for more info.
+              </p>
+              <small><strong>Problem:</strong> Opens new window without warning users</small>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis: Incomplete Pattern</h3>
+          <pre class="analysis-result error">
+Analysis complete: 5 issues found
+
+Missing Pattern Requirements:
+✗ Using span with onclick instead of &lt;a&gt; element
+✗ Non-descriptive link text ("click here")
+✗ Icon-only link missing aria-label
+✗ Link missing href attribute (not keyboard accessible)
+✗ target="_blank" without warning or rel attributes
+
+WCAG 2.1.1 (Keyboard): FAIL - Fake links not keyboard accessible
+WCAG 2.4.4 (Link Purpose - In Context): FAIL - "Click here" unclear
+WCAG 2.4.9 (Link Purpose - Link Only): FAIL - Links unclear out of context
+WCAG 4.1.2 (Name, Role, Value): FAIL - Missing role and accessible name
+          </pre>
+        </div>
+
+        <div class="issue-explanation">
+          <h3>Why This Fails</h3>
+          <ul>
+            <li><strong>Fake links (div/span with onclick):</strong> Not keyboard accessible, no semantic meaning, screen readers don't announce as links</li>
+            <li><strong>"Click here" links:</strong> Meaningless out of context, screen reader users navigating by links can't understand destination</li>
+            <li><strong>Icon-only without label:</strong> Screen readers announce "link" but no purpose or destination</li>
+            <li><strong>No href attribute:</strong> Link is not keyboard accessible (can't Tab to it)</li>
+            <li><strong>Unexpected new windows:</strong> Disorients users, especially screen reader users who may not realize context changed</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <section class="code-walkthrough">
+      <h2>Code Walkthrough</h2>
+
+      <h3>Basic Link (Accessible)</h3>
+      <pre><code>&lt;a href="/privacy-policy"&gt;Privacy Policy&lt;/a&gt;</code></pre>
+      <p>
+        <strong>&lt;a&gt;</strong> element with <strong>href</strong> creates a semantic link.
+        <strong>Descriptive text</strong> makes purpose clear out of context.
+        Naturally keyboard accessible (Tab to focus, Enter to activate).
+      </p>
+
+      <h3>External Link (Opens New Window)</h3>
+      <pre><code>&lt;a href="https://example.com"
+   target="_blank"
+   rel="noopener noreferrer"
+   aria-label="Example website (opens in new window)"&gt;
+  Example Website
+&lt;/a&gt;</code></pre>
+      <p>
+        <strong>target="_blank":</strong> Opens in new window/tab<br>
+        <strong>rel="noopener noreferrer":</strong> Security best practice<br>
+        <strong>aria-label:</strong> Warns users about new window<br>
+        <strong>Alternative:</strong> Add visual indicator (icon) and text "(opens in new window)"
+      </p>
+
+      <h3>Icon-Only Link (Requires aria-label)</h3>
+      <pre><code>&lt;a href="/settings" aria-label="Settings"&gt;
+  &lt;svg&gt;...&lt;/svg&gt;
+&lt;/a&gt;</code></pre>
+      <p>
+        <strong>aria-label</strong> is REQUIRED when link has no visible text.
+        Screen readers announce: "Settings, link" (not just "link").
+        Alternative: Include visually-hidden text inside link.
+      </p>
+
+      <h3>Icon Link with Text (aria-label Optional)</h3>
+      <pre><code>&lt;a href="/profile" class="icon-link"&gt;
+  &lt;svg&gt;...&lt;/svg&gt;
+  &lt;span&gt;Profile&lt;/span&gt;
+&lt;/a&gt;</code></pre>
+      <p>
+        When link has visible text, <strong>aria-label is NOT needed</strong>.
+        Screen readers will announce the visible text: "Profile, link".
+      </p>
+
+      <h3>Link with Additional Context</h3>
+      <pre><code>&lt;a href="/article" aria-describedby="date"&gt;
+  Understanding WCAG 2.2
+&lt;/a&gt;
+&lt;span id="date"&gt;Published Jan 15, 2026&lt;/span&gt;</code></pre>
+      <p>
+        <strong>aria-describedby</strong> associates additional context with the link.
+        Screen readers announce: "Understanding WCAG 2.2, link, Published January 15, 2026".
+        Main link text remains concise while providing extra detail.
+      </p>
+
+      <h3>What NOT to Do</h3>
+      <pre><code>&lt;!-- ❌ BAD: Fake link with span --&gt;
+&lt;span onclick="navigate()"&gt;Click here&lt;/span&gt;
+
+&lt;!-- ❌ BAD: Non-descriptive text --&gt;
+&lt;a href="/report"&gt;Click here&lt;/a&gt;
+
+&lt;!-- ❌ BAD: Link without href --&gt;
+&lt;a onclick="doSomething()"&gt;Action&lt;/a&gt;
+
+&lt;!-- ❌ BAD: Icon-only without label --&gt;
+&lt;a href="/settings"&gt;&lt;svg&gt;...&lt;/svg&gt;&lt;/a&gt;
+
+&lt;!-- ✅ GOOD: Proper link with descriptive text --&gt;
+&lt;a href="/report"&gt;Download Annual Report&lt;/a&gt;
+
+&lt;!-- ✅ GOOD: Icon-only with aria-label --&gt;
+&lt;a href="/settings" aria-label="Settings"&gt;
+  &lt;svg&gt;...&lt;/svg&gt;
+&lt;/a&gt;</code></pre>
+    </section>
+
+    <section class="why-paradise">
+      <h2>What Paradise Detects</h2>
+
+      <h3>Complete Pattern Validation</h3>
+      <p>Paradise validates <strong>semantic link structure and accessibility</strong>:</p>
+
+      <div class="detection-grid">
+        <div class="detection-item">
+          <h4>Semantic Elements</h4>
+          <ul>
+            <li>&lt;a&gt; element (not div/span)</li>
+            <li>href attribute present and valid</li>
+            <li>No fake links with onclick only</li>
+            <li>Proper role (implicit in &lt;a&gt;)</li>
+          </ul>
+        </div>
+
+        <div class="detection-item">
+          <h4>Descriptive Text</h4>
+          <ul>
+            <li>No "click here" or "read more"</li>
+            <li>Link text describes destination</li>
+            <li>Text meaningful out of context</li>
+            <li>Adequate link text length</li>
+          </ul>
+        </div>
+
+        <div class="detection-item">
+          <h4>Icon Links</h4>
+          <ul>
+            <li>Icon-only links have aria-label</li>
+            <li>aria-label is descriptive</li>
+            <li>Links with text don't need aria-label</li>
+            <li>No empty links</li>
+          </ul>
+        </div>
+
+        <div class="detection-item">
+          <h4>External Links</h4>
+          <ul>
+            <li>target="_blank" has warning</li>
+            <li>rel="noopener noreferrer" present</li>
+            <li>User notified about new window</li>
+            <li>Security attributes included</li>
+          </ul>
+        </div>
+
+        <div class="detection-item">
+          <h4>Keyboard Access</h4>
+          <ul>
+            <li>Links are keyboard focusable</li>
+            <li>Tab order is logical</li>
+            <li>Enter activates link</li>
+            <li>Focus indicator visible</li>
+          </ul>
+        </div>
+
+        <div class="detection-item">
+          <h4>Visual Indicators</h4>
+          <ul>
+            <li>Links visually distinguishable</li>
+            <li>Underline or other indicator</li>
+            <li>Color not only indicator (WCAG 1.4.1)</li>
+            <li>Focus indicator has 3:1 contrast</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="comparison-table">
+      <h2>Why Other Tools Miss This</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Validation Aspect</th>
+            <th>Traditional Tools</th>
+            <th>Paradise</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Semantic Elements</strong></td>
+            <td>~ May detect missing href</td>
+            <td>✓ Detects fake links (div/span with onclick)</td>
+          </tr>
+          <tr>
+            <td><strong>Link Text Quality</strong></td>
+            <td>✗ Cannot evaluate "click here"</td>
+            <td>✓ Flags non-descriptive link text</td>
+          </tr>
+          <tr>
+            <td><strong>Icon-Only Links</strong></td>
+            <td>✗ Cannot detect missing aria-label</td>
+            <td>✓ Requires aria-label for icon-only links</td>
+          </tr>
+          <tr>
+            <td><strong>External Links</strong></td>
+            <td>~ May detect target="_blank"</td>
+            <td>✓ Requires warning and security attributes</td>
+          </tr>
+          <tr>
+            <td><strong>Keyboard Access</strong></td>
+            <td>✗ Cannot verify keyboard focus</td>
+            <td>✓ Verifies links are keyboard accessible</td>
+          </tr>
+          <tr>
+            <td><strong>Link Purpose</strong></td>
+            <td>✗ Cannot evaluate context</td>
+            <td>✓ Validates link purpose is clear</td>
+          </tr>
+          <tr>
+            <td><strong>aria-describedby</strong></td>
+            <td>~ May detect presence</td>
+            <td>✓ Verifies referenced element exists</td>
+          </tr>
+          <tr>
+            <td><strong>Focus Indicators</strong></td>
+            <td>✗ Cannot verify visibility</td>
+            <td>✓ Checks focus indicator contrast/visibility</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="tool-limitation">
+        <strong>Traditional tools:</strong> Can detect missing href attributes or basic link validation,
+        but cannot identify fake links (div/span with onclick), evaluate link text quality,
+        or verify that icon-only links have proper labels.
+      </p>
+
+      <p class="paradise-advantage">
+        <strong>Paradise:</strong> Understands link semantics and purpose. Detects when developers
+        create fake links with div/span elements, flags non-descriptive link text like "click here",
+        and ensures icon-only links have aria-label. Validates the complete accessible link pattern.
+      </p>
+    </section>
+
+    <section class="wcag-mapping">
+      <h2>WCAG Success Criteria</h2>
+      <ul class="wcag-list">
+        <li>
+          <strong>2.1.1 Keyboard (Level A)</strong>
+          <p>All link functionality must be available using a keyboard. Links must use &lt;a&gt; with href (naturally keyboard accessible) or have tabindex="0" and Enter key handler.</p>
+        </li>
+        <li>
+          <strong>2.4.4 Link Purpose - In Context (Level A)</strong>
+          <p>The purpose of each link can be determined from the link text alone or from the link text together with its programmatically determined link context.</p>
+        </li>
+        <li>
+          <strong>2.4.9 Link Purpose - Link Only (Level AAA)</strong>
+          <p>The purpose of each link can be identified from link text alone. Avoid "click here", "read more", etc. Link text should be descriptive.</p>
+        </li>
+        <li>
+          <strong>4.1.2 Name, Role, Value (Level A)</strong>
+          <p>Links must have an accessible name (text content or aria-label). Icon-only links MUST have aria-label or visually-hidden text.</p>
+        </li>
+        <li>
+          <strong>3.2.5 Change on Request (Level AAA)</strong>
+          <p>Opening new windows/tabs should only occur on user request. When using target="_blank", users should be warned (via text or aria-label).</p>
+        </li>
+        <li>
+          <strong>1.4.1 Use of Color (Level A)</strong>
+          <p>Links must not rely on color alone. Use underline, icon, or other visual indicator in addition to color.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="resources">
+      <h2>Resources</h2>
+      <ul>
+        <li><a href="https://www.w3.org/WAI/WCAG21/Understanding/link-purpose-in-context.html" target="_blank" rel="noopener noreferrer">WCAG: Link Purpose (In Context)</a></li>
+        <li><a href="https://www.w3.org/WAI/WCAG21/Understanding/link-purpose-link-only.html" target="_blank" rel="noopener noreferrer">WCAG: Link Purpose (Link Only)</a></li>
+        <li><a href="https://webaim.org/techniques/hypertext/" target="_blank" rel="noopener noreferrer">WebAIM: Links and Hypertext</a></li>
+        <li><a href="https://www.a11yproject.com/posts/creating-valid-and-accessible-links/" target="_blank" rel="noopener noreferrer">A11y Project: Creating Valid Links</a></li>
+        <li><a href="/docs/issues/link-issues.md">Paradise: Link Pattern Help</a></li>
+      </ul>
+    </section>
+
+    <nav class="demo-nav">
+      <a href="../navigation-widgets/breadcrumb-comprehensive.html" class="nav-prev">Previous: Breadcrumb</a>
+      <a href="../../index.html" class="nav-home">All Patterns</a>
+      <a href="../input-widgets/switch-comprehensive.html" class="nav-next">Next: Switch</a>
+    </nav>
+  </div>
+
+  <script src="../../js/accessible/link-complete.js"></script>
+  <script src="../../js/inaccessible/link-incomplete.js"></script>
+</body>
+</html>

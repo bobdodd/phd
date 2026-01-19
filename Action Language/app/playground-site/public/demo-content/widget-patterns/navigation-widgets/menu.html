@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu Pattern Demo - Paradise Widget Patterns</title>
+  <link rel="stylesheet" href="../../../css/demo.css">
+  <style>
+    .menu-button {
+      padding: 12px 24px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .menu-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    [role="menu"] {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      list-style: none;
+      padding: 4px 0;
+      margin: 4px 0 0 0;
+      min-width: 200px;
+      z-index: 1000;
+    }
+
+    [role="menu"][hidden] {
+      display: none;
+    }
+
+    [role="menuitem"] {
+      padding: 8px 16px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    [role="menuitem"]:hover,
+    [role="menuitem"]:focus {
+      background: #0066cc;
+      color: white;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="../../index.html">Home</a> &gt;
+      <a href="#navigation">Navigation Widgets</a> &gt;
+      <span>Menu</span>
+    </nav>
+
+    <header>
+      <h1>📋 Menu Pattern</h1>
+      <p class="subtitle">Dropdown menu with arrow navigation and Enter/Space activation</p>
+      <div class="pattern-info">
+        <span class="complexity-badge high">High Complexity</span>
+        <span class="wcag-badge">WCAG 2.1.1, 4.1.2</span>
+      </div>
+    </header>
+
+    <section class="pattern-description">
+      <h2>Complete Menu Pattern Requires:</h2>
+      <ul>
+        <li><code>role="menu"</code> on menu container</li>
+        <li><code>role="menuitem"</code> on each menu item</li>
+        <li><code>aria-haspopup="true"</code> on trigger button</li>
+        <li><code>aria-expanded</code> on trigger (true/false)</li>
+        <li><strong>Arrow key navigation:</strong> Up/Down to navigate items</li>
+        <li><strong>Enter/Space:</strong> Activate menu item</li>
+        <li><strong>Escape:</strong> Close menu</li>
+        <li><strong>First character navigation:</strong> Type letter to jump to item</li>
+      </ul>
+    </section>
+
+    <div class="comparison">
+      <section class="example good">
+        <h2>✅ Accessible Implementation</h2>
+        <div class="menu-container">
+          <button class="menu-button"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  aria-controls="good-menu"
+                  id="good-menu-button">
+            Actions ▼
+          </button>
+          <ul role="menu" id="good-menu" aria-labelledby="good-menu-button" hidden>
+            <li role="menuitem">Edit</li>
+            <li role="menuitem">Duplicate</li>
+            <li role="menuitem">Delete</li>
+          </ul>
+        </div>
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis: ✅ Complete Pattern</h3>
+          <ul class="validation-results">
+            <li class="check-pass">✓ role="menu" present</li>
+            <li class="check-pass">✓ role="menuitem" on items</li>
+            <li class="check-pass">✓ aria-haspopup on trigger</li>
+            <li class="check-pass">✓ Arrow navigation detected</li>
+            <li class="check-pass">✓ Enter/Space activation</li>
+            <li class="check-pass">✓ Escape handler</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="example bad">
+        <h2>❌ Inaccessible Implementation</h2>
+        <div class="menu-container">
+          <button class="menu-button" id="bad-menu-button">Actions ▼</button>
+          <ul id="bad-menu" hidden>
+            <li>Edit</li>
+            <li>Duplicate</li>
+            <li>Delete</li>
+          </ul>
+        </div>
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis: ❌ Incomplete Pattern</h3>
+          <ul class="issues-list">
+            <li class="issue-error">Missing role="menu"</li>
+            <li class="issue-error">Missing role="menuitem"</li>
+            <li class="issue-error">Missing aria-haspopup</li>
+            <li class="issue-error">No arrow navigation</li>
+            <li class="issue-error">No Enter/Space handlers</li>
+            <li class="issue-error">No Escape handler</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <section class="wcag-mapping">
+      <h2>📋 WCAG Success Criteria</h2>
+      <ul class="wcag-list">
+        <li><strong>2.1.1 Keyboard (Level A)</strong> - Arrow keys, Enter, Escape</li>
+        <li><strong>4.1.2 Name, Role, Value (Level A)</strong> - menu/menuitem roles</li>
+      </ul>
+    </section>
+
+    <section class="resources">
+      <h2>📚 Resources</h2>
+      <ul>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/menubar/" target="_blank">WAI-ARIA: Menu Pattern</a></li>
+        <li><a href="/docs/issues/incomplete-menu-pattern.md">Paradise: Menu Pattern Help</a></li>
+      </ul>
+    </section>
+
+    <nav class="demo-nav">
+      <a href="tabs.html" class="nav-prev">← Previous: Tabs</a>
+      <a href="../../index.html" class="nav-home">🏠 All Patterns</a>
+      <a href="tree.html" class="nav-next">Next: Tree →</a>
+    </nav>
+  </div>
+</body>
+</html>

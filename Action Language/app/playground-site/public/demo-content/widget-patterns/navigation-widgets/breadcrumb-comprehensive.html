@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Breadcrumb Pattern - Paradise Widget Patterns</title>
+  <link rel="stylesheet" href="../../../css/demo.css">
+  <style>
+    .breadcrumb-demo {
+      margin: 2rem 0;
+    }
+
+    .breadcrumb-container {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 1rem;
+      background: #f9f9f9;
+    }
+
+    nav[aria-label="Breadcrumb"] ol {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    nav[aria-label="Breadcrumb"] li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    nav[aria-label="Breadcrumb"] a {
+      color: #0066cc;
+      text-decoration: none;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    nav[aria-label="Breadcrumb"] a:hover {
+      text-decoration: underline;
+      background: #e3f2fd;
+    }
+
+    nav[aria-label="Breadcrumb"] a:focus {
+      outline: 2px solid #0066cc;
+      outline-offset: 2px;
+    }
+
+    nav[aria-label="Breadcrumb"] li[aria-current="page"] {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .breadcrumb-separator {
+      color: #666;
+      user-select: none;
+    }
+
+    /* Bad breadcrumb styles */
+    .bad-breadcrumb {
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .bad-breadcrumb span {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .bad-breadcrumb a {
+      color: #0066cc;
+      text-decoration: none;
+    }
+
+    .bad-breadcrumb a:hover {
+      text-decoration: underline;
+    }
+
+    .bad-breadcrumb .current {
+      font-weight: 600;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="../../index.html">Home</a> &gt;
+      <a href="#navigation">Navigation Widgets</a> &gt;
+      <span>Breadcrumb</span>
+    </nav>
+
+    <header>
+      <h1>🍞 Breadcrumb Pattern</h1>
+      <p class="subtitle">Navigation trail with semantic markup</p>
+      <div class="pattern-info">
+        <span class="complexity-badge medium">Medium Complexity</span>
+        <span class="wcag-badge">WCAG 1.3.1, 2.4.8</span>
+      </div>
+    </header>
+
+    <section class="pattern-description">
+      <h2>Complete Breadcrumb Pattern Requires:</h2>
+      <ul>
+        <li><code>&lt;nav&gt;</code> element as container</li>
+        <li><code>aria-label="Breadcrumb"</code> on nav to identify it</li>
+        <li>Ordered list (<code>&lt;ol&gt;</code>) for hierarchy</li>
+        <li><code>&lt;li&gt;</code> for each breadcrumb item</li>
+        <li>Links (<code>&lt;a&gt;</code>) for navigable items</li>
+        <li><code>aria-current="page"</code> on current page item</li>
+        <li>Visual separators (/, &gt;, →) between items</li>
+        <li><strong>Semantic structure:</strong> Conveys hierarchy to assistive tech</li>
+        <li><strong>Keyboard accessible:</strong> Links naturally focusable</li>
+      </ul>
+    </section>
+
+    <div class="comparison">
+      <section class="example good">
+        <h2>✅ Accessible Breadcrumb</h2>
+        <p>Complete breadcrumb with semantic navigation and ARIA.</p>
+
+        <div class="breadcrumb-demo">
+          <div class="breadcrumb-container">
+            <nav aria-label="Breadcrumb">
+              <ol>
+                <li>
+                  <a href="../../index.html">Home</a>
+                  <span class="breadcrumb-separator" aria-hidden="true">&gt;</span>
+                </li>
+                <li>
+                  <a href="#products">Products</a>
+                  <span class="breadcrumb-separator" aria-hidden="true">&gt;</span>
+                </li>
+                <li>
+                  <a href="#electronics">Electronics</a>
+                  <span class="breadcrumb-separator" aria-hidden="true">&gt;</span>
+                </li>
+                <li>
+                  <a href="#laptops">Laptops</a>
+                  <span class="breadcrumb-separator" aria-hidden="true">&gt;</span>
+                </li>
+                <li aria-current="page">
+                  MacBook Pro 16"
+                </li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis: ✅ Complete Pattern</h3>
+          <pre class="analysis-result success">
+✓ Analysis complete: 0 issues found
+
+Pattern Requirements Met:
+✓ &lt;nav&gt; element present
+✓ aria-label="Breadcrumb" identifies navigation
+✓ &lt;ol&gt; provides semantic hierarchy
+✓ &lt;li&gt; elements for each item
+✓ &lt;a&gt; elements for navigable items
+✓ aria-current="page" on current item
+✓ Separators have aria-hidden="true"
+✓ Keyboard accessible (native links)
+
+WCAG 1.3.1 (Info and Relationships): PASS
+WCAG 2.4.8 (Location): PASS
+          </pre>
+        </div>
+
+        <div class="testing-instructions">
+          <h3>Testing Instructions</h3>
+          <ol>
+            <li><strong>Tab:</strong> Navigate between breadcrumb links</li>
+            <li><strong>Enter:</strong> Activate a link (shows alert in demo)</li>
+            <li><strong>Screen Reader:</strong> Announces "Breadcrumb navigation" and hierarchy</li>
+            <li><strong>Screen Reader:</strong> Announces "current page" for last item</li>
+            <li><strong>Visual:</strong> Clear hierarchy with separators</li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="example bad">
+        <h2>❌ Inaccessible Breadcrumb</h2>
+        <p>Breadcrumb missing semantic structure and ARIA.</p>
+
+        <div class="breadcrumb-demo">
+          <div class="breadcrumb-container">
+            <div class="bad-breadcrumb">
+              <span>
+                <a href="../../index.html">Home</a>
+                <span class="breadcrumb-separator">&gt;</span>
+              </span>
+              <span>
+                <a href="#products">Products</a>
+                <span class="breadcrumb-separator">&gt;</span>
+              </span>
+              <span>
+                <a href="#electronics">Electronics</a>
+                <span class="breadcrumb-separator">&gt;</span>
+              </span>
+              <span>
+                <a href="#laptops">Laptops</a>
+                <span class="breadcrumb-separator">&gt;</span>
+              </span>
+              <span class="current">
+                MacBook Pro 16"
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis: ❌ Incomplete Pattern</h3>
+          <pre class="analysis-result error">
+⚠ Analysis complete: 5 issues found
+
+Missing Pattern Requirements:
+✗ Missing &lt;nav&gt; element
+✗ Missing aria-label="Breadcrumb"
+✗ Using &lt;div&gt; instead of &lt;ol&gt; (no semantic hierarchy)
+✗ Using &lt;span&gt; instead of &lt;li&gt;
+✗ Missing aria-current="page" on current item
+
+WCAG 1.3.1 (Info and Relationships): FAIL - No semantic structure
+WCAG 2.4.8 (Location): FAIL - Not identified as breadcrumb
+          </pre>
+        </div>
+
+        <div class="issue-explanation">
+          <h3>Why This Fails</h3>
+          <ul>
+            <li><strong>No &lt;nav&gt; landmark:</strong> Screen readers can't identify this as navigation</li>
+            <li><strong>No aria-label:</strong> If user has multiple navs, can't distinguish as breadcrumb</li>
+            <li><strong>No &lt;ol&gt;:</strong> Screen readers don't announce hierarchy (1 of 5, 2 of 5...)</li>
+            <li><strong>No aria-current:</strong> Screen readers don't announce current page</li>
+            <li><strong>Flat structure:</strong> Assistive tech sees unrelated links, not a trail</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <section class="code-walkthrough">
+      <h2>Code Walkthrough</h2>
+
+      <h3>HTML Structure (Accessible)</h3>
+      <pre><code>&lt;nav aria-label="Breadcrumb"&gt;
+  &lt;ol&gt;
+    &lt;li&gt;
+      &lt;a href="/home"&gt;Home&lt;/a&gt;
+      &lt;span aria-hidden="true"&gt;&amp;gt;&lt;/span&gt;
+    &lt;/li&gt;
+    &lt;li&gt;
+      &lt;a href="/products"&gt;Products&lt;/a&gt;
+      &lt;span aria-hidden="true"&gt;&amp;gt;&lt;/span&gt;
+    &lt;/li&gt;
+    &lt;li aria-current="page"&gt;
+      MacBook Pro 16"
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/nav&gt;</code></pre>
+
+      <h3>Why This Structure Works</h3>
+
+      <h4>1. &lt;nav&gt; Landmark</h4>
+      <pre><code>&lt;nav aria-label="Breadcrumb"&gt;
+  &lt;!-- Content --&gt;
+&lt;/nav&gt;</code></pre>
+      <p>
+        <strong>&lt;nav&gt;</strong> creates a navigation landmark that screen readers recognize.
+        <strong>aria-label="Breadcrumb"</strong> distinguishes it from other navigation (main menu, footer links, etc.).
+      </p>
+
+      <h4>2. Ordered List for Hierarchy</h4>
+      <pre><code>&lt;ol&gt;
+  &lt;li&gt;Home&lt;/li&gt;
+  &lt;li&gt;Products&lt;/li&gt;
+  &lt;li&gt;MacBook Pro&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+      <p>
+        <strong>&lt;ol&gt;</strong> (ordered list) communicates hierarchy to screen readers.
+        They announce: "List, 3 items... 1 of 3... 2 of 3... 3 of 3".
+        This helps users understand their depth in the navigation.
+      </p>
+
+      <h4>3. Links for Navigation</h4>
+      <pre><code>&lt;li&gt;
+  &lt;a href="/products"&gt;Products&lt;/a&gt;
+&lt;/li&gt;</code></pre>
+      <p>
+        <strong>&lt;a&gt;</strong> elements are naturally keyboard accessible and announced as links.
+        Current page is plain text (not a link to itself).
+      </p>
+
+      <h4>4. aria-current="page"</h4>
+      <pre><code>&lt;li aria-current="page"&gt;
+  MacBook Pro 16"
+&lt;/li&gt;</code></pre>
+      <p>
+        <strong>aria-current="page"</strong> explicitly marks the current page.
+        Screen readers announce: "MacBook Pro 16 inch, current page".
+      </p>
+
+      <h4>5. Hidden Separators</h4>
+      <pre><code>&lt;span aria-hidden="true"&gt;&amp;gt;&lt;/span&gt;</code></pre>
+      <p>
+        <strong>aria-hidden="true"</strong> hides visual separators from screen readers.
+        They're purely decorative and would clutter announcements.
+        Screen readers already announce the list structure ("1 of 5, 2 of 5...").
+      </p>
+    </section>
+
+    <section class="why-paradise">
+      <h2>🎯 What Paradise Detects</h2>
+
+      <h3>Complete Pattern Validation</h3>
+      <p>Paradise validates the <strong>entire breadcrumb structure</strong>, not just individual elements:</p>
+
+      <div class="detection-grid">
+        <div class="detection-item">
+          <h4>✓ Semantic Structure</h4>
+          <ul>
+            <li>&lt;nav&gt; landmark present</li>
+            <li>aria-label identifies it as breadcrumb</li>
+            <li>&lt;ol&gt; provides hierarchy</li>
+            <li>&lt;li&gt; for each item</li>
+          </ul>
+        </div>
+
+        <div class="detection-item">
+          <h4>✓ Navigation Links</h4>
+          <ul>
+            <li>&lt;a&gt; elements for navigable items</li>
+            <li>Current page is not a link</li>
+            <li>Links naturally keyboard accessible</li>
+          </ul>
+        </div>
+
+        <div class="detection-item">
+          <h4>✓ Current Page Marker</h4>
+          <ul>
+            <li>aria-current="page" present</li>
+            <li>Applied to correct element</li>
+            <li>Only one item marked as current</li>
+          </ul>
+        </div>
+
+        <div class="detection-item">
+          <h4>✓ Accessibility Details</h4>
+          <ul>
+            <li>Separators hidden from screen readers</li>
+            <li>No redundant ARIA roles</li>
+            <li>Proper hierarchy communicated</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="comparison-table">
+      <h2>Why Other Tools Miss This</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Validation Aspect</th>
+            <th>Traditional Tools</th>
+            <th>Paradise</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>&lt;nav&gt; Landmark</strong></td>
+            <td>✓ Detects missing &lt;nav&gt;</td>
+            <td>✓ Detects missing &lt;nav&gt;</td>
+          </tr>
+          <tr>
+            <td><strong>aria-label</strong></td>
+            <td>~ May suggest aria-label</td>
+            <td>✓ Requires "Breadcrumb" label</td>
+          </tr>
+          <tr>
+            <td><strong>Semantic List</strong></td>
+            <td>✗ Cannot verify &lt;ol&gt; vs &lt;div&gt;</td>
+            <td>✓ Requires &lt;ol&gt; for hierarchy</td>
+          </tr>
+          <tr>
+            <td><strong>List Items</strong></td>
+            <td>✗ Cannot verify &lt;li&gt; structure</td>
+            <td>✓ Requires &lt;li&gt; for each crumb</td>
+          </tr>
+          <tr>
+            <td><strong>aria-current</strong></td>
+            <td>~ May detect presence</td>
+            <td>✓ Verifies correct placement and uniqueness</td>
+          </tr>
+          <tr>
+            <td><strong>Separator Handling</strong></td>
+            <td>✗ Cannot verify aria-hidden</td>
+            <td>✓ Verifies separators hidden from AT</td>
+          </tr>
+          <tr>
+            <td><strong>Link Structure</strong></td>
+            <td>~ Basic link validation</td>
+            <td>✓ Verifies current page not a link</td>
+          </tr>
+          <tr>
+            <td><strong>Complete Pattern</strong></td>
+            <td>✗ Checks elements independently</td>
+            <td>✓ Validates entire pattern structure</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="tool-limitation">
+        <strong>Traditional tools:</strong> May check for individual elements like &lt;nav&gt; or aria-current,
+        but cannot verify the complete semantic structure (ol > li) or proper hierarchy communication.
+      </p>
+
+      <p class="paradise-advantage">
+        <strong>Paradise:</strong> Understands the breadcrumb pattern as a complete structure.
+        Validates that &lt;nav&gt; + aria-label + &lt;ol&gt; + &lt;li&gt; + aria-current work together
+        to create a proper navigation trail that conveys hierarchy to assistive technology.
+      </p>
+    </section>
+
+    <section class="wcag-mapping">
+      <h2>📋 WCAG Success Criteria</h2>
+      <ul class="wcag-list">
+        <li>
+          <strong>1.3.1 Info and Relationships (Level A)</strong>
+          <p>The breadcrumb hierarchy must be programmatically determined using semantic HTML (&lt;nav&gt;, &lt;ol&gt;, &lt;li&gt;) and ARIA attributes.</p>
+        </li>
+        <li>
+          <strong>2.4.8 Location (Level AAA)</strong>
+          <p>Information about the user's location within a set of Web pages must be available. Breadcrumbs provide this context.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="resources">
+      <h2>📚 Resources</h2>
+      <ul>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/" target="_blank">WAI-ARIA: Breadcrumb Pattern</a></li>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/examples/breadcrumb/" target="_blank">WAI-ARIA: Breadcrumb Example</a></li>
+        <li><a href="/docs/issues/incomplete-breadcrumb-pattern.md">Paradise: Breadcrumb Pattern Help</a></li>
+      </ul>
+    </section>
+
+    <nav class="demo-nav">
+      <a href="tree-comprehensive.html" class="nav-prev">← Previous: Tree</a>
+      <a href="../../index.html" class="nav-home">🏠 All Patterns</a>
+      <a href="toolbar-comprehensive.html" class="nav-next">Next: Toolbar →</a>
+    </nav>
+  </div>
+
+  <script src="../../js/accessible/breadcrumb-complete.js"></script>
+</body>
+</html>

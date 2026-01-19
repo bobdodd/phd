@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Combobox Pattern Demo - Paradise Widget Patterns</title>
+  <link rel="stylesheet" href="../../../css/demo.css">
+  <style>
+    .combobox-container {
+      margin: 20px 0;
+      max-width: 500px;
+    }
+
+    .combobox-label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    .combobox-wrapper {
+      position: relative;
+    }
+
+    [role="combobox"] {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 16px;
+      border: 2px solid #666;
+      border-radius: 4px;
+      background: white;
+      transition: border-color 0.15s;
+    }
+
+    [role="combobox"]:focus {
+      outline: none;
+      border-color: #0066cc;
+      box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+    }
+
+    [role="combobox"][aria-expanded="true"] {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      border-bottom-color: transparent;
+    }
+
+    .combobox-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      font-size: 12px;
+      color: #666;
+      transition: transform 0.2s;
+    }
+
+    [role="combobox"][aria-expanded="true"] + .combobox-icon {
+      transform: translateY(-50%) rotate(180deg);
+    }
+
+    [role="listbox"] {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      max-height: 300px;
+      overflow-y: auto;
+      background: white;
+      border: 2px solid #0066cc;
+      border-top: none;
+      border-bottom-left-radius: 4px;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      z-index: 1000;
+      display: none;
+    }
+
+    [role="listbox"][aria-hidden="false"] {
+      display: block;
+    }
+
+    [role="option"] {
+      padding: 12px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: background 0.15s;
+      border-bottom: 1px solid #eee;
+    }
+
+    [role="option"]:last-child {
+      border-bottom: none;
+    }
+
+    [role="option"]:hover {
+      background: #e6f2ff;
+    }
+
+    [role="option"][aria-selected="true"] {
+      background: #0066cc;
+      color: white;
+      font-weight: bold;
+    }
+
+    [role="option"][aria-selected="true"]::before {
+      content: "→ ";
+      margin-right: 8px;
+      font-weight: bold;
+    }
+
+    .country-flag {
+      font-size: 24px;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+
+    .country-info {
+      flex: 1;
+    }
+
+    .country-name {
+      display: block;
+      font-weight: 600;
+    }
+
+    .country-code {
+      display: block;
+      font-size: 13px;
+      opacity: 0.8;
+      margin-top: 2px;
+    }
+
+    [role="option"][aria-selected="true"] .country-code {
+      opacity: 0.9;
+    }
+
+    .no-results {
+      padding: 12px 16px;
+      color: #666;
+      font-style: italic;
+      text-align: center;
+    }
+
+    .selection-output {
+      margin-top: 16px;
+      padding: 12px;
+      background: #f5f5f5;
+      border-radius: 4px;
+      border-left: 4px solid #0066cc;
+    }
+
+    .selection-output strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .selection-output .selected-value {
+      font-family: 'Courier New', monospace;
+      color: #0066cc;
+    }
+
+    .bad-combobox-container .combobox-label {
+      color: inherit;
+    }
+
+    .bad-combobox-input {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 16px;
+      border: 2px solid #666;
+      border-radius: 4px;
+      background: white;
+    }
+
+    .bad-combobox-input:focus {
+      outline: 2px solid #999;
+      outline-offset: 2px;
+    }
+
+    .bad-listbox {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      max-height: 300px;
+      overflow-y: auto;
+      background: white;
+      border: 2px solid #666;
+      border-top: none;
+      border-bottom-left-radius: 4px;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      z-index: 1000;
+      display: none;
+    }
+
+    .bad-listbox.open {
+      display: block;
+    }
+
+    .bad-option {
+      padding: 12px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+    }
+
+    .bad-option:last-child {
+      border-bottom: none;
+    }
+
+    .bad-option:hover {
+      background: #e6e6e6;
+    }
+
+    .bad-option.selected {
+      background: #999;
+      color: white;
+    }
+
+    .keyboard-hints {
+      margin-top: 12px;
+      padding: 10px;
+      background: #e6f7ff;
+      border-radius: 4px;
+      font-size: 14px;
+      border: 1px solid #91d5ff;
+    }
+
+    .keyboard-hints strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #0066cc;
+    }
+
+    .keyboard-hints ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .keyboard-hints li {
+      margin: 4px 0;
+    }
+
+    kbd {
+      display: inline-block;
+      padding: 2px 6px;
+      font-family: monospace;
+      font-size: 12px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .combobox-instructions {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 4px;
+      padding: 12px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .combobox-instructions strong {
+      color: #856404;
+    }
+
+    .inline-autocomplete-demo {
+      margin-top: 40px;
+    }
+
+    .feature-note {
+      background: #f0f8ff;
+      border-left: 4px solid #0066cc;
+      padding: 12px;
+      margin: 16px 0;
+      border-radius: 4px;
+    }
+
+    .feature-note strong {
+      color: #0066cc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="../../index.html">Home</a> &gt;
+      <a href="#input-widgets">Input Widgets</a> &gt;
+      <span>Combobox</span>
+    </nav>
+
+    <header>
+      <h1>Combobox Pattern</h1>
+      <p class="subtitle">Autocomplete input with dropdown list and full keyboard navigation</p>
+
+      <div class="pattern-info">
+        <span class="complexity-badge very-high">Very High Complexity</span>
+        <span class="wcag-badge">WCAG 2.1.1, 4.1.2</span>
+      </div>
+    </header>
+
+    <section class="pattern-description">
+      <h2>What is a Combobox?</h2>
+      <p>A combobox is a composite widget that combines an input field with a popup listbox, allowing users to either type a value or select from a list of options. Also known as an autocomplete or autosuggest, it's one of the most complex ARIA patterns, requiring careful coordination between the input, listbox, and keyboard interactions.</p>
+
+      <div class="key-requirements">
+        <h3>Complete Combobox Pattern Requires:</h3>
+        <ul>
+          <li><code>role="combobox"</code> on the input element</li>
+          <li><code>aria-expanded="true/false"</code> on input to indicate popup state</li>
+          <li><code>aria-controls="listbox-id"</code> pointing to the listbox element</li>
+          <li><code>aria-activedescendant="option-id"</code> on input for virtual focus</li>
+          <li><code>aria-autocomplete="list"</code> or <code>"both"</code> on input</li>
+          <li>Popup: <code>role="listbox"</code> with <code>role="option"</code> items</li>
+          <li><code>aria-selected="true"</code> on the highlighted option</li>
+          <li><strong>Arrow Down/Up:</strong> Navigate options (opens popup if closed)</li>
+          <li><strong>Enter:</strong> Select highlighted option and close popup</li>
+          <li><strong>Escape:</strong> Close popup and clear highlight</li>
+          <li><strong>Type:</strong> Filter options based on input value</li>
+          <li><strong>Alt+Down:</strong> Open popup without moving focus</li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="comparison">
+      <!-- LEFT SIDE - ACCESSIBLE -->
+      <section class="example good">
+        <h2>Accessible Implementation</h2>
+        <p>Complete combobox with aria-activedescendant, virtual focus, and full keyboard navigation.</p>
+
+        <div class="combobox-instructions">
+          <strong>Try it:</strong> Click or Tab to focus the input, then type to filter or use arrow keys to navigate. Press Enter to select, Escape to close.
+        </div>
+
+        <!-- Country Selector Example -->
+        <div class="combobox-container">
+          <label id="good-country-label" class="combobox-label">
+            Select your country:
+          </label>
+          <div class="combobox-wrapper">
+            <input type="text"
+                   role="combobox"
+                   id="good-country-combobox"
+                   aria-labelledby="good-country-label"
+                   aria-autocomplete="list"
+                   aria-expanded="false"
+                   aria-controls="good-country-listbox"
+                   aria-activedescendant=""
+                   placeholder="Type to search countries..."
+                   autocomplete="off">
+            <span class="combobox-icon" aria-hidden="true">▼</span>
+            <ul role="listbox"
+                id="good-country-listbox"
+                aria-hidden="true">
+              <li role="option" id="good-option-us">
+                <span class="country-flag">🇺🇸</span>
+                <span class="country-info">
+                  <span class="country-name">United States</span>
+                  <span class="country-code">USA</span>
+                </span>
+              </li>
+              <li role="option" id="good-option-ca">
+                <span class="country-flag">🇨🇦</span>
+                <span class="country-info">
+                  <span class="country-name">Canada</span>
+                  <span class="country-code">CAN</span>
+                </span>
+              </li>
+              <li role="option" id="good-option-uk">
+                <span class="country-flag">🇬🇧</span>
+                <span class="country-info">
+                  <span class="country-name">United Kingdom</span>
+                  <span class="country-code">GBR</span>
+                </span>
+              </li>
+              <li role="option" id="good-option-au">
+                <span class="country-flag">🇦🇺</span>
+                <span class="country-info">
+                  <span class="country-name">Australia</span>
+                  <span class="country-code">AUS</span>
+                </span>
+              </li>
+              <li role="option" id="good-option-de">
+                <span class="country-flag">🇩🇪</span>
+                <span class="country-info">
+                  <span class="country-name">Germany</span>
+                  <span class="country-code">DEU</span>
+                </span>
+              </li>
+              <li role="option" id="good-option-fr">
+                <span class="country-flag">🇫🇷</span>
+                <span class="country-info">
+                  <span class="country-name">France</span>
+                  <span class="country-code">FRA</span>
+                </span>
+              </li>
+              <li role="option" id="good-option-jp">
+                <span class="country-flag">🇯🇵</span>
+                <span class="country-info">
+                  <span class="country-name">Japan</span>
+                  <span class="country-code">JPN</span>
+                </span>
+              </li>
+              <li role="option" id="good-option-cn">
+                <span class="country-flag">🇨🇳</span>
+                <span class="country-info">
+                  <span class="country-name">China</span>
+                  <span class="country-code">CHN</span>
+                </span>
+              </li>
+              <li role="option" id="good-option-in">
+                <span class="country-flag">🇮🇳</span>
+                <span class="country-info">
+                  <span class="country-name">India</span>
+                  <span class="country-code">IND</span>
+                </span>
+              </li>
+              <li role="option" id="good-option-br">
+                <span class="country-flag">🇧🇷</span>
+                <span class="country-info">
+                  <span class="country-name">Brazil</span>
+                  <span class="country-code">BRA</span>
+                </span>
+              </li>
+              <li role="option" id="good-option-mx">
+                <span class="country-flag">🇲🇽</span>
+                <span class="country-info">
+                  <span class="country-name">Mexico</span>
+                  <span class="country-code">MEX</span>
+                </span>
+              </li>
+              <li role="option" id="good-option-es">
+                <span class="country-flag">🇪🇸</span>
+                <span class="country-info">
+                  <span class="country-name">Spain</span>
+                  <span class="country-code">ESP</span>
+                </span>
+              </li>
+              <li role="option" id="good-option-it">
+                <span class="country-flag">🇮🇹</span>
+                <span class="country-info">
+                  <span class="country-name">Italy</span>
+                  <span class="country-code">ITA</span>
+                </span>
+              </li>
+              <li role="option" id="good-option-se">
+                <span class="country-flag">🇸🇪</span>
+                <span class="country-info">
+                  <span class="country-name">Sweden</span>
+                  <span class="country-code">SWE</span>
+                </span>
+              </li>
+              <li role="option" id="good-option-no">
+                <span class="country-flag">🇳🇴</span>
+                <span class="country-info">
+                  <span class="country-name">Norway</span>
+                  <span class="country-code">NOR</span>
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="selection-output">
+            <strong>Selected Country:</strong>
+            <span id="good-selection" class="selected-value">None</span>
+          </div>
+
+          <div class="keyboard-hints">
+            <strong>Keyboard shortcuts:</strong>
+            <ul>
+              <li><kbd>Type</kbd> Filter countries by name</li>
+              <li><kbd>↓</kbd> <kbd>↑</kbd> Navigate options (opens popup)</li>
+              <li><kbd>Enter</kbd> Select highlighted option</li>
+              <li><kbd>Escape</kbd> Close popup and clear filter</li>
+              <li><kbd>Alt</kbd> + <kbd>↓</kbd> Open popup without moving selection</li>
+              <li><kbd>Home</kbd> <kbd>End</kbd> Jump to first/last visible option</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="feature-note">
+          <strong>Virtual Focus (aria-activedescendant):</strong> Unlike native focus, which moves to the listbox options, this combobox uses <code>aria-activedescendant</code> to keep keyboard focus on the input while highlighting options in the listbox. This allows seamless typing while navigating options.
+        </div>
+
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis Results</h3>
+          <div class="result-box success">
+            <strong>Complete Combobox Pattern Detected</strong>
+            <p>0 issues found</p>
+          </div>
+
+          <h4>Validation Checklist:</h4>
+          <ul class="validation-results">
+            <li class="check-pass">✓ <code>role="combobox"</code> on input</li>
+            <li class="check-pass">✓ <code>aria-expanded</code> managed correctly</li>
+            <li class="check-pass">✓ <code>aria-controls</code> links to listbox</li>
+            <li class="check-pass">✓ <code>aria-activedescendant</code> for virtual focus</li>
+            <li class="check-pass">✓ <code>aria-autocomplete="list"</code> present</li>
+            <li class="check-pass">✓ <code>role="listbox"</code> on popup</li>
+            <li class="check-pass">✓ <code>role="option"</code> on each item</li>
+            <li class="check-pass">✓ <code>aria-selected="true"</code> on highlighted option</li>
+            <li class="check-pass">✓ Arrow Up/Down navigation detected</li>
+            <li class="check-pass">✓ Enter to select option</li>
+            <li class="check-pass">✓ Escape to close popup</li>
+            <li class="check-pass">✓ Type-ahead filtering implemented</li>
+            <li class="check-pass">✓ Home/End navigation</li>
+            <li class="check-pass">✓ Alt+Down to open popup</li>
+          </ul>
+        </div>
+
+        <details class="code-sample">
+          <summary>View Complete HTML</summary>
+          <pre><code>&lt;label id="country-label"&gt;Select your country:&lt;/label&gt;
+&lt;div class="combobox-wrapper"&gt;
+  &lt;input type="text"
+         role="combobox"
+         aria-labelledby="country-label"
+         aria-autocomplete="list"
+         aria-expanded="false"
+         aria-controls="country-listbox"
+         aria-activedescendant=""
+         placeholder="Type to search..."&gt;
+
+  &lt;ul role="listbox"
+      id="country-listbox"
+      aria-hidden="true"&gt;
+    &lt;li role="option" id="option-us"&gt;United States&lt;/li&gt;
+    &lt;li role="option" id="option-ca"&gt;Canada&lt;/li&gt;
+    &lt;li role="option" id="option-uk"&gt;United Kingdom&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+        </details>
+
+        <details class="code-sample">
+          <summary>View Complete JavaScript (Key Features)</summary>
+          <pre><code>// Complete combobox implementation
+const combobox = document.querySelector('[role="combobox"]');
+const listbox = document.getElementById(combobox.getAttribute('aria-controls'));
+const options = Array.from(listbox.querySelectorAll('[role="option"]'));
+
+let currentIndex = -1;
+let filteredOptions = options;
+
+// Open popup
+function openPopup() {
+  combobox.setAttribute('aria-expanded', 'true');
+  listbox.setAttribute('aria-hidden', 'false');
+}
+
+// Close popup
+function closePopup() {
+  combobox.setAttribute('aria-expanded', 'false');
+  listbox.setAttribute('aria-hidden', 'true');
+  clearHighlight();
+}
+
+// Highlight an option using aria-activedescendant
+function highlightOption(index) {
+  if (index &lt; 0 || index &gt;= filteredOptions.length) return;
+
+  currentIndex = index;
+  const option = filteredOptions[index];
+
+  // Clear previous selection
+  options.forEach(opt => opt.setAttribute('aria-selected', 'false'));
+
+  // Set new selection
+  option.setAttribute('aria-selected', 'true');
+
+  // Update aria-activedescendant (virtual focus)
+  combobox.setAttribute('aria-activedescendant', option.id);
+
+  // Scroll into view if needed
+  option.scrollIntoView({ block: 'nearest' });
+}
+
+// Clear highlight
+function clearHighlight() {
+  options.forEach(opt => opt.setAttribute('aria-selected', 'false'));
+  combobox.setAttribute('aria-activedescendant', '');
+  currentIndex = -1;
+}
+
+// Filter options based on input
+function filterOptions() {
+  const searchTerm = combobox.value.toLowerCase();
+
+  filteredOptions = options.filter(option => {
+    const text = option.textContent.toLowerCase();
+    const matches = text.includes(searchTerm);
+
+    // Show/hide based on match
+    option.style.display = matches ? '' : 'none';
+
+    return matches;
+  });
+
+  // Reset highlight
+  currentIndex = -1;
+  clearHighlight();
+
+  if (filteredOptions.length > 0) {
+    openPopup();
+  } else {
+    closePopup();
+  }
+}
+
+// Select option
+function selectOption(option) {
+  combobox.value = option.textContent.trim();
+  closePopup();
+
+  // Dispatch change event
+  combobox.dispatchEvent(new Event('change', { bubbles: true }));
+}
+
+// Keyboard navigation
+combobox.addEventListener('keydown', (event) => {
+  switch (event.key) {
+    case 'ArrowDown':
+      event.preventDefault();
+      if (combobox.getAttribute('aria-expanded') === 'false') {
+        openPopup();
+        highlightOption(0);
+      } else {
+        highlightOption(Math.min(currentIndex + 1, filteredOptions.length - 1));
+      }
+      break;
+
+    case 'ArrowUp':
+      event.preventDefault();
+      if (currentIndex > 0) {
+        highlightOption(currentIndex - 1);
+      }
+      break;
+
+    case 'Home':
+      event.preventDefault();
+      if (combobox.getAttribute('aria-expanded') === 'true') {
+        highlightOption(0);
+      }
+      break;
+
+    case 'End':
+      event.preventDefault();
+      if (combobox.getAttribute('aria-expanded') === 'true') {
+        highlightOption(filteredOptions.length - 1);
+      }
+      break;
+
+    case 'Enter':
+      event.preventDefault();
+      if (currentIndex >= 0 && filteredOptions[currentIndex]) {
+        selectOption(filteredOptions[currentIndex]);
+      }
+      break;
+
+    case 'Escape':
+      event.preventDefault();
+      closePopup();
+      break;
+
+    case 'ArrowDown':
+      // Alt+Down opens without moving selection
+      if (event.altKey) {
+        event.preventDefault();
+        openPopup();
+      }
+      break;
+  }
+});
+
+// Filter on input
+combobox.addEventListener('input', filterOptions);
+
+// Click option to select
+options.forEach((option) => {
+  option.addEventListener('click', () => selectOption(option));
+});</code></pre>
+        </details>
+      </section>
+
+      <!-- RIGHT SIDE - INACCESSIBLE -->
+      <section class="example bad">
+        <h2>Inaccessible Implementation</h2>
+        <p>Autocomplete missing ARIA roles, attributes, and keyboard navigation.</p>
+
+        <div class="combobox-instructions">
+          <strong>Try it:</strong> Notice how keyboard navigation doesn't work, the dropdown state isn't announced, and selection is unclear to screen readers.
+        </div>
+
+        <!-- Country Selector Example -->
+        <div class="bad-combobox-container">
+          <label id="bad-country-label" class="combobox-label">
+            Select your country:
+          </label>
+          <div class="combobox-wrapper">
+            <input type="text"
+                   id="bad-country-input"
+                   class="bad-combobox-input"
+                   placeholder="Type to search countries..."
+                   autocomplete="off">
+            <span class="combobox-icon" aria-hidden="true">▼</span>
+            <ul class="bad-listbox" id="bad-country-listbox">
+              <li class="bad-option" data-value="us">
+                <span class="country-flag">🇺🇸</span>
+                <span class="country-info">
+                  <span class="country-name">United States</span>
+                  <span class="country-code">USA</span>
+                </span>
+              </li>
+              <li class="bad-option" data-value="ca">
+                <span class="country-flag">🇨🇦</span>
+                <span class="country-info">
+                  <span class="country-name">Canada</span>
+                  <span class="country-code">CAN</span>
+                </span>
+              </li>
+              <li class="bad-option" data-value="uk">
+                <span class="country-flag">🇬🇧</span>
+                <span class="country-info">
+                  <span class="country-name">United Kingdom</span>
+                  <span class="country-code">GBR</span>
+                </span>
+              </li>
+              <li class="bad-option" data-value="au">
+                <span class="country-flag">🇦🇺</span>
+                <span class="country-info">
+                  <span class="country-name">Australia</span>
+                  <span class="country-code">AUS</span>
+                </span>
+              </li>
+              <li class="bad-option" data-value="de">
+                <span class="country-flag">🇩🇪</span>
+                <span class="country-info">
+                  <span class="country-name">Germany</span>
+                  <span class="country-code">DEU</span>
+                </span>
+              </li>
+              <li class="bad-option" data-value="fr">
+                <span class="country-flag">🇫🇷</span>
+                <span class="country-info">
+                  <span class="country-name">France</span>
+                  <span class="country-code">FRA</span>
+                </span>
+              </li>
+              <li class="bad-option" data-value="jp">
+                <span class="country-flag">🇯🇵</span>
+                <span class="country-info">
+                  <span class="country-name">Japan</span>
+                  <span class="country-code">JPN</span>
+                </span>
+              </li>
+              <li class="bad-option" data-value="cn">
+                <span class="country-flag">🇨🇳</span>
+                <span class="country-info">
+                  <span class="country-name">China</span>
+                  <span class="country-code">CHN</span>
+                </span>
+              </li>
+              <li class="bad-option" data-value="in">
+                <span class="country-flag">🇮🇳</span>
+                <span class="country-info">
+                  <span class="country-name">India</span>
+                  <span class="country-code">IND</span>
+                </span>
+              </li>
+              <li class="bad-option" data-value="br">
+                <span class="country-flag">🇧🇷</span>
+                <span class="country-info">
+                  <span class="country-name">Brazil</span>
+                  <span class="country-code">BRA</span>
+                </span>
+              </li>
+              <li class="bad-option" data-value="mx">
+                <span class="country-flag">🇲🇽</span>
+                <span class="country-info">
+                  <span class="country-name">Mexico</span>
+                  <span class="country-code">MEX</span>
+                </span>
+              </li>
+              <li class="bad-option" data-value="es">
+                <span class="country-flag">🇪🇸</span>
+                <span class="country-info">
+                  <span class="country-name">Spain</span>
+                  <span class="country-code">ESP</span>
+                </span>
+              </li>
+              <li class="bad-option" data-value="it">
+                <span class="country-flag">🇮🇹</span>
+                <span class="country-info">
+                  <span class="country-name">Italy</span>
+                  <span class="country-code">ITA</span>
+                </span>
+              </li>
+              <li class="bad-option" data-value="se">
+                <span class="country-flag">🇸🇪</span>
+                <span class="country-info">
+                  <span class="country-name">Sweden</span>
+                  <span class="country-code">SWE</span>
+                </span>
+              </li>
+              <li class="bad-option" data-value="no">
+                <span class="country-flag">🇳🇴</span>
+                <span class="country-info">
+                  <span class="country-name">Norway</span>
+                  <span class="country-code">NOR</span>
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="selection-output">
+            <strong>Selected Country:</strong>
+            <span id="bad-selection" class="selected-value">None</span>
+          </div>
+        </div>
+
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis Results</h3>
+          <div class="result-box error">
+            <strong>Incomplete Combobox Pattern</strong>
+            <p>9 issues found</p>
+          </div>
+
+          <h4>Issues Detected:</h4>
+          <ul class="issues-list">
+            <li class="issue-error">
+              <strong>Missing <code>role="combobox"</code></strong>
+              <p>Input not identified as a combobox to assistive technologies</p>
+            </li>
+            <li class="issue-error">
+              <strong>Missing <code>aria-expanded</code></strong>
+              <p>Popup state (open/closed) not communicated to screen readers</p>
+            </li>
+            <li class="issue-error">
+              <strong>Missing <code>aria-controls</code></strong>
+              <p>Relationship between input and listbox not established</p>
+            </li>
+            <li class="issue-error">
+              <strong>Missing <code>aria-activedescendant</code></strong>
+              <p>Highlighted option not announced to screen readers</p>
+            </li>
+            <li class="issue-error">
+              <strong>Missing <code>aria-autocomplete</code></strong>
+              <p>Autocomplete behavior not declared</p>
+            </li>
+            <li class="issue-error">
+              <strong>Missing <code>role="listbox"</code> and <code>role="option"</code></strong>
+              <p>Popup options not properly identified</p>
+            </li>
+            <li class="issue-error">
+              <strong>Missing <code>aria-selected</code></strong>
+              <p>Highlighted state not communicated</p>
+            </li>
+            <li class="issue-error">
+              <strong>No arrow key navigation</strong>
+              <p>Cannot navigate options with keyboard</p>
+            </li>
+            <li class="issue-error">
+              <strong>No Enter/Escape handlers</strong>
+              <p>Cannot select or dismiss with keyboard</p>
+            </li>
+          </ul>
+
+          <h4>Validation Checklist:</h4>
+          <ul class="validation-results">
+            <li class="check-fail">✗ <code>role="combobox"</code> missing</li>
+            <li class="check-fail">✗ <code>aria-expanded</code> missing</li>
+            <li class="check-fail">✗ <code>aria-controls</code> missing</li>
+            <li class="check-fail">✗ <code>aria-activedescendant</code> missing</li>
+            <li class="check-fail">✗ <code>aria-autocomplete</code> missing</li>
+            <li class="check-fail">✗ <code>role="listbox"</code> missing</li>
+            <li class="check-fail">✗ <code>aria-selected</code> missing</li>
+            <li class="check-fail">✗ No arrow navigation</li>
+            <li class="check-fail">✗ No Enter/Escape handlers</li>
+          </ul>
+        </div>
+
+        <details class="code-sample">
+          <summary>View Incomplete HTML</summary>
+          <pre><code>&lt;!-- INCOMPLETE: Missing ARIA roles and attributes --&gt;
+&lt;label&gt;Select your country:&lt;/label&gt;
+&lt;div class="combobox-wrapper"&gt;
+  &lt;input type="text"
+         placeholder="Type to search..."&gt;
+
+  &lt;ul class="listbox"&gt;
+    &lt;li class="option"&gt;United States&lt;/li&gt;
+    &lt;li class="option"&gt;Canada&lt;/li&gt;
+    &lt;li class="option"&gt;United Kingdom&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+        </details>
+
+        <details class="code-sample">
+          <summary>View Incomplete JavaScript</summary>
+          <pre><code>// INCOMPLETE: Only mouse support, no accessibility
+const input = document.querySelector('.combobox-input');
+const listbox = document.querySelector('.listbox');
+const options = listbox.querySelectorAll('.option');
+
+// Filter on input
+input.addEventListener('input', () => {
+  const searchTerm = input.value.toLowerCase();
+
+  options.forEach(option => {
+    const matches = option.textContent.toLowerCase().includes(searchTerm);
+    option.style.display = matches ? '' : 'none';
+  });
+
+  // Show/hide listbox
+  listbox.classList.toggle('open', input.value.length > 0);
+
+  // ❌ MISSING: aria-expanded update
+  // ❌ MISSING: aria-activedescendant for highlighted option
+});
+
+// Click to select
+options.forEach(option => {
+  option.addEventListener('click', () => {
+    input.value = option.textContent.trim();
+    listbox.classList.remove('open');
+
+    // ❌ MISSING: aria-expanded update
+    // ❌ MISSING: Arrow key navigation
+    // ❌ MISSING: Enter to select
+    // ❌ MISSING: Escape to close
+    // ❌ MISSING: Home/End navigation
+    // ❌ MISSING: aria-selected management
+    // ❌ MISSING: Keyboard-only users excluded
+  });
+});</code></pre>
+        </details>
+      </section>
+    </div>
+
+    <section class="testing-panel">
+      <h2>Interactive Testing</h2>
+      <p>Test both implementations with keyboard and screen reader:</p>
+
+      <div class="testing-instructions">
+        <h3>Keyboard Testing Steps:</h3>
+        <ol>
+          <li><strong>Focus the input:</strong> Tab to the combobox</li>
+          <li><strong>Accessible:</strong> Announced as "combobox, collapsed"</li>
+          <li><strong>Inaccessible:</strong> Announced as generic text input</li>
+          <li><strong>Type to filter:</strong> Type "uni" to filter results</li>
+          <li><strong>Accessible:</strong> Popup opens, aria-expanded="true" announced</li>
+          <li><strong>Inaccessible:</strong> Popup state not announced</li>
+          <li><strong>Navigate options:</strong> Press <kbd>↓</kbd> and <kbd>↑</kbd></li>
+          <li><strong>Accessible:</strong> Each option announced with "option, selected"</li>
+          <li><strong>Inaccessible:</strong> Nothing happens</li>
+          <li><strong>Select option:</strong> Press <kbd>Enter</kbd></li>
+          <li><strong>Accessible:</strong> Option selected, popup closes, input filled</li>
+          <li><strong>Inaccessible:</strong> Nothing happens</li>
+          <li><strong>Open with Alt+Down:</strong> Press <kbd>Alt</kbd> + <kbd>↓</kbd></li>
+          <li><strong>Accessible:</strong> Popup opens without filtering</li>
+          <li><strong>Inaccessible:</strong> Nothing happens</li>
+          <li><strong>Close popup:</strong> Press <kbd>Escape</kbd></li>
+          <li><strong>Accessible:</strong> Popup closes, aria-expanded="false"</li>
+          <li><strong>Inaccessible:</strong> Nothing happens</li>
+        </ol>
+
+        <h3>Screen Reader Testing:</h3>
+        <ul>
+          <li><strong>Accessible:</strong> "Select your country, combobox, collapsed"</li>
+          <li><strong>Inaccessible:</strong> "Select your country, edit text"</li>
+          <li><strong>Accessible (typing):</strong> "Expanded, 3 results available"</li>
+          <li><strong>Inaccessible (typing):</strong> No announcement about results</li>
+          <li><strong>Accessible (arrow down):</strong> "United States, option, 1 of 3, selected"</li>
+          <li><strong>Inaccessible (arrow down):</strong> No announcement</li>
+          <li><strong>Accessible (enter):</strong> "United States selected, collapsed"</li>
+          <li><strong>Inaccessible (enter):</strong> No announcement</li>
+          <li><strong>Accessible (escape):</strong> "Collapsed"</li>
+          <li><strong>Inaccessible (escape):</strong> No announcement</li>
+        </ul>
+
+        <div class="testing-checklist">
+          <h4>Test Checklist:</h4>
+          <label><input type="checkbox"> Tab to combobox (works for both)</label>
+          <label><input type="checkbox"> Type to filter options (works for both)</label>
+          <label><input type="checkbox"> Arrow keys navigate (accessible only)</label>
+          <label><input type="checkbox"> Enter selects option (accessible only)</label>
+          <label><input type="checkbox"> Escape closes popup (accessible only)</label>
+          <label><input type="checkbox"> Alt+Down opens popup (accessible only)</label>
+          <label><input type="checkbox"> Home/End navigation (accessible only)</label>
+          <label><input type="checkbox"> Screen reader announces popup state</label>
+          <label><input type="checkbox"> Screen reader announces highlighted option</label>
+          <label><input type="checkbox"> Screen reader announces result count</label>
+        </div>
+      </div>
+    </section>
+
+    <section class="explanation">
+      <h2>What Paradise Detects</h2>
+      <p>Paradise validates the <strong>complete combobox pattern</strong> in multiple steps:</p>
+
+      <ol class="detection-steps">
+        <li>
+          <strong>Combobox Role</strong>
+          <p>Verifies <code>role="combobox"</code> on the input element</p>
+        </li>
+        <li>
+          <strong>Popup State</strong>
+          <p>Checks for <code>aria-expanded="true/false"</code> to indicate popup state</p>
+        </li>
+        <li>
+          <strong>Popup Relationship</strong>
+          <p>Validates <code>aria-controls</code> pointing to the listbox element ID</p>
+        </li>
+        <li>
+          <strong>Virtual Focus</strong>
+          <p>Ensures <code>aria-activedescendant</code> is present and updated to indicate highlighted option</p>
+        </li>
+        <li>
+          <strong>Autocomplete Type</strong>
+          <p>Checks for <code>aria-autocomplete="list"</code>, <code>"both"</code>, or <code>"inline"</code></p>
+        </li>
+        <li>
+          <strong>Listbox Structure</strong>
+          <p>Validates <code>role="listbox"</code> on popup with <code>role="option"</code> on items</p>
+        </li>
+        <li>
+          <strong>Selection State</strong>
+          <p>Verifies <code>aria-selected="true"</code> on the highlighted option</p>
+        </li>
+        <li>
+          <strong>Arrow Navigation</strong>
+          <p>Detects keydown handlers for ArrowUp/ArrowDown to navigate options</p>
+        </li>
+        <li>
+          <strong>Enter Handler</strong>
+          <p>Checks for Enter key handler to select the highlighted option</p>
+        </li>
+        <li>
+          <strong>Escape Handler</strong>
+          <p>Validates Escape key handler to close the popup</p>
+        </li>
+        <li>
+          <strong>Filtering Logic</strong>
+          <p>Detects input event handler that filters options based on typed value</p>
+        </li>
+        <li>
+          <strong>Home/End Navigation</strong>
+          <p>Optionally checks for Home/End key handlers</p>
+        </li>
+      </ol>
+
+      <div class="insight-box">
+        <h3>Why This Matters</h3>
+        <p>The combobox pattern is one of the most complex ARIA patterns because it requires perfect coordination between the input, listbox, and keyboard interactions. Without proper ARIA attributes, screen reader users don't know when the popup opens, which option is highlighted, or how to select an option. Without keyboard handlers, keyboard-only users cannot navigate or select options at all. The <code>aria-activedescendant</code> attribute is critical for maintaining focus on the input while allowing virtual navigation of options, enabling users to continue typing while browsing suggestions.</p>
+      </div>
+    </section>
+
+    <section class="comparison-section">
+      <h2>Why Other Tools Miss This</h2>
+
+      <div class="tool-comparison">
+        <div class="comparison-item">
+          <h3>Traditional Tool Output</h3>
+          <pre><code>✓ Input has label
+✓ Dropdown is visible
+✓ Options can be clicked
+✓ Filtering works
+
+Result: All checks pass! ✅</code></pre>
+          <p class="comparison-note">But keyboard users cannot navigate or select options, and screen readers don't announce the popup state or highlighted option.</p>
+        </div>
+
+        <div class="comparison-item">
+          <h3>Paradise Output</h3>
+          <pre><code>✓ Input has label
+✓ Dropdown present
+✗ Missing role="combobox"
+✗ Missing aria-expanded
+✗ Missing aria-controls
+✗ Missing aria-activedescendant
+✗ Missing role="listbox"
+✗ No arrow navigation
+✗ No Enter/Escape handlers
+
+Result: 9 critical issues ❌</code></pre>
+          <p class="comparison-note">Paradise catches all missing accessibility features that make comboboxes unusable for keyboard and screen reader users.</p>
+        </div>
+      </div>
+
+      <div class="why-box">
+        <h3>The Difference</h3>
+        <ul>
+          <li><strong>Other tools:</strong> Check if input and dropdown exist and work with mouse</li>
+          <li><strong>Paradise:</strong> Validates complete combobox pattern with all required ARIA attributes and keyboard interactions</li>
+          <li><strong>Result:</strong> Paradise prevents comboboxes that work perfectly for mouse users but are completely unusable for keyboard-only and screen reader users</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="wcag-mapping">
+      <h2>WCAG Success Criteria</h2>
+      <p>Complete combobox pattern satisfies:</p>
+      <ul class="wcag-list">
+        <li>
+          <strong>2.1.1 Keyboard (Level A)</strong>
+          <p>Arrow Up/Down navigation, Enter to select, Escape to close, Alt+Down to open, Home/End navigation</p>
+        </li>
+        <li>
+          <strong>4.1.2 Name, Role, Value (Level A)</strong>
+          <p><code>role="combobox"</code>, <code>aria-expanded</code>, <code>aria-controls</code>, <code>aria-activedescendant</code>, <code>aria-autocomplete</code>, <code>role="listbox"</code>, <code>role="option"</code>, <code>aria-selected</code></p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="resources">
+      <h2>Additional Resources</h2>
+      <ul>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/combobox/" target="_blank">WAI-ARIA: Combobox Pattern</a></li>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/" target="_blank">WAI-ARIA: Keyboard Interface</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/combobox_role" target="_blank">MDN: Combobox Role</a></li>
+        <li><a href="https://www.w3.org/TR/wai-aria-1.2/#aria-activedescendant" target="_blank">WAI-ARIA: aria-activedescendant</a></li>
+      </ul>
+    </section>
+
+    <nav class="demo-nav">
+      <a href="switch-comprehensive.html" class="nav-prev">← Previous: Switch</a>
+      <a href="../../index.html" class="nav-home">All Patterns</a>
+      <a href="listbox-comprehensive.html" class="nav-next">Next: Listbox →</a>
+    </nav>
+  </div>
+
+  <script src="../../js/accessible/combobox-complete.js"></script>
+  <script src="../../js/inaccessible/combobox-incomplete.js"></script>
+</body>
+</html>

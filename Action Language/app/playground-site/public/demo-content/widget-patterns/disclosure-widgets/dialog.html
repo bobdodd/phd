@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dialog Pattern Demo - Paradise Widget Patterns</title>
+  <link rel="stylesheet" href="../../../css/demo.css">
+  <style>
+    .dialog-trigger {
+      padding: 12px 24px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 20px 0;
+    }
+
+    /* Dialog styling */
+    .dialog-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .dialog-overlay.visible {
+      display: flex;
+    }
+
+    .dialog {
+      background: white;
+      border-radius: 8px;
+      padding: 24px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .dialog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .dialog-title {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .dialog-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px 8px;
+      line-height: 1;
+    }
+
+    .dialog-close:hover {
+      background: #f0f0f0;
+      border-radius: 4px;
+    }
+
+    .dialog-body {
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .dialog-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .dialog-actions button {
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: #0066cc;
+      color: white;
+      border: 1px solid #0055aa;
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="../../index.html">Home</a> &gt;
+      <a href="#disclosure">Disclosure Widgets</a> &gt;
+      <span>Dialog</span>
+    </nav>
+
+    <header>
+      <h1>🗨️ Dialog Pattern</h1>
+      <p class="subtitle">Modal dialogs with focus management and keyboard support</p>
+
+      <div class="pattern-info">
+        <span class="complexity-badge very-high">Very High Complexity</span>
+        <span class="wcag-badge">WCAG 2.1.2, 2.4.3, 4.1.2</span>
+      </div>
+    </header>
+
+    <section class="pattern-description">
+      <h2>What is a Dialog?</h2>
+      <p>A dialog is an overlay that requires user interaction before returning to the main content. Dialogs must trap focus within the overlay and provide a way to close (Escape key). This is one of the most complex ARIA patterns to implement correctly.</p>
+
+      <div class="key-requirements">
+        <h3>Complete Dialog Pattern Requires:</h3>
+        <ul>
+          <li><code>role="dialog"</code> or <code>&lt;dialog&gt;</code> element</li>
+          <li><code>aria-modal="true"</code> to indicate modal behavior</li>
+          <li><code>aria-labelledby</code> pointing to dialog title</li>
+          <li><strong>Focus trap:</strong> Tab/Shift+Tab cycle within dialog only</li>
+          <li><strong>Escape handler:</strong> Escape key closes dialog</li>
+          <li><strong>Focus restoration:</strong> Return focus to trigger element</li>
+          <li><strong>Initial focus:</strong> Move focus into dialog on open</li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="comparison">
+      <!-- LEFT SIDE - ACCESSIBLE -->
+      <section class="example good">
+        <h2>✅ Accessible Implementation</h2>
+        <p>Complete dialog with focus trap, Escape handler, and focus restoration.</p>
+
+        <button class="dialog-trigger" id="good-trigger">
+          Open Accessible Dialog
+        </button>
+
+        <div id="good-dialog-overlay" class="dialog-overlay" role="presentation">
+          <div id="good-dialog"
+               role="dialog"
+               aria-modal="true"
+               aria-labelledby="good-dialog-title">
+            <div class="dialog-header">
+              <h2 id="good-dialog-title" class="dialog-title">Confirm Action</h2>
+              <button class="dialog-close"
+                      aria-label="Close dialog"
+                      id="good-dialog-close">
+                ×
+              </button>
+            </div>
+            <div class="dialog-body">
+              <p>Are you sure you want to proceed with this action? This cannot be undone.</p>
+            </div>
+            <div class="dialog-actions">
+              <button class="btn-secondary" id="good-dialog-cancel">Cancel</button>
+              <button class="btn-primary" id="good-dialog-confirm">Confirm</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis Results</h3>
+          <div class="result-box success">
+            <strong>✅ Complete Dialog Pattern Detected</strong>
+            <p>0 issues found</p>
+          </div>
+
+          <h4>Validation Checklist:</h4>
+          <ul class="validation-results">
+            <li class="check-pass">✓ <code>role="dialog"</code> present</li>
+            <li class="check-pass">✓ <code>aria-modal="true"</code> present</li>
+            <li class="check-pass">✓ <code>aria-labelledby</code> references title</li>
+            <li class="check-pass">✓ Focus trap implemented (Tab/Shift+Tab)</li>
+            <li class="check-pass">✓ Escape key handler detected</li>
+            <li class="check-pass">✓ Focus restoration on close</li>
+            <li class="check-pass">✓ Initial focus management</li>
+          </ul>
+        </div>
+
+        <details class="code-sample">
+          <summary>View Complete HTML</summary>
+          <pre><code>&lt;div class="dialog-overlay" role="presentation"&gt;
+  &lt;div role="dialog"
+       aria-modal="true"
+       aria-labelledby="dialog-title"&gt;
+    &lt;div class="dialog-header"&gt;
+      &lt;h2 id="dialog-title"&gt;Confirm Action&lt;/h2&gt;
+      &lt;button aria-label="Close dialog"&gt;×&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div class="dialog-body"&gt;
+      &lt;p&gt;Dialog content...&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="dialog-actions"&gt;
+      &lt;button&gt;Cancel&lt;/button&gt;
+      &lt;button&gt;Confirm&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        </details>
+
+        <details class="code-sample">
+          <summary>View Complete JavaScript</summary>
+          <pre><code>// Complete dialog implementation with focus trap
+const dialog = document.getElementById('dialog');
+const overlay = document.getElementById('dialog-overlay');
+const trigger = document.getElementById('trigger');
+let previousFocus;
+
+function openDialog() {
+  // Store previous focus
+  previousFocus = document.activeElement;
+
+  // Show dialog
+  overlay.classList.add('visible');
+
+  // Move focus to first focusable element
+  const firstFocusable = dialog.querySelector('button');
+  firstFocusable.focus();
+
+  // Add event listeners
+  dialog.addEventListener('keydown', handleDialogKeydown);
+}
+
+function closeDialog() {
+  // Hide dialog
+  overlay.classList.remove('visible');
+
+  // Restore focus
+  if (previousFocus) {
+    previousFocus.focus();
+  }
+
+  // Remove event listeners
+  dialog.removeEventListener('keydown', handleDialogKeydown);
+}
+
+function handleDialogKeydown(event) {
+  // Escape key closes dialog
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    closeDialog();
+    return;
+  }
+
+  // Tab key implements focus trap
+  if (event.key === 'Tab') {
+    const focusables = Array.from(
+      dialog.querySelectorAll('button, [href], input, select, textarea')
+    );
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+}</code></pre>
+        </details>
+      </section>
+
+      <!-- RIGHT SIDE - INACCESSIBLE -->
+      <section class="example bad">
+        <h2>❌ Inaccessible Implementation</h2>
+        <p>Dialog missing focus trap, Escape handler, and proper ARIA attributes.</p>
+
+        <button class="dialog-trigger" id="bad-trigger">
+          Open Inaccessible Dialog
+        </button>
+
+        <div id="bad-dialog-overlay" class="dialog-overlay" role="presentation">
+          <div id="bad-dialog" class="dialog">
+            <div class="dialog-header">
+              <h2 class="dialog-title">Confirm Action</h2>
+              <button class="dialog-close" id="bad-dialog-close">×</button>
+            </div>
+            <div class="dialog-body">
+              <p>Are you sure you want to proceed with this action? This cannot be undone.</p>
+            </div>
+            <div class="dialog-actions">
+              <button class="btn-secondary" id="bad-dialog-cancel">Cancel</button>
+              <button class="btn-primary" id="bad-dialog-confirm">Confirm</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis Results</h3>
+          <div class="result-box error">
+            <strong>❌ Incomplete Dialog Pattern</strong>
+            <p>7 issues found</p>
+          </div>
+
+          <h4>Issues Detected:</h4>
+          <ul class="issues-list">
+            <li class="issue-error">
+              <strong>Missing <code>role="dialog"</code></strong>
+              <p>Screen readers won't announce this as a dialog</p>
+            </li>
+            <li class="issue-error">
+              <strong>Missing <code>aria-modal="true"</code></strong>
+              <p>Screen readers may not restrict navigation to dialog</p>
+            </li>
+            <li class="issue-error">
+              <strong>Missing <code>aria-labelledby</code></strong>
+              <p>Dialog has no accessible name</p>
+            </li>
+            <li class="issue-error">
+              <strong>No focus trap detected</strong>
+              <p>Tab key can escape dialog and focus background content</p>
+            </li>
+            <li class="issue-error">
+              <strong>No Escape key handler</strong>
+              <p>Keyboard users cannot close dialog with Escape</p>
+            </li>
+            <li class="issue-error">
+              <strong>No focus restoration</strong>
+              <p>Focus lost when dialog closes</p>
+            </li>
+            <li class="issue-error">
+              <strong>No initial focus management</strong>
+              <p>Focus doesn't move into dialog on open</p>
+            </li>
+          </ul>
+
+          <h4>Validation Checklist:</h4>
+          <ul class="validation-results">
+            <li class="check-fail">✗ <code>role="dialog"</code> missing</li>
+            <li class="check-fail">✗ <code>aria-modal="true"</code> missing</li>
+            <li class="check-fail">✗ <code>aria-labelledby</code> missing</li>
+            <li class="check-fail">✗ No focus trap (Tab escapes)</li>
+            <li class="check-fail">✗ No Escape key handler</li>
+            <li class="check-fail">✗ No focus restoration</li>
+            <li class="check-fail">✗ No initial focus management</li>
+          </ul>
+        </div>
+
+        <details class="code-sample">
+          <summary>View Incomplete HTML</summary>
+          <pre><code>&lt;!-- INCOMPLETE: Missing ARIA attributes --&gt;
+&lt;div class="dialog-overlay"&gt;
+  &lt;div class="dialog"&gt;
+    &lt;div class="dialog-header"&gt;
+      &lt;h2&gt;Confirm Action&lt;/h2&gt;
+      &lt;button&gt;×&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div class="dialog-body"&gt;
+      &lt;p&gt;Dialog content...&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="dialog-actions"&gt;
+      &lt;button&gt;Cancel&lt;/button&gt;
+      &lt;button&gt;Confirm&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        </details>
+
+        <details class="code-sample">
+          <summary>View Incomplete JavaScript</summary>
+          <pre><code>// INCOMPLETE: Only show/hide, no accessibility
+const dialog = document.getElementById('bad-dialog');
+const overlay = document.getElementById('bad-dialog-overlay');
+
+function openDialog() {
+  overlay.classList.add('visible');
+  // ❌ MISSING: Focus management
+  // ❌ MISSING: Store previous focus
+  // ❌ MISSING: Focus trap
+  // ❌ MISSING: Escape handler
+}
+
+function closeDialog() {
+  overlay.classList.remove('visible');
+  // ❌ MISSING: Focus restoration
+}</code></pre>
+        </details>
+      </section>
+    </div>
+
+    <section class="testing-panel">
+      <h2>🧪 Interactive Testing</h2>
+      <p>Test both implementations with keyboard navigation:</p>
+
+      <div class="testing-instructions">
+        <h3>Keyboard Testing Steps:</h3>
+        <ol>
+          <li>Open dialog with <kbd>Enter</kbd> or <kbd>Space</kbd> on trigger button</li>
+          <li>Verify focus moves into dialog automatically</li>
+          <li>Press <kbd>Tab</kbd> repeatedly to navigate dialog controls</li>
+          <li><strong>Accessible:</strong> Focus stays trapped in dialog</li>
+          <li><strong>Inaccessible:</strong> Focus escapes to background content</li>
+          <li>Press <kbd>Escape</kbd> to close dialog</li>
+          <li><strong>Accessible:</strong> Dialog closes, focus returns to trigger</li>
+          <li><strong>Inaccessible:</strong> Nothing happens</li>
+        </ol>
+
+        <h3>Screen Reader Testing:</h3>
+        <ul>
+          <li><strong>Accessible:</strong> Announces "Confirm Action, dialog" when opened</li>
+          <li><strong>Inaccessible:</strong> No announcement, reads as generic content</li>
+          <li><strong>Accessible:</strong> Screen reader restricts navigation to dialog</li>
+          <li><strong>Inaccessible:</strong> Screen reader can read background content</li>
+        </ul>
+
+        <div class="testing-checklist">
+          <h4>Test Checklist:</h4>
+          <label><input type="checkbox"> Open dialog with Enter/Space</label>
+          <label><input type="checkbox"> Focus moves into dialog</label>
+          <label><input type="checkbox"> Tab stays within dialog (accessible only)</label>
+          <label><input type="checkbox"> Shift+Tab stays within dialog (accessible only)</label>
+          <label><input type="checkbox"> Escape closes dialog (accessible only)</label>
+          <label><input type="checkbox"> Focus returns to trigger (accessible only)</label>
+          <label><input type="checkbox"> Screen reader announces dialog role</label>
+          <label><input type="checkbox"> Close button has accessible name</label>
+        </div>
+      </div>
+    </section>
+
+    <section class="explanation">
+      <h2>🎯 What Paradise Detects</h2>
+      <p>Paradise validates the <strong>complete dialog pattern</strong> in 7 steps:</p>
+
+      <ol class="detection-steps">
+        <li>
+          <strong>Structural Analysis</strong>
+          <p>Detects <code>role="dialog"</code> or <code>&lt;dialog&gt;</code> element</p>
+        </li>
+        <li>
+          <strong>ARIA Attributes</strong>
+          <p>Verifies <code>aria-modal="true"</code> and <code>aria-labelledby</code> present</p>
+        </li>
+        <li>
+          <strong>Focus Trap Detection</strong>
+          <p>Checks for Tab/Shift+Tab key handlers that cycle focus within dialog</p>
+        </li>
+        <li>
+          <strong>Escape Handler</strong>
+          <p>Verifies Escape key handler closes dialog</p>
+        </li>
+        <li>
+          <strong>Focus Restoration</strong>
+          <p>Checks that focus returns to trigger element on close</p>
+        </li>
+        <li>
+          <strong>Initial Focus</strong>
+          <p>Verifies focus moves into dialog on open</p>
+        </li>
+        <li>
+          <strong>Accessible Name</strong>
+          <p>Confirms dialog title is referenced by <code>aria-labelledby</code></p>
+        </li>
+      </ol>
+
+      <div class="insight-box">
+        <h3>💡 Why This Matters</h3>
+        <p>Keyboard and screen reader users depend on focus management to use dialogs. Without a focus trap, Tab can move focus to background content that's supposed to be inert. Without Escape handling, keyboard users are trapped. Without focus restoration, users lose their place.</p>
+      </div>
+    </section>
+
+    <section class="comparison-section">
+      <h2>🔍 Why Other Tools Miss This</h2>
+
+      <div class="tool-comparison">
+        <div class="comparison-item">
+          <h3>Traditional Tool Output</h3>
+          <pre><code>✓ Element has role="dialog"
+✓ Element has aria-modal="true"
+✓ Element has aria-labelledby
+
+Result: All checks pass! ✅</code></pre>
+          <p class="comparison-note">But the dialog is completely broken for keyboard users.</p>
+        </div>
+
+        <div class="comparison-item">
+          <h3>Paradise Output</h3>
+          <pre><code>✓ role="dialog" detected
+✓ aria-modal="true" present
+✓ aria-labelledby references title
+✗ No focus trap detected
+✗ No Escape key handler
+✗ No focus restoration
+✗ No initial focus management
+
+Result: Incomplete pattern ❌</code></pre>
+          <p class="comparison-note">Paradise catches the missing keyboard behavior.</p>
+        </div>
+      </div>
+
+      <div class="why-box">
+        <h3>The Difference</h3>
+        <ul>
+          <li><strong>Other tools:</strong> Check if attributes exist</li>
+          <li><strong>Paradise:</strong> Validates complete implementation including JavaScript behavior</li>
+          <li><strong>Result:</strong> Paradise prevents broken dialogs from shipping to production</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="wcag-mapping">
+      <h2>📋 WCAG Success Criteria</h2>
+      <p>Complete dialog pattern satisfies:</p>
+      <ul class="wcag-list">
+        <li>
+          <strong>2.1.2 No Keyboard Trap (Level A)</strong>
+          <p>Focus trap allows Tab navigation within dialog, Escape exits</p>
+        </li>
+        <li>
+          <strong>2.4.3 Focus Order (Level A)</strong>
+          <p>Focus management ensures logical navigation order</p>
+        </li>
+        <li>
+          <strong>4.1.2 Name, Role, Value (Level A)</strong>
+          <p><code>role="dialog"</code>, <code>aria-modal</code>, and <code>aria-labelledby</code> communicate structure</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="resources">
+      <h2>📚 Additional Resources</h2>
+      <ul>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/" target="_blank">WAI-ARIA: Dialog (Modal) Pattern</a></li>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/" target="_blank">WAI-ARIA: Keyboard Interface</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog" target="_blank">MDN: &lt;dialog&gt; Element</a></li>
+      </ul>
+    </section>
+
+    <nav class="demo-nav">
+      <a href="../navigation-widgets/tabs.html" class="nav-prev">← Previous: Tabs</a>
+      <a href="../../index.html" class="nav-home">🏠 All Patterns</a>
+      <a href="accordion.html" class="nav-next">Next: Accordion →</a>
+    </nav>
+  </div>
+
+  <script src="../../js/accessible/dialog-complete.js"></script>
+  <script src="../../js/inaccessible/dialog-incomplete.js"></script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toolbar Pattern - Paradise Widget Patterns</title>
+  <link rel="stylesheet" href="../../../css/demo.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="../../index.html">Home</a> &gt;
+      <a href="#navigation">Navigation Widgets</a> &gt;
+      <span>Toolbar</span>
+    </nav>
+
+    <header>
+      <h1>🔧 Toolbar Pattern</h1>
+      <p class="subtitle">Button group with roving tabindex navigation</p>
+      <div class="pattern-info">
+        <span class="complexity-badge medium">Medium Complexity</span>
+        <span class="wcag-badge">WCAG 2.1.1, 4.1.2</span>
+      </div>
+    </header>
+
+    <section class="pattern-description">
+      <h2>Complete Toolbar Pattern Requires:</h2>
+      <ul>
+        <li><code>role="toolbar"</code> on container</li>
+        <li><code>aria-label</code> on toolbar for identification</li>
+        <li>Button elements or <code>role="button"</code></li>
+        <li><strong>Roving tabindex:</strong> Only one item at tabindex="0"</li>
+        <li><strong>Arrow Left/Right:</strong> Navigate buttons</li>
+        <li><strong>Home/End:</strong> Jump to first/last</li>
+        <li><strong>Enter/Space:</strong> Activate focused button</li>
+      </ul>
+    </section>
+
+    <div class="comparison">
+      <section class="example good">
+        <h2>✅ Accessible Pattern</h2>
+        <p>Complete toolbar with roving tabindex and arrow navigation.</p>
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis: ✅ Complete Pattern</h3>
+          <ul class="validation-results">
+            <li class="check-pass">✓ role="toolbar" present</li>
+            <li class="check-pass">✓ aria-label present</li>
+            <li class="check-pass">✓ Roving tabindex implemented</li>
+            <li class="check-pass">✓ Arrow Left/Right detected</li>
+            <li class="check-pass">✓ Home/End support</li>
+            <li class="check-pass">✓ Enter/Space activation</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="example bad">
+        <h2>❌ Inaccessible Pattern</h2>
+        <p>Button group missing toolbar role and keyboard navigation.</p>
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis: ❌ Incomplete Pattern</h3>
+          <ul class="issues-list">
+            <li class="issue-error">Missing role="toolbar"</li>
+            <li class="issue-error">Missing aria-label</li>
+            <li class="issue-error">No roving tabindex</li>
+            <li class="issue-error">No arrow navigation</li>
+            <li class="issue-error">No Home/End support</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <section class="wcag-mapping">
+      <h2>📋 WCAG Success Criteria</h2>
+      <ul class="wcag-list">
+        <li><strong>2.1.1 Keyboard (Level A)</strong> - Arrow keys, Home/End, Enter/Space</li>
+        <li><strong>4.1.2 Name, Role, Value (Level A)</strong> - toolbar role, accessible name</li>
+      </ul>
+    </section>
+
+    <section class="resources">
+      <h2>📚 Resources</h2>
+      <ul>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/" target="_blank">WAI-ARIA: Toolbar Pattern</a></li>
+        <li><a href="/docs/issues/incomplete-toolbar-pattern.md">Paradise: Toolbar Pattern Help</a></li>
+      </ul>
+    </section>
+
+    <nav class="demo-nav">
+      <a href="tree.html" class="nav-prev">← Previous: Tree</a>
+      <a href="../../index.html" class="nav-home">🏠 All Patterns</a>
+      <a href="../disclosure-widgets/disclosure.html" class="nav-next">Next: Disclosure →</a>
+    </nav>
+  </div>
+</body>
+</html>

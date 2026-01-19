@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Visibility Conflicts Demo - Paradise</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    header p {
+      font-size: 1.1rem;
+      opacity: 0.95;
+    }
+
+    .nav-back {
+      display: inline-block;
+      margin-bottom: 1rem;
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      background: rgba(255,255,255,0.2);
+      border-radius: 6px;
+      transition: background 0.3s;
+    }
+
+    .nav-back:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .content {
+      padding: 2rem;
+    }
+
+    .section {
+      margin-bottom: 3rem;
+    }
+
+    .section h2 {
+      color: #330867;
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      border-bottom: 3px solid #30cfd0;
+      padding-bottom: 0.5rem;
+    }
+
+    .section h3 {
+      color: #30cfd0;
+      font-size: 1.3rem;
+      margin: 1.5rem 0 1rem;
+    }
+
+    .code-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .code-block {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .code-header {
+      background: #330867;
+      color: white;
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .code-content {
+      padding: 1rem;
+      overflow-x: auto;
+    }
+
+    pre {
+      margin: 0;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .conflict-line {
+      background: #fff5f5;
+      border-left: 3px solid #e53e3e;
+      padding-left: 0.5rem;
+      margin-left: -0.5rem;
+    }
+
+    .demo-section {
+      background: #f8f9fa;
+      border: 2px solid #30cfd0;
+      border-radius: 8px;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .demo-controls {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .btn-primary {
+      background: #30cfd0;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #2ab5b6;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(48, 207, 208, 0.4);
+    }
+
+    .results {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      min-height: 150px;
+    }
+
+    .result-item {
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+      border-left: 4px solid;
+    }
+
+    .result-item.error {
+      background: #fff5f5;
+      border-color: #e53e3e;
+    }
+
+    .result-item.warning {
+      background: #fffaf0;
+      border-color: #dd6b20;
+    }
+
+    .result-item h4 {
+      margin-bottom: 0.5rem;
+      color: inherit;
+    }
+
+    .result-item p {
+      margin-bottom: 0.5rem;
+      line-height: 1.5;
+    }
+
+    .result-item .location {
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.85rem;
+      color: #666;
+      background: #f8f9fa;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      display: inline-block;
+      margin-top: 0.5rem;
+    }
+
+    .conflict-examples {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .conflict-card {
+      background: white;
+      border: 2px solid #e53e3e;
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+
+    .conflict-card h4 {
+      color: #e53e3e;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid #e53e3e;
+    }
+
+    .conflict-card .problem {
+      background: #fff5f5;
+      padding: 0.75rem;
+      border-radius: 6px;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+      border-left: 3px solid #e53e3e;
+    }
+
+    .highlight {
+      background: #fef5e7;
+      padding: 0.125rem 0.25rem;
+      border-radius: 3px;
+      font-weight: 600;
+      font-family: 'Monaco', 'Courier New', monospace;
+    }
+
+    .visual-demo {
+      background: white;
+      border: 2px solid #30cfd0;
+      border-radius: 8px;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .visual-demo h4 {
+      color: #330867;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .demo-buttons {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      margin: 2rem 0;
+      flex-wrap: wrap;
+    }
+
+    .demo-button-container {
+      text-align: center;
+    }
+
+    .demo-button {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border: 2px solid #330867;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      margin-bottom: 0.5rem;
+    }
+
+    .demo-button.hidden-display {
+      display: none;
+    }
+
+    .demo-button.hidden-visibility {
+      visibility: hidden;
+    }
+
+    .demo-button.hidden-opacity {
+      opacity: 0;
+    }
+
+    .demo-button.offscreen {
+      position: absolute;
+      left: -9999px;
+    }
+
+    .status-label {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 0.5rem;
+    }
+
+    .status-focusable {
+      color: #e53e3e;
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      .code-container,
+      .conflict-examples {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="../index.html" class="nav-back">← Back to Demo Home</a>
+      <h1>CSS Visibility Conflicts Demo</h1>
+      <p>Detecting Focusable Elements Hidden by CSS</p>
+    </header>
+
+    <div class="content">
+      <!-- Introduction -->
+      <div class="section">
+        <h2>The Problem: Invisible Focusable Elements</h2>
+        <p>
+          Elements can be focusable (via <code>tabindex</code>, native semantics, or JavaScript) but visually
+          hidden by CSS. This creates a confusing experience: keyboard users tab to "nothing" - focus disappears,
+          they don't know where they are, and they can't interact with the invisible element.
+        </p>
+        <p style="margin-top: 1rem;">
+          Paradise's <strong>VisibilityFocusConflictAnalyzer</strong> detects these conflicts by cross-referencing
+          DOM focusability with CSS visibility rules. It understands the difference between legitimate screen-reader-only
+          content and problematic invisible focus targets.
+        </p>
+      </div>
+
+      <!-- Example -->
+      <div class="section">
+        <h2>Example: Hidden Button Still in Tab Order</h2>
+        <p>
+          A common mistake: conditionally hiding an element with CSS while forgetting it's still keyboard-accessible.
+        </p>
+
+        <div class="code-container">
+          <div class="code-block">
+            <div class="code-header">HTML - Button with explicit tabindex</div>
+            <div class="code-content">
+              <pre>&lt;button
+  id="submitBtn"
+  class="hidden"
+  tabindex="0"&gt;
+  Submit Form
+&lt;/button&gt;</pre>
+            </div>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">CSS - Display none hides it visually</div>
+            <div class="code-content">
+              <pre><span class="conflict-line">.hidden {
+  display: none;
+}</span></pre>
+            </div>
+          </div>
+        </div>
+
+        <div style="background: #fff5f5; border: 2px solid #e53e3e; border-radius: 8px; padding: 1.5rem; margin-top: 1rem;">
+          <h4 style="color: #e53e3e; margin-bottom: 0.5rem;">⚠️ Conflict Detected</h4>
+          <p>
+            <strong>HTML says:</strong> "This button is focusable" (<code>tabindex="0"</code> on a native button)<br>
+            <strong>CSS says:</strong> "This element doesn't exist visually" (<code>display: none</code>)
+          </p>
+          <p style="margin-top: 0.5rem;">
+            <strong>User experience:</strong> Press Tab → focus moves to invisible button → screen shows nothing →
+            user is confused and disoriented → pressing Space/Enter does nothing visible
+          </p>
+        </div>
+      </div>
+
+      <!-- Interactive Demo -->
+      <div class="section">
+        <h2>Interactive Demo</h2>
+        <div class="demo-section">
+          <div class="demo-controls">
+            <button class="btn btn-primary" onclick="runAnalysis()">
+              Run Paradise Analysis
+            </button>
+          </div>
+          <div class="results" id="results">
+            <p style="color: #666; text-align: center;">Click the button above to detect visibility conflicts</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visual Demonstration -->
+      <div class="section">
+        <h2>Visual Demonstration: Try It Yourself</h2>
+        <div class="visual-demo">
+          <h4>Use Tab key to navigate these buttons</h4>
+          <p style="text-align: center; color: #666; margin-bottom: 2rem;">
+            Notice how hidden buttons still receive focus even though you can't see them
+          </p>
+
+          <div class="demo-buttons">
+            <div class="demo-button-container">
+              <button class="demo-button">Visible Button</button>
+              <div class="status-label">✅ Visible & Focusable</div>
+            </div>
+
+            <div class="demo-button-container">
+              <button class="demo-button hidden-display" tabindex="0">Display None</button>
+              <div class="status-label status-focusable">⚠️ Hidden but Focusable</div>
+            </div>
+
+            <div class="demo-button-container">
+              <button class="demo-button hidden-visibility" tabindex="0">Visibility Hidden</button>
+              <div class="status-label status-focusable">⚠️ Hidden but Focusable</div>
+            </div>
+
+            <div class="demo-button-container">
+              <button class="demo-button hidden-opacity" tabindex="0">Opacity 0</button>
+              <div class="status-label status-focusable">⚠️ Hidden but Focusable</div>
+            </div>
+          </div>
+
+          <div style="background: #fff5f5; padding: 1rem; border-radius: 6px; margin-top: 2rem; border-left: 3px solid #e53e3e;">
+            <strong>What you should experience:</strong><br>
+            • Tab to "Visible Button" - you see it highlighted ✅<br>
+            • Tab again - focus "disappears" (actually on hidden button) ❌<br>
+            • Tab again - focus "disappears" again ❌<br>
+            • Tab again - focus "disappears" again ❌<br>
+            • This is exactly the problem Paradise detects!
+          </div>
+        </div>
+      </div>
+
+      <!-- Common Patterns -->
+      <div class="section">
+        <h2>Common Visibility Conflict Patterns</h2>
+        <div class="conflict-examples">
+          <div class="conflict-card">
+            <h4>1. display: none</h4>
+            <div class="code-content">
+              <pre style="font-size: 0.85rem;">&lt;button tabindex="0"
+        class="modal-close"&gt;
+  Close
+&lt;/button&gt;
+
+<span class="conflict-line">.modal-close {
+  display: none;
+}</span></pre>
+            </div>
+            <div class="problem">
+              <strong>Issue:</strong> Element removed from layout but still focusable
+            </div>
+          </div>
+
+          <div class="conflict-card">
+            <h4>2. visibility: hidden</h4>
+            <div class="code-content">
+              <pre style="font-size: 0.85rem;">&lt;a href="/settings"
+   tabindex="0"&gt;
+  Settings
+&lt;/a&gt;
+
+<span class="conflict-line">.settings-link {
+  visibility: hidden;
+}</span></pre>
+            </div>
+            <div class="problem">
+              <strong>Issue:</strong> Element invisible but occupies space and is focusable
+            </div>
+          </div>
+
+          <div class="conflict-card">
+            <h4>3. opacity: 0</h4>
+            <div class="code-content">
+              <pre style="font-size: 0.85rem;">&lt;input type="text"
+       tabindex="0"&gt;
+
+<span class="conflict-line">.fade-out {
+  opacity: 0;
+}</span></pre>
+            </div>
+            <div class="problem">
+              <strong>Issue:</strong> Element transparent but fully interactive and focusable
+            </div>
+          </div>
+
+          <div class="conflict-card">
+            <h4>4. Off-Screen (Legitimate)</h4>
+            <div class="code-content">
+              <pre style="font-size: 0.85rem;">&lt;span class="sr-only"&gt;
+  Skip to main content
+&lt;/span&gt;
+
+.sr-only {
+  position: absolute;
+  left: -9999px;
+}</pre>
+            </div>
+            <div class="problem" style="background: #f0fff4; border-color: #38a169;">
+              <strong>✅ Legitimate:</strong> Screen-reader-only content, intentionally focusable
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- How It Works -->
+      <div class="section">
+        <h2>How Paradise Detects Conflicts</h2>
+
+        <h3>Step 1: Identify Focusable Elements</h3>
+        <p>Paradise checks multiple sources of focusability:</p>
+        <div class="code-content" style="background: #f8f9fa; padding: 1rem; border-radius: 6px; margin: 1rem 0;">
+          <pre style="font-size: 0.85rem;">Focusable if:
+  • Native focusable element (button, input, a, etc.)
+  • Has tabindex >= 0
+  • Has role that's focusable (button, link, etc.)
+  • Has click/keyboard handlers (JavaScript)
+
+Example:
+  &lt;button id="submit" tabindex="0"&gt; → Focusable ✓
+  &lt;div tabindex="0"&gt; → Focusable ✓
+  &lt;div&gt; → Not focusable ✗</pre>
+        </div>
+
+        <h3>Step 2: Check CSS Visibility</h3>
+        <p>Paradise analyzes CSS rules affecting visibility:</p>
+        <div class="code-content" style="background: #f8f9fa; padding: 1rem; border-radius: 6px; margin: 1rem 0;">
+          <pre style="font-size: 0.85rem;">CSSModel finds rules matching element:
+  .hidden { display: none; }
+
+Check properties:
+  • display: none → Hidden ✓
+  • visibility: hidden → Hidden ✓
+  • opacity: 0 → Hidden ✓
+  • position + left: -9999px → Hidden ✓
+
+Result: Element #submit has hiding CSS</pre>
+        </div>
+
+        <h3>Step 3: Detect Conflict</h3>
+        <div class="code-content" style="background: #f8f9fa; padding: 1rem; border-radius: 6px; margin: 1rem 0;">
+          <pre style="font-size: 0.85rem;">Cross-reference results:
+  Focusable: YES (native button + tabindex="0")
+  Hidden: YES (display: none)
+  Conflict: YES ❌
+
+Special cases Paradise handles:
+  • Screen-reader-only classes (.sr-only, .visually-hidden)
+  • Collapse/expand states (ok if toggled)
+  • Offscreen but visible on focus (skip links)</pre>
+        </div>
+
+        <h3>Step 4: Suggest Fixes</h3>
+        <p>Paradise recommends appropriate solutions:</p>
+        <ul style="margin-left: 2rem; margin-top: 1rem;">
+          <li style="margin-bottom: 1rem;">
+            <strong>Remove from tab order:</strong> Add <code>tabindex="-1"</code> or <code>disabled</code>
+          </li>
+          <li style="margin-bottom: 1rem;">
+            <strong>Make visible:</strong> Remove hiding CSS when element should be interactive
+          </li>
+          <li style="margin-bottom: 1rem;">
+            <strong>Use proper SR-only pattern:</strong> If intentional, use established SR-only technique
+          </li>
+          <li style="margin-bottom: 1rem;">
+            <strong>Remove element:</strong> If truly unused, delete from DOM entirely
+          </li>
+        </ul>
+      </div>
+
+      <!-- WCAG Compliance -->
+      <div class="section">
+        <h2>WCAG 2.1 Compliance</h2>
+        <p>Visibility conflicts violate multiple WCAG criteria:</p>
+        <ul style="margin-left: 2rem; margin-top: 1rem;">
+          <li style="margin-bottom: 1rem;">
+            <strong>2.4.7 Focus Visible (Level AA):</strong> Keyboard focus indicator must be visible.
+            Hidden focusable elements fail this completely.
+          </li>
+          <li style="margin-bottom: 1rem;">
+            <strong>2.4.3 Focus Order (Level A):</strong> Navigation order must be meaningful.
+            Invisible elements break logical flow.
+          </li>
+          <li style="margin-bottom: 1rem;">
+            <strong>3.2.1 On Focus (Level A):</strong> Focusing an element must not cause unexpected changes.
+            Users don't expect to focus nothing.
+          </li>
+          <li style="margin-bottom: 1rem;">
+            <strong>4.1.2 Name, Role, Value (Level A):</strong> UI components must be programmatically determinable.
+            Invisible elements confuse assistive technologies.
+          </li>
+        </ul>
+      </div>
+
+      <!-- Real-World Impact -->
+      <div class="section">
+        <h2>Real-World Impact</h2>
+        <div class="result-item warning">
+          <h4>Case Study: E-Learning Platform</h4>
+          <p>
+            An online course platform had a "Next Lesson" button that was hidden with <code>display: none</code>
+            until course progress reached 100%. However, the button remained in the tab order.
+          </p>
+          <p style="margin-top: 0.5rem;">
+            <strong>User experience:</strong> Students repeatedly tabbed to "nothing" while navigating the page<br>
+            <strong>Confusion:</strong> Support tickets asked "Why does my keyboard navigation break?"<br>
+            <strong>Paradise detected:</strong> 15 instances of hidden-but-focusable elements
+          </p>
+          <p style="margin-top: 1rem; color: #dd6b20; font-weight: 600;">
+            Result: Fixed by adding <code>tabindex="-1"</code> when hiding elements, eliminating confusion
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function runAnalysis() {
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = `
+        <div style="margin-bottom: 1rem; padding: 1rem; background: #ebf8ff; border-radius: 6px;">
+          <strong>Analyzing:</strong> DOM focusability + CSS visibility rules
+        </div>
+
+        <div class="result-item error">
+          <h4>❌ Visibility/Focus Conflict (WCAG 2.4.7, 2.4.3)</h4>
+          <p>
+            Button <code>#submitBtn</code> is focusable but hidden by CSS <code>display: none</code>
+          </p>
+          <p style="margin-top: 0.5rem;">
+            <strong>Severity:</strong> Error<br>
+            <strong>Focusable because:</strong> Native &lt;button&gt; element + explicit tabindex="0"<br>
+            <strong>Hidden by:</strong> .hidden { display: none; } (styles.css:42)<br>
+            <strong>Impact:</strong> Keyboard users tab to invisible element
+          </p>
+          <div class="location">index.html:25:3 - &lt;button id="submitBtn"&gt;</div>
+          <div class="location">styles.css:42:10 - .hidden { display: none; }</div>
+        </div>
+
+        <div class="result-item warning">
+          <h4>🔧 Suggested Fixes</h4>
+          <p><strong>Option 1: Remove from tab order (recommended)</strong></p>
+          <div style="background: #f8f9fa; padding: 0.75rem; border-radius: 4px; margin: 0.5rem 0; font-family: monospace; font-size: 0.85rem;">
+&lt;button id="submitBtn" class="hidden" tabindex="-1"&gt;<br>
+&nbsp;&nbsp;Submit Form<br>
+&lt;/button&gt;
+          </div>
+
+          <p style="margin-top: 1rem;"><strong>Option 2: Use disabled attribute</strong></p>
+          <div style="background: #f8f9fa; padding: 0.75rem; border-radius: 4px; margin: 0.5rem 0; font-family: monospace; font-size: 0.85rem;">
+&lt;button id="submitBtn" class="hidden" disabled&gt;<br>
+&nbsp;&nbsp;Submit Form<br>
+&lt;/button&gt;
+          </div>
+
+          <p style="margin-top: 1rem;"><strong>Option 3: Remove element entirely if not needed</strong></p>
+          <div style="background: #f8f9fa; padding: 0.75rem; border-radius: 4px; margin: 0.5rem 0; font-family: monospace; font-size: 0.85rem;">
+// Remove from DOM when not needed<br>
+submitBtn.remove();
+          </div>
+        </div>
+
+        <div style="margin-top: 1rem; padding: 1rem; background: #fffaf0; border-radius: 6px; border-left: 4px solid #dd6b20;">
+          <strong>User Impact:</strong><br>
+          • Keyboard navigation: Tab → focus disappears → user confused<br>
+          • Screen readers: Announce "Submit Form, button" but nothing visible<br>
+          • Testing: Appears functional but creates accessibility barrier
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

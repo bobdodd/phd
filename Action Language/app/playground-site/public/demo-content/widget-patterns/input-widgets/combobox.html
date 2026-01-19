@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Combobox Pattern - Paradise Widget Patterns</title>
+  <link rel="stylesheet" href="../../../css/demo.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="../../index.html">Home</a> &gt;
+      <a href="#input">Input Widgets</a> &gt;
+      <span>Combobox</span>
+    </nav>
+
+    <header>
+      <h1>📝 Combobox Pattern</h1>
+      <p class="subtitle">Autocomplete input with arrow navigation and selection</p>
+      <div class="pattern-info">
+        <span class="complexity-badge very-high">Very High Complexity</span>
+        <span class="wcag-badge">WCAG 2.1.1, 4.1.2</span>
+      </div>
+    </header>
+
+    <section class="pattern-description">
+      <h2>Complete Combobox Pattern Requires:</h2>
+      <ul>
+        <li><code>role="combobox"</code> on input element</li>
+        <li><code>aria-expanded</code> on input (true/false)</li>
+        <li><code>aria-controls</code> pointing to listbox</li>
+        <li><code>aria-activedescendant</code> for virtual focus</li>
+        <li><code>role="listbox"</code> on dropdown</li>
+        <li><code>role="option"</code> on each item</li>
+        <li><strong>Arrow keys:</strong> Navigate options</li>
+        <li><strong>Enter:</strong> Select option</li>
+        <li><strong>Escape:</strong> Close dropdown</li>
+        <li><strong>Type-ahead:</strong> Filter options by typing</li>
+      </ul>
+    </section>
+
+    <div class="comparison">
+      <section class="example good">
+        <h2>✅ Accessible Pattern</h2>
+        <p>Complete combobox with aria-activedescendant and keyboard navigation.</p>
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis: ✅ Complete Pattern</h3>
+          <ul class="validation-results">
+            <li class="check-pass">✓ role="combobox" present</li>
+            <li class="check-pass">✓ aria-expanded management</li>
+            <li class="check-pass">✓ aria-controls linking</li>
+            <li class="check-pass">✓ aria-activedescendant for virtual focus</li>
+            <li class="check-pass">✓ Arrow navigation detected</li>
+            <li class="check-pass">✓ Enter/Escape handlers</li>
+            <li class="check-pass">✓ Type-ahead filtering</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="example bad">
+        <h2>❌ Inaccessible Pattern</h2>
+        <p>Autocomplete missing ARIA relationships and keyboard support.</p>
+        <div class="paradise-analysis">
+          <h3>Paradise Analysis: ❌ Incomplete Pattern</h3>
+          <ul class="issues-list">
+            <li class="issue-error">Missing role="combobox"</li>
+            <li class="issue-error">Missing aria-expanded</li>
+            <li class="issue-error">Missing aria-activedescendant</li>
+            <li class="issue-error">No arrow navigation</li>
+            <li class="issue-error">No Enter to select</li>
+            <li class="issue-error">No Escape handler</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <section class="wcag-mapping">
+      <h2>📋 WCAG Success Criteria</h2>
+      <ul class="wcag-list">
+        <li><strong>2.1.1 Keyboard (Level A)</strong> - Arrow keys, Enter, Escape, type-ahead</li>
+        <li><strong>4.1.2 Name, Role, Value (Level A)</strong> - combobox/listbox/option roles, aria-activedescendant</li>
+      </ul>
+    </section>
+
+    <section class="resources">
+      <h2>📚 Resources</h2>
+      <ul>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/combobox/" target="_blank">WAI-ARIA: Combobox Pattern</a></li>
+        <li><a href="/docs/issues/incomplete-combobox-pattern.md">Paradise: Combobox Pattern Help</a></li>
+      </ul>
+    </section>
+
+    <nav class="demo-nav">
+      <a href="../../index.html" class="nav-home">🏠 All Patterns</a>
+      <a href="listbox.html" class="nav-next">Next: Listbox →</a>
+    </nav>
+  </div>
+</body>
+</html>

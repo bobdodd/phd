@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabs Pattern - Widget Demo</title>
+  <link rel="stylesheet" href="../../../css/demo.css">
+  <style>
+    /* Demo page specific styles */
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    @media (max-width: 768px) {
+      .comparison {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .example {
+      border: 3px solid;
+      border-radius: 8px;
+      padding: 2rem;
+    }
+
+    .example.good {
+      border-color: #48bb78;
+      background: #f0fff4;
+    }
+
+    .example.bad {
+      border-color: #f56565;
+      background: #fff5f5;
+    }
+
+    .example h2 {
+      margin-top: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Tabs widget styles */
+    .tabs-widget {
+      margin: 2rem 0;
+    }
+
+    .tabs-widget [role="tablist"] {
+      display: flex;
+      gap: 0.25rem;
+      border-bottom: 2px solid #e2e8f0;
+      margin-bottom: 0;
+    }
+
+    .tabs-widget [role="tab"] {
+      padding: 0.75rem 1.5rem;
+      background: #f7fafc;
+      border: 2px solid #e2e8f0;
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+      position: relative;
+      top: 2px;
+    }
+
+    .tabs-widget [role="tab"]:hover {
+      background: #edf2f7;
+    }
+
+    .tabs-widget [role="tab"]:focus {
+      outline: 3px solid #667eea;
+      outline-offset: -3px;
+      z-index: 1;
+    }
+
+    .tabs-widget [role="tab"][aria-selected="true"] {
+      background: white;
+      border-color: #667eea;
+      border-bottom-color: white;
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .tabs-widget [role="tabpanel"] {
+      padding: 2rem;
+      border: 2px solid #e2e8f0;
+      border-top: none;
+      background: white;
+      min-height: 150px;
+    }
+
+    .tabs-widget [role="tabpanel"]:focus {
+      outline: 2px solid #667eea;
+      outline-offset: 4px;
+    }
+
+    /* Bad example - incomplete tabs */
+    .example.bad .tabs-widget [role="tab"] {
+      background: #fed7d7;
+      border-color: #fc8181;
+    }
+
+    .example.bad .tabs-widget [role="tab"].active {
+      background: #fff5f5;
+      border-color: #f56565;
+      color: #c53030;
+    }
+
+    .example.bad .tabs-widget [role="tabpanel"] {
+      border-color: #fc8181;
+    }
+
+    /* Testing panel */
+    .testing-panel {
+      background: #edf2f7;
+      border: 2px solid #cbd5e0;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .testing-panel h3 {
+      margin-top: 0;
+      color: #2d3748;
+    }
+
+    .testing-instructions kbd {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      background: white;
+      border: 1px solid #cbd5e0;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.1);
+    }
+
+    .testing-checklist {
+      margin-top: 1rem;
+    }
+
+    .testing-checklist li {
+      margin: 0.5rem 0;
+    }
+
+    .testing-checklist input[type="checkbox"] {
+      margin-right: 0.5rem;
+    }
+
+    /* Paradise analysis results */
+    .paradise-analysis {
+      background: white;
+      border: 2px solid #667eea;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .paradise-analysis h3 {
+      margin-top: 0;
+      color: #667eea;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .analysis-result {
+      padding: 1rem;
+      border-radius: 6px;
+      margin: 1rem 0;
+    }
+
+    .analysis-result.success {
+      background: #f0fff4;
+      border: 2px solid #48bb78;
+    }
+
+    .analysis-result.error {
+      background: #fff5f5;
+      border: 2px solid #f56565;
+    }
+
+    .issues-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .issues-list li {
+      padding: 0.75rem;
+      background: white;
+      border-left: 4px solid #f56565;
+      margin: 0.5rem 0;
+      border-radius: 4px;
+    }
+
+    .issues-list code {
+      background: #fed7d7;
+      padding: 0.25rem 0.5rem;
+      border-radius: 3px;
+      font-weight: 600;
+      color: #c53030;
+    }
+
+    .validation-results {
+      list-style: none;
+      padding: 0;
+    }
+
+    .validation-results li {
+      padding: 0.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .check-pass {
+      color: #2f855a;
+    }
+
+    .check-fail {
+      color: #c53030;
+    }
+
+    .check-pass .icon,
+    .check-fail .icon {
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+
+    /* Code display */
+    details {
+      margin: 1.5rem 0;
+    }
+
+    details summary {
+      cursor: pointer;
+      padding: 0.75rem 1rem;
+      background: #2d3748;
+      color: white;
+      border-radius: 6px;
+      font-weight: 600;
+      user-select: none;
+    }
+
+    details summary:hover {
+      background: #4a5568;
+    }
+
+    details pre {
+      margin: 0;
+      background: #1a202c;
+      color: #e2e8f0;
+      padding: 1.5rem;
+      border-radius: 0 0 6px 6px;
+      overflow-x: auto;
+    }
+
+    details pre code {
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .code-comment {
+      color: #68d391;
+    }
+
+    .code-string {
+      color: #fbbf24;
+    }
+
+    .code-keyword {
+      color: #90cdf4;
+    }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <header style="background: #2d3748; color: white; padding: 2rem;">
+    <nav class="breadcrumb">
+      <a href="../../index.html" style="color: #90cdf4;">← Widget Pattern Demos</a>
+    </nav>
+    <h1>Tabs Pattern Demo</h1>
+    <p style="opacity: 0.9;">Complete ARIA tabs pattern validation with keyboard navigation</p>
+    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+      <span style="background: rgba(255,255,255,0.2); padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem;">Complexity: HIGH</span>
+      <span style="background: rgba(255,255,255,0.2); padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem;">5 Components</span>
+      <span style="background: rgba(255,255,255,0.2); padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem;">WCAG 1.3.1, 2.1.1, 4.1.2</span>
+    </div>
+  </header>
+
+  <main id="main" style="max-width: 1400px; margin: 0 auto; padding: 2rem;">
+
+    <section class="explanation">
+      <h2>About the Tabs Pattern</h2>
+      <p style="font-size: 1.1rem; line-height: 1.6;">
+        The tabs pattern allows users to switch between multiple panels of content. A complete implementation requires:
+      </p>
+      <ol style="font-size: 1.05rem; line-height: 1.8;">
+        <li><strong>Tablist container</strong> with <code>role="tablist"</code></li>
+        <li><strong>Tab buttons</strong> with <code>role="tab"</code>, <code>aria-selected</code>, and <code>aria-controls</code></li>
+        <li><strong>Tab panels</strong> with <code>role="tabpanel"</code> and <code>aria-labelledby</code></li>
+        <li><strong>Keyboard navigation</strong>: Arrow keys navigate tabs, Tab enters panel</li>
+        <li><strong>State management</strong>: <code>aria-selected</code> updates, roving tabindex</li>
+      </ol>
+    </section>
+
+    <div class="comparison">
+      <!-- ACCESSIBLE IMPLEMENTATION -->
+      <section class="example good">
+        <h2>
+          <span style="font-size: 1.5rem;">✅</span>
+          Accessible Implementation
+        </h2>
+
+        <div class="tabs-widget" id="good-tabs">
+          <div role="tablist" aria-label="Sample Tabs">
+            <button role="tab" aria-selected="true" aria-controls="good-panel-1" id="good-tab-1" tabindex="0">
+              Overview
+            </button>
+            <button role="tab" aria-selected="false" aria-controls="good-panel-2" id="good-tab-2" tabindex="-1">
+              Features
+            </button>
+            <button role="tab" aria-selected="false" aria-controls="good-panel-3" id="good-tab-3" tabindex="-1">
+              Pricing
+            </button>
+          </div>
+
+          <div role="tabpanel" id="good-panel-1" aria-labelledby="good-tab-1" tabindex="0">
+            <h3>Overview</h3>
+            <p>This is the overview panel. Notice how it's properly associated with the Overview tab via <code>aria-labelledby</code>.</p>
+            <p>You can focus this panel content by pressing <kbd>Tab</kbd> after focusing a tab.</p>
+          </div>
+
+          <div role="tabpanel" id="good-panel-2" aria-labelledby="good-tab-2" hidden tabindex="0">
+            <h3>Features</h3>
+            <p>This is the features panel. It's hidden by default and revealed when the Features tab is activated.</p>
+            <p>The <code>hidden</code> attribute is removed when the tab is selected.</p>
+          </div>
+
+          <div role="tabpanel" id="good-panel-3" aria-labelledby="good-tab-3" hidden tabindex="0">
+            <h3>Pricing</h3>
+            <p>This is the pricing panel. Each panel has its own focusable content.</p>
+            <p>Screen readers announce: "Pricing, tab panel" when entering this panel.</p>
+          </div>
+        </div>
+
+        <div class="paradise-analysis">
+          <h3>🎯 Paradise Analysis Results</h3>
+          <div class="analysis-result success">
+            <strong>✅ Complete Tabs Pattern Detected</strong>
+            <p style="margin: 0.5rem 0 0 0;">All required components present. Zero issues found.</p>
+          </div>
+
+          <h4 style="margin-top: 1.5rem;">Pattern Validation:</h4>
+          <ul class="validation-results">
+            <li class="check-pass">
+              <span class="icon">✓</span>
+              <span>Structural hierarchy (tablist → tabs → panels)</span>
+            </li>
+            <li class="check-pass">
+              <span class="icon">✓</span>
+              <span>ARIA relationships (aria-controls, aria-labelledby)</span>
+            </li>
+            <li class="check-pass">
+              <span class="icon">✓</span>
+              <span>Keyboard navigation (arrow keys, Home/End)</span>
+            </li>
+            <li class="check-pass">
+              <span class="icon">✓</span>
+              <span>State management (aria-selected updates)</span>
+            </li>
+            <li class="check-pass">
+              <span class="icon">✓</span>
+              <span>Focus management (roving tabindex)</span>
+            </li>
+          </ul>
+        </div>
+
+        <details>
+          <summary>View Complete Code</summary>
+          <pre><code><span class="code-comment">// HTML Structure</span>
+<span class="code-keyword">&lt;div</span> <span class="code-string">role="tablist"</span> <span class="code-string">aria-label="Sample Tabs"</span><span class="code-keyword">&gt;</span>
+  <span class="code-keyword">&lt;button</span>
+    <span class="code-string">role="tab"</span>
+    <span class="code-string">aria-selected="true"</span>
+    <span class="code-string">aria-controls="panel-1"</span>
+    <span class="code-string">id="tab-1"</span>
+  <span class="code-keyword">&gt;</span>Tab 1<span class="code-keyword">&lt;/button&gt;</span>
+<span class="code-keyword">&lt;/div&gt;</span>
+
+<span class="code-keyword">&lt;div</span>
+  <span class="code-string">role="tabpanel"</span>
+  <span class="code-string">id="panel-1"</span>
+  <span class="code-string">aria-labelledby="tab-1"</span>
+<span class="code-keyword">&gt;</span>
+  Panel content
+<span class="code-keyword">&lt;/div&gt;</span>
+
+<span class="code-comment">// JavaScript - Arrow Key Navigation</span>
+<span class="code-keyword">const</span> tablist = document.querySelector('[role="tablist"]');
+<span class="code-keyword">const</span> tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+<span class="code-keyword">const</span> panels = Array.from(document.querySelectorAll('[role="tabpanel"]'));
+
+tablist.addEventListener('keydown', (e) => {
+  <span class="code-keyword">const</span> current = tabs.indexOf(document.activeElement);
+  <span class="code-keyword">let</span> next;
+
+  <span class="code-keyword">if</span> (e.key === 'ArrowRight') {
+    next = (current + 1) % tabs.length;
+  } <span class="code-keyword">else if</span> (e.key === 'ArrowLeft') {
+    next = (current - 1 + tabs.length) % tabs.length;
+  } <span class="code-keyword">else if</span> (e.key === 'Home') {
+    next = 0;
+  } <span class="code-keyword">else if</span> (e.key === 'End') {
+    next = tabs.length - 1;
+  } <span class="code-keyword">else</span> {
+    <span class="code-keyword">return</span>;
+  }
+
+  e.preventDefault();
+  activateTab(tabs[next]);
+});
+
+<span class="code-comment">// Activate Tab Function</span>
+<span class="code-keyword">function</span> activateTab(tab) {
+  <span class="code-keyword">const</span> index = tabs.indexOf(tab);
+
+  <span class="code-comment">// Update tabs</span>
+  tabs.forEach((t, i) => {
+    t.setAttribute('aria-selected', i === index);
+    t.setAttribute('tabindex', i === index ? '0' : '-1');
+  });
+
+  <span class="code-comment">// Update panels</span>
+  panels.forEach((p, i) => {
+    p.hidden = i !== index;
+  });
+
+  tab.focus();
+}
+
+<span class="code-comment">// Click handler</span>
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => activateTab(tab));
+});</code></pre>
+        </details>
+      </section>
+
+      <!-- INACCESSIBLE IMPLEMENTATION -->
+      <section class="example bad">
+        <h2>
+          <span style="font-size: 1.5rem;">❌</span>
+          Inaccessible Implementation
+        </h2>
+
+        <div class="tabs-widget" id="bad-tabs">
+          <div role="tablist">
+            <button role="tab" class="active" id="bad-tab-1">
+              Overview
+            </button>
+            <button role="tab" id="bad-tab-2">
+              Features
+            </button>
+            <button role="tab" id="bad-tab-3">
+              Pricing
+            </button>
+          </div>
+
+          <div role="tabpanel" id="bad-panel-1" style="display: block;">
+            <h3>Overview</h3>
+            <p>This panel is visible but has no proper ARIA connection to its tab.</p>
+            <p><strong>Problem:</strong> No <code>aria-labelledby</code> linking to tab.</p>
+          </div>
+
+          <div role="tabpanel" id="bad-panel-2" style="display: none;">
+            <h3>Features</h3>
+            <p>This panel is hidden but there's no keyboard navigation to reveal it.</p>
+          </div>
+
+          <div role="tabpanel" id="bad-panel-3" style="display: none;">
+            <h3>Pricing</h3>
+            <p>Keyboard users cannot access this content at all.</p>
+          </div>
+        </div>
+
+        <div class="paradise-analysis">
+          <h3>🎯 Paradise Analysis Results</h3>
+          <div class="analysis-result error">
+            <strong>❌ Incomplete Tabs Pattern</strong>
+            <p style="margin: 0.5rem 0 0 0;">5 critical issues found:</p>
+          </div>
+
+          <ul class="issues-list">
+            <li>
+              <code>incomplete-tabs-pattern</code>: Missing <code>aria-selected</code> attributes on tabs
+            </li>
+            <li>
+              <code>incomplete-tabs-pattern</code>: Missing <code>aria-controls</code> linking tabs to panels
+            </li>
+            <li>
+              <code>incomplete-tabs-pattern</code>: No arrow key navigation detected
+            </li>
+            <li>
+              <code>incomplete-tabs-pattern</code>: No Home/End key support
+            </li>
+            <li>
+              <code>missing-aria-connection</code>: Panels missing <code>aria-labelledby</code>
+            </li>
+          </ul>
+
+          <h4 style="margin-top: 1.5rem;">Pattern Validation:</h4>
+          <ul class="validation-results">
+            <li class="check-pass">
+              <span class="icon">✓</span>
+              <span>Structural hierarchy (tablist → tabs → panels)</span>
+            </li>
+            <li class="check-fail">
+              <span class="icon">✗</span>
+              <span>ARIA relationships (aria-controls, aria-labelledby) <strong>MISSING</strong></span>
+            </li>
+            <li class="check-fail">
+              <span class="icon">✗</span>
+              <span>Keyboard navigation (arrow keys, Home/End) <strong>MISSING</strong></span>
+            </li>
+            <li class="check-fail">
+              <span class="icon">✗</span>
+              <span>State management (aria-selected updates) <strong>MISSING</strong></span>
+            </li>
+            <li class="check-fail">
+              <span class="icon">✗</span>
+              <span>Focus management (roving tabindex) <strong>MISSING</strong></span>
+            </li>
+          </ul>
+        </div>
+
+        <details>
+          <summary>View Problematic Code</summary>
+          <pre><code><span class="code-comment">// HTML Structure - INCOMPLETE</span>
+<span class="code-keyword">&lt;div</span> <span class="code-string">role="tablist"</span><span class="code-keyword">&gt;</span>
+  <span class="code-keyword">&lt;button</span>
+    <span class="code-string">role="tab"</span>
+    <span class="code-comment">// ❌ MISSING: aria-selected</span>
+    <span class="code-comment">// ❌ MISSING: aria-controls</span>
+    <span class="code-comment">// ❌ MISSING: unique id</span>
+  <span class="code-keyword">&gt;</span>Tab 1<span class="code-keyword">&lt;/button&gt;</span>
+<span class="code-keyword">&lt;/div&gt;</span>
+
+<span class="code-keyword">&lt;div</span>
+  <span class="code-string">role="tabpanel"</span>
+  <span class="code-comment">// ❌ MISSING: aria-labelledby</span>
+  <span class="code-comment">// ❌ Using display:none instead of hidden attribute</span>
+  <span class="code-string">style="display: none;"</span>
+<span class="code-keyword">&gt;</span>
+  Panel content
+<span class="code-keyword">&lt;/div&gt;</span>
+
+<span class="code-comment">// JavaScript - ONLY CLICK HANDLERS</span>
+<span class="code-keyword">const</span> tabs = document.querySelectorAll('[role="tab"]');
+<span class="code-keyword">const</span> panels = document.querySelectorAll('[role="tabpanel"]');
+
+tabs.forEach((tab, index) => {
+  tab.addEventListener('click', () => {
+    <span class="code-comment">// Only handles clicks!</span>
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+
+    panels.forEach((p, i) => {
+      p.style.display = i === index ? 'block' : 'none';
+    });
+  });
+});
+
+<span class="code-comment">// ❌ MISSING: Arrow key navigation</span>
+<span class="code-comment">// ❌ MISSING: Home/End support</span>
+<span class="code-comment">// ❌ MISSING: aria-selected updates</span>
+<span class="code-comment">// ❌ MISSING: Roving tabindex management</span></code></pre>
+        </details>
+      </section>
+    </div>
+
+    <div class="testing-panel">
+      <h3>🧪 Try It Yourself - Keyboard Testing</h3>
+      <div class="testing-instructions">
+        <p style="margin-top: 0;"><strong>Test the accessible tabs (left side):</strong></p>
+        <ol>
+          <li>Press <kbd>Tab</kbd> to focus the first tab button</li>
+          <li>Press <kbd>→</kbd> (Right Arrow) to navigate to the next tab</li>
+          <li>Press <kbd>←</kbd> (Left Arrow) to navigate to the previous tab</li>
+          <li>Press <kbd>Home</kbd> to jump to the first tab</li>
+          <li>Press <kbd>End</kbd> to jump to the last tab</li>
+          <li>Press <kbd>Tab</kbd> again to move focus into the panel content</li>
+        </ol>
+
+        <p><strong>Test the inaccessible tabs (right side):</strong></p>
+        <ol>
+          <li>Press <kbd>Tab</kbd> to focus a tab button</li>
+          <li>Try pressing <kbd>→</kbd> - nothing happens! ❌</li>
+          <li>Try pressing <kbd>Home</kbd> or <kbd>End</kbd> - nothing happens! ❌</li>
+          <li>Notice you can only click with mouse 🖱️</li>
+        </ol>
+      </div>
+
+      <div class="testing-checklist">
+        <h4>What Should Happen (Accessible Tabs):</h4>
+        <ul>
+          <li><input type="checkbox" id="check1"><label for="check1">Arrow keys navigate between tabs</label></li>
+          <li><input type="checkbox" id="check2"><label for="check2">Home/End keys jump to first/last tab</label></li>
+          <li><input type="checkbox" id="check3"><label for="check3">Tab key moves to panel content</label></li>
+          <li><input type="checkbox" id="check4"><label for="check4">aria-selected updates when tab changes</label></li>
+          <li><input type="checkbox" id="check5"><label for="check5">Only one tab is focusable at a time (roving tabindex)</label></li>
+          <li><input type="checkbox" id="check6"><label for="check6">Visible focus indicator on active element</label></li>
+        </ul>
+      </div>
+    </div>
+
+    <section style="background: #f7fafc; padding: 2rem; border-radius: 8px; margin: 3rem 0;">
+      <h2>What Paradise Detects</h2>
+      <p style="font-size: 1.1rem;">
+        Paradise's Widget Pattern Analyzer validates the <strong>complete tabs pattern</strong>, not just individual attributes:
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+        <div style="background: white; padding: 1.5rem; border-radius: 8px; border: 2px solid #e2e8f0;">
+          <h3 style="margin-top: 0; color: #667eea;">Step 1: Structure</h3>
+          <p>Detects tablist container with tab children and panel elements.</p>
+          <code style="display: block; background: #edf2f7; padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem;">
+            role="tablist" → role="tab" → role="tabpanel"
+          </code>
+        </div>
+
+        <div style="background: white; padding: 1.5rem; border-radius: 8px; border: 2px solid #e2e8f0;">
+          <h3 style="margin-top: 0; color: #667eea;">Step 2: ARIA Relationships</h3>
+          <p>Validates aria-controls and aria-labelledby connections.</p>
+          <code style="display: block; background: #edf2f7; padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem;">
+            aria-controls="panel1" → id="panel1"
+          </code>
+        </div>
+
+        <div style="background: white; padding: 1.5rem; border-radius: 8px; border: 2px solid #e2e8f0;">
+          <h3 style="margin-top: 0; color: #667eea;">Step 3: Keyboard Nav</h3>
+          <p>Checks for arrow key, Home, and End handlers.</p>
+          <code style="display: block; background: #edf2f7; padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem;">
+            if (e.key === 'ArrowRight') { ... }
+          </code>
+        </div>
+
+        <div style="background: white; padding: 1.5rem; border-radius: 8px; border: 2px solid #e2e8f0;">
+          <h3 style="margin-top: 0; color: #667eea;">Step 4: State Management</h3>
+          <p>Verifies aria-selected attribute updates dynamically.</p>
+          <code style="display: block; background: #edf2f7; padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem;">
+            setAttribute('aria-selected', 'true')
+          </code>
+        </div>
+
+        <div style="background: white; padding: 1.5rem; border-radius: 8px; border: 2px solid #e2e8f0;">
+          <h3 style="margin-top: 0; color: #667eea;">Step 5: Focus Management</h3>
+          <p>Ensures roving tabindex pattern is implemented.</p>
+          <code style="display: block; background: #edf2f7; padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem;">
+            setAttribute('tabindex', '0' or '-1')
+          </code>
+        </div>
+      </div>
+    </section>
+
+    <section style="background: #667eea; color: white; padding: 2rem; border-radius: 8px; margin: 3rem 0;">
+      <h2 style="margin-top: 0;">Why Other Tools Miss This</h2>
+      <p style="font-size: 1.1rem; line-height: 1.6;">
+        Traditional accessibility checkers (axe, Lighthouse, WAVE) validate individual ARIA attributes but <strong>cannot detect incomplete patterns</strong>:
+      </p>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+        <div>
+          <h3>❌ Traditional Tool Output:</h3>
+          <ul style="line-height: 1.8;">
+            <li>✅ Element has role="tab"</li>
+            <li>✅ Element has role="tabpanel"</li>
+            <li>✅ Element has role="tablist"</li>
+            <li><strong>→ All checks pass!</strong></li>
+          </ul>
+          <p style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 6px; margin-top: 1rem;">
+            <strong>Problem:</strong> Widget is completely unusable for keyboard users, but tool reports no issues!
+          </p>
+        </div>
+
+        <div>
+          <h3>✅ Paradise Output:</h3>
+          <ul style="line-height: 1.8;">
+            <li>✅ Structure detected</li>
+            <li>❌ Missing aria-selected</li>
+            <li>❌ Missing aria-controls</li>
+            <li>❌ Missing arrow navigation</li>
+            <li>❌ Missing roving tabindex</li>
+          </ul>
+          <p style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 6px; margin-top: 1rem;">
+            <strong>Result:</strong> Paradise catches the incomplete pattern and provides fix code!
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>WCAG Success Criteria</h2>
+      <p>This tabs pattern addresses:</p>
+      <ul style="font-size: 1.05rem; line-height: 1.8;">
+        <li><strong>1.3.1 Info and Relationships (Level A):</strong> ARIA roles and relationships communicate structure to assistive technology</li>
+        <li><strong>2.1.1 Keyboard (Level A):</strong> All functionality available via keyboard (arrow keys, Tab)</li>
+        <li><strong>4.1.2 Name, Role, Value (Level A):</strong> All tabs have accessible names and current state (aria-selected)</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer style="background: #2d3748; color: white; padding: 2rem; text-align: center; margin-top: 4rem;">
+    <p style="margin: 0;">
+      Paradise Widget Pattern Analyzer - Tabs Demo
+    </p>
+    <p style="margin-top: 0.5rem; opacity: 0.7;">
+      <a href="../../index.html" style="color: #90cdf4;">← Back to Widget Patterns</a>
+    </p>
+  </footer>
+
+  <!-- Accessible Tabs Implementation -->
+  <script src="../../js/accessible/tabs-complete.js"></script>
+
+  <!-- Inaccessible Tabs Implementation -->
+  <script src="../../js/inaccessible/tabs-incomplete.js"></script>
+</body>
+</html>

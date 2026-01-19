@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spinbutton Pattern - Comprehensive Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .pattern-info {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            margin-top: 20px;
+        }
+
+        .pattern-info h3 {
+            color: #2980b9;
+            margin-bottom: 10px;
+        }
+
+        .pattern-info ul {
+            margin-left: 20px;
+        }
+
+        .pattern-info li {
+            margin-bottom: 5px;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .demo-section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .demo-section h2 {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .accessible h2 {
+            color: #27ae60;
+        }
+
+        .inaccessible h2 {
+            color: #e74c3c;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .status-badge.good {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.bad {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .spinbutton-group {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+        }
+
+        .spinbutton-group h3 {
+            margin-bottom: 15px;
+            color: #495057;
+            font-size: 1.2em;
+        }
+
+        .spinbutton-container {
+            margin-bottom: 20px;
+        }
+
+        .spinbutton-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .spinbutton-wrapper {
+            display: flex;
+            align-items: stretch;
+            max-width: 200px;
+            border: 2px solid #ced4da;
+            border-radius: 6px;
+            background: white;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .spinbutton-wrapper:focus-within {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .spinbutton-wrapper.invalid {
+            border-color: #e74c3c;
+        }
+
+        .spinbutton-wrapper.invalid:focus-within {
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2);
+        }
+
+        .spinbutton-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: none;
+            font-size: 16px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            background: transparent;
+        }
+
+        .spinbutton-input:focus {
+            outline: none;
+        }
+
+        .spinbutton-buttons {
+            display: flex;
+            flex-direction: column;
+            border-left: 2px solid #ced4da;
+        }
+
+        .spinbutton-button {
+            flex: 1;
+            width: 32px;
+            border: none;
+            background: #f8f9fa;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #495057;
+            transition: background 0.2s;
+        }
+
+        .spinbutton-button:hover:not(:disabled) {
+            background: #e9ecef;
+        }
+
+        .spinbutton-button:active:not(:disabled) {
+            background: #dee2e6;
+        }
+
+        .spinbutton-button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .spinbutton-button:first-child {
+            border-bottom: 1px solid #ced4da;
+        }
+
+        .spinbutton-info {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+
+        .spinbutton-value {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .value-display {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .description {
+            color: #6c757d;
+            font-size: 0.95em;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        /* Complex Spinbutton Styles */
+        .temperature-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .temperature-display {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            font-size: 1.8em;
+            font-weight: 700;
+            min-width: 120px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .temperature-scale {
+            display: flex;
+            gap: 10px;
+        }
+
+        .scale-button {
+            padding: 8px 16px;
+            border: 2px solid #ced4da;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .scale-button.active {
+            background: #3498db;
+            border-color: #3498db;
+            color: white;
+        }
+
+        .scale-button:hover:not(.active) {
+            border-color: #3498db;
+        }
+
+        /* Font Size Demo */
+        .font-size-demo {
+            padding: 20px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .preview-text {
+            transition: font-size 0.2s;
+            color: #2c3e50;
+            line-height: 1.5;
+        }
+
+        /* Time Picker Style */
+        .time-picker {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .time-separator {
+            font-size: 24px;
+            font-weight: 700;
+            color: #495057;
+        }
+
+        .time-wrapper {
+            max-width: 80px;
+        }
+
+        /* Percentage Slider Style */
+        .percentage-display {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .percentage-bar {
+            flex: 1;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .percentage-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+            transition: width 0.3s;
+        }
+
+        .percentage-text {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #495057;
+            min-width: 80px;
+        }
+
+        /* Issues Panel */
+        .issues-panel {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .issues-panel h2 {
+            color: #e74c3c;
+            margin-bottom: 20px;
+        }
+
+        .issue-list {
+            list-style: none;
+        }
+
+        .issue-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #fff5f5;
+            border-left: 4px solid #e74c3c;
+            border-radius: 4px;
+        }
+
+        .issue-item strong {
+            color: #c0392b;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* Keyboard Help */
+        .keyboard-help {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .keyboard-help h4 {
+            margin-bottom: 15px;
+            color: #495057;
+        }
+
+        .keyboard-shortcuts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+        }
+
+        .shortcut {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .key {
+            padding: 4px 8px;
+            background: white;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+            font-weight: 600;
+            box-shadow: 0 2px 0 #ced4da;
+        }
+
+        .key-description {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        /* Currency Spinbutton */
+        .currency-wrapper {
+            position: relative;
+        }
+
+        .currency-symbol {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: 700;
+            color: #495057;
+            font-size: 16px;
+        }
+
+        .currency-input {
+            padding-left: 30px !important;
+        }
+
+        /* Rating Spinbutton */
+        .rating-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 5px;
+            font-size: 24px;
+        }
+
+        .star {
+            color: #ffd700;
+            text-shadow: 0 0 2px rgba(0,0,0,0.2);
+        }
+
+        .star.empty {
+            color: #e9ecef;
+        }
+
+        /* Step Indicator */
+        .step-info {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #e3f2fd;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: #1976d2;
+            margin-left: 10px;
+        }
+
+        /* Live Region for Announcements */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        .code-example {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        .code-example pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        /* Comparison Features */
+        .features-comparison {
+            margin-top: 20px;
+        }
+
+        .feature-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-item.has {
+            background: #d4edda;
+        }
+
+        .feature-item.missing {
+            background: #f8d7da;
+        }
+
+        .feature-icon {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .feature-icon.check {
+            color: #155724;
+        }
+
+        .feature-icon.cross {
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Spinbutton Pattern</h1>
+            <p class="subtitle">Interactive number input controls with keyboard navigation</p>
+
+            <div class="pattern-info">
+                <h3>ARIA Spinbutton Pattern Requirements</h3>
+                <ul>
+                    <li><strong>role="spinbutton"</strong> on the input element</li>
+                    <li><strong>aria-valuemin</strong>, <strong>aria-valuemax</strong>, <strong>aria-valuenow</strong> attributes</li>
+                    <li><strong>aria-label</strong> or <strong>aria-labelledby</strong> for accessible naming</li>
+                    <li><strong>aria-valuetext</strong> (optional) for custom value descriptions</li>
+                    <li><strong>Arrow Up/Down</strong> to increment/decrement value</li>
+                    <li><strong>Home/End</strong> keys to jump to min/max values</li>
+                    <li><strong>Page Up/Down</strong> for larger increments (optional)</li>
+                </ul>
+            </div>
+        </header>
+
+        <div class="comparison-grid">
+            <!-- ACCESSIBLE VERSION -->
+            <div class="demo-section accessible">
+                <h2>
+                    Accessible Implementation
+                    <span class="status-badge good">WCAG Compliant</span>
+                </h2>
+
+                <div class="features-comparison">
+                    <div class="feature-item has">
+                        <span class="feature-icon check">✓</span>
+                        <span>Proper ARIA attributes and roles</span>
+                    </div>
+                    <div class="feature-item has">
+                        <span class="feature-icon check">✓</span>
+                        <span>Full keyboard navigation support</span>
+                    </div>
+                    <div class="feature-item has">
+                        <span class="feature-icon check">✓</span>
+                        <span>Screen reader announcements</span>
+                    </div>
+                    <div class="feature-item has">
+                        <span class="feature-icon check">✓</span>
+                        <span>Accessible labels and descriptions</span>
+                    </div>
+                    <div class="feature-item has">
+                        <span class="feature-icon check">✓</span>
+                        <span>Value validation and bounds</span>
+                    </div>
+                </div>
+
+                <!-- Basic Spinbutton -->
+                <div class="spinbutton-group">
+                    <h3>1. Basic Quantity Selector</h3>
+                    <p class="description">Simple spinbutton for selecting quantity with min/max bounds.</p>
+
+                    <div class="spinbutton-container">
+                        <label id="quantity-label-good" class="spinbutton-label">Quantity:</label>
+                        <div class="spinbutton-wrapper" id="quantity-wrapper-good">
+                            <input
+                                type="text"
+                                class="spinbutton-input"
+                                id="quantity-good"
+                                role="spinbutton"
+                                aria-labelledby="quantity-label-good"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                                aria-valuenow="1"
+                                value="1"
+                                inputmode="numeric"
+                            />
+                            <div class="spinbutton-buttons">
+                                <button class="spinbutton-button" aria-label="Increase quantity">▲</button>
+                                <button class="spinbutton-button" aria-label="Decrease quantity">▼</button>
+                            </div>
+                        </div>
+                        <div class="spinbutton-info">
+                            <div class="spinbutton-value">
+                                <span>Current:</span>
+                                <span class="value-display" id="quantity-value-good">1</span>
+                            </div>
+                            <div>Range: 0-100</div>
+                            <div class="step-info">Step: 1</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Font Size Picker -->
+                <div class="spinbutton-group">
+                    <h3>2. Font Size Picker</h3>
+                    <p class="description">Control font size with visual preview and aria-valuetext.</p>
+
+                    <div class="spinbutton-container">
+                        <label id="fontsize-label-good" class="spinbutton-label">Font Size:</label>
+                        <div class="spinbutton-wrapper" id="fontsize-wrapper-good">
+                            <input
+                                type="text"
+                                class="spinbutton-input"
+                                id="fontsize-good"
+                                role="spinbutton"
+                                aria-labelledby="fontsize-label-good"
+                                aria-valuemin="8"
+                                aria-valuemax="72"
+                                aria-valuenow="16"
+                                aria-valuetext="16 pixels"
+                                value="16px"
+                                inputmode="numeric"
+                            />
+                            <div class="spinbutton-buttons">
+                                <button class="spinbutton-button" aria-label="Increase font size">▲</button>
+                                <button class="spinbutton-button" aria-label="Decrease font size">▼</button>
+                            </div>
+                        </div>
+                        <div class="spinbutton-info">
+                            <div>Range: 8px-72px</div>
+                            <div class="step-info">Step: 2px</div>
+                        </div>
+                        <div class="font-size-demo">
+                            <p class="preview-text" id="preview-text-good" style="font-size: 16px;">
+                                The quick brown fox jumps over the lazy dog.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Temperature Control -->
+                <div class="spinbutton-group">
+                    <h3>3. Temperature Control</h3>
+                    <p class="description">Temperature spinbutton with unit conversion (Celsius/Fahrenheit).</p>
+
+                    <div class="spinbutton-container">
+                        <label id="temp-label-good" class="spinbutton-label">Temperature:</label>
+                        <div class="temperature-wrapper">
+                            <div class="temperature-display" id="temp-display-good">20°C</div>
+                            <div>
+                                <div class="spinbutton-wrapper" id="temp-wrapper-good">
+                                    <input
+                                        type="text"
+                                        class="spinbutton-input"
+                                        id="temperature-good"
+                                        role="spinbutton"
+                                        aria-labelledby="temp-label-good"
+                                        aria-valuemin="-50"
+                                        aria-valuemax="50"
+                                        aria-valuenow="20"
+                                        aria-valuetext="20 degrees Celsius"
+                                        value="20"
+                                        inputmode="numeric"
+                                    />
+                                    <div class="spinbutton-buttons">
+                                        <button class="spinbutton-button" aria-label="Increase temperature">▲</button>
+                                        <button class="spinbutton-button" aria-label="Decrease temperature">▼</button>
+                                    </div>
+                                </div>
+                                <div class="temperature-scale">
+                                    <button class="scale-button active" data-scale="C">Celsius</button>
+                                    <button class="scale-button" data-scale="F">Fahrenheit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Time Picker -->
+                <div class="spinbutton-group">
+                    <h3>4. Time Picker</h3>
+                    <p class="description">Hour and minute selectors with wraparound behavior.</p>
+
+                    <div class="spinbutton-container">
+                        <label id="time-label-good" class="spinbutton-label">Time:</label>
+                        <div class="time-picker">
+                            <div class="time-wrapper">
+                                <div class="spinbutton-wrapper" id="hour-wrapper-good">
+                                    <input
+                                        type="text"
+                                        class="spinbutton-input"
+                                        id="hour-good"
+                                        role="spinbutton"
+                                        aria-label="Hours"
+                                        aria-valuemin="0"
+                                        aria-valuemax="23"
+                                        aria-valuenow="12"
+                                        value="12"
+                                        inputmode="numeric"
+                                    />
+                                    <div class="spinbutton-buttons">
+                                        <button class="spinbutton-button" aria-label="Increase hours">▲</button>
+                                        <button class="spinbutton-button" aria-label="Decrease hours">▼</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="time-separator">:</span>
+                            <div class="time-wrapper">
+                                <div class="spinbutton-wrapper" id="minute-wrapper-good">
+                                    <input
+                                        type="text"
+                                        class="spinbutton-input"
+                                        id="minute-good"
+                                        role="spinbutton"
+                                        aria-label="Minutes"
+                                        aria-valuemin="0"
+                                        aria-valuemax="59"
+                                        aria-valuenow="0"
+                                        value="00"
+                                        inputmode="numeric"
+                                    />
+                                    <div class="spinbutton-buttons">
+                                        <button class="spinbutton-button" aria-label="Increase minutes">▲</button>
+                                        <button class="spinbutton-button" aria-label="Decrease minutes">▼</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Percentage Slider -->
+                <div class="spinbutton-group">
+                    <h3>5. Percentage Selector</h3>
+                    <p class="description">Percentage spinbutton with visual progress bar.</p>
+
+                    <div class="spinbutton-container">
+                        <label id="percent-label-good" class="spinbutton-label">Progress:</label>
+                        <div class="spinbutton-wrapper" id="percent-wrapper-good" style="max-width: 120px;">
+                            <input
+                                type="text"
+                                class="spinbutton-input"
+                                id="percentage-good"
+                                role="spinbutton"
+                                aria-labelledby="percent-label-good"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                                aria-valuenow="50"
+                                aria-valuetext="50 percent"
+                                value="50%"
+                                inputmode="numeric"
+                            />
+                            <div class="spinbutton-buttons">
+                                <button class="spinbutton-button" aria-label="Increase percentage">▲</button>
+                                <button class="spinbutton-button" aria-label="Decrease percentage">▼</button>
+                            </div>
+                        </div>
+                        <div class="percentage-display">
+                            <div class="percentage-bar">
+                                <div class="percentage-fill" id="percent-fill-good" style="width: 50%"></div>
+                            </div>
+                            <div class="percentage-text" id="percent-text-good">50%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="keyboard-help">
+                    <h4>Keyboard Navigation</h4>
+                    <div class="keyboard-shortcuts">
+                        <div class="shortcut">
+                            <span class="key">↑</span>
+                            <span class="key-description">Increase value</span>
+                        </div>
+                        <div class="shortcut">
+                            <span class="key">↓</span>
+                            <span class="key-description">Decrease value</span>
+                        </div>
+                        <div class="shortcut">
+                            <span class="key">Home</span>
+                            <span class="key-description">Minimum value</span>
+                        </div>
+                        <div class="shortcut">
+                            <span class="key">End</span>
+                            <span class="key-description">Maximum value</span>
+                        </div>
+                        <div class="shortcut">
+                            <span class="key">Page Up</span>
+                            <span class="key-description">Large increase</span>
+                        </div>
+                        <div class="shortcut">
+                            <span class="key">Page Down</span>
+                            <span class="key-description">Large decrease</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INACCESSIBLE VERSION -->
+            <div class="demo-section inaccessible">
+                <h2>
+                    Inaccessible Implementation
+                    <span class="status-badge bad">Has Issues</span>
+                </h2>
+
+                <div class="features-comparison">
+                    <div class="feature-item missing">
+                        <span class="feature-icon cross">✗</span>
+                        <span>Missing role="spinbutton"</span>
+                    </div>
+                    <div class="feature-item missing">
+                        <span class="feature-icon cross">✗</span>
+                        <span>No ARIA value attributes</span>
+                    </div>
+                    <div class="feature-item missing">
+                        <span class="feature-icon cross">✗</span>
+                        <span>Missing accessible labels</span>
+                    </div>
+                    <div class="feature-item missing">
+                        <span class="feature-icon cross">✗</span>
+                        <span>No keyboard navigation</span>
+                    </div>
+                    <div class="feature-item missing">
+                        <span class="feature-icon cross">✗</span>
+                        <span>Poor screen reader support</span>
+                    </div>
+                </div>
+
+                <!-- Basic Spinbutton -->
+                <div class="spinbutton-group">
+                    <h3>1. Basic Quantity Selector</h3>
+                    <p class="description">Missing role and ARIA attributes.</p>
+
+                    <div class="spinbutton-container">
+                        <span class="spinbutton-label">Quantity:</span>
+                        <div class="spinbutton-wrapper" id="quantity-wrapper-bad">
+                            <input
+                                type="text"
+                                class="spinbutton-input"
+                                id="quantity-bad"
+                                value="1"
+                            />
+                            <div class="spinbutton-buttons">
+                                <button class="spinbutton-button">▲</button>
+                                <button class="spinbutton-button">▼</button>
+                            </div>
+                        </div>
+                        <div class="spinbutton-info">
+                            <div class="spinbutton-value">
+                                <span>Current:</span>
+                                <span class="value-display" id="quantity-value-bad">1</span>
+                            </div>
+                            <div>Range: 0-100</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Font Size Picker -->
+                <div class="spinbutton-group">
+                    <h3>2. Font Size Picker</h3>
+                    <p class="description">No keyboard support or value announcements.</p>
+
+                    <div class="spinbutton-container">
+                        <span class="spinbutton-label">Font Size:</span>
+                        <div class="spinbutton-wrapper" id="fontsize-wrapper-bad">
+                            <input
+                                type="text"
+                                class="spinbutton-input"
+                                id="fontsize-bad"
+                                value="16px"
+                            />
+                            <div class="spinbutton-buttons">
+                                <button class="spinbutton-button">▲</button>
+                                <button class="spinbutton-button">▼</button>
+                            </div>
+                        </div>
+                        <div class="font-size-demo">
+                            <p class="preview-text" id="preview-text-bad" style="font-size: 16px;">
+                                The quick brown fox jumps over the lazy dog.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Temperature Control -->
+                <div class="spinbutton-group">
+                    <h3>3. Temperature Control</h3>
+                    <p class="description">Missing value context and unit information.</p>
+
+                    <div class="spinbutton-container">
+                        <span class="spinbutton-label">Temperature:</span>
+                        <div class="temperature-wrapper">
+                            <div class="temperature-display" id="temp-display-bad">20°C</div>
+                            <div>
+                                <div class="spinbutton-wrapper" id="temp-wrapper-bad">
+                                    <input
+                                        type="text"
+                                        class="spinbutton-input"
+                                        id="temperature-bad"
+                                        value="20"
+                                    />
+                                    <div class="spinbutton-buttons">
+                                        <button class="spinbutton-button">▲</button>
+                                        <button class="spinbutton-button">▼</button>
+                                    </div>
+                                </div>
+                                <div class="temperature-scale">
+                                    <button class="scale-button active" data-scale="C">Celsius</button>
+                                    <button class="scale-button" data-scale="F">Fahrenheit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Time Picker -->
+                <div class="spinbutton-group">
+                    <h3>4. Time Picker</h3>
+                    <p class="description">No relationship between hour and minute inputs.</p>
+
+                    <div class="spinbutton-container">
+                        <span class="spinbutton-label">Time:</span>
+                        <div class="time-picker">
+                            <div class="time-wrapper">
+                                <div class="spinbutton-wrapper" id="hour-wrapper-bad">
+                                    <input
+                                        type="text"
+                                        class="spinbutton-input"
+                                        id="hour-bad"
+                                        value="12"
+                                    />
+                                    <div class="spinbutton-buttons">
+                                        <button class="spinbutton-button">▲</button>
+                                        <button class="spinbutton-button">▼</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="time-separator">:</span>
+                            <div class="time-wrapper">
+                                <div class="spinbutton-wrapper" id="minute-wrapper-bad">
+                                    <input
+                                        type="text"
+                                        class="spinbutton-input"
+                                        id="minute-bad"
+                                        value="00"
+                                    />
+                                    <div class="spinbutton-buttons">
+                                        <button class="spinbutton-button">▲</button>
+                                        <button class="spinbutton-button">▼</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Percentage Slider -->
+                <div class="spinbutton-group">
+                    <h3>5. Percentage Selector</h3>
+                    <p class="description">No semantic connection to progress bar.</p>
+
+                    <div class="spinbutton-container">
+                        <span class="spinbutton-label">Progress:</span>
+                        <div class="spinbutton-wrapper" id="percent-wrapper-bad" style="max-width: 120px;">
+                            <input
+                                type="text"
+                                class="spinbutton-input"
+                                id="percentage-bad"
+                                value="50%"
+                            />
+                            <div class="spinbutton-buttons">
+                                <button class="spinbutton-button">▲</button>
+                                <button class="spinbutton-button">▼</button>
+                            </div>
+                        </div>
+                        <div class="percentage-display">
+                            <div class="percentage-bar">
+                                <div class="percentage-fill" id="percent-fill-bad" style="width: 50%"></div>
+                            </div>
+                            <div class="percentage-text" id="percent-text-bad">50%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="keyboard-help">
+                    <h4>Keyboard Navigation</h4>
+                    <p style="color: #e74c3c; font-weight: 600;">⚠️ Keyboard navigation not implemented</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Issues Detected -->
+        <div class="issues-panel">
+            <h2>Paradise Detected Issues (5)</h2>
+            <ul class="issue-list">
+                <li class="issue-item">
+                    <strong>Issue 1: Missing role="spinbutton"</strong>
+                    Screen readers cannot identify these as spinbutton controls. Users don't know they can use arrow keys or what type of input is expected.
+                </li>
+                <li class="issue-item">
+                    <strong>Issue 2: Missing aria-valuemin, aria-valuemax, aria-valuenow</strong>
+                    No information about current value or valid range. Screen readers cannot announce the current state or bounds to users.
+                </li>
+                <li class="issue-item">
+                    <strong>Issue 3: Missing accessible labels</strong>
+                    Inputs lack proper aria-label or aria-labelledby. Screen reader users don't know what each spinbutton controls.
+                </li>
+                <li class="issue-item">
+                    <strong>Issue 4: No keyboard navigation</strong>
+                    Arrow keys, Home, End, and Page Up/Down don't work. Keyboard users cannot operate the controls efficiently.
+                </li>
+                <li class="issue-item">
+                    <strong>Issue 5: Missing aria-valuetext</strong>
+                    For non-numeric displays (like "16px" or "50%"), screen readers read the formatted text incorrectly without proper value context.
+                </li>
+            </ul>
+        </div>
+
+        <!-- Live Region for Announcements -->
+        <div class="sr-only" role="status" aria-live="polite" aria-atomic="true" id="spinbutton-announcer"></div>
+    </div>
+
+    <script src="../../js/accessible/spinbutton-complete.js"></script>
+    <script src="../../js/inaccessible/spinbutton-incomplete.js"></script>
+</body>
+</html>

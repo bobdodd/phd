@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Controls - A11y Demo</title>
+  <link rel="stylesheet" href="../css/demo.css">
+  <style>
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="email"] {
+      padding: 0.5rem;
+      border: 2px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    input:focus {
+      border-color: #0078d4;
+    }
+
+    .required-indicator {
+      color: #dc2626;
+      font-weight: bold;
+    }
+
+    .error-message {
+      color: #dc2626;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+
+    .error input {
+      border-color: #dc2626;
+    }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <header>
+    <nav class="breadcrumb">
+      <a href="../index.html">← Back to Demo Index</a>
+    </nav>
+    <h1>Form Controls Demo</h1>
+    <p>Accessible vs. inaccessible form patterns</p>
+  </header>
+
+  <main id="main">
+    <section class="explanation">
+      <h2>About This Pattern</h2>
+      <p>
+        Forms must have proper labels, clear required field indicators, and accessible error messages
+        that are programmatically associated with their inputs.
+      </p>
+      <ul>
+        <li><strong>WCAG Criteria:</strong> 1.3.1 (Info and Relationships), 3.3.2 (Labels or Instructions), 4.1.2 (Name, Role, Value)</li>
+        <li><strong>Required ARIA:</strong> aria-label or label association, aria-describedby for errors, aria-required for required fields</li>
+        <li><strong>Keyboard:</strong> All form controls must be keyboard accessible</li>
+      </ul>
+    </section>
+
+    <div class="comparison">
+      <section class="example good">
+        <h2>✓ Accessible Implementation</h2>
+        <div class="demo-container">
+          <form id="good-form" novalidate>
+            <div class="form-group">
+              <label for="good-name">
+                Name <span class="required-indicator" aria-label="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="good-name"
+                name="name"
+                aria-required="true"
+                aria-describedby="good-name-error"
+              />
+              <div id="good-name-error" class="error-message" role="alert" aria-live="polite"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="good-email">
+                Email <span class="required-indicator" aria-label="required">*</span>
+              </label>
+              <input
+                type="email"
+                id="good-email"
+                name="email"
+                aria-required="true"
+                aria-describedby="good-email-error"
+              />
+              <div id="good-email-error" class="error-message" role="alert" aria-live="polite"></div>
+            </div>
+
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+
+        <details>
+          <summary>View Code</summary>
+          <pre><code>&lt;form id="good-form" novalidate&gt;
+  &lt;div class="form-group"&gt;
+    &lt;label for="good-name"&gt;
+      Name &lt;span class="required-indicator" aria-label="required"&gt;*&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;input
+      type="text"
+      id="good-name"
+      aria-required="true"
+      aria-describedby="good-name-error"
+    /&gt;
+    &lt;div id="good-name-error" role="alert" aria-live="polite"&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/form&gt;
+
+&lt;script&gt;
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const nameInput = document.getElementById('good-name');
+  const errorDiv = document.getElementById('good-name-error');
+
+  if (!nameInput.value) {
+    errorDiv.textContent = 'Name is required';
+    nameInput.setAttribute('aria-invalid', 'true');
+  }
+});
+&lt;/script&gt;</code></pre>
+        </details>
+      </section>
+
+      <section class="example bad">
+        <h2>✗ Inaccessible Implementation</h2>
+        <div class="demo-container">
+          <form id="bad-form">
+            <div class="form-group">
+              <div>Name *</div>
+              <input type="text" id="bad-name" placeholder="Enter your name" />
+              <div id="bad-name-error" class="error-message"></div>
+            </div>
+
+            <div class="form-group">
+              <div>Email *</div>
+              <input type="email" id="bad-email" placeholder="Enter your email" />
+              <div id="bad-name-error" class="error-message"></div>
+            </div>
+
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+
+        <details>
+          <summary>View Code</summary>
+          <pre><code>&lt;!-- Missing label element --&gt;
+&lt;form id="bad-form"&gt;
+  &lt;div class="form-group"&gt;
+    &lt;div&gt;Name *&lt;/div&gt;
+    &lt;input type="text" id="bad-name" placeholder="Enter your name" /&gt;
+    &lt;div id="bad-name-error"&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/form&gt;
+
+&lt;script&gt;
+// Missing aria-required, aria-describedby, aria-invalid
+// Error message not announced to screen readers
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const errorDiv = document.getElementById('bad-name-error');
+  errorDiv.textContent = 'Name is required'; // Silent update!
+});
+&lt;/script&gt;</code></pre>
+        </details>
+
+        <div class="expected-issues">
+          <h3>Issues the analyzer will detect:</h3>
+          <ul>
+            <li><code>missing-label</code> - Input without associated label element (WCAG 1.3.1)</li>
+            <li><code>placeholder-as-label</code> - Using placeholder instead of proper label</li>
+            <li><code>missing-aria-required</code> - Required field without aria-required attribute</li>
+            <li><code>missing-error-association</code> - Error message not linked with aria-describedby</li>
+            <li><code>missing-aria-live</code> - Dynamic error messages without live region (WCAG 4.1.3)</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <section class="try-it">
+      <h2>Try It Yourself</h2>
+      <ol>
+        <li><strong>Screen Reader Test:</strong> Tab through forms - accessible version announces labels and requirements</li>
+        <li><strong>Submit Empty:</strong> Try submitting without filling fields - notice error announcements</li>
+        <li><strong>Run Analyzer:</strong> <code>node src/cli.js demo/pages/forms.html</code></li>
+      </ol>
+    </section>
+  </main>
+
+  <footer>
+    <nav>
+      <a href="buttons.html">← Previous: Buttons</a>
+      <a href="navigation.html">Next: Navigation →</a>
+    </nav>
+  </footer>
+
+  <script src="../js/accessible/form.js"></script>
+  <script src="../js/inaccessible/form.js"></script>
+</body>
+</html>

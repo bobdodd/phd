@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Buttons - A11y Demo</title>
+  <link rel="stylesheet" href="../css/demo.css">
+  <style>
+    /* Demo-specific styles */
+    .demo-button {
+      margin: 0.5rem;
+    }
+
+    .custom-button {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: #0078d4;
+      color: white;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .custom-button:hover {
+      background: #005a9e;
+    }
+
+    .output {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #f5f5f5;
+      border-radius: 4px;
+      min-height: 40px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <header>
+    <nav class="breadcrumb">
+      <a href="../index.html">← Back to Demo Index</a>
+    </nav>
+    <h1>Interactive Buttons Demo</h1>
+    <p>Comparing accessible and inaccessible button implementations</p>
+  </header>
+
+  <main id="main">
+    <section class="explanation">
+      <h2>About This Pattern</h2>
+      <p>
+        Interactive buttons are fundamental UI controls. For accessibility, they must be operable
+        via keyboard, have proper focus indicators, and use appropriate semantic HTML or ARIA roles.
+      </p>
+      <ul>
+        <li><strong>WCAG Criteria:</strong> 2.1.1 (Keyboard), 2.4.7 (Focus Visible), 4.1.2 (Name, Role, Value)</li>
+        <li><strong>Required ARIA:</strong> role="button" (if not using &lt;button&gt;), aria-label or visible text</li>
+        <li><strong>Keyboard:</strong> Enter and Space keys must activate</li>
+        <li><strong>Focus:</strong> Must be keyboard-focusable with visible focus indicator</li>
+      </ul>
+    </section>
+
+    <div class="comparison">
+      <section class="example good">
+        <h2>✓ Accessible Implementation</h2>
+        <div class="demo-container">
+          <h3>Native Button Element</h3>
+          <button id="good-button-1" class="demo-button">
+            Click Me
+          </button>
+
+          <h3 style="margin-top: 1.5rem;">Custom Button with Full Support</h3>
+          <div id="good-button-2" class="custom-button demo-button" role="button" tabindex="0">
+            Custom Button
+          </div>
+
+          <div id="good-output" class="output" aria-live="polite">
+            Click a button to see the result...
+          </div>
+        </div>
+
+        <details>
+          <summary>View Code</summary>
+          <pre><code>&lt;!-- Native button (best practice) --&gt;
+&lt;button id="good-button-1"&gt;
+  Click Me
+&lt;/button&gt;
+
+&lt;!-- Custom button with proper ARIA --&gt;
+&lt;div
+  id="good-button-2"
+  role="button"
+  tabindex="0"
+  class="custom-button"&gt;
+  Custom Button
+&lt;/div&gt;
+
+&lt;script&gt;
+const button1 = document.getElementById('good-button-1');
+const button2 = document.getElementById('good-button-2');
+const output = document.getElementById('good-output');
+
+// Native button gets keyboard support automatically
+button1.addEventListener('click', () => {
+  output.textContent = 'Native button clicked!';
+});
+
+// Custom button needs explicit keyboard support
+button2.addEventListener('click', () => {
+  output.textContent = 'Custom button clicked!';
+});
+
+// Handle Enter and Space keys for custom button
+button2.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault(); // Prevent page scroll on Space
+    button2.click(); // Trigger click event
+  }
+});
+&lt;/script&gt;</code></pre>
+        </details>
+      </section>
+
+      <section class="example bad">
+        <h2>✗ Inaccessible Implementation</h2>
+        <div class="demo-container">
+          <h3>Div Without Keyboard Support</h3>
+          <div id="bad-button-1" class="custom-button demo-button">
+            Click Only
+          </div>
+
+          <h3 style="margin-top: 1.5rem;">Span With Mouse Handler</h3>
+          <span id="bad-button-2" class="custom-button demo-button">
+            Mouse Only
+          </span>
+
+          <div id="bad-output" class="output">
+            Try using keyboard only (Tab, Enter) - it won't work!
+          </div>
+        </div>
+
+        <details>
+          <summary>View Code</summary>
+          <pre><code>&lt;!-- Missing role="button" and tabindex --&gt;
+&lt;div id="bad-button-1" class="custom-button"&gt;
+  Click Only
+&lt;/div&gt;
+
+&lt;!-- Span with no ARIA and no keyboard support --&gt;
+&lt;span id="bad-button-2" class="custom-button"&gt;
+  Mouse Only
+&lt;/span&gt;
+
+&lt;script&gt;
+const button1 = document.getElementById('bad-button-1');
+const button2 = document.getElementById('bad-button-2');
+const output = document.getElementById('bad-output');
+
+// Only click handlers - no keyboard support!
+button1.addEventListener('click', () => {
+  output.textContent = 'Div clicked (mouse only)';
+});
+
+button2.addEventListener('click', () => {
+  output.textContent = 'Span clicked (mouse only)';
+});
+
+// Missing:
+// - role="button"
+// - tabindex="0"
+// - keydown handler for Enter/Space
+// - Proper semantic element
+&lt;/script&gt;</code></pre>
+        </details>
+
+        <div class="expected-issues">
+          <h3>Issues the analyzer will detect:</h3>
+          <ul>
+            <li><code>mouse-only-click</code> - Element has click handler but is not keyboard accessible (WCAG 2.1.1)</li>
+            <li><code>missing-keyboard-handler</code> - No keydown handler for Enter/Space keys</li>
+            <li><code>missing-aria-role</code> - Interactive div/span without role="button"</li>
+            <li><code>not-focusable</code> - Missing tabindex="0" for keyboard focus</li>
+            <li><code>incomplete-button-pattern</code> - Button widget pattern validation failure</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <section class="try-it">
+      <h2>Try It Yourself</h2>
+      <ol>
+        <li><strong>Keyboard Test:</strong> Use Tab to focus buttons, Enter/Space to activate</li>
+        <li><strong>Focus Indicator:</strong> Notice the prominent blue outline on focused elements</li>
+        <li><strong>Screen Reader:</strong> Test with NVDA/JAWS - accessible buttons announce "button", inaccessible ones don't</li>
+        <li><strong>Run Analyzer:</strong> <code>node src/cli.js demo/pages/buttons.html</code></li>
+        <li><strong>VS Code:</strong> Open this file in VS Code to see diagnostics on the bad examples</li>
+      </ol>
+    </section>
+  </main>
+
+  <footer>
+    <nav>
+      <a href="../index.html">← Back to Index</a>
+      <a href="forms.html">Next: Form Controls →</a>
+    </nav>
+  </footer>
+
+  <script src="../js/accessible/button.js"></script>
+  <script src="../js/inaccessible/button.js"></script>
+</body>
+</html>

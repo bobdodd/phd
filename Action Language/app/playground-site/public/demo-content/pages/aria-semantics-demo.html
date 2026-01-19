@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARIA Semantics - A11y Demo</title>
+  <link rel="stylesheet" href="../css/demo.css">
+  <style>
+    /* Demo-specific styles */
+    .custom-checkbox {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .custom-checkbox.checked {
+      font-weight: 600;
+    }
+
+    .accordion-button {
+      width: 100%;
+      padding: 1rem;
+      background: #f0f0f0;
+      border: 1px solid #ddd;
+      text-align: left;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+
+    .accordion-content {
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-top: none;
+      background: #fafafa;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 400px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal button {
+      margin: 0.5rem;
+    }
+
+    .status-message {
+      padding: 0.75rem;
+      margin-top: 1rem;
+      border-radius: 4px;
+      min-height: 40px;
+    }
+
+    .status-message:empty::before {
+      content: 'Status messages appear here...';
+      opacity: 0.5;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <header>
+    <nav class="breadcrumb">
+      <a href="../index.html">← Back to Demo Index</a>
+    </nav>
+    <h1>ARIA Semantics Demo</h1>
+    <p>Demonstrating 8 types of ARIA semantic issues detected by ARIASemanticAnalyzer</p>
+  </header>
+
+  <main id="main">
+    <section class="explanation">
+      <h2>About This Pattern</h2>
+      <p>
+        ARIA semantics define how assistive technologies interpret interactive elements. Proper ARIA
+        implementation requires valid roles, required attributes, dynamic state updates, and correct
+        usage patterns. The ARIASemanticAnalyzer detects 8 categories of ARIA semantic issues.
+      </p>
+      <ul>
+        <li><strong>WCAG Criteria:</strong> 4.1.2 (Name, Role, Value), 4.1.3 (Status Messages), 2.5.3 (Label in Name), 2.1.1 (Keyboard)</li>
+        <li><strong>Issue Types:</strong> invalid-role, interactive-role-static, aria-expanded-static, dialog-missing-label, missing-required-aria, assertive-live-region, aria-hidden-true, aria-label-overuse</li>
+        <li><strong>Requirements:</strong> Valid ARIA 1.2 roles, required attributes, dynamic state updates, proper handlers</li>
+      </ul>
+    </section>
+
+    <div class="comparison">
+      <section class="example good">
+        <h2>✓ Accessible Implementation</h2>
+        <div class="demo-container">
+          <h3>1. Valid ARIA Roles with Handlers</h3>
+          <div
+            id="good-button"
+            role="button"
+            tabindex="0"
+            style="display: inline-block; padding: 0.5rem 1rem; background: #0078d4; color: white; border-radius: 4px; cursor: pointer;"
+          >
+            Custom Button
+          </div>
+
+          <h3 style="margin-top: 1.5rem;">2. Checkbox with Required aria-checked</h3>
+          <div
+            id="good-checkbox"
+            role="checkbox"
+            aria-checked="false"
+            tabindex="0"
+            class="custom-checkbox"
+          >
+            ☐ <span>Subscribe to newsletter</span>
+          </div>
+
+          <h3 style="margin-top: 1.5rem;">3. Dynamic aria-expanded</h3>
+          <button
+            id="good-accordion"
+            class="accordion-button"
+            aria-expanded="false"
+          >
+            FAQ: What is ARIA?
+          </button>
+          <div id="good-accordion-content" class="accordion-content hidden">
+            ARIA (Accessible Rich Internet Applications) provides semantic information to assistive technologies.
+          </div>
+
+          <h3 style="margin-top: 1.5rem;">4. Dialog with Label</h3>
+          <button id="good-open-dialog">Open Dialog</button>
+          <div id="good-dialog-overlay" class="modal-overlay hidden">
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="good-dialog-title"
+              class="modal"
+            >
+              <h2 id="good-dialog-title">Confirm Action</h2>
+              <p>Are you sure you want to proceed?</p>
+              <button id="good-dialog-confirm">Confirm</button>
+              <button id="good-dialog-cancel">Cancel</button>
+            </div>
+          </div>
+
+          <h3 style="margin-top: 1.5rem;">5. Polite Live Region</h3>
+          <button id="good-save-button">Save Draft</button>
+          <div
+            id="good-status"
+            aria-live="polite"
+            role="status"
+            class="status-message"
+            style="background: #e8f5e9; border: 1px solid #4caf50;"
+          ></div>
+        </div>
+
+        <details>
+          <summary>View Code</summary>
+          <pre><code>&lt;!-- 1. Valid role with handlers --&gt;
+&lt;div
+  id="good-button"
+  role="button"
+  tabindex="0"&gt;
+  Custom Button
+&lt;/div&gt;
+
+&lt;!-- 2. Checkbox with aria-checked --&gt;
+&lt;div
+  id="good-checkbox"
+  role="checkbox"
+  aria-checked="false"
+  tabindex="0"&gt;
+  ☐ Subscribe
+&lt;/div&gt;
+
+&lt;!-- 3. Dynamic aria-expanded --&gt;
+&lt;button
+  id="good-accordion"
+  aria-expanded="false"&gt;
+  FAQ: What is ARIA?
+&lt;/button&gt;
+
+&lt;!-- 4. Dialog with aria-labelledby --&gt;
+&lt;div
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="dialog-title"&gt;
+  &lt;h2 id="dialog-title"&gt;Confirm Action&lt;/h2&gt;
+  ...
+&lt;/div&gt;
+
+&lt;!-- 5. Polite live region --&gt;
+&lt;div
+  aria-live="polite"
+  role="status"&gt;
+  Draft saved
+&lt;/div&gt;
+
+&lt;script&gt;
+// Button with keyboard support
+document.getElementById('good-button')
+  .addEventListener('click', () => {
+    console.log('Button clicked');
+  });
+
+document.getElementById('good-button')
+  .addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      document.getElementById('good-button').click();
+    }
+  });
+
+// Checkbox with state updates
+const checkbox = document.getElementById('good-checkbox');
+checkbox.addEventListener('click', () => {
+  const checked = checkbox.getAttribute('aria-checked') === 'true';
+  checkbox.setAttribute('aria-checked', !checked);
+  checkbox.textContent = !checked ? '☑' : '☐';
+});
+
+// Accordion with dynamic aria-expanded
+const accordion = document.getElementById('good-accordion');
+const content = document.getElementById('good-accordion-content');
+accordion.addEventListener('click', () => {
+  const expanded = accordion.getAttribute('aria-expanded') === 'true';
+  accordion.setAttribute('aria-expanded', !expanded);
+  content.classList.toggle('hidden');
+});
+
+// Polite status updates
+document.getElementById('good-save-button')
+  .addEventListener('click', () => {
+    document.getElementById('good-status')
+      .textContent = 'Draft saved successfully';
+  });
+&lt;/script&gt;</code></pre>
+        </details>
+      </section>
+
+      <section class="example bad">
+        <h2>✗ Inaccessible Implementation</h2>
+        <div class="demo-container">
+          <h3>1. Invalid Role</h3>
+          <div
+            id="bad-dropdown"
+            role="dropdown"
+            style="display: inline-block; padding: 0.5rem 1rem; background: #ccc; border-radius: 4px; cursor: pointer;"
+          >
+            Invalid "dropdown" role
+          </div>
+
+          <h3 style="margin-top: 1.5rem;">2. Interactive Role Without Handler</h3>
+          <div
+            id="bad-button"
+            role="button"
+            style="display: inline-block; padding: 0.5rem 1rem; background: #ccc; border-radius: 4px; cursor: pointer;"
+          >
+            No click or keyboard handler!
+          </div>
+
+          <h3 style="margin-top: 1.5rem;">3. Checkbox Missing aria-checked</h3>
+          <div
+            id="bad-checkbox"
+            role="checkbox"
+            class="custom-checkbox"
+            style="background: #f0f0f0; padding: 0.5rem;"
+          >
+            ☐ <span>Missing aria-checked</span>
+          </div>
+
+          <h3 style="margin-top: 1.5rem;">4. Static aria-expanded</h3>
+          <button
+            id="bad-accordion"
+            class="accordion-button"
+            aria-expanded="false"
+          >
+            FAQ: Never updates aria-expanded!
+          </button>
+          <div id="bad-accordion-content" class="accordion-content hidden">
+            The aria-expanded attribute stays "false" even when this content is visible.
+          </div>
+
+          <h3 style="margin-top: 1.5rem;">5. Dialog Without Label</h3>
+          <button id="bad-open-dialog">Open Unlabeled Dialog</button>
+          <div id="bad-dialog-overlay" class="modal-overlay hidden">
+            <div
+              role="dialog"
+              aria-modal="true"
+              class="modal"
+            >
+              <h2>Confirm Delete</h2>
+              <p>Missing aria-labelledby or aria-label!</p>
+              <button id="bad-dialog-cancel">Cancel</button>
+            </div>
+          </div>
+
+          <h3 style="margin-top: 1.5rem;">6. Assertive Live Region</h3>
+          <button id="bad-notify-button">Show Notification</button>
+          <div
+            id="bad-status"
+            aria-live="assertive"
+            role="alert"
+            class="status-message"
+            style="background: #fff3cd; border: 1px solid #ffc107;"
+          ></div>
+
+          <h3 style="margin-top: 1.5rem;">7. aria-hidden on Focusable Element</h3>
+          <button
+            id="bad-hidden-button"
+            aria-hidden="true"
+            style="padding: 0.5rem 1rem;"
+          >
+            Focusable but aria-hidden!
+          </button>
+
+          <h3 style="margin-top: 1.5rem;">8. aria-label Overriding Visible Text</h3>
+          <button
+            id="bad-label-button"
+            aria-label="Send form submission"
+            style="padding: 0.5rem 1rem;"
+          >
+            Submit
+          </button>
+        </div>
+
+        <details>
+          <summary>View Code</summary>
+          <pre><code>&lt;!-- 1. Invalid role "dropdown" --&gt;
+&lt;div role="dropdown"&gt;
+  Invalid role
+&lt;/div&gt;
+
+&lt;!-- 2. Interactive role without handlers --&gt;
+&lt;div role="button"&gt;
+  No handlers!
+&lt;/div&gt;
+
+&lt;!-- 3. Missing required aria-checked --&gt;
+&lt;div role="checkbox"&gt;
+  Missing aria-checked
+&lt;/div&gt;
+
+&lt;!-- 4. Static aria-expanded --&gt;
+&lt;button aria-expanded="false"&gt;
+  Never updates
+&lt;/button&gt;
+&lt;script&gt;
+// Opens content but never updates aria-expanded!
+document.getElementById('bad-accordion')
+  .addEventListener('click', () => {
+    document.getElementById('bad-accordion-content')
+      .classList.toggle('hidden');
+    // BUG: aria-expanded stays "false"
+  });
+&lt;/script&gt;
+
+&lt;!-- 5. Dialog without label --&gt;
+&lt;div role="dialog" aria-modal="true"&gt;
+  &lt;h2&gt;Confirm&lt;/h2&gt;
+&lt;/div&gt;
+
+&lt;!-- 6. Assertive live region for non-urgent message --&gt;
+&lt;div aria-live="assertive" role="alert"&gt;
+  Form saved
+&lt;/div&gt;
+
+&lt;!-- 7. aria-hidden on focusable element --&gt;
+&lt;button aria-hidden="true"&gt;
+  Can focus but hidden from screen reader
+&lt;/button&gt;
+
+&lt;!-- 8. aria-label different from visible text --&gt;
+&lt;button aria-label="Send form submission"&gt;
+  Submit
+&lt;/button&gt;</code></pre>
+        </details>
+
+        <div class="expected-issues">
+          <h3>Issues the analyzer will detect:</h3>
+          <ul>
+            <li><code>invalid-role</code> - "dropdown" is not a valid ARIA 1.2 role (WCAG 4.1.2)</li>
+            <li><code>interactive-role-static</code> - role="button" without click or keyboard handlers (WCAG 2.1.1, 4.1.2)</li>
+            <li><code>missing-required-aria</code> - role="checkbox" requires aria-checked attribute (WCAG 4.1.2)</li>
+            <li><code>aria-expanded-static</code> - aria-expanded set but never updated (WCAG 4.1.2)</li>
+            <li><code>dialog-missing-label</code> - Dialog without aria-labelledby or aria-label (WCAG 4.1.2)</li>
+            <li><code>assertive-live-region</code> - Non-urgent message using aria-live="assertive" (WCAG 4.1.3)</li>
+            <li><code>aria-hidden-true</code> - aria-hidden="true" on focusable button (WCAG 4.1.2)</li>
+            <li><code>aria-label-overuse</code> - aria-label differs from visible text (WCAG 2.5.3)</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <section class="try-it">
+      <h2>Try It Yourself</h2>
+      <ol>
+        <li><strong>Keyboard Test:</strong> Try tabbing through both sections - notice which elements are focusable</li>
+        <li><strong>Accordion Test:</strong> Open/close accordions and check if aria-expanded updates (use browser DevTools)</li>
+        <li><strong>Checkbox Test:</strong> Click checkboxes and check if aria-checked updates in DevTools</li>
+        <li><strong>Screen Reader:</strong> Test with NVDA/JAWS:
+          <ul>
+            <li>Invalid role announces as generic div</li>
+            <li>Checkbox without aria-checked doesn't announce state</li>
+            <li>Static aria-expanded announces wrong state</li>
+            <li>Dialog without label just says "dialog" with no context</li>
+            <li>Button with aria-hidden is skipped entirely</li>
+            <li>aria-label button announces label, not visible text</li>
+          </ul>
+        </li>
+        <li><strong>Run Analyzer:</strong> <code>node src/cli.js demo/pages/aria-semantics-demo.html</code></li>
+        <li><strong>VS Code:</strong> Open this file in VS Code to see all 8 issue types detected</li>
+      </ol>
+    </section>
+
+    <section class="explanation">
+      <h2>Understanding Each Issue Type</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-top: 1rem;">
+        <div style="border: 1px solid #ddd; padding: 1rem; border-radius: 4px;">
+          <h3>1. invalid-role</h3>
+          <p><strong>Problem:</strong> Using ARIA role that doesn't exist in ARIA 1.2 spec</p>
+          <p><strong>Impact:</strong> Screen readers ignore invalid roles</p>
+          <p><strong>Fix:</strong> Use valid ARIA 1.2 roles (button, combobox, listbox, etc.)</p>
+        </div>
+
+        <div style="border: 1px solid #ddd; padding: 1rem; border-radius: 4px;">
+          <h3>2. interactive-role-static</h3>
+          <p><strong>Problem:</strong> Interactive role (button, checkbox) without event handlers</p>
+          <p><strong>Impact:</strong> Keyboard users can't activate, screen reader users hear "button" but nothing happens</p>
+          <p><strong>Fix:</strong> Add click handler and keydown handler (Enter/Space)</p>
+        </div>
+
+        <div style="border: 1px solid #ddd; padding: 1rem; border-radius: 4px;">
+          <h3>3. aria-expanded-static</h3>
+          <p><strong>Problem:</strong> aria-expanded set but never changes</p>
+          <p><strong>Impact:</strong> Screen reader announces wrong state</p>
+          <p><strong>Fix:</strong> Update aria-expanded="true"/"false" when content shows/hides</p>
+        </div>
+
+        <div style="border: 1px solid #ddd; padding: 1rem; border-radius: 4px;">
+          <h3>4. dialog-missing-label</h3>
+          <p><strong>Problem:</strong> Dialog without aria-labelledby or aria-label</p>
+          <p><strong>Impact:</strong> Screen reader says "dialog" with no context</p>
+          <p><strong>Fix:</strong> Add aria-labelledby pointing to dialog title</p>
+        </div>
+
+        <div style="border: 1px solid #ddd; padding: 1rem; border-radius: 4px;">
+          <h3>5. missing-required-aria</h3>
+          <p><strong>Problem:</strong> Role missing required ARIA attributes (e.g., checkbox needs aria-checked)</p>
+          <p><strong>Impact:</strong> Screen reader can't announce state</p>
+          <p><strong>Fix:</strong> Add required attributes per ARIA spec</p>
+        </div>
+
+        <div style="border: 1px solid #ddd; padding: 1rem; border-radius: 4px;">
+          <h3>6. assertive-live-region</h3>
+          <p><strong>Problem:</strong> Using aria-live="assertive" for non-urgent messages</p>
+          <p><strong>Impact:</strong> Interrupts screen reader mid-sentence</p>
+          <p><strong>Fix:</strong> Use aria-live="polite" for most messages</p>
+        </div>
+
+        <div style="border: 1px solid #ddd; padding: 1rem; border-radius: 4px;">
+          <h3>7. aria-hidden-true</h3>
+          <p><strong>Problem:</strong> aria-hidden="true" on focusable element</p>
+          <p><strong>Impact:</strong> Keyboard focus lands on "nothing" for screen reader users</p>
+          <p><strong>Fix:</strong> Remove aria-hidden or make element non-focusable</p>
+        </div>
+
+        <div style="border: 1px solid #ddd; padding: 1rem; border-radius: 4px;">
+          <h3>8. aria-label-overuse</h3>
+          <p><strong>Problem:</strong> aria-label overrides visible text with different content</p>
+          <p><strong>Impact:</strong> Voice control users say visible text but it doesn't work</p>
+          <p><strong>Fix:</strong> Remove aria-label or ensure it contains visible text</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <nav>
+      <a href="../index.html">← Back to Index</a>
+      <a href="modals.html">Next: Modal Dialogs →</a>
+    </nav>
+  </footer>
+
+  <script>
+    // Good examples - properly implemented
+    const goodButton = document.getElementById('good-button');
+    goodButton.addEventListener('click', () => {
+      console.log('Good button clicked');
+    });
+    goodButton.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        goodButton.click();
+      }
+    });
+
+    const goodCheckbox = document.getElementById('good-checkbox');
+    goodCheckbox.addEventListener('click', () => {
+      const checked = goodCheckbox.getAttribute('aria-checked') === 'true';
+      goodCheckbox.setAttribute('aria-checked', String(!checked));
+      goodCheckbox.querySelector('span').previousSibling.textContent = !checked ? '☑ ' : '☐ ';
+    });
+    goodCheckbox.addEventListener('keydown', (e) => {
+      if (e.key === ' ') {
+        e.preventDefault();
+        goodCheckbox.click();
+      }
+    });
+
+    const goodAccordion = document.getElementById('good-accordion');
+    const goodAccordionContent = document.getElementById('good-accordion-content');
+    goodAccordion.addEventListener('click', () => {
+      const expanded = goodAccordion.getAttribute('aria-expanded') === 'true';
+      goodAccordion.setAttribute('aria-expanded', String(!expanded));
+      goodAccordionContent.classList.toggle('hidden');
+    });
+
+    document.getElementById('good-open-dialog').addEventListener('click', () => {
+      document.getElementById('good-dialog-overlay').classList.remove('hidden');
+    });
+    document.getElementById('good-dialog-confirm').addEventListener('click', () => {
+      document.getElementById('good-dialog-overlay').classList.add('hidden');
+      alert('Confirmed!');
+    });
+    document.getElementById('good-dialog-cancel').addEventListener('click', () => {
+      document.getElementById('good-dialog-overlay').classList.add('hidden');
+    });
+
+    document.getElementById('good-save-button').addEventListener('click', () => {
+      document.getElementById('good-status').textContent = 'Draft saved successfully';
+      setTimeout(() => {
+        document.getElementById('good-status').textContent = '';
+      }, 3000);
+    });
+
+    // Bad examples - demonstrating issues
+    document.getElementById('bad-accordion').addEventListener('click', () => {
+      document.getElementById('bad-accordion-content').classList.toggle('hidden');
+      // BUG: aria-expanded never updates!
+    });
+
+    document.getElementById('bad-open-dialog').addEventListener('click', () => {
+      document.getElementById('bad-dialog-overlay').classList.remove('hidden');
+    });
+    document.getElementById('bad-dialog-cancel').addEventListener('click', () => {
+      document.getElementById('bad-dialog-overlay').classList.add('hidden');
+    });
+
+    document.getElementById('bad-notify-button').addEventListener('click', () => {
+      document.getElementById('bad-status').textContent = 'Form saved (interrupts screen reader!)';
+      setTimeout(() => {
+        document.getElementById('bad-status').textContent = '';
+      }, 3000);
+    });
+  </script>
+</body>
+</html>
