@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 // Dynamically import Monaco to avoid SSR issues
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
@@ -82,6 +84,8 @@ export default function Home() {
   const [issuesFound, setIssuesFound] = useState<number>(0);
   const [showSamplesModal, setShowSamplesModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('widget-patterns');
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  const [helpContent, setHelpContent] = useState<{ type: string; title: string; content: string } | null>(null);
 
   const currentFileArray = files[activeTab];
   const currentFile = currentFileArray[activeFileIndex[activeTab]];
@@ -151,6 +155,28 @@ export default function Home() {
     setFiles(STARTER_FILES);
     setActiveFileIndex({ html: 0, javascript: 0, css: 0 });
     setIssuesFound(0);
+  };
+
+  const showHelp = async (issueType: string) => {
+    try {
+      const response = await fetch(`/docs/issues/${issueType}.md`);
+      if (!response.ok) {
+        alert('Help documentation not found for this issue.');
+        return;
+      }
+
+      const content = await response.text();
+
+      // Extract title from markdown (first # heading)
+      const titleMatch = content.match(/^#\s+(.+)$/m);
+      const title = titleMatch ? titleMatch[1] : issueType;
+
+      setHelpContent({ type: issueType, title, content });
+      setShowHelpModal(true);
+    } catch (error) {
+      console.error('Error loading help:', error);
+      alert('Failed to load help documentation.');
+    }
   };
 
   const loadSample = async (categoryKey: string, exampleFile: string) => {
@@ -280,17 +306,21 @@ export default function Home() {
 
   const hasMultipleFiles = files.html.length > 1 || files.javascript.length > 1 || files.css.length > 1;
 
-  // Keyboard support for modal - close on Escape
+  // Keyboard support for modals - close on Escape
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && showSamplesModal) {
-        setShowSamplesModal(false);
+      if (e.key === 'Escape') {
+        if (showSamplesModal) {
+          setShowSamplesModal(false);
+        } else if (showHelpModal) {
+          setShowHelpModal(false);
+        }
       }
     };
 
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
-  }, [showSamplesModal]);
+  }, [showSamplesModal, showHelpModal]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -494,9 +524,20 @@ export default function Home() {
 
                   {/* Placeholder issues */}
                   <div className="space-y-3">
-                    <div className="border-l-4 border-orange-500 bg-orange-50 p-4 rounded cursor-pointer hover:bg-orange-100 transition-colors">
-                      <div className="font-semibold text-orange-900">Mouse-Only Click Handler</div>
-                      <div className="text-sm text-orange-700 mt-1">index.html:12 - div requires keyboard handler</div>
+                    <div className="border-l-4 border-orange-500 bg-orange-50 p-4 rounded">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="font-semibold text-orange-900">Mouse-Only Click Handler</div>
+                          <div className="text-sm text-orange-700 mt-1">index.html:12 - div requires keyboard handler</div>
+                        </div>
+                        <button
+                          onClick={() => showHelp('mouse-only-click')}
+                          className="ml-3 px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 flex-shrink-0"
+                          title="View help for this issue"
+                        >
+                          ? Help
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -704,6 +745,88 @@ export default function Home() {
               </p>
               <button
                 onClick={() => setShowSamplesModal(false)}
+                className="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Help Modal */}
+      {showHelpModal && helpContent && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          onClick={() => setShowHelpModal(false)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              setShowHelpModal(false);
+            }
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="help-modal-title"
+        >
+          <div
+            className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-blue-700 to-blue-900 text-white px-8 py-6 flex items-center justify-between">
+              <div>
+                <h2 id="help-modal-title" className="text-3xl font-bold mb-2">{helpContent.title}</h2>
+                <p className="text-blue-100">Accessibility Issue Documentation</p>
+              </div>
+              <button
+                onClick={() => setShowHelpModal(false)}
+                className="text-white/80 hover:text-white text-4xl leading-none px-3 focus:outline-none focus:ring-2 focus:ring-white rounded"
+                aria-label="Close help modal"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="flex-1 p-8 overflow-y-auto prose prose-blue max-w-none">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  h1: ({ node, ...props }) => <h1 className="text-3xl font-bold mb-4 text-gray-900" {...props} />,
+                  h2: ({ node, ...props }) => <h2 className="text-2xl font-semibold mt-8 mb-4 text-gray-900" {...props} />,
+                  h3: ({ node, ...props }) => <h3 className="text-xl font-semibold mt-6 mb-3 text-gray-900" {...props} />,
+                  p: ({ node, ...props }) => <p className="mb-4 text-gray-700 leading-relaxed" {...props} />,
+                  ul: ({ node, ...props }) => <ul className="mb-4 ml-6 list-disc text-gray-700" {...props} />,
+                  ol: ({ node, ...props }) => <ol className="mb-4 ml-6 list-decimal text-gray-700" {...props} />,
+                  li: ({ node, ...props }) => <li className="mb-2" {...props} />,
+                  code: ({ node, inline, ...props }: any) =>
+                    inline ? (
+                      <code className="bg-gray-100 text-red-600 px-1.5 py-0.5 rounded text-sm font-mono" {...props} />
+                    ) : (
+                      <code className="block bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm font-mono my-4" {...props} />
+                    ),
+                  pre: ({ node, ...props }) => <pre className="bg-gray-900 rounded-lg overflow-hidden my-4" {...props} />,
+                  a: ({ node, ...props }) => (
+                    <a className="text-blue-600 hover:text-blue-800 underline" target="_blank" rel="noopener noreferrer" {...props} />
+                  ),
+                  blockquote: ({ node, ...props }) => (
+                    <blockquote className="border-l-4 border-blue-500 pl-4 italic my-4 text-gray-600" {...props} />
+                  ),
+                  strong: ({ node, ...props }) => <strong className="font-semibold text-gray-900" {...props} />,
+                }}
+              >
+                {helpContent.content}
+              </ReactMarkdown>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="bg-gray-50 px-8 py-4 border-t border-gray-200 flex items-center justify-between">
+              <p className="text-sm text-gray-600">
+                Learn more in our <Link href="/learn/" className="text-blue-600 hover:underline">accessibility guide</Link>
+              </p>
+              <button
+                onClick={() => setShowHelpModal(false)}
                 className="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
               >
                 Close
