@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import PreviewIframe from './PreviewIframe';
-import { AccessibilityNode, SRMessage } from '../../lib/screen-reader/types';
+import { AccessibilityNode, SRMessage, NavigationMode } from '../../lib/screen-reader/types';
+import { VirtualScreenReader } from '../../lib/screen-reader/VirtualScreenReader';
 
 interface ScreenReaderModalProps {
   isOpen: boolean;
@@ -19,30 +20,53 @@ export default function ScreenReaderModal({
   cssContent,
   jsContent
 }: ScreenReaderModalProps) {
-  const [accessibilityTree, setAccessibilityTree] = useState<AccessibilityNode[]>([]);
   const [srOutput, setSrOutput] = useState<SRMessage[]>([]);
-  const [virtualCursorIndex, setVirtualCursorIndex] = useState(0);
   const [currentNode, setCurrentNode] = useState<AccessibilityNode | null>(null);
-  const [mode, setMode] = useState<'browse' | 'focus'>('browse');
+  const [mode, setMode] = useState<NavigationMode>('browse');
   const [highlightedElement, setHighlightedElement] = useState<HTMLElement | null>(null);
 
   const modalRef = useRef<HTMLDivElement>(null);
   const iframeDocRef = useRef<Document | null>(null);
+  const screenReaderRef = useRef<VirtualScreenReader | null>(null);
+  const srOutputRef = useRef<HTMLDivElement>(null);
+
+  // Initialize screen reader
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const sr = new VirtualScreenReader(
+      // onAnnouncement callback
+      (message) => {
+        setSrOutput(prev => [...prev, message]);
+        // Auto-scroll to latest message
+        setTimeout(() => {
+          if (srOutputRef.current) {
+            srOutputRef.current.scrollTop = srOutputRef.current.scrollHeight;
+          }
+        }, 0);
+      },
+      // onPositionChange callback
+      (node, element) => {
+        setCurrentNode(node);
+        setHighlightedElement(element);
+      }
+    );
+
+    screenReaderRef.current = sr;
+
+    return () => {
+      screenReaderRef.current = null;
+    };
+  }, [isOpen]);
 
   // Handle iframe DOM ready
   const handleDomReady = (iframeDoc: Document) => {
     iframeDocRef.current = iframeDoc;
 
-    // TODO: Build accessibility tree from iframe DOM
-    // For now, just announce page loaded
-    const loadMessage: SRMessage = {
-      id: `msg-${Date.now()}`,
-      timestamp: Date.now(),
-      type: 'page-load',
-      content: 'Page loaded. Use arrow keys to navigate.'
-    };
-
-    setSrOutput([loadMessage]);
+    // Build accessibility tree and load into screen reader
+    if (screenReaderRef.current) {
+      screenReaderRef.current.loadDocument(iframeDoc);
+    }
   };
 
   // Handle keyboard navigation
@@ -50,15 +74,65 @@ export default function ScreenReaderModal({
     if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      const sr = screenReaderRef.current;
+      if (!sr) return;
+
       // Close on Escape
       if (e.key === 'Escape') {
         onClose();
         return;
       }
 
-      // TODO: Implement keyboard navigation
-      // For now, just log
-      console.log('Key pressed:', e.key);
+      // Prevent default for navigation keys
+      const navKeys = ['ArrowDown', 'ArrowUp', 'Enter', 'h', 'H', 'k', 'K', 'b', 'B', 'l', 'L', 'f', 'F'];
+      if (navKeys.includes(e.key)) {
+        e.preventDefault();
+      }
+
+      // Navigate based on key
+      switch (e.key) {
+        case 'ArrowDown':
+          sr.nextElement();
+          break;
+        case 'ArrowUp':
+          sr.previousElement();
+          break;
+        case 'h':
+        case 'H':
+          if (e.shiftKey) {
+            sr.previousHeading();
+          } else {
+            sr.nextHeading();
+          }
+          break;
+        case 'k':
+        case 'K':
+          if (e.shiftKey) {
+            sr.previousLink();
+          } else {
+            sr.nextLink();
+          }
+          break;
+        case 'b':
+        case 'B':
+          if (e.shiftKey) {
+            sr.previousButton();
+          } else {
+            sr.nextButton();
+          }
+          break;
+        case 'l':
+        case 'L':
+          sr.nextLandmark();
+          break;
+        case 'f':
+        case 'F':
+          sr.nextFormControl();
+          break;
+        case 'Enter':
+          sr.activateElement();
+          break;
+      }
     };
 
     document.addEventListener('keydown', handleKeyDown);
@@ -174,11 +248,13 @@ export default function ScreenReaderModal({
             <div className="bg-gray-100 px-4 py-3 border-b border-gray-200 flex items-center gap-3">
               <button
                 onClick={() => {
-                  // Refresh preview
+                  // Refresh preview - reload the document
                   setSrOutput([]);
-                  setVirtualCursorIndex(0);
                   setCurrentNode(null);
                   setHighlightedElement(null);
+                  if (iframeDocRef.current && screenReaderRef.current) {
+                    screenReaderRef.current.loadDocument(iframeDocRef.current);
+                  }
                 }}
                 className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500"
               >
@@ -221,7 +297,7 @@ export default function ScreenReaderModal({
             </div>
 
             {/* SR Output Log */}
-            <div className="flex-1 overflow-auto bg-white px-6 py-4">
+            <div ref={srOutputRef} className="flex-1 overflow-auto bg-white px-6 py-4">
               <h3 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">
                 Screen Reader Output
               </h3>
@@ -266,31 +342,43 @@ export default function ScreenReaderModal({
                   <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">
                     ↓
                   </kbd>
-                  <span className="text-gray-600">Next element</span>
+                  <span className="text-gray-600">Next</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">
                     ↑
                   </kbd>
-                  <span className="text-gray-600">Previous element</span>
+                  <span className="text-gray-600">Previous</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">
                     H
                   </kbd>
-                  <span className="text-gray-600">Next heading</span>
+                  <span className="text-gray-600">Headings</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">
                     K
                   </kbd>
-                  <span className="text-gray-600">Next link</span>
+                  <span className="text-gray-600">Links</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">
                     B
                   </kbd>
-                  <span className="text-gray-600">Next button</span>
+                  <span className="text-gray-600">Buttons</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">
+                    L
+                  </kbd>
+                  <span className="text-gray-600">Landmarks</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">
+                    F
+                  </kbd>
+                  <span className="text-gray-600">Form controls</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">
@@ -299,13 +387,21 @@ export default function ScreenReaderModal({
                   <span className="text-gray-600">Activate</span>
                 </div>
               </div>
+              <div className="text-xs text-gray-500 italic">
+                Use Shift + key for previous item (e.g., Shift+H for previous heading)
+              </div>
 
               {/* Mode Toggle */}
               <div className="flex items-center justify-between pt-3 border-t border-gray-200">
                 <span className="text-sm font-medium text-gray-700">Mode:</span>
                 <div className="flex gap-2">
                   <button
-                    onClick={() => setMode('browse')}
+                    onClick={() => {
+                      if (screenReaderRef.current) {
+                        screenReaderRef.current.toggleMode();
+                        setMode(screenReaderRef.current.getMode());
+                      }
+                    }}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                       mode === 'browse'
                         ? 'bg-purple-600 text-white'
@@ -315,7 +411,12 @@ export default function ScreenReaderModal({
                     Browse
                   </button>
                   <button
-                    onClick={() => setMode('focus')}
+                    onClick={() => {
+                      if (screenReaderRef.current) {
+                        screenReaderRef.current.toggleMode();
+                        setMode(screenReaderRef.current.getMode());
+                      }
+                    }}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                       mode === 'focus'
                         ? 'bg-purple-600 text-white'
