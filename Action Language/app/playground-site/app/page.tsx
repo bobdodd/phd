@@ -1047,12 +1047,25 @@ export default function Home() {
                         }`}
                         onClick={() => {
                           setSelectedIssueIndex(index);
-                          updateEditorDecorations(issues);
-                          // Jump to line if possible
-                          if (issue.line && editorRef.current) {
-                            editorRef.current.revealLineInCenter(issue.line);
-                            editorRef.current.setPosition({ lineNumber: issue.line, column: issue.column || 1 });
+
+                          // Switch to the correct tab based on issue location
+                          const loc = issue.location || '';
+                          if (loc === 'HTML' || loc.includes('.html')) {
+                            setActiveTab('html');
+                          } else if (loc === 'JavaScript' || loc.includes('.js') || loc.includes('.jsx') || loc.includes('.ts') || loc.includes('.tsx')) {
+                            setActiveTab('javascript');
+                          } else if (loc === 'CSS' || loc.includes('.css')) {
+                            setActiveTab('css');
                           }
+
+                          updateEditorDecorations(issues);
+                          // Jump to line if possible (after a brief delay to let tab switch)
+                          setTimeout(() => {
+                            if (issue.line && editorRef.current) {
+                              editorRef.current.revealLineInCenter(issue.line);
+                              editorRef.current.setPosition({ lineNumber: issue.line, column: issue.column || 1 });
+                            }
+                          }, 100);
                         }}
                       >
                         <div className="flex items-start justify-between">
