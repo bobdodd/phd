@@ -52,6 +52,16 @@ interface ExampleFiles {
   css: CodeFile[];
 }
 
+interface IssueFix {
+  description: string;
+  code: string;
+  location: {
+    file?: string;
+    line?: number;
+    column?: number;
+  };
+}
+
 interface Issue {
   type: string;
   severity: 'error' | 'warning' | 'info';
@@ -61,6 +71,7 @@ interface Issue {
   line?: number;
   column?: number;
   length?: number;
+  fix?: IssueFix;
 }
 
 // Starter code examples - empty files
@@ -135,6 +146,8 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<string>('widget-patterns');
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [helpContent, setHelpContent] = useState<{ type: string; title: string; content: string } | null>(null);
+  const [showFixModal, setShowFixModal] = useState(false);
+  const [selectedFix, setSelectedFix] = useState<IssueFix | null>(null);
 
   const editorRef = useRef<any>(null);
   const monacoRef = useRef<any>(null);
@@ -413,7 +426,16 @@ export default function Home() {
             location: issue.location?.file || 'JavaScript',
             line: issue.location?.line,
             column: issue.location?.column,
-            length: 10 // Default length for squiggle
+            length: 10, // Default length for squiggle
+            fix: issue.fix ? {
+              description: issue.fix.description,
+              code: issue.fix.code,
+              location: {
+                file: issue.fix.location?.file,
+                line: issue.fix.location?.line,
+                column: issue.fix.location?.column
+              }
+            } : undefined
           });
         }
       } catch (error) {
@@ -448,7 +470,16 @@ export default function Home() {
             location: issue.location?.file || 'HTML',
             line: issue.location?.line,
             column: issue.location?.column,
-            length: 10
+            length: 10,
+            fix: issue.fix ? {
+              description: issue.fix.description,
+              code: issue.fix.code,
+              location: {
+                file: issue.fix.location?.file,
+                line: issue.fix.location?.line,
+                column: issue.fix.location?.column
+              }
+            } : undefined
           });
         }
       } catch (error) {
@@ -1103,16 +1134,31 @@ export default function Home() {
                               </div>
                             )}
                           </div>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              showHelp(issue.type.toLowerCase().replace(/\s+/g, '-'));
-                            }}
-                            className="ml-3 px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 flex-shrink-0"
-                            title="View help for this issue"
-                          >
-                            ? Help
-                          </button>
+                          <div className="flex gap-2">
+                            {issue.fix && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedFix(issue.fix!);
+                                  setShowFixModal(true);
+                                }}
+                                className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 flex-shrink-0"
+                                title="View suggested fix"
+                              >
+                                ⚡ Fix
+                              </button>
+                            )}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                showHelp(issue.type.toLowerCase().replace(/\s+/g, '-'));
+                              }}
+                              className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 flex-shrink-0"
+                              title="View help for this issue"
+                            >
+                              ? Help
+                            </button>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -1407,6 +1453,121 @@ export default function Home() {
                 className="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Fix Modal */}
+      {showFixModal && selectedFix && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          onClick={() => setShowFixModal(false)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              setShowFixModal(false);
+            }
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="fix-modal-title"
+        >
+          <div
+            className="bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-green-700 to-green-900 text-white px-8 py-6 flex items-center justify-between">
+              <div>
+                <h2 id="fix-modal-title" className="text-3xl font-bold mb-2">Suggested Fix</h2>
+                <p className="text-green-100">Apply this fix to resolve the issue</p>
+              </div>
+              <button
+                onClick={() => setShowFixModal(false)}
+                className="text-white/80 hover:text-white text-4xl leading-none px-3 focus:outline-none focus:ring-2 focus:ring-white rounded"
+                aria-label="Close fix modal"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="flex-1 p-8 overflow-y-auto">
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">Description</h3>
+                <p className="text-gray-700 leading-relaxed">{selectedFix.description}</p>
+              </div>
+
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">Code to Add</h3>
+                <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm font-mono">
+                  <code>{selectedFix.code}</code>
+                </pre>
+              </div>
+
+              {selectedFix.location && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="text-sm font-semibold text-blue-900 mb-2">Location</h4>
+                  <p className="text-sm text-blue-800">
+                    {selectedFix.location.file && `File: ${selectedFix.location.file}`}
+                    {selectedFix.location.line && ` • Line: ${selectedFix.location.line}`}
+                    {selectedFix.location.column && ` • Column: ${selectedFix.location.column}`}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="bg-gray-50 px-8 py-4 border-t border-gray-200 flex items-center justify-end gap-3">
+              <button
+                onClick={() => setShowFixModal(false)}
+                className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  // Apply the fix to the editor
+                  if (selectedFix && editorRef.current) {
+                    const currentContent = currentFile.content;
+                    const fixLocation = selectedFix.location;
+
+                    // If we have a specific line, try to insert at that location
+                    if (fixLocation.line) {
+                      const lines = currentContent.split('\n');
+                      const targetLine = fixLocation.line - 1; // Convert to 0-indexed
+
+                      if (targetLine >= 0 && targetLine < lines.length) {
+                        // Insert the fix code after the target line
+                        lines.splice(targetLine + 1, 0, selectedFix.code);
+                        const newContent = lines.join('\n');
+                        updateFile(newContent);
+
+                        // Jump to the inserted code
+                        setTimeout(() => {
+                          if (editorRef.current) {
+                            editorRef.current.revealLineInCenter(targetLine + 2);
+                            editorRef.current.setPosition({
+                              lineNumber: targetLine + 2,
+                              column: 1
+                            });
+                          }
+                        }, 100);
+                      }
+                    } else {
+                      // If no specific line, append to the end
+                      const newContent = currentContent + '\n\n' + selectedFix.code;
+                      updateFile(newContent);
+                    }
+                  }
+
+                  setShowFixModal(false);
+                }}
+                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 font-medium"
+              >
+                Apply Fix
               </button>
             </div>
           </div>
