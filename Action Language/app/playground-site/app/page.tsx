@@ -1,18 +1,66 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { parse, ParserOptions } from '@babel/parser';
+import traverse from '@babel/traverse';
+import * as t from '@babel/types';
+import { SvelteActionLanguageExtractor } from '../../../src/parsers/SvelteActionLanguageExtractor';
+import { VueActionLanguageExtractor } from '../../../src/parsers/VueActionLanguageExtractor';
+import { AngularActionLanguageExtractor } from '../../../src/parsers/AngularActionLanguageExtractor';
+import { ReactActionLanguageExtractor } from '../../../src/parsers/ReactActionLanguageExtractor';
+import { MouseOnlyClickAnalyzer } from '../../../src/analyzers/MouseOnlyClickAnalyzer';
+import { AngularReactivityAnalyzer } from '../../../src/analyzers/AngularReactivityAnalyzer';
+import { VueReactivityAnalyzer } from '../../../src/analyzers/VueReactivityAnalyzer';
+import { SvelteReactivityAnalyzer } from '../../../src/analyzers/SvelteReactivityAnalyzer';
+import { ReactA11yAnalyzer } from '../../../src/analyzers/ReactA11yAnalyzer';
+import { FocusManagementAnalyzer } from '../../../src/analyzers/FocusManagementAnalyzer';
+import { FocusOrderConflictAnalyzer } from '../../../src/analyzers/FocusOrderConflictAnalyzer';
+import { KeyboardNavigationAnalyzer } from '../../../src/analyzers/KeyboardNavigationAnalyzer';
+import { ARIASemanticAnalyzer } from '../../../src/analyzers/ARIASemanticAnalyzer';
+import { MissingAriaConnectionAnalyzer } from '../../../src/analyzers/MissingAriaConnectionAnalyzer';
+import { OrphanedEventHandlerAnalyzer } from '../../../src/analyzers/OrphanedEventHandlerAnalyzer';
+import { VisibilityFocusConflictAnalyzer } from '../../../src/analyzers/VisibilityFocusConflictAnalyzer';
+import { WidgetPatternAnalyzer } from '../../../src/analyzers/WidgetPatternAnalyzer';
+import { HeadingStructureAnalyzer } from '../../../src/analyzers/HeadingStructureAnalyzer';
+import { ActionLanguageModelImpl } from '../../../src/models/ActionLanguageModel';
+import { HTMLParser } from '../../../src/parsers/HTMLParser';
+import { DocumentModel } from '../../../src/models/DocumentModel';
 
 // Dynamically import Monaco to avoid SSR issues
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
+
+// Extend Window type for Monaco
+declare global {
+  interface Window {
+    monaco: any;
+  }
+}
 
 // File structure
 interface CodeFile {
   name: string;
   content: string;
+}
+
+interface ExampleFiles {
+  html: CodeFile[];
+  javascript: CodeFile[];
+  css: CodeFile[];
+}
+
+interface Issue {
+  type: string;
+  severity: 'error' | 'warning' | 'info';
+  wcag: string[];
+  message: string;
+  location: string;
+  line?: number;
+  column?: number;
+  length?: number;
 }
 
 // Starter code examples - empty files
@@ -81,11 +129,16 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<FileType>('html');
   const [activeFileIndex, setActiveFileIndex] = useState({ html: 0, javascript: 0, css: 0 });
   const [analyzing, setAnalyzing] = useState(false);
-  const [issuesFound, setIssuesFound] = useState<number>(0);
+  const [issues, setIssues] = useState<Issue[]>([]);
+  const [selectedIssueIndex, setSelectedIssueIndex] = useState<number | null>(null);
   const [showSamplesModal, setShowSamplesModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('widget-patterns');
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [helpContent, setHelpContent] = useState<{ type: string; title: string; content: string } | null>(null);
+
+  const editorRef = useRef<any>(null);
+  const monacoRef = useRef<any>(null);
+  const decorationsRef = useRef<string[]>([]);
 
   const currentFileArray = files[activeTab];
   const currentFile = currentFileArray[activeFileIndex[activeTab]];
@@ -142,20 +195,435 @@ export default function Home() {
     }
   };
 
-  const analyzeCode = () => {
+  // Auto-analyze code whenever files change
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      analyzeFiles(files);
+    }, 500); // Debounce for real-time analysis
+
+    return () => clearTimeout(timer);
+  }, [files]);
+
+  // Update decorations when selected issue changes
+  useEffect(() => {
+    updateEditorDecorations(issues);
+  }, [selectedIssueIndex, activeTab, activeFileIndex]);
+
+  const analyzeFiles = (currentFiles: ExampleFiles) => {
     setAnalyzing(true);
-    // Placeholder - will implement full analysis
-    setTimeout(() => {
+
+    try {
+      // Parse each JavaScript file separately
+      const allParsedNodes: any[] = [];
+
+      for (const jsFile of currentFiles.javascript) {
+        const parsed = parseToActionLanguage(jsFile.content, jsFile.name);
+        allParsedNodes.push(...parsed);
+      }
+
+      // Detect issues across all files
+      const detected = detectIssues(allParsedNodes, currentFiles);
+      setIssues(detected);
+
+      // Update decorations in Monaco editor
+      updateEditorDecorations(detected);
+    } catch (error) {
+      console.error('Analysis error:', error);
+      setIssues([]);
+    } finally {
       setAnalyzing(false);
-      // Always show at least 1 issue for demo purposes
-      setIssuesFound(Math.max(1, Math.floor(Math.random() * 5)));
-    }, 1000);
+    }
+  };
+
+  const parseToActionLanguage = (code: string, filename: string = 'playground.js') => {
+    // Handle React files
+    if (filename.endsWith('.jsx') || filename.endsWith('.tsx') || code.includes('React') || code.includes('useState')) {
+      const extractor = new ReactActionLanguageExtractor();
+      const model = extractor.parse(code, filename);
+      return model.nodes;
+    }
+
+    // Handle Svelte files
+    if (filename.endsWith('.svelte')) {
+      const extractor = new SvelteActionLanguageExtractor();
+      const model = extractor.parse(code, filename);
+      return model.nodes;
+    }
+
+    // Handle Vue files
+    if (filename.endsWith('.vue')) {
+      const extractor = new VueActionLanguageExtractor();
+      const model = extractor.parse(code, filename);
+      return model.nodes;
+    }
+
+    // Handle Angular files
+    if (filename.endsWith('.html') || filename.endsWith('.component.ts')) {
+      const extractor = new AngularActionLanguageExtractor();
+      const model = extractor.parse(code, filename);
+      return model.nodes;
+    }
+
+    const nodes: any[] = [];
+    const variableBindings = new Map<string, { selector: string; binding: string }>();
+    let nodeCounter = 0;
+
+    const BABEL_CONFIG: ParserOptions = {
+      sourceType: 'module',
+      plugins: [
+        'jsx',
+        'typescript',
+        ['decorators', { decoratorsBeforeExport: true }],
+        'classProperties',
+        'objectRestSpread',
+        'optionalChaining',
+        'nullishCoalescingOperator',
+      ],
+      ranges: true,
+      tokens: false,
+    };
+
+    try {
+      const ast = parse(code, {
+        ...BABEL_CONFIG,
+        sourceFilename: filename,
+      });
+
+      // Collect variable bindings
+      traverse(ast, {
+        VariableDeclarator(path: any) {
+          const node = path.node;
+          const id = node.id;
+          const init = node.init;
+
+          if (!t.isIdentifier(id) || !init) return;
+
+          if (t.isCallExpression(init) &&
+              t.isMemberExpression(init.callee) &&
+              t.isIdentifier(init.callee.object, { name: 'document' })) {
+
+            const methodName = t.isIdentifier(init.callee.property) ? init.callee.property.name : null;
+
+            if (methodName === 'getElementById' && init.arguments.length > 0 && t.isStringLiteral(init.arguments[0])) {
+              variableBindings.set(id.name, {
+                selector: `#${init.arguments[0].value}`,
+                binding: 'id'
+              });
+            } else if ((methodName === 'querySelector' || methodName === 'querySelectorAll') &&
+                       init.arguments.length > 0 && t.isStringLiteral(init.arguments[0])) {
+              variableBindings.set(id.name, {
+                selector: init.arguments[0].value,
+                binding: 'selector'
+              });
+            }
+          }
+        },
+
+        CallExpression(path: any) {
+          const node = path.node;
+          const callee = node.callee;
+
+          if (!t.isMemberExpression(callee)) return;
+          if (!t.isIdentifier(callee.property, { name: 'addEventListener' })) return;
+
+          let selector = null;
+          let variableName = null;
+
+          // Check if it's element.addEventListener(...)
+          if (t.isCallExpression(callee.object) && t.isMemberExpression(callee.object.callee)) {
+            const method = callee.object.callee;
+            if (t.isIdentifier(method.object, { name: 'document' })) {
+              const methodName = t.isIdentifier(method.property) ? method.property.name : null;
+
+              if (methodName === 'getElementById' && callee.object.arguments.length > 0 && t.isStringLiteral(callee.object.arguments[0])) {
+                selector = `#${callee.object.arguments[0].value}`;
+              } else if ((methodName === 'querySelector' || methodName === 'querySelectorAll') &&
+                         callee.object.arguments.length > 0 && t.isStringLiteral(callee.object.arguments[0])) {
+                selector = callee.object.arguments[0].value;
+              }
+            }
+          } else if (t.isIdentifier(callee.object)) {
+            variableName = callee.object.name;
+            const binding = variableBindings.get(variableName);
+            if (binding) {
+              selector = binding.selector;
+            }
+          }
+
+          if (!selector) return;
+          if (node.arguments.length < 2) return;
+          if (!t.isStringLiteral(node.arguments[0])) return;
+
+          const eventType = node.arguments[0].value;
+
+          nodes.push({
+            nodeId: `node-${nodeCounter++}`,
+            type: 'interaction',
+            selector: selector,
+            action: eventType,
+            location: {
+              file: filename,
+              line: node.loc?.start.line,
+              column: node.loc?.start.column
+            }
+          });
+        }
+      });
+    } catch (error) {
+      console.error('Parse error:', error);
+    }
+
+    return nodes;
+  };
+
+  const detectIssues = (nodes: any[], currentFiles: ExampleFiles) => {
+    const detected: Issue[] = [];
+
+    // Create ActionLanguage model
+    const actionLanguageModel = new ActionLanguageModelImpl(nodes, 'playground.js');
+
+    // Initialize analyzers
+    const analyzers = [
+      new MouseOnlyClickAnalyzer(),
+      new FocusManagementAnalyzer(),
+      new FocusOrderConflictAnalyzer(),
+      new KeyboardNavigationAnalyzer(),
+      new ARIASemanticAnalyzer(),
+      new MissingAriaConnectionAnalyzer(),
+      new OrphanedEventHandlerAnalyzer(),
+      new VisibilityFocusConflictAnalyzer(),
+      new WidgetPatternAnalyzer(),
+      new ReactA11yAnalyzer(),
+    ];
+
+    // Run all analyzers
+    for (const analyzer of analyzers) {
+      try {
+        const analyzerIssues = analyzer.analyze({
+          actionLanguageModel,
+          scope: 'file'
+        });
+
+        for (const issue of analyzerIssues) {
+          detected.push({
+            type: issue.type,
+            severity: issue.severity,
+            wcag: issue.wcagCriteria || [],
+            message: issue.message,
+            location: issue.location?.file || 'JavaScript',
+            line: issue.location?.line,
+            column: issue.location?.column,
+            length: 10 // Default length for squiggle
+          });
+        }
+      } catch (error) {
+        console.error(`Analyzer error (${analyzer.name}):`, error);
+      }
+    }
+
+    // Run HeadingStructureAnalyzer if there's HTML
+    const allHtml = currentFiles.html.map(f => f.content).join('\n');
+    if (allHtml.trim().length > 0) {
+      try {
+        const htmlParser = new HTMLParser();
+        const domModel = htmlParser.parse(allHtml, 'playground.html');
+        const documentModel = new DocumentModel({
+          scope: 'file',
+          dom: domModel,
+          javascript: []
+        });
+
+        const headingAnalyzer = new HeadingStructureAnalyzer();
+        const headingIssues = headingAnalyzer.analyze({
+          documentModel,
+          scope: 'file'
+        });
+
+        for (const issue of headingIssues) {
+          detected.push({
+            type: issue.type,
+            severity: issue.severity,
+            wcag: issue.wcagCriteria || [],
+            message: issue.message,
+            location: issue.location?.file || 'HTML',
+            line: issue.location?.line,
+            column: issue.location?.column,
+            length: 10
+          });
+        }
+      } catch (error) {
+        console.error('HeadingStructureAnalyzer error:', error);
+      }
+    }
+
+    // Run framework-specific analyzers if patterns detected
+    const allJs = currentFiles.javascript.map(f => f.content).join('\n');
+    const allContent = allHtml + '\n' + allJs;
+
+    // Angular
+    if (allContent.includes('[(ngModel)]') || allContent.includes('*ngIf') || allContent.includes('*ngFor')) {
+      try {
+        const angularExtractor = new AngularActionLanguageExtractor();
+        const angularModel = angularExtractor.parse(allContent, 'playground.html');
+        const angularAnalyzer = new AngularReactivityAnalyzer();
+        const angularIssues = angularAnalyzer.analyze({
+          actionLanguageModel: angularModel,
+          scope: 'file'
+        });
+
+        for (const issue of angularIssues) {
+          detected.push({
+            type: issue.type,
+            severity: issue.severity,
+            wcag: issue.wcagCriteria || [],
+            message: issue.message,
+            location: 'Angular',
+            line: issue.location?.line,
+            column: issue.location?.column,
+            length: 10
+          });
+        }
+      } catch (error) {
+        console.error('AngularReactivityAnalyzer error:', error);
+      }
+    }
+
+    // Vue
+    if (allContent.includes('v-model') || allContent.includes('v-if') || allContent.includes('v-for')) {
+      try {
+        const vueExtractor = new VueActionLanguageExtractor();
+        const vueModel = vueExtractor.parse(allContent, 'playground.vue');
+        const vueAnalyzer = new VueReactivityAnalyzer();
+        const vueIssues = vueAnalyzer.analyze({
+          actionLanguageModel: vueModel,
+          scope: 'file'
+        });
+
+        for (const issue of vueIssues) {
+          detected.push({
+            type: issue.type,
+            severity: issue.severity,
+            wcag: issue.wcagCriteria || [],
+            message: issue.message,
+            location: 'Vue',
+            line: issue.location?.line,
+            column: issue.location?.column,
+            length: 10
+          });
+        }
+      } catch (error) {
+        console.error('VueReactivityAnalyzer error:', error);
+      }
+    }
+
+    // Svelte
+    if (allContent.includes('bind:') || allContent.includes('{#if') || allContent.includes('{#each')) {
+      try {
+        const svelteExtractor = new SvelteActionLanguageExtractor();
+        const svelteModel = svelteExtractor.parse(allContent, 'playground.svelte');
+        const svelteAnalyzer = new SvelteReactivityAnalyzer();
+        const svelteIssues = svelteAnalyzer.analyze({
+          actionLanguageModel: svelteModel,
+          scope: 'file'
+        });
+
+        for (const issue of svelteIssues) {
+          detected.push({
+            type: issue.type,
+            severity: issue.severity,
+            wcag: issue.wcagCriteria || [],
+            message: issue.message,
+            location: 'Svelte',
+            line: issue.location?.line,
+            column: issue.location?.column,
+            length: 10
+          });
+        }
+      } catch (error) {
+        console.error('SvelteReactivityAnalyzer error:', error);
+      }
+    }
+
+    return detected;
+  };
+
+  const updateEditorDecorations = (detectedIssues: Issue[]) => {
+    if (!editorRef.current || !monacoRef.current) return;
+
+    const editor = editorRef.current;
+    const monaco = monacoRef.current;
+
+    // Clear previous decorations
+    if (decorationsRef.current.length > 0) {
+      decorationsRef.current = editor.deltaDecorations(decorationsRef.current, []);
+    }
+
+    // Get current file location
+    const currentLocation = activeTab === 'html' ? 'HTML' : activeTab === 'javascript' ? 'JavaScript' : 'CSS';
+
+    // Filter issues for current file - match by file type rather than exact filename
+    const fileIssues = detectedIssues.filter(issue => {
+      const loc = issue.location || '';
+
+      // For HTML tab, match HTML location or .html files
+      if (currentLocation === 'HTML' && (loc === 'HTML' || loc.includes('.html'))) {
+        return true;
+      }
+
+      // For JavaScript tab, match JavaScript location or .js/.jsx/.ts/.tsx files
+      if (currentLocation === 'JavaScript' && (
+        loc === 'JavaScript' ||
+        loc.includes('.js') ||
+        loc.includes('.jsx') ||
+        loc.includes('.ts') ||
+        loc.includes('.tsx')
+      )) {
+        return true;
+      }
+
+      // For CSS tab, match CSS location or .css files
+      if (currentLocation === 'CSS' && (loc === 'CSS' || loc.includes('.css'))) {
+        return true;
+      }
+
+      return false;
+    });
+
+    // Create new decorations
+    const newDecorations = fileIssues.map((issue) => {
+      // Find the index of this issue in the full issues array
+      const fullArrayIndex = detectedIssues.findIndex(i =>
+        i.line === issue.line &&
+        i.column === issue.column &&
+        i.type === issue.type &&
+        i.message === issue.message
+      );
+      const isSelected = selectedIssueIndex === fullArrayIndex;
+      const line = issue.line || 1;
+      const column = issue.column || 1;
+      const length = issue.length || 10;
+
+      return {
+        range: new monaco.Range(line, column, line, column + length),
+        options: {
+          isWholeLine: false,
+          className: isSelected ? 'paradise-squiggle-selected' : 'paradise-squiggle-error',
+          glyphMarginClassName: issue.severity === 'error' ? 'paradise-glyph-error' : 'paradise-glyph-warning',
+          hoverMessage: { value: `**${issue.type}**: ${issue.message}` },
+          inlineClassName: isSelected ? 'paradise-inline-selected' : 'paradise-inline-error'
+        }
+      };
+    });
+
+    // Apply decorations
+    decorationsRef.current = editor.deltaDecorations([], newDecorations);
   };
 
   const clearAll = () => {
     setFiles(STARTER_FILES);
     setActiveFileIndex({ html: 0, javascript: 0, css: 0 });
-    setIssuesFound(0);
+    setIssues([]);
+    setSelectedIssueIndex(null);
   };
 
   const showHelp = async (issueType: string) => {
@@ -297,7 +765,7 @@ export default function Home() {
       setActiveTab('html');
       setActiveFileIndex({ html: 0, javascript: 0, css: 0 });
       setShowSamplesModal(false);
-      setIssuesFound(0);
+      // Issues will be automatically analyzed by the useEffect
 
     } catch (error) {
       console.error('Error loading sample:', error);
@@ -344,14 +812,16 @@ export default function Home() {
                 </div>
               </div>
             )}
-            <div className="flex gap-4 flex-wrap">
-              <button
-                onClick={analyzeCode}
-                disabled={analyzing}
-                className="bg-white text-blue-700 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-700 disabled:opacity-50"
-              >
-                {analyzing ? 'Analyzing...' : 'Analyze Code'}
-              </button>
+            <div className="flex gap-4 flex-wrap items-center">
+              {analyzing && (
+                <div className="bg-white text-blue-700 px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
+                  <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Analyzing...
+                </div>
+              )}
               <button
                 onClick={() => setShowSamplesModal(true)}
                 className="bg-white text-blue-700 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-700"
@@ -485,6 +955,41 @@ export default function Home() {
                   value={currentFile.content}
                   onChange={(value) => updateFile(value || '')}
                   theme="vs-light"
+                  onMount={(editor, monaco) => {
+                    editorRef.current = editor;
+                    monacoRef.current = monaco;
+
+                    // Define custom CSS classes for squiggles
+                    const style = document.createElement('style');
+                    style.innerHTML = `
+                      .paradise-squiggle-error {
+                        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 3' enable-background='new 0 0 6 3' height='3' width='6'%3E%3Cg fill='%23dc2626'%3E%3Cpolygon points='5.5,0 2.5,3 1.1,3 4.1,0'/%3E%3Cpolygon points='4,0 6,2 6,0.6 5.4,0'/%3E%3Cpolygon points='0,2 1,3 2.4,3 0,0.6'/%3E%3C/g%3E%3C/svg%3E") repeat-x bottom left;
+                        padding-bottom: 3px;
+                      }
+                      .paradise-squiggle-selected {
+                        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 3' enable-background='new 0 0 6 3' height='3' width='6'%3E%3Cg fill='%23eab308'%3E%3Cpolygon points='5.5,0 2.5,3 1.1,3 4.1,0'/%3E%3Cpolygon points='4,0 6,2 6,0.6 5.4,0'/%3E%3Cpolygon points='0,2 1,3 2.4,3 0,0.6'/%3E%3C/g%3E%3C/svg%3E") repeat-x bottom left;
+                        padding-bottom: 3px;
+                      }
+                      .paradise-inline-error {
+                        background-color: rgba(220, 38, 38, 0.1);
+                      }
+                      .paradise-inline-selected {
+                        background-color: rgba(234, 179, 8, 0.2);
+                      }
+                      .paradise-glyph-error::before {
+                        content: "●";
+                        color: #dc2626;
+                      }
+                      .paradise-glyph-warning::before {
+                        content: "●";
+                        color: #f59e0b;
+                      }
+                    `;
+                    document.head.appendChild(style);
+
+                    // Update decorations when mounted
+                    updateEditorDecorations(issues);
+                  }}
                   options={{
                     minimap: { enabled: false },
                     fontSize: 14,
@@ -493,6 +998,7 @@ export default function Home() {
                     automaticLayout: true,
                     wordWrap: 'on',
                     padding: { top: 16, bottom: 16 },
+                    glyphMargin: true,
                   }}
                 />
               </div>
@@ -504,11 +1010,13 @@ export default function Home() {
             <div className="bg-white rounded-lg shadow-lg p-6 sticky top-6">
               <h2 className="text-2xl font-bold mb-4 text-gray-900">Analysis Results</h2>
 
-              {issuesFound === 0 ? (
+              {issues.length === 0 ? (
                 <div className="text-center py-8">
-                  <div className="text-6xl mb-4" aria-hidden="true">🔍</div>
+                  <div className="text-6xl mb-4" aria-hidden="true">
+                    {analyzing ? '⏳' : '✅'}
+                  </div>
                   <p className="text-gray-600">
-                    Click "Analyze Code" to check for accessibility issues
+                    {analyzing ? 'Analyzing code...' : 'No accessibility issues found!'}
                   </p>
                 </div>
               ) : (
@@ -517,29 +1025,83 @@ export default function Home() {
                     <div className="flex items-center">
                       <span className="text-2xl mr-3" aria-hidden="true">⚠️</span>
                       <div>
-                        <p className="font-semibold text-red-900">{issuesFound} Issue{issuesFound !== 1 ? 's' : ''} Found</p>
-                        <p className="text-sm text-red-700">Click each issue to jump to location</p>
+                        <p className="font-semibold text-red-900">{issues.length} Issue{issues.length !== 1 ? 's' : ''} Found</p>
+                        <p className="text-sm text-red-700">Click each issue to highlight in code</p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Placeholder issues */}
-                  <div className="space-y-3">
-                    <div className="border-l-4 border-orange-500 bg-orange-50 p-4 rounded">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="font-semibold text-orange-900">Mouse-Only Click Handler</div>
-                          <div className="text-sm text-orange-700 mt-1">index.html:12 - div requires keyboard handler</div>
+                  {/* Real issues */}
+                  <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                    {issues.map((issue, index) => (
+                      <div
+                        key={index}
+                        className={`border-l-4 p-4 rounded cursor-pointer transition-all ${
+                          selectedIssueIndex === index
+                            ? 'border-yellow-500 bg-yellow-100'
+                            : issue.severity === 'error'
+                            ? 'border-red-500 bg-red-50 hover:bg-red-100'
+                            : issue.severity === 'warning'
+                            ? 'border-orange-500 bg-orange-50 hover:bg-orange-100'
+                            : 'border-blue-500 bg-blue-50 hover:bg-blue-100'
+                        }`}
+                        onClick={() => {
+                          setSelectedIssueIndex(index);
+                          updateEditorDecorations(issues);
+                          // Jump to line if possible
+                          if (issue.line && editorRef.current) {
+                            editorRef.current.revealLineInCenter(issue.line);
+                            editorRef.current.setPosition({ lineNumber: issue.line, column: issue.column || 1 });
+                          }
+                        }}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className={`font-semibold ${
+                              selectedIssueIndex === index
+                                ? 'text-yellow-900'
+                                : issue.severity === 'error'
+                                ? 'text-red-900'
+                                : issue.severity === 'warning'
+                                ? 'text-orange-900'
+                                : 'text-blue-900'
+                            }`}>
+                              {issue.type}
+                            </div>
+                            <div className={`text-sm mt-1 ${
+                              selectedIssueIndex === index
+                                ? 'text-yellow-700'
+                                : issue.severity === 'error'
+                                ? 'text-red-700'
+                                : issue.severity === 'warning'
+                                ? 'text-orange-700'
+                                : 'text-blue-700'
+                            }`}>
+                              {issue.location}
+                              {issue.line && `:${issue.line}`}
+                              {issue.column && `:${issue.column}`}
+                              {' - '}
+                              {issue.message}
+                            </div>
+                            {issue.wcag.length > 0 && (
+                              <div className="text-xs mt-1 text-gray-600">
+                                WCAG: {issue.wcag.join(', ')}
+                              </div>
+                            )}
+                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              showHelp(issue.type.toLowerCase().replace(/\s+/g, '-'));
+                            }}
+                            className="ml-3 px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 flex-shrink-0"
+                            title="View help for this issue"
+                          >
+                            ? Help
+                          </button>
                         </div>
-                        <button
-                          onClick={() => showHelp('mouse-only-click')}
-                          className="ml-3 px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 flex-shrink-0"
-                          title="View help for this issue"
-                        >
-                          ? Help
-                        </button>
                       </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
               )}
