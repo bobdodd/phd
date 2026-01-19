@@ -821,7 +821,8 @@ export default function Home() {
       scriptElements.forEach(el => el.remove());
       linkElements.forEach(el => el.remove());
 
-      const htmlContent = doc.documentElement.outerHTML;
+      // Only use body content (not full document with head)
+      const htmlContent = doc.body ? doc.body.innerHTML : doc.documentElement.outerHTML;
 
       // Load into playground
       setFiles({
