@@ -228,22 +228,12 @@ export default function AboutPage() {
           <p className="text-xl mb-8 text-blue-100">
             Experience the power of universal accessibility analysis. Test your code now.
           </p>
-          <div className="flex gap-4 justify-center flex-wrap">
-            <Link
-              href="/"
-              className="inline-block bg-white text-blue-700 px-10 py-4 rounded-lg text-lg font-semibold hover:bg-blue-50 transition-colors shadow-lg focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-700"
-            >
-              Launch Playground →
-            </Link>
-            <a
-              href="https://github.com/bobdodd/phd"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block bg-blue-800 text-white px-10 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-700"
-            >
-              View on GitHub →
-            </a>
-          </div>
+          <Link
+            href="/"
+            className="inline-block bg-white text-blue-700 px-10 py-4 rounded-lg text-lg font-semibold hover:bg-blue-50 transition-colors shadow-lg focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-700"
+          >
+            Launch Playground →
+          </Link>
         </section>
       </div>
     </div>

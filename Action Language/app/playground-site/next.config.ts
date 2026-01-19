@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+  turbopack: {},
   webpack: (config, { isServer, dev }) => {
     // Ensure Babel packages are properly transpiled for browser use
     config.resolve.fallback = {

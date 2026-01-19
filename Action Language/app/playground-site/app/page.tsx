@@ -950,6 +950,7 @@ export default function Home() {
               {/* Monaco Editor */}
               <div id="editor-panel" role="tabpanel" aria-labelledby={`${activeTab}-tab`}>
                 <MonacoEditor
+                  key={`${activeTab}-${activeFileIndex[activeTab]}`}
                   height="600px"
                   language={getLanguage()}
                   value={currentFile.content}
@@ -1058,14 +1059,14 @@ export default function Home() {
                             setActiveTab('css');
                           }
 
-                          updateEditorDecorations(issues);
-                          // Jump to line if possible (after a brief delay to let tab switch)
+                          // Wait for tab switch and editor re-render before updating decorations and jumping
                           setTimeout(() => {
+                            updateEditorDecorations(issues);
                             if (issue.line && editorRef.current) {
                               editorRef.current.revealLineInCenter(issue.line);
                               editorRef.current.setPosition({ lineNumber: issue.line, column: issue.column || 1 });
                             }
-                          }, 100);
+                          }, 200);
                         }}
                       >
                         <div className="flex items-start justify-between">

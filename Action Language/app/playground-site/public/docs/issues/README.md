@@ -280,7 +280,7 @@ Help us improve this documentation! If you:
 - Have real-world examples to share
 - Spot errors or omissions
 
-Please [open an issue](https://github.com/bobdodd/paradise/issues) or submit a pull request.
+If you have suggestions for improvements, please reach out to the Paradise development team.
 
 ## WCAG Quick Reference
 

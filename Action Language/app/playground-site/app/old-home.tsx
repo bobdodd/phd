@@ -141,15 +141,6 @@ export default function Home() {
           <p className="text-sm text-gray-500">
             Powered by ActionLanguage • 15+ Accessibility Analyzers • WCAG 2.1 Compliant
           </p>
-          <div className="mt-6">
-            <Link
-              href="https://github.com/bobdodd/phd"
-              target="_blank"
-              className="text-[#0066CC] hover:text-[#0052A3] transition-colors"
-            >
-              View on GitHub →
-            </Link>
-          </div>
         </div>
       </footer>
     </div>

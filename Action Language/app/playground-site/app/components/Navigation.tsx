@@ -62,15 +62,6 @@ export default function Navigation() {
             >
               About
             </Link>
-            <a
-              href="https://github.com/bobdodd/phd"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-4 py-2 rounded-lg font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              aria-label="View source code on GitHub (opens in new tab)"
-            >
-              GitHub
-            </a>
           </div>
         </div>
       </div>
