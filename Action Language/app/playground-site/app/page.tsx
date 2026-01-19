@@ -147,7 +147,8 @@ export default function Home() {
     // Placeholder - will implement full analysis
     setTimeout(() => {
       setAnalyzing(false);
-      setIssuesFound(Math.floor(Math.random() * 5));
+      // Always show at least 1 issue for demo purposes
+      setIssuesFound(Math.max(1, Math.floor(Math.random() * 5)));
     }, 1000);
   };
 
