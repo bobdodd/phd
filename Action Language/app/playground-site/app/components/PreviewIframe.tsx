@@ -25,6 +25,19 @@ export default function PreviewIframe({
     const iframe = iframeRef.current;
     if (!iframe) return;
 
+    // Parse and clean HTML content to remove link/style/script tags
+    // (CSS and JS are provided separately via cssContent and jsContent)
+    let cleanedHTML = htmlContent;
+
+    // Remove link tags (external CSS references)
+    cleanedHTML = cleanedHTML.replace(/<link[^>]*>/gi, '');
+
+    // Remove style tags (inline CSS - handled separately)
+    cleanedHTML = cleanedHTML.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+
+    // Remove script tags (inline/external JS - handled separately)
+    cleanedHTML = cleanedHTML.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
+
     // Build complete HTML document
     const fullHTML = `<!DOCTYPE html>
 <html lang="en">
@@ -50,7 +63,7 @@ export default function PreviewIframe({
   </style>
 </head>
 <body>
-  ${htmlContent}
+  ${cleanedHTML}
 
   <script>
     // Wrap user JavaScript in try-catch for safety
