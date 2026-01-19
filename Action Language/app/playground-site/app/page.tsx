@@ -29,6 +29,7 @@ import { HeadingStructureAnalyzer } from '../../../src/analyzers/HeadingStructur
 import { ActionLanguageModelImpl } from '../../../src/models/ActionLanguageModel';
 import { HTMLParser } from '../../../src/parsers/HTMLParser';
 import { DocumentModel } from '../../../src/models/DocumentModel';
+import ScreenReaderModal from './components/ScreenReaderModal';
 
 // Dynamically import Monaco to avoid SSR issues
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
@@ -148,6 +149,7 @@ export default function Home() {
   const [helpContent, setHelpContent] = useState<{ type: string; title: string; content: string } | null>(null);
   const [showFixModal, setShowFixModal] = useState(false);
   const [selectedFix, setSelectedFix] = useState<IssueFix | null>(null);
+  const [showSRModal, setShowSRModal] = useState(false);
 
   const editorRef = useRef<any>(null);
   const monacoRef = useRef<any>(null);
@@ -853,6 +855,12 @@ export default function Home() {
                   Analyzing...
                 </div>
               )}
+              <button
+                onClick={() => setShowSRModal(true)}
+                className="bg-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-700 flex items-center gap-2"
+              >
+                <span>▶</span> Preview with Screen Reader
+              </button>
               <button
                 onClick={() => setShowSamplesModal(true)}
                 className="bg-white text-blue-700 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-700"
@@ -1573,6 +1581,15 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* Screen Reader Modal */}
+      <ScreenReaderModal
+        isOpen={showSRModal}
+        onClose={() => setShowSRModal(false)}
+        htmlContent={files.html.map(f => f.content).join('\n')}
+        cssContent={files.css.map(f => f.content).join('\n')}
+        jsContent={files.javascript.map(f => f.content).join('\n')}
+      />
     </div>
   );
 }
