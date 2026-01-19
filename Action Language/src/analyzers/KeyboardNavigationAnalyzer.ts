@@ -344,6 +344,8 @@ element.addEventListener('keydown', (event) => {
 
     // Look for modal/dialog indicators in DOM manipulations or roles
     const modalPatterns = nodes.filter((node) => {
+      if (!node.element) return false;
+
       const selector = node.element.selector?.toLowerCase() || '';
       const binding = node.element.binding?.toLowerCase() || '';
       const role = node.metadata?.role;
