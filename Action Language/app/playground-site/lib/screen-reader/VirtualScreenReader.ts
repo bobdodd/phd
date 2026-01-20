@@ -1298,6 +1298,30 @@ export class VirtualScreenReader {
       parts.push(node.states.grabbed ? 'grabbed' : 'not grabbed');
     }
 
+    // Add keyboard shortcuts if present
+    if (node.properties.keyshortcuts) {
+      parts.push(`Shortcut: ${node.properties.keyshortcuts}`);
+    }
+
+    // Add custom role description if present (overrides default role announcement)
+    if (node.properties.roledescription) {
+      // Insert roledescription at the beginning instead of role
+      parts.unshift(node.properties.roledescription);
+    }
+
+    // Add placeholder if present and no value
+    if (node.properties.placeholder && !node.value) {
+      parts.push(`Placeholder: ${node.properties.placeholder}`);
+    }
+
+    // Add details reference if present
+    if (node.properties.details && node.domElement) {
+      const detailsElement = node.domElement.ownerDocument.getElementById(node.properties.details);
+      if (detailsElement) {
+        parts.push('Additional details available');
+      }
+    }
+
     const content = parts.join(', ');
 
     this.announce({

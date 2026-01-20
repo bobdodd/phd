@@ -603,6 +603,18 @@ export class AccessibilityTreeBuilder {
       states.grabbed = false;
     }
 
+    // dropeffect (for drag and drop targets)
+    const ariaDropeffect = element.getAttribute('aria-dropeffect');
+    if (ariaDropeffect && ariaDropeffect !== 'none') {
+      states.dropeffect = ariaDropeffect as 'copy' | 'execute' | 'link' | 'move' | 'popup';
+    }
+
+    // live (for live regions)
+    const ariaLive = element.getAttribute('aria-live');
+    if (ariaLive) {
+      states.live = ariaLive as 'off' | 'polite' | 'assertive';
+    }
+
     return states;
   }
 
@@ -664,6 +676,18 @@ export class AccessibilityTreeBuilder {
 
     const errormessage = element.getAttribute('aria-errormessage');
     if (errormessage) properties.errormessage = errormessage;
+
+    const owns = element.getAttribute('aria-owns');
+    if (owns) properties.owns = owns;
+
+    const flowto = element.getAttribute('aria-flowto');
+    if (flowto) properties.flowto = flowto;
+
+    const activedescendant = element.getAttribute('aria-activedescendant');
+    if (activedescendant) properties.activedescendant = activedescendant;
+
+    const details = element.getAttribute('aria-details');
+    if (details) properties.details = details;
 
     // modal (for dialogs)
     if (role === 'dialog' || role === 'alertdialog') {
@@ -782,6 +806,23 @@ export class AccessibilityTreeBuilder {
       const cite = element.getAttribute('cite');
       if (cite) {
         properties.cite = cite;
+      }
+    }
+
+    // Additional ARIA properties
+    const keyshortcuts = element.getAttribute('aria-keyshortcuts');
+    if (keyshortcuts) properties.keyshortcuts = keyshortcuts;
+
+    const roledescription = element.getAttribute('aria-roledescription');
+    if (roledescription) properties.roledescription = roledescription;
+
+    const ariaPlaceholder = element.getAttribute('aria-placeholder');
+    if (ariaPlaceholder) {
+      properties.placeholder = ariaPlaceholder;
+    } else if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
+      const placeholder = element.getAttribute('placeholder');
+      if (placeholder) {
+        properties.placeholder = placeholder;
       }
     }
 

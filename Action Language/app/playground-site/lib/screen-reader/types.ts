@@ -19,6 +19,9 @@ export interface ARIAStates {
   required?: boolean;
   current?: boolean | 'page' | 'step' | 'location' | 'date' | 'time';
   visited?: boolean;
+  // Additional ARIA states
+  dropeffect?: 'copy' | 'execute' | 'link' | 'move' | 'none' | 'popup';
+  live?: 'off' | 'polite' | 'assertive';
 }
 
 /**
@@ -47,6 +50,14 @@ export interface ARIAProperties {
   labelledby?: string; // ID(s) of elements that label this element
   describedby?: string; // ID(s) of elements that describe this element
   errormessage?: string; // ID of element containing error message
+  owns?: string; // ID(s) of elements owned by this element
+  flowto?: string; // ID(s) for custom reading order
+  activedescendant?: string; // ID of currently active descendant
+  details?: string; // ID of element with additional details
+  // Other ARIA properties
+  keyshortcuts?: string; // Keyboard shortcuts for this element
+  roledescription?: string; // Custom role description
+  placeholder?: string; // Placeholder text
   // Semantic HTML attributes
   expansion?: string; // For abbr/acronym elements
   cite?: string; // For blockquote elements
