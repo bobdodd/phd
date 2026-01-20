@@ -31,6 +31,7 @@ import { HeadingStructureAnalyzer } from '../lib/analyzers/HeadingStructureAnaly
 import { FormLabelAnalyzer } from '../lib/analyzers/FormLabelAnalyzer';
 import { AltTextAnalyzer } from '../lib/analyzers/AltTextAnalyzer';
 import { LandmarkStructureAnalyzer } from '../lib/analyzers/LandmarkStructureAnalyzer';
+import { KeyboardTrapAnalyzer } from '../lib/analyzers/KeyboardTrapAnalyzer';
 import { ParadiseCodeActionProvider } from './codeActionProvider';
 
 export class ForegroundAnalyzer {
@@ -69,7 +70,8 @@ export class ForegroundAnalyzer {
       new HeadingStructureAnalyzer(),
       new FormLabelAnalyzer(),
       new AltTextAnalyzer(),
-      new LandmarkStructureAnalyzer()
+      new LandmarkStructureAnalyzer(),
+      new KeyboardTrapAnalyzer()
     ];
 
     this.outputChannel.appendLine(`[ForegroundAnalyzer] Initialized with ${this.analyzers.length} analyzers`);

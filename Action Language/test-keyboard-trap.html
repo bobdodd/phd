@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Keyboard Trap Test Cases</title>
+</head>
+<body>
+  <h1>Keyboard Trap Test Cases</h1>
+
+  <!-- ISSUE: Modal dialog without escape handler -->
+  <div role="dialog" aria-modal="true" id="modal1">
+    <h2>Modal Dialog</h2>
+    <p>This modal has no escape key handler - keyboard trap!</p>
+    <button id="close-modal">Close</button>
+  </div>
+
+  <!-- GOOD: Modal with escape handler -->
+  <div role="dialog" aria-modal="true" id="modal2">
+    <h2>Accessible Modal</h2>
+    <p>This modal can be closed with Escape key.</p>
+    <button id="close-modal2">Close</button>
+  </div>
+
+  <!-- ISSUE: Focus trap without escape -->
+  <div id="focus-trap-container">
+    <button>First</button>
+    <button>Last</button>
+  </div>
+
+  <script>
+    // ISSUE: Modal without Escape handler
+    const modal1 = document.getElementById('modal1');
+    document.getElementById('close-modal').addEventListener('click', () => {
+      modal1.style.display = 'none';
+    });
+
+    // GOOD: Modal with Escape handler
+    const modal2 = document.getElementById('modal2');
+    document.getElementById('close-modal2').addEventListener('click', () => {
+      modal2.style.display = 'none';
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        modal2.style.display = 'none';
+      }
+    });
+
+    // ISSUE: Tab key trap without escape
+    const trapContainer = document.getElementById('focus-trap-container');
+    trapContainer.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        // Trap focus within container
+        const focusableElements = trapContainer.querySelectorAll('button');
+        // ... focus management logic but NO escape handler
+      }
+    });
+
+    // GOOD: Focus trap WITH escape handler
+    const accessibleTrap = document.getElementById('accessible-trap');
+    accessibleTrap.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        // Focus trap implementation
+        const focusable = accessibleTrap.querySelectorAll('button');
+        // ... proper focus cycling
+      }
+
+      // Escape to exit
+      if (e.key === 'Escape') {
+        exitTrap();
+      }
+    });
+
+    // ISSUE: Blur handler that refocuses immediately (focus loop)
+    const trappedInput = document.getElementById('trapped-input');
+    trappedInput.addEventListener('blur', () => {
+      trappedInput.focus(); // Creates infinite loop - keyboard trap!
+    });
+
+    // GOOD: Conditional blur refocus
+    const conditionalInput = document.getElementById('conditional-input');
+    conditionalInput.addEventListener('blur', () => {
+      if (needsValidation && !isValid()) {
+        conditionalInput.focus(); // Only refocus if invalid
+      }
+    });
+
+    // ISSUE: Tab prevented without proper management
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') {
+        e.preventDefault(); // Blocks all Tab navigation!
+        // No focus management provided
+      }
+    });
+  </script>
+
+  <!-- Test inputs -->
+  <input type="text" id="trapped-input" placeholder="Trapped input">
+  <input type="text" id="conditional-input" placeholder="Conditional refocus">
+
+  <!-- Accessible trap example -->
+  <div id="accessible-trap" style="display:none;">
+    <button>Button 1</button>
+    <button>Button 2</button>
+  </div>
+</body>
+</html>

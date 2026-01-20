@@ -60,6 +60,7 @@ const HeadingStructureAnalyzer_1 = require("../lib/analyzers/HeadingStructureAna
 const FormLabelAnalyzer_1 = require("../lib/analyzers/FormLabelAnalyzer");
 const AltTextAnalyzer_1 = require("../lib/analyzers/AltTextAnalyzer");
 const LandmarkStructureAnalyzer_1 = require("../lib/analyzers/LandmarkStructureAnalyzer");
+const KeyboardTrapAnalyzer_1 = require("../lib/analyzers/KeyboardTrapAnalyzer");
 class ForegroundAnalyzer {
     constructor(diagnosticCollection, projectManager, codeActionProvider, outputChannel) {
         this.diagnosticCollection = diagnosticCollection;
@@ -84,7 +85,8 @@ class ForegroundAnalyzer {
             new HeadingStructureAnalyzer_1.HeadingStructureAnalyzer(),
             new FormLabelAnalyzer_1.FormLabelAnalyzer(),
             new AltTextAnalyzer_1.AltTextAnalyzer(),
-            new LandmarkStructureAnalyzer_1.LandmarkStructureAnalyzer()
+            new LandmarkStructureAnalyzer_1.LandmarkStructureAnalyzer(),
+            new KeyboardTrapAnalyzer_1.KeyboardTrapAnalyzer()
         ];
         this.outputChannel.appendLine(`[ForegroundAnalyzer] Initialized with ${this.analyzers.length} analyzers`);
     }
