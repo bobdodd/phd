@@ -1,5 +1,6 @@
 import { AccessibilityNode, SRMessage, NavigationMode } from './types';
 import { AccessibilityTreeBuilder } from './AccessibilityTreeBuilder';
+import { LiveRegionSimulator } from './LiveRegionSimulator';
 
 /**
  * Virtual Screen Reader Engine
@@ -11,6 +12,7 @@ export class VirtualScreenReader {
   private currentIndex: number = -1;
   private mode: NavigationMode = 'browse';
   private messageIdCounter = 0;
+  private liveRegionSimulator: LiveRegionSimulator;
 
   private onAnnouncement?: (message: SRMessage) => void;
   private onPositionChange?: (node: AccessibilityNode | null, element: HTMLElement | null) => void;
@@ -21,6 +23,11 @@ export class VirtualScreenReader {
   ) {
     this.onAnnouncement = onAnnouncement;
     this.onPositionChange = onPositionChange;
+
+    // Initialize live region simulator with announcement callback
+    this.liveRegionSimulator = new LiveRegionSimulator((messageData) => {
+      this.announce(messageData);
+    });
   }
 
   /**
@@ -32,6 +39,9 @@ export class VirtualScreenReader {
     this.flatTree = this.flattenTree(this.accessibilityTree);
     this.currentIndex = -1;
 
+    // Start observing live regions
+    this.liveRegionSimulator.observe(document);
+
     // Announce page load
     this.announce({
       type: 'page-load',
@@ -42,6 +52,13 @@ export class VirtualScreenReader {
     if (this.flatTree.length > 0) {
       this.moveTo(0);
     }
+  }
+
+  /**
+   * Clean up resources
+   */
+  destroy(): void {
+    this.liveRegionSimulator.destroy();
   }
 
   /**

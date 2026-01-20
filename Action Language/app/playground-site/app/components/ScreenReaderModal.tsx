@@ -55,6 +55,10 @@ export default function ScreenReaderModal({
     screenReaderRef.current = sr;
 
     return () => {
+      // Clean up screen reader resources
+      if (screenReaderRef.current) {
+        screenReaderRef.current.destroy();
+      }
       screenReaderRef.current = null;
     };
   }, [isOpen]);
@@ -332,8 +336,12 @@ export default function ScreenReaderModal({
                           ? 'bg-blue-50 border-blue-500'
                           : message.type === 'announcement'
                           ? 'bg-green-50 border-green-500'
+                          : message.type === 'state-change'
+                          ? 'bg-yellow-50 border-yellow-500'
                           : message.type === 'error'
                           ? 'bg-red-50 border-red-500'
+                          : message.type === 'page-load'
+                          ? 'bg-purple-50 border-purple-500'
                           : 'bg-gray-50 border-gray-500'
                       }`}
                     >
