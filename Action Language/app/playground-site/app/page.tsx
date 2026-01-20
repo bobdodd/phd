@@ -30,6 +30,7 @@ import { FormLabelAnalyzer } from '../../../src/analyzers/FormLabelAnalyzer';
 import { AltTextAnalyzer } from '../../../src/analyzers/AltTextAnalyzer';
 import { LandmarkStructureAnalyzer } from '../../../src/analyzers/LandmarkStructureAnalyzer';
 import { LinkTextAnalyzer } from '../../../src/analyzers/LinkTextAnalyzer';
+import { SingleLetterShortcutAnalyzer } from '../../../src/analyzers/SingleLetterShortcutAnalyzer';
 import { ActionLanguageModelImpl } from '../../../src/models/ActionLanguageModel';
 import { HTMLParser } from '../../../src/parsers/HTMLParser';
 import { DocumentModel } from '../../../src/models/DocumentModel';
@@ -424,6 +425,7 @@ export default function Home() {
       new VisibilityFocusConflictAnalyzer(),
       new WidgetPatternAnalyzer(),
       new ReactA11yAnalyzer(),
+      new SingleLetterShortcutAnalyzer(),
     ];
 
     // Run all analyzers

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Single Letter Shortcut Test Cases</title>
+</head>
+<body>
+  <h1>Single Letter Shortcut Test Cases</h1>
+
+  <script>
+    // ISSUE: Single letter shortcut without modifier keys on document (global)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 's') {
+        // Save action
+        console.log('Saving...');
+      }
+    });
+
+    // ISSUE: Single letter shortcut with 'h' key
+    document.addEventListener('keypress', (event) => {
+      if (event.key === 'h') {
+        // Go to home
+        window.location.href = '/home';
+      }
+    });
+
+    // GOOD: Shortcut requires Ctrl modifier
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 's' && e.ctrlKey) {
+        // Save action with Ctrl+S
+        console.log('Saving with Ctrl+S...');
+      }
+    });
+
+    // GOOD: Shortcut requires Meta (Cmd) modifier
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'k' && e.metaKey) {
+        // Search with Cmd+K
+        console.log('Opening search...');
+      }
+    });
+
+    // GOOD: Shortcut requires Alt modifier
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'n' && e.altKey) {
+        // New item with Alt+N
+        console.log('Creating new item...');
+      }
+    });
+
+    // ISSUE: Using keyCode (legacy) without modifier
+    document.onkeydown = function(event) {
+      if (event.keyCode === 65) { // 'A' key
+        alert('A pressed');
+      }
+    };
+
+    // ISSUE: Checking multiple single keys without modifiers
+    window.addEventListener('keypress', function(e) {
+      if (e.key === 'd') {
+        deleteItem();
+      }
+      if (e.key === 'e') {
+        editItem();
+      }
+    });
+
+    // GOOD: Has a mechanism to disable shortcuts
+    let shortcutsEnabled = true;
+
+    document.addEventListener('keydown', (e) => {
+      if (shortcutsEnabled && e.key === 'p') {
+        printDocument();
+      }
+    });
+
+    // ISSUE: Punctuation shortcut without modifier
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/') {
+        // Open search
+        openSearch();
+      }
+    });
+
+    // ISSUE: Number key shortcut without modifier
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '1') {
+        // Go to tab 1
+        goToTab(1);
+      }
+    });
+
+    // INFO: Element-specific shortcut (only active on focus)
+    const searchInput = document.getElementById('search');
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        // This is OK - only active when input has focus
+        performSearch();
+      }
+    });
+
+    function deleteItem() {}
+    function editItem() {}
+    function printDocument() {}
+    function openSearch() {}
+    function goToTab(num) {}
+    function performSearch() {}
+  </script>
+
+  <input id="search" type="text" placeholder="Search...">
+  <button>Submit</button>
+
+  <h2>Expected Issues:</h2>
+  <ul>
+    <li>'s' key on document without modifier (line ~12)</li>
+    <li>'h' key on document without modifier (line ~19)</li>
+    <li>keyCode 65 ('A') without modifier (line ~47)</li>
+    <li>'d' and 'e' keys without modifier (lines ~54-58)</li>
+    <li>'/' key without modifier (line ~69)</li>
+    <li>'1' key without modifier (line ~76)</li>
+  </ul>
+
+  <h2>Expected Good Patterns:</h2>
+  <ul>
+    <li>Ctrl+S (has modifier)</li>
+    <li>Meta+K (has modifier)</li>
+    <li>Alt+N (has modifier)</li>
+    <li>'p' with shortcutsEnabled check (has disable mechanism)</li>
+    <li>Enter on search input (element-specific, only active on focus)</li>
+  </ul>
+</body>
+</html>
