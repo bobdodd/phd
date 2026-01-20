@@ -18,8 +18,6 @@ export class AccessibilityTreeBuilder {
     const bodyElement = document.body;
     if (!bodyElement) return tree;
 
-    console.log('[AccessibilityTreeBuilder] Building tree from body with', bodyElement.children.length, 'direct children');
-
     // Process body's children directly into tree
     // We need a special container node to collect children that would otherwise be orphaned
     const rootContainer: AccessibilityNode = {
@@ -37,25 +35,15 @@ export class AccessibilityTreeBuilder {
     };
 
     for (const child of Array.from(bodyElement.children)) {
-      console.log('[AccessibilityTreeBuilder] Processing body child:', child.tagName, child.className);
-      const childNode = this.buildNode(child, rootContainer);
-      if (childNode) {
-        console.log('[AccessibilityTreeBuilder] Added node to tree:', childNode.role, childNode.name, 'with', childNode.children.length, 'children');
-        // Don't push here - buildNode/processChildren will add to rootContainer.children
-      } else {
-        console.log('[AccessibilityTreeBuilder] Child returned null');
-      }
+      this.buildNode(child, rootContainer);
+      // buildNode will add nodes to rootContainer.children
     }
 
     // Now tree contains all nodes that were added to rootContainer
     const finalTree = rootContainer.children;
 
-    console.log('[AccessibilityTreeBuilder] Tree before flattening has', finalTree.length, 'root nodes');
-
     // Flatten tree for navigation (add treeIndex)
     this.flattenTree(finalTree);
-
-    console.log('[AccessibilityTreeBuilder] Final tree has', finalTree.length, 'nodes total');
 
     return finalTree;
   }
@@ -68,17 +56,14 @@ export class AccessibilityTreeBuilder {
 
     // Check if element is hidden from accessibility tree
     if (this.isHidden(htmlElement)) {
-      console.log('[buildNode] Element hidden:', htmlElement.tagName, htmlElement.className);
       return null;
     }
 
     // Compute role
     const role = this.computeRole(htmlElement);
-    console.log('[buildNode]', htmlElement.tagName, htmlElement.className, '-> role:', role);
 
     // Some elements have no role and should not be in the tree
     if (!role || role === 'none' || role === 'presentation') {
-      console.log('[buildNode] No role/presentation, processing children');
       // But we should still process their children
       return this.processChildren(htmlElement, parent);
     }
@@ -87,10 +72,8 @@ export class AccessibilityTreeBuilder {
     // If it's just a container with no direct text, skip it
     if (role === 'generic') {
       const hasDirectText = this.hasDirectTextContent(htmlElement);
-      console.log('[buildNode] Generic element, hasDirectText:', hasDirectText);
       if (!hasDirectText) {
         // No direct text, just process children
-        console.log('[buildNode] No direct text, processing children');
         return this.processChildren(htmlElement, parent);
       }
     }
@@ -115,13 +98,12 @@ export class AccessibilityTreeBuilder {
 
     // Add this node to parent's children array
     if (parent) {
-      console.log('[buildNode] Adding node to parent:', node.role, '->', parent.role);
       parent.children.push(node);
     }
 
     // Process children
     for (const child of Array.from(htmlElement.children)) {
-      const childNode = this.buildNode(child, node);
+      this.buildNode(child, node);
       // Children will add themselves to node.children via the parent logic above
     }
 
@@ -150,27 +132,16 @@ export class AccessibilityTreeBuilder {
   private processChildren(element: HTMLElement, parent: AccessibilityNode | null): AccessibilityNode | null {
     // Process all children and add them to parent
     // This is used when the current element shouldn't be in the tree but its children should
-    console.log('[processChildren]', element.tagName, element.className, '- has', element.children.length, 'children, parent:', parent?.role || 'null');
     let firstChild: AccessibilityNode | null = null;
 
     for (const child of Array.from(element.children)) {
       const childNode = this.buildNode(child, parent);
-      if (childNode) {
-        // If there's a parent, add child to parent's children array
-        if (parent) {
-          console.log('[processChildren] Adding child to parent:', childNode.role, '->', parent.role);
-          parent.children.push(childNode);
-        } else {
-          console.log('[processChildren] WARNING: Child has no parent to attach to:', childNode.role, childNode.name);
-        }
+      if (childNode && !firstChild) {
         // Keep track of first child to return
-        if (!firstChild) {
-          firstChild = childNode;
-        }
+        firstChild = childNode;
       }
     }
 
-    console.log('[processChildren] Returning firstChild:', firstChild?.role || 'null');
     // Return the first child (or null if no children)
     // This maintains compatibility with how buildNode uses processChildren
     return firstChild;
