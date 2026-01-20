@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Landmark Structure Test Cases</title>
+</head>
+<body>
+  <h1>Landmark Structure Test Cases</h1>
+
+  <!-- ISSUE: Missing main landmark (detected at page level) -->
+  <!-- This page should have a <main> element -->
+
+  <!-- GOOD: Navigation landmark -->
+  <nav>
+    <ul>
+      <li><a href="#home">Home</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
+  </nav>
+
+  <!-- GOOD: Header with banner role (not nested) -->
+  <header>
+    <h1>Site Title</h1>
+  </header>
+
+  <!-- ISSUE: Multiple navigation landmarks without labels -->
+  <nav>
+    <a href="#link1">Link 1</a>
+  </nav>
+
+  <nav>
+    <a href="#link2">Link 2</a>
+  </nav>
+
+  <!-- GOOD: Multiple navigation landmarks WITH unique labels -->
+  <nav aria-label="Primary navigation">
+    <a href="#primary">Primary</a>
+  </nav>
+
+  <nav aria-label="Secondary navigation">
+    <a href="#secondary">Secondary</a>
+  </nav>
+
+  <!-- ISSUE: Redundant role on semantic element -->
+  <main role="main">
+    <h2>Main Content</h2>
+    <p>This is the primary content area.</p>
+  </main>
+
+  <!-- ISSUE: Multiple main landmarks without labels -->
+  <div role="main">
+    <p>Another main area without label</p>
+  </div>
+
+  <!-- GOOD: Multiple main landmarks WITH labels -->
+  <main aria-label="Article content">
+    <article>Article 1</article>
+  </main>
+
+  <main aria-label="Sidebar content">
+    <aside>Sidebar</aside>
+  </main>
+
+  <!-- GOOD: Complementary landmark -->
+  <aside>
+    <h2>Related Links</h2>
+  </aside>
+
+  <!-- ISSUE: Section without accessible name (not a landmark) -->
+  <section>
+    <h2>Section Heading</h2>
+    <p>This section won't be exposed as a landmark.</p>
+  </section>
+
+  <!-- GOOD: Section with accessible name (becomes region landmark) -->
+  <section aria-label="Important section">
+    <h2>Section Heading</h2>
+    <p>This section will be exposed as a region landmark.</p>
+  </section>
+
+  <!-- GOOD: Form with accessible name (becomes form landmark) -->
+  <form aria-label="Contact form">
+    <input type="text" name="name">
+    <button type="submit">Submit</button>
+  </form>
+
+  <!-- ISSUE: Form without accessible name (not a landmark) -->
+  <form>
+    <input type="text" name="email">
+    <button type="submit">Send</button>
+  </form>
+
+  <!-- GOOD: Search landmark -->
+  <div role="search">
+    <input type="search" placeholder="Search...">
+  </div>
+
+  <!-- GOOD: Footer with contentinfo role (not nested) -->
+  <footer>
+    <p>&copy; 2024 Company Name</p>
+  </footer>
+
+  <!-- GOOD: Header nested in article (no banner role) -->
+  <article>
+    <header>
+      <h2>Article Title</h2>
+    </header>
+    <p>Article content...</p>
+    <!-- GOOD: Footer nested in article (no contentinfo role) -->
+    <footer>
+      <p>Article footer</p>
+    </footer>
+  </article>
+
+  <!-- ISSUE: Main nested inside complementary (warning) -->
+  <aside>
+    <main>
+      <p>Main content nested in aside</p>
+    </main>
+  </aside>
+
+  <!-- ISSUE: Redundant role on nav -->
+  <nav role="navigation">
+    <a href="#redundant">Redundant role</a>
+  </nav>
+
+  <!-- GOOD: Region with aria-labelledby -->
+  <div role="region" aria-labelledby="region-heading">
+    <h2 id="region-heading">Region Title</h2>
+    <p>Region content</p>
+  </div>
+</body>
+</html>

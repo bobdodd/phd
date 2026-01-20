@@ -59,6 +59,7 @@ const AngularReactivityAnalyzer_1 = require("../lib/analyzers/AngularReactivityA
 const HeadingStructureAnalyzer_1 = require("../lib/analyzers/HeadingStructureAnalyzer");
 const FormLabelAnalyzer_1 = require("../lib/analyzers/FormLabelAnalyzer");
 const AltTextAnalyzer_1 = require("../lib/analyzers/AltTextAnalyzer");
+const LandmarkStructureAnalyzer_1 = require("../lib/analyzers/LandmarkStructureAnalyzer");
 class ForegroundAnalyzer {
     constructor(diagnosticCollection, projectManager, codeActionProvider, outputChannel) {
         this.diagnosticCollection = diagnosticCollection;
@@ -82,7 +83,8 @@ class ForegroundAnalyzer {
             new AngularReactivityAnalyzer_1.AngularReactivityAnalyzer(),
             new HeadingStructureAnalyzer_1.HeadingStructureAnalyzer(),
             new FormLabelAnalyzer_1.FormLabelAnalyzer(),
-            new AltTextAnalyzer_1.AltTextAnalyzer()
+            new AltTextAnalyzer_1.AltTextAnalyzer(),
+            new LandmarkStructureAnalyzer_1.LandmarkStructureAnalyzer()
         ];
         this.outputChannel.appendLine(`[ForegroundAnalyzer] Initialized with ${this.analyzers.length} analyzers`);
     }
