@@ -28,6 +28,7 @@ import { SvelteReactivityAnalyzer } from '../lib/analyzers/SvelteReactivityAnaly
 import { VueReactivityAnalyzer } from '../lib/analyzers/VueReactivityAnalyzer';
 import { AngularReactivityAnalyzer } from '../lib/analyzers/AngularReactivityAnalyzer';
 import { HeadingStructureAnalyzer } from '../lib/analyzers/HeadingStructureAnalyzer';
+import { FormLabelAnalyzer } from '../lib/analyzers/FormLabelAnalyzer';
 import { ParadiseCodeActionProvider } from './codeActionProvider';
 
 export class ForegroundAnalyzer {
@@ -63,7 +64,8 @@ export class ForegroundAnalyzer {
       new SvelteReactivityAnalyzer(),
       new VueReactivityAnalyzer(),
       new AngularReactivityAnalyzer(),
-      new HeadingStructureAnalyzer()
+      new HeadingStructureAnalyzer(),
+      new FormLabelAnalyzer()
     ];
 
     this.outputChannel.appendLine(`[ForegroundAnalyzer] Initialized with ${this.analyzers.length} analyzers`);
