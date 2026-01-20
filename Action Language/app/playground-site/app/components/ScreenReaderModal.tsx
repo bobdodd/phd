@@ -188,7 +188,7 @@ export default function ScreenReaderModal({
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, mode]);
 
   // Prevent body scroll when modal is open
   useEffect(() => {
@@ -219,9 +219,10 @@ export default function ScreenReaderModal({
     // Focus the modal container initially
     modalElement.focus();
 
-    // Focus trap implementation
+    // Focus trap implementation (only for modal UI, not screen reader navigation)
     const handleTabKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
+      // Don't trap Tab if we're in focus mode - let the screen reader handle it
+      if (e.key !== 'Tab' || mode === 'focus') return;
 
       const focusableElements = modalElement.querySelectorAll<HTMLElement>(
         'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
@@ -252,7 +253,7 @@ export default function ScreenReaderModal({
       // Restore focus when modal closes
       previouslyFocusedElement?.focus();
     };
-  }, [isOpen]);
+  }, [isOpen, mode]);
 
   if (!isOpen) return null;
 
