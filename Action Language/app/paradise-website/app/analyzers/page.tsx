@@ -20,7 +20,7 @@ export default function AnalyzersPage() {
         <div className="mb-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="bg-white rounded-xl shadow-lg p-6 text-center border-2 border-paradise-blue/20">
-              <div className="text-4xl font-bold text-paradise-blue mb-2">14</div>
+              <div className="text-4xl font-bold text-paradise-blue mb-2">17</div>
               <div className="text-gray-600 font-medium">Total Analyzers</div>
               <div className="text-xs text-gray-500 mt-1">Behavioral + Structural + Framework</div>
             </div>
@@ -637,23 +637,107 @@ btn.addEventListener('click', handler);
                 <strong>WCAG:</strong> 1.3.1, 2.4.1, 2.4.6, 2.4.10, 4.1.2 | <strong>Impact:</strong> Screen readers rely on headings for navigation
               </div>
             </div>
+            {/* Analyzer 15: FormLabelAnalyzer */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border-l-8 border-green-500">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center text-white text-xl font-bold">15</div>
+                <div>
+                  <h3 className="text-2xl font-bold">FormLabelAnalyzer</h3>
+                  <div className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">✓ IMPLEMENTED</div>
+                </div>
+              </div>
+              <p className="text-gray-700 mb-4">
+                Detects form labeling issues to ensure all form inputs have proper accessible labels for screen readers.
+              </p>
+
+              <div className="space-y-3 mb-4">
+                <div className="bg-red-50 rounded p-3">
+                  <h4 className="font-semibold text-red-900 mb-2">Label Detection</h4>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">missing-form-label</div>
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">placeholder-only-label</div>
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">empty-form-label</div>
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">broken-label-for</div>
+                    <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">title-only-label</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2">
+                <strong>WCAG:</strong> 1.3.1, 3.3.2, 4.1.2 | <strong>Impact:</strong> Screen readers need proper labels
+              </div>
+            </div>
+
+            {/* Analyzer 16: AltTextAnalyzer */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border-l-8 border-green-500">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center text-white text-xl font-bold">16</div>
+                <div>
+                  <h3 className="text-2xl font-bold">AltTextAnalyzer</h3>
+                  <div className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">✓ IMPLEMENTED</div>
+                </div>
+              </div>
+              <p className="text-gray-700 mb-4">
+                Validates image alt text quality and detects common mistakes like HTML tags, URLs, or file paths in alt text.
+              </p>
+
+              <div className="space-y-3 mb-4">
+                <div className="bg-red-50 rounded p-3">
+                  <h4 className="font-semibold text-red-900 mb-2">Alt Text Issues</h4>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">missing-alt-attribute</div>
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">alt-only-whitespace</div>
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">alt-contains-html</div>
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">alt-contains-url</div>
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">alt-contains-filepath</div>
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">alt-ends-with-extension</div>
+                    <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">alt-too-long</div>
+                    <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">alt-generic</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2">
+                <strong>WCAG:</strong> 1.1.1 | <strong>Impact:</strong> Images must have text alternatives
+              </div>
+            </div>
+
+            {/* Analyzer 17: LandmarkStructureAnalyzer */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border-l-8 border-green-500">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center text-white text-xl font-bold">17</div>
+                <div>
+                  <h3 className="text-2xl font-bold">LandmarkStructureAnalyzer</h3>
+                  <div className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">✓ IMPLEMENTED</div>
+                </div>
+              </div>
+              <p className="text-gray-700 mb-4">
+                Validates landmark regions and page structure for proper navigation. Detects missing main landmark, duplicate landmarks without labels.
+              </p>
+
+              <div className="space-y-3 mb-4">
+                <div className="bg-red-50 rounded p-3">
+                  <h4 className="font-semibold text-red-900 mb-2">Landmark Issues</h4>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">missing-main-landmark</div>
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">multiple-main-without-labels</div>
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">redundant-landmark-role</div>
+                    <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">unlabeled-landmark</div>
+                    <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">section-without-label</div>
+                    <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">main-nested-in-landmark</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2">
+                <strong>WCAG:</strong> 1.3.1, 2.4.1, 4.1.2 | <strong>Impact:</strong> Landmarks enable page navigation
+              </div>
+            </div>
           </div>
 
           <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 mt-8">
             <h3 className="text-xl font-bold text-blue-900 mb-3">Coming Soon in Phase 4</h3>
             <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-700">
-              <div>
-                <strong className="text-blue-900">FormAccessibilityAnalyzer</strong>
-                <p className="text-xs mt-1">27 tests: Labels, ARIA references, required indicators, autocomplete</p>
-              </div>
-              <div>
-                <strong className="text-blue-900">ImageAccessibilityAnalyzer</strong>
-                <p className="text-xs mt-1">12 tests: Alt text quality, SVG accessibility, decorative images</p>
-              </div>
-              <div>
-                <strong className="text-blue-900">LandmarkAnalyzer</strong>
-                <p className="text-xs mt-1">8 tests: Main landmark, banner/contentinfo, duplicate names</p>
-              </div>
               <div>
                 <strong className="text-blue-900">AccessibleNameAnalyzer</strong>
                 <p className="text-xs mt-1">Computes accessible names, detects generic/missing names</p>
