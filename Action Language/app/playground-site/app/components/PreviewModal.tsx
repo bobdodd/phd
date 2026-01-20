@@ -350,22 +350,25 @@ export default function PreviewModal({
               <span className="text-sm text-purple-100 font-medium">Screen Reader</span>
               <button
                 onClick={handleScreenReaderToggle}
-                className={`relative inline-flex h-7 w-12 flex-shrink-0 items-center rounded-full border-2 transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-purple-800 ${
-                  screenReaderEnabled
-                    ? 'bg-green-600 border-green-600'
-                    : 'bg-gray-400 border-gray-400'
-                }`}
+                type="button"
+                className="relative focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-purple-800 rounded-full"
                 title={screenReaderEnabled ? 'Disable screen reader' : 'Enable screen reader'}
-                aria-label={screenReaderEnabled ? 'Disable screen reader' : 'Enable screen reader'}
-                aria-pressed={screenReaderEnabled}
+                aria-label="Screen Reader"
                 role="switch"
                 aria-checked={screenReaderEnabled}
               >
                 <span
-                  className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-lg transition-transform duration-200 ease-in-out ${
-                    screenReaderEnabled ? 'translate-x-6' : 'translate-x-0.5'
+                  className={`flex items-center w-11 h-6 rounded-full transition-colors duration-200 ${
+                    screenReaderEnabled ? 'bg-green-500' : 'bg-gray-400'
                   }`}
-                />
+                >
+                  <span
+                    className={`block w-5 h-5 bg-white rounded-full shadow-lg transform transition-transform duration-200 ${
+                      screenReaderEnabled ? 'translate-x-6' : 'translate-x-0.5'
+                    }`}
+                    aria-hidden="true"
+                  />
+                </span>
               </button>
             </div>
 
