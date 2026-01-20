@@ -30,6 +30,7 @@ import { ActionLanguageModelImpl } from '../../../src/models/ActionLanguageModel
 import { HTMLParser } from '../../../src/parsers/HTMLParser';
 import { DocumentModel } from '../../../src/models/DocumentModel';
 import ScreenReaderModal from './components/ScreenReaderModal';
+import { FileManager, PlaygroundFiles } from '../lib/utils/FileManager';
 
 // Dynamically import Monaco to avoid SSR issues
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
@@ -150,6 +151,13 @@ export default function Home() {
   const [showFixModal, setShowFixModal] = useState(false);
   const [selectedFix, setSelectedFix] = useState<IssueFix | null>(null);
   const [showSRModal, setShowSRModal] = useState(false);
+
+  // Save/Load state
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [showLoadModal, setShowLoadModal] = useState(false);
+  const [projectTitle, setProjectTitle] = useState('');
+  const [projectDescription, setProjectDescription] = useState('');
+  const [savedProjects, setSavedProjects] = useState<{ key: string; metadata?: PlaygroundFiles['metadata'] }[]>([]);
 
   const editorRef = useRef<any>(null);
   const monacoRef = useRef<any>(null);
@@ -659,6 +667,84 @@ export default function Home() {
     setSelectedIssueIndex(null);
   };
 
+  // Load saved projects list when component mounts
+  useEffect(() => {
+    setSavedProjects(FileManager.getSavedProjects());
+  }, []);
+
+  // Save project to localStorage
+  const saveProject = () => {
+    if (!projectTitle.trim()) {
+      alert('Please enter a project title');
+      return;
+    }
+
+    const key = FileManager.generateProjectKey(projectTitle);
+    const playgroundFiles: PlaygroundFiles = {
+      html: files.html.map(f => f.content).join('\n'),
+      css: files.css.map(f => f.content).join('\n'),
+      js: files.javascript.map(f => f.content).join('\n'),
+      metadata: {
+        title: projectTitle,
+        description: projectDescription,
+        created: Date.now()
+      }
+    };
+
+    try {
+      FileManager.saveToLocalStorage(key, playgroundFiles);
+      alert('Project saved successfully!');
+      setShowSaveModal(false);
+      setProjectTitle('');
+      setProjectDescription('');
+      setSavedProjects(FileManager.getSavedProjects());
+    } catch (error) {
+      alert(`Failed to save project: ${error}`);
+    }
+  };
+
+  // Load project from localStorage
+  const loadProject = (key: string) => {
+    const playgroundFiles = FileManager.loadFromLocalStorage(key);
+    if (!playgroundFiles) {
+      alert('Failed to load project');
+      return;
+    }
+
+    setFiles({
+      html: [{ name: 'index.html', content: playgroundFiles.html }],
+      javascript: [{ name: 'main.js', content: playgroundFiles.js }],
+      css: [{ name: 'styles.css', content: playgroundFiles.css }]
+    });
+
+    setActiveTab('html');
+    setActiveFileIndex({ html: 0, javascript: 0, css: 0 });
+    setShowLoadModal(false);
+  };
+
+  // Delete project from localStorage
+  const deleteProject = (key: string) => {
+    if (confirm('Are you sure you want to delete this project?')) {
+      FileManager.deleteFromLocalStorage(key);
+      setSavedProjects(FileManager.getSavedProjects());
+    }
+  };
+
+  // Export project as downloadable files
+  const exportProject = () => {
+    const playgroundFiles: PlaygroundFiles = {
+      html: files.html.map(f => f.content).join('\n'),
+      css: files.css.map(f => f.content).join('\n'),
+      js: files.javascript.map(f => f.content).join('\n'),
+      metadata: {
+        title: projectTitle || 'playground-export',
+        description: projectDescription
+      }
+    };
+
+    FileManager.downloadProject(playgroundFiles);
+  };
+
   const showHelp = async (issueType: string) => {
     try {
       const response = await fetch(`/docs/issues/${issueType}.md`);
@@ -852,13 +938,19 @@ export default function Home() {
           setShowSamplesModal(false);
         } else if (showHelpModal) {
           setShowHelpModal(false);
+        } else if (showFixModal) {
+          setShowFixModal(false);
+        } else if (showSaveModal) {
+          setShowSaveModal(false);
+        } else if (showLoadModal) {
+          setShowLoadModal(false);
         }
       }
     };
 
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
-  }, [showSamplesModal, showHelpModal]);
+  }, [showSamplesModal, showHelpModal, showFixModal, showSaveModal, showLoadModal]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -896,6 +988,27 @@ export default function Home() {
                 className="bg-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-700 flex items-center gap-2"
               >
                 <span>▶</span> Preview with Screen Reader
+              </button>
+              <button
+                onClick={() => setShowSaveModal(true)}
+                className="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-700 flex items-center gap-2"
+              >
+                <span>💾</span> Save Project
+              </button>
+              <button
+                onClick={() => {
+                  setSavedProjects(FileManager.getSavedProjects());
+                  setShowLoadModal(true);
+                }}
+                className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-500 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-700 flex items-center gap-2"
+              >
+                <span>📂</span> Load Project
+              </button>
+              <button
+                onClick={exportProject}
+                className="bg-orange-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-700 flex items-center gap-2"
+              >
+                <span>📥</span> Export Files
               </button>
               <button
                 onClick={() => setShowSamplesModal(true)}
@@ -1626,6 +1739,201 @@ export default function Home() {
         cssContent={files.css.map(f => f.content).join('\n')}
         jsContent={files.javascript.map(f => f.content).join('\n')}
       />
+
+      {/* Save Project Modal */}
+      {showSaveModal && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          onClick={() => setShowSaveModal(false)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              setShowSaveModal(false);
+            }
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="save-modal-title"
+        >
+          <div
+            className="bg-white rounded-xl shadow-2xl max-w-2xl w-full overflow-hidden flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-green-700 to-green-900 text-white px-8 py-6 flex items-center justify-between">
+              <div>
+                <h2 id="save-modal-title" className="text-3xl font-bold mb-2">Save Project</h2>
+                <p className="text-green-100">Save your work to browser storage</p>
+              </div>
+              <button
+                onClick={() => setShowSaveModal(false)}
+                className="text-white/80 hover:text-white text-4xl leading-none px-3 focus:outline-none focus:ring-2 focus:ring-white rounded"
+                aria-label="Close save modal"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-8">
+              <div className="mb-6">
+                <label htmlFor="project-title" className="block text-sm font-semibold text-gray-900 mb-2">
+                  Project Title *
+                </label>
+                <input
+                  id="project-title"
+                  type="text"
+                  value={projectTitle}
+                  onChange={(e) => setProjectTitle(e.target.value)}
+                  placeholder="e.g., Accessible Modal Widget"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  required
+                />
+              </div>
+
+              <div className="mb-6">
+                <label htmlFor="project-description" className="block text-sm font-semibold text-gray-900 mb-2">
+                  Description (optional)
+                </label>
+                <textarea
+                  id="project-description"
+                  value={projectDescription}
+                  onChange={(e) => setProjectDescription(e.target.value)}
+                  placeholder="Describe your project..."
+                  rows={4}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                />
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-blue-800">
+                  <strong>Note:</strong> Your project will be saved to browser localStorage.
+                  It will only be available on this device and browser.
+                </p>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="bg-gray-50 px-8 py-4 border-t border-gray-200 flex items-center justify-end gap-3">
+              <button
+                onClick={() => setShowSaveModal(false)}
+                className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveProject}
+                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold"
+              >
+                💾 Save Project
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Load Project Modal */}
+      {showLoadModal && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          onClick={() => setShowLoadModal(false)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              setShowLoadModal(false);
+            }
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="load-modal-title"
+        >
+          <div
+            className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-blue-700 to-blue-900 text-white px-8 py-6 flex items-center justify-between">
+              <div>
+                <h2 id="load-modal-title" className="text-3xl font-bold mb-2">Load Project</h2>
+                <p className="text-blue-100">Choose a saved project to load</p>
+              </div>
+              <button
+                onClick={() => setShowLoadModal(false)}
+                className="text-white/80 hover:text-white text-4xl leading-none px-3 focus:outline-none focus:ring-2 focus:ring-white rounded"
+                aria-label="Close load modal"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="flex-1 p-8 overflow-y-auto">
+              {savedProjects.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="text-6xl mb-4" aria-hidden="true">📂</div>
+                  <p className="text-xl text-gray-600 mb-2">No saved projects</p>
+                  <p className="text-sm text-gray-500">Save your current work to see it here</p>
+                </div>
+              ) : (
+                <div className="grid gap-4">
+                  {savedProjects.map((project) => (
+                    <div
+                      key={project.key}
+                      className="border-2 border-gray-200 rounded-lg p-5 hover:border-blue-500 hover:shadow-lg transition-all group"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                            {project.metadata?.title || 'Untitled Project'}
+                          </h3>
+                          {project.metadata?.description && (
+                            <p className="text-sm text-gray-600 mb-3">{project.metadata.description}</p>
+                          )}
+                          <div className="flex items-center gap-4 text-xs text-gray-500">
+                            {project.metadata?.created && (
+                              <span>Created: {new Date(project.metadata.created).toLocaleString()}</span>
+                            )}
+                            {project.metadata?.modified && (
+                              <span>Modified: {new Date(project.metadata.modified).toLocaleString()}</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex gap-2 ml-4">
+                          <button
+                            onClick={() => loadProject(project.key)}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold"
+                          >
+                            📂 Load
+                          </button>
+                          <button
+                            onClick={() => deleteProject(project.key)}
+                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 text-sm font-semibold"
+                          >
+                            🗑 Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="bg-gray-50 px-8 py-4 border-t border-gray-200 flex items-center justify-between">
+              <p className="text-sm text-gray-600">
+                {savedProjects.length} saved project{savedProjects.length !== 1 ? 's' : ''}
+              </p>
+              <button
+                onClick={() => setShowLoadModal(false)}
+                className="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
