@@ -1,6 +1,7 @@
 import { AccessibilityNode, SRMessage, NavigationMode } from './types';
 import { AccessibilityTreeBuilder } from './AccessibilityTreeBuilder';
 import { LiveRegionSimulator } from './LiveRegionSimulator';
+import { SpeechEngine } from './SpeechEngine';
 
 /**
  * Virtual Screen Reader Engine
@@ -13,6 +14,7 @@ export class VirtualScreenReader {
   private mode: NavigationMode = 'browse';
   private messageIdCounter = 0;
   private liveRegionSimulator: LiveRegionSimulator;
+  private speechEngine: SpeechEngine;
 
   private onAnnouncement?: (message: SRMessage) => void;
   private onPositionChange?: (node: AccessibilityNode | null, element: HTMLElement | null) => void;
@@ -23,6 +25,9 @@ export class VirtualScreenReader {
   ) {
     this.onAnnouncement = onAnnouncement;
     this.onPositionChange = onPositionChange;
+
+    // Initialize speech engine
+    this.speechEngine = new SpeechEngine();
 
     // Initialize live region simulator with announcement callback
     this.liveRegionSimulator = new LiveRegionSimulator((messageData) => {
@@ -1497,6 +1502,13 @@ export class VirtualScreenReader {
       ...messageData,
     };
 
+    // Speak the announcement
+    if (message.content) {
+      // Live regions with assertive politeness interrupt current speech
+      const interrupt = message.politeness === 'assertive' || message.type === 'navigation';
+      this.speechEngine.speak(message.content, interrupt);
+    }
+
     if (this.onAnnouncement) {
       this.onAnnouncement(message);
     }
@@ -1567,5 +1579,28 @@ export class VirtualScreenReader {
       }
     }
     return result;
+  }
+
+  /**
+   * Get speech engine for external control
+   */
+  getSpeechEngine(): SpeechEngine {
+    return this.speechEngine;
+  }
+
+  /**
+   * Toggle speech on/off
+   */
+  toggleSpeech(): boolean {
+    const currentState = this.speechEngine.getSettings().enabled;
+    this.speechEngine.setEnabled(!currentState);
+    return !currentState;
+  }
+
+  /**
+   * Check if speech is enabled
+   */
+  isSpeechEnabled(): boolean {
+    return this.speechEngine.getSettings().enabled;
   }
 }

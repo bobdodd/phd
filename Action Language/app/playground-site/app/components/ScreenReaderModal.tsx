@@ -24,6 +24,8 @@ export default function ScreenReaderModal({
   const [currentNode, setCurrentNode] = useState<AccessibilityNode | null>(null);
   const [mode, setMode] = useState<NavigationMode>('browse');
   const [highlightedElement, setHighlightedElement] = useState<HTMLElement | null>(null);
+  const [speechEnabled, setSpeechEnabled] = useState(true);
+  const [speechRate, setSpeechRate] = useState(1.5);
 
   const modalRef = useRef<HTMLDivElement>(null);
   const iframeDocRef = useRef<Document | null>(null);
@@ -190,6 +192,22 @@ export default function ScreenReaderModal({
     };
   }, [isOpen, onClose, mode]);
 
+  // Speech control handlers
+  const toggleSpeech = () => {
+    if (screenReaderRef.current) {
+      const newState = screenReaderRef.current.toggleSpeech();
+      setSpeechEnabled(newState);
+    }
+  };
+
+  const changeSpeechRate = (rate: number) => {
+    if (screenReaderRef.current) {
+      const speechEngine = screenReaderRef.current.getSpeechEngine();
+      speechEngine.updateSettings({ rate });
+      setSpeechRate(rate);
+    }
+  };
+
   // Prevent body scroll when modal is open
   useEffect(() => {
     if (!isOpen) return;
@@ -332,8 +350,44 @@ export default function ScreenReaderModal({
           <div className="w-[40%] flex flex-col">
             {/* Current Position Display */}
             <div className="bg-purple-50 border-b border-purple-200 px-6 py-4">
-              <div className="text-sm font-semibold text-purple-900 mb-1">
-                Virtual Cursor Position
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-sm font-semibold text-purple-900">
+                  Virtual Cursor Position
+                </div>
+                {/* Speech Controls */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={toggleSpeech}
+                    className={`p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                      speechEnabled
+                        ? 'bg-purple-600 text-white hover:bg-purple-700'
+                        : 'bg-gray-300 text-gray-600 hover:bg-gray-400'
+                    }`}
+                    title={speechEnabled ? 'Mute speech' : 'Enable speech'}
+                    aria-label={speechEnabled ? 'Mute speech' : 'Enable speech'}
+                  >
+                    {speechEnabled ? '🔊' : '🔇'}
+                  </button>
+                  {speechEnabled && (
+                    <select
+                      value={speechRate}
+                      onChange={(e) => changeSpeechRate(Number(e.target.value))}
+                      className="text-xs px-2 py-1 rounded border border-purple-300 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      title="Speech rate"
+                      aria-label="Speech rate"
+                    >
+                      <option value={0.5}>0.5x</option>
+                      <option value={0.75}>0.75x</option>
+                      <option value={1.0}>1x</option>
+                      <option value={1.25}>1.25x</option>
+                      <option value={1.5}>1.5x</option>
+                      <option value={1.75}>1.75x</option>
+                      <option value={2.0}>2x</option>
+                      <option value={2.5}>2.5x</option>
+                      <option value={3.0}>3x</option>
+                    </select>
+                  )}
+                </div>
               </div>
               <div className="text-lg font-bold text-purple-700">
                 {currentNode ? currentNode.name || currentNode.role : 'Not positioned'}
