@@ -47,6 +47,14 @@ export interface ARIAProperties {
   labelledby?: string; // ID(s) of elements that label this element
   describedby?: string; // ID(s) of elements that describe this element
   errormessage?: string; // ID of element containing error message
+  // Semantic HTML attributes
+  expansion?: string; // For abbr/acronym elements
+  cite?: string; // For blockquote elements
+  datetime?: string; // For time elements
+  // Meter element properties
+  low?: number; // Low threshold for meter
+  high?: number; // High threshold for meter
+  optimum?: number; // Optimum value for meter
 }
 
 /**

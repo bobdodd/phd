@@ -229,6 +229,49 @@ export class AccessibilityTreeBuilder {
         return element.getAttribute('alt') === '' ? 'presentation' : 'img';
       case 'dialog':
         return 'dialog';
+      case 'abbr':
+      case 'acronym':
+        return 'abbr';
+      case 'blockquote':
+        return 'blockquote';
+      case 'code':
+        return 'code';
+      case 'pre':
+        return 'preformatted';
+      case 'time':
+        return 'time';
+      case 'dl':
+        return 'list'; // Definition list is a type of list
+      case 'dt':
+        return 'term';
+      case 'dd':
+        return 'definition';
+      case 'details':
+        return 'group'; // Details acts as a disclosure widget
+      case 'summary':
+        return 'button'; // Summary acts as a button to toggle details
+      case 'mark':
+        return 'mark';
+      case 'meter':
+        return 'meter';
+      case 'output':
+        return 'status'; // Output elements announce their updates like status
+      case 'kbd':
+        return 'kbd';
+      case 'samp':
+        return 'samp';
+      case 'var':
+        return 'var';
+      case 'ins':
+        return 'insertion';
+      case 'del':
+        return 'deletion';
+      case 'q':
+        return 'quote';
+      case 'cite':
+        return 'cite';
+      case 'dfn':
+        return 'definition'; // Defining term
       default:
         return 'generic';
     }
@@ -425,6 +468,9 @@ export class AccessibilityTreeBuilder {
     const ariaExpanded = element.getAttribute('aria-expanded');
     if (ariaExpanded) {
       states.expanded = ariaExpanded === 'true';
+    } else if (element.tagName.toLowerCase() === 'details') {
+      // details elements have native open/closed state
+      states.expanded = (element as HTMLDetailsElement).open;
     }
 
     // selected
@@ -603,6 +649,77 @@ export class AccessibilityTreeBuilder {
       const autocomplete = element.getAttribute('autocomplete');
       if (autocomplete && autocomplete !== 'off') {
         properties.autocomplete = autocomplete;
+      }
+    }
+
+    // expansion (for abbreviations and acronyms)
+    if (role === 'abbr') {
+      const title = element.getAttribute('title');
+      if (title) {
+        properties.expansion = title;
+      }
+    }
+
+    // cite (for blockquotes)
+    if (role === 'blockquote') {
+      const cite = element.getAttribute('cite');
+      if (cite) {
+        properties.cite = cite;
+      }
+    }
+
+    // datetime (for time elements)
+    if (role === 'time') {
+      const datetime = element.getAttribute('datetime');
+      if (datetime) {
+        properties.datetime = datetime;
+      }
+    }
+
+    // meter properties
+    if (role === 'meter' && element.tagName.toLowerCase() === 'meter') {
+      const meter = element as HTMLMeterElement;
+      properties.valuemin = meter.min;
+      properties.valuemax = meter.max;
+      properties.valuenow = meter.value;
+
+      // low and high thresholds
+      if (meter.low !== undefined) {
+        properties.low = meter.low;
+      }
+      if (meter.high !== undefined) {
+        properties.high = meter.high;
+      }
+      if (meter.optimum !== undefined) {
+        properties.optimum = meter.optimum;
+      }
+    }
+
+    // output element for attribute (links to form inputs)
+    if (role === 'status' && element.tagName.toLowerCase() === 'output') {
+      const forAttr = element.getAttribute('for');
+      if (forAttr) {
+        properties.controls = forAttr; // Reuse controls for the 'for' relationship
+      }
+    }
+
+    // ins and del elements (edits)
+    if (role === 'insertion' || role === 'deletion') {
+      const datetime = element.getAttribute('datetime');
+      if (datetime) {
+        properties.datetime = datetime;
+      }
+      const cite = element.getAttribute('cite');
+      if (cite) {
+        properties.cite = cite;
+      }
+    }
+
+    // q element (inline quote)
+    if (role === 'quote') {
+      const cite = element.getAttribute('cite');
+      if (cite) {
+        properties.cite = cite;
       }
     }
 

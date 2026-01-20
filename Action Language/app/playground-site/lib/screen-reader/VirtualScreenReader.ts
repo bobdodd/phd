@@ -1045,6 +1045,141 @@ export class VirtualScreenReader {
         if (node.name) parts.push(node.name);
         break;
 
+      case 'abbr':
+        parts.push('Abbreviation');
+        if (node.name) parts.push(node.name);
+        if (node.properties.expansion) {
+          parts.push(`Expansion: ${node.properties.expansion}`);
+        }
+        break;
+
+      case 'blockquote':
+        parts.push('Blockquote');
+        if (node.name) parts.push(node.name);
+        if (node.properties.cite) {
+          parts.push(`Citation: ${node.properties.cite}`);
+        }
+        break;
+
+      case 'code':
+        parts.push('Code');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'preformatted':
+        parts.push('Preformatted text');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'time':
+        parts.push('Time');
+        if (node.name) parts.push(node.name);
+        if (node.properties.datetime) {
+          parts.push(`Date time: ${node.properties.datetime}`);
+        }
+        break;
+
+      case 'math':
+        parts.push('Math');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'directory':
+        parts.push('Directory');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'mark':
+        parts.push('Highlighted');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'meter':
+        parts.push('Meter');
+        if (node.name) parts.push(node.name);
+        if (node.properties.valuenow !== undefined && node.properties.valuemax !== undefined && node.properties.valuemin !== undefined) {
+          // Calculate percentage
+          const range = node.properties.valuemax - node.properties.valuemin;
+          const percent = Math.round(((node.properties.valuenow - node.properties.valuemin) / range) * 100);
+          parts.push(`${percent}%`);
+
+          // Determine state relative to thresholds
+          if (node.properties.optimum !== undefined) {
+            if (node.properties.low !== undefined && node.properties.valuenow < node.properties.low) {
+              parts.push('low');
+            } else if (node.properties.high !== undefined && node.properties.valuenow > node.properties.high) {
+              parts.push('high');
+            } else {
+              parts.push('optimal');
+            }
+          }
+        }
+        break;
+
+      case 'group':
+        // For details elements, announce as disclosure
+        if (node.tagName === 'details') {
+          parts.push('Details');
+          if (node.name) parts.push(node.name);
+          if (node.states.expanded !== undefined) {
+            parts.push(node.states.expanded ? 'expanded' : 'collapsed');
+          }
+        } else {
+          parts.push('Group');
+          if (node.name) parts.push(node.name);
+        }
+        break;
+
+      case 'kbd':
+        parts.push('Keyboard input');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'samp':
+        parts.push('Sample output');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'var':
+        parts.push('Variable');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'insertion':
+        parts.push('Inserted');
+        if (node.name) parts.push(node.name);
+        if (node.properties.datetime) {
+          parts.push(`on ${node.properties.datetime}`);
+        }
+        if (node.properties.cite) {
+          parts.push(`Citation: ${node.properties.cite}`);
+        }
+        break;
+
+      case 'deletion':
+        parts.push('Deleted');
+        if (node.name) parts.push(node.name);
+        if (node.properties.datetime) {
+          parts.push(`on ${node.properties.datetime}`);
+        }
+        if (node.properties.cite) {
+          parts.push(`Citation: ${node.properties.cite}`);
+        }
+        break;
+
+      case 'quote':
+        parts.push('Inline quote');
+        if (node.name) parts.push(node.name);
+        if (node.properties.cite) {
+          parts.push(`Citation: ${node.properties.cite}`);
+        }
+        break;
+
+      case 'cite':
+        parts.push('Citation');
+        if (node.name) parts.push(node.name);
+        break;
+
       default:
         if (node.name) {
           parts.push(node.name);
