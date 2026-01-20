@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Language Attribute Test Cases</title>
+</head>
+<body>
+    <h1>Language Attribute Test Cases</h1>
+    <p>This file tests the LanguageAttributeAnalyzer for WCAG 3.1.1 and 3.1.2 compliance.</p>
+
+    <!-- Test 1: Missing lang attribute on <html> element -->
+    <!-- ❌ ISSUE: missing-html-lang (error) - The html element above is missing a lang attribute -->
+
+    <section>
+        <h2>Test 2: Empty lang attribute</h2>
+        <!-- ❌ ISSUE: If html has lang="" - empty-html-lang (error) -->
+        <p lang="">This paragraph has an empty lang attribute (should be error)</p>
+    </section>
+
+    <section>
+        <h2>Test 3: Invalid language code on html</h2>
+        <!-- ❌ ISSUE: If html has lang="english" - invalid-html-lang (warning) -->
+        <!-- Valid codes: en, en-US, es, fr, de, etc. (BCP 47) -->
+    </section>
+
+    <section>
+        <h2>Test 4: Valid lang attribute (WCAG 3.1.1 compliant)</h2>
+        <!-- ✅ PASS: If html has lang="en" or lang="en-US" -->
+        <p>This is English content with valid language attribute on html element.</p>
+    </section>
+
+    <section>
+        <h2>Test 5: Language changes within page (WCAG 3.1.2)</h2>
+
+        <!-- ✅ PASS: Valid lang on element -->
+        <p lang="es">Este es contenido en español con atributo lang válido.</p>
+
+        <!-- ✅ PASS: Valid lang with region -->
+        <p lang="fr-CA">Ceci est du contenu en français canadien.</p>
+
+        <!-- ✅ PASS: Valid lang code -->
+        <blockquote lang="de">Dies ist ein deutsches Zitat.</blockquote>
+    </section>
+
+    <section>
+        <h2>Test 6: Invalid lang attributes on elements</h2>
+
+        <!-- ❌ ISSUE: empty-lang-attribute (error) -->
+        <p lang="">This paragraph has empty lang attribute</p>
+
+        <!-- ❌ ISSUE: invalid-lang-attribute (warning) -->
+        <p lang="spanish">This uses "spanish" instead of "es" (invalid)</p>
+
+        <!-- ❌ ISSUE: invalid-lang-attribute (warning) -->
+        <p lang="eng">This uses "eng" instead of "en" (invalid 3-letter code)</p>
+
+        <!-- ❌ ISSUE: invalid-lang-attribute (warning) -->
+        <blockquote lang="French">This uses "French" instead of "fr" (invalid capitalization)</blockquote>
+    </section>
+
+    <section>
+        <h2>Test 7: Valid BCP 47 language codes</h2>
+
+        <!-- ✅ PASS: All valid BCP 47 codes -->
+        <p lang="zh-CN">简体中文 (Simplified Chinese)</p>
+        <p lang="zh-TW">繁體中文 (Traditional Chinese)</p>
+        <p lang="pt-BR">Português brasileiro</p>
+        <p lang="pt-PT">Português europeu</p>
+        <p lang="ar-SA">العربية السعودية</p>
+        <p lang="ja-JP">日本語</p>
+        <p lang="ko-KR">한국어</p>
+    </section>
+
+    <section>
+        <h2>Test 8: Extended BCP 47 codes (with script)</h2>
+
+        <!-- ✅ PASS: Valid with script subtag -->
+        <p lang="zh-Hans">简体中文 (Chinese with Simplified script)</p>
+        <p lang="zh-Hant">繁體中文 (Chinese with Traditional script)</p>
+        <p lang="zh-Hans-CN">简体中文（中国）</p>
+    </section>
+
+    <section>
+        <h2>Test 9: Edge cases</h2>
+
+        <!-- ✅ PASS: Two-letter code -->
+        <p lang="en">English</p>
+
+        <!-- ✅ PASS: Three-letter code (less common but valid) -->
+        <p lang="fil">Filipino (three-letter code)</p>
+
+        <!-- ❌ ISSUE: invalid-lang-attribute (warning) - single letter -->
+        <p lang="e">Invalid single letter code</p>
+
+        <!-- ❌ ISSUE: invalid-lang-attribute (warning) - too long -->
+        <p lang="english-usa">Invalid verbose code</p>
+    </section>
+
+    <section>
+        <h2>Test 10: Common language codes</h2>
+
+        <!-- All ✅ PASS: Common valid codes -->
+        <div>
+            <span lang="en">English</span> |
+            <span lang="es">Español</span> |
+            <span lang="fr">Français</span> |
+            <span lang="de">Deutsch</span> |
+            <span lang="it">Italiano</span> |
+            <span lang="pt">Português</span> |
+            <span lang="ru">Русский</span> |
+            <span lang="ja">日本語</span> |
+            <span lang="zh">中文</span> |
+            <span lang="ar">العربية</span> |
+            <span lang="hi">हिन्दी</span> |
+            <span lang="nl">Nederlands</span> |
+            <span lang="sv">Svenska</span> |
+            <span lang="no">Norsk</span> |
+            <span lang="da">Dansk</span> |
+            <span lang="fi">Suomi</span> |
+            <span lang="pl">Polski</span> |
+            <span lang="tr">Türkçe</span> |
+            <span lang="el">Ελληνικά</span> |
+            <span lang="he">עברית</span>
+        </div>
+    </section>
+
+    <footer>
+        <p>End of test cases. Expected issues:</p>
+        <ul>
+            <li>missing-html-lang (error) - if html element has no lang attribute</li>
+            <li>empty-lang-attribute (error) - paragraph with lang=""</li>
+            <li>invalid-lang-attribute (warning) - "spanish", "eng", "French", "e", "english-usa"</li>
+        </ul>
+        <p>Total expected: 1 error (missing-html-lang) + 1 error (empty-lang) + 5 warnings (invalid codes) = 7 issues</p>
+    </footer>
+</body>
+</html>

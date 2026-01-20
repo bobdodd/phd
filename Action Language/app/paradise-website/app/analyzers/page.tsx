@@ -20,7 +20,7 @@ export default function AnalyzersPage() {
         <div className="mb-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="bg-white rounded-xl shadow-lg p-6 text-center border-2 border-paradise-blue/20">
-              <div className="text-4xl font-bold text-paradise-blue mb-2">19</div>
+              <div className="text-4xl font-bold text-paradise-blue mb-2">20</div>
               <div className="text-gray-600 font-medium">Total Analyzers</div>
               <div className="text-xs text-gray-500 mt-1">Behavioral + Structural + Framework</div>
             </div>
@@ -791,6 +791,37 @@ btn.addEventListener('click', handler);
 
               <div className="text-sm text-gray-600 bg-gray-50 rounded p-2">
                 <strong>WCAG:</strong> 2.1.4 | <strong>Impact:</strong> Single character shortcuts must have turn-off, remap, or focus-only mechanism
+              </div>
+            </div>
+
+            {/* Analyzer 20: LanguageAttributeAnalyzer */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border-l-8 border-green-500">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center text-white text-xl font-bold">20</div>
+                <div>
+                  <h3 className="text-2xl font-bold">LanguageAttributeAnalyzer</h3>
+                  <div className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">✓ IMPLEMENTED</div>
+                </div>
+              </div>
+              <p className="text-gray-700 mb-4">
+                Validates language attributes on HTML elements. Detects missing or invalid lang attributes on the html element and checks for empty or invalid language codes on other elements.
+              </p>
+
+              <div className="space-y-3 mb-4">
+                <div className="bg-red-50 rounded p-3">
+                  <h4 className="font-semibold text-red-900 mb-2">Language Issues</h4>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">missing-html-lang</div>
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">empty-html-lang</div>
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">empty-lang-attribute</div>
+                    <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">invalid-html-lang</div>
+                    <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">invalid-lang-attribute</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2">
+                <strong>WCAG:</strong> 3.1.1, 3.1.2 | <strong>Impact:</strong> Screen readers need valid language codes to pronounce content correctly
               </div>
             </div>
           </div>
