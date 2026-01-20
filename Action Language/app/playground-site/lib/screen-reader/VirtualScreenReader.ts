@@ -48,13 +48,19 @@ export class VirtualScreenReader {
    * Navigate to next element
    */
   nextElement(): void {
-    if (this.currentIndex < this.flatTree.length - 1) {
-      this.moveTo(this.currentIndex + 1);
+    if (this.mode === 'focus') {
+      // In focus mode, only navigate to focusable elements
+      this.nextFocusable();
     } else {
-      this.announce({
-        type: 'navigation',
-        content: 'End of document',
-      });
+      // In browse mode, navigate to all elements
+      if (this.currentIndex < this.flatTree.length - 1) {
+        this.moveTo(this.currentIndex + 1);
+      } else {
+        this.announce({
+          type: 'navigation',
+          content: 'End of document',
+        });
+      }
     }
   }
 
@@ -62,12 +68,44 @@ export class VirtualScreenReader {
    * Navigate to previous element
    */
   previousElement(): void {
-    if (this.currentIndex > 0) {
-      this.moveTo(this.currentIndex - 1);
+    if (this.mode === 'focus') {
+      // In focus mode, only navigate to focusable elements
+      this.previousFocusable();
     } else {
+      // In browse mode, navigate to all elements
+      if (this.currentIndex > 0) {
+        this.moveTo(this.currentIndex - 1);
+      } else {
+        this.announce({
+          type: 'navigation',
+          content: 'Beginning of document',
+        });
+      }
+    }
+  }
+
+  /**
+   * Navigate to next focusable element
+   */
+  nextFocusable(): void {
+    const found = this.findNext(node => node.isFocusable);
+    if (!found) {
       this.announce({
         type: 'navigation',
-        content: 'Beginning of document',
+        content: 'No next focusable element',
+      });
+    }
+  }
+
+  /**
+   * Navigate to previous focusable element
+   */
+  previousFocusable(): void {
+    const found = this.findPrevious(node => node.isFocusable);
+    if (!found) {
+      this.announce({
+        type: 'navigation',
+        content: 'No previous focusable element',
       });
     }
   }
@@ -217,10 +255,29 @@ export class VirtualScreenReader {
    */
   toggleMode(): void {
     this.mode = this.mode === 'browse' ? 'focus' : 'browse';
-    this.announce({
-      type: 'announcement',
-      content: `${this.mode === 'browse' ? 'Browse' : 'Focus'} mode`,
-    });
+
+    if (this.mode === 'focus') {
+      // When entering focus mode, move to nearest focusable element
+      const currentNode = this.getCurrentNode();
+      if (currentNode && !currentNode.isFocusable) {
+        // Current element is not focusable, find the next focusable one
+        const found = this.findNext(node => node.isFocusable);
+        if (!found) {
+          // No focusable element forward, try backward
+          this.findPrevious(node => node.isFocusable);
+        }
+      }
+
+      this.announce({
+        type: 'announcement',
+        content: 'Focus mode. Press Tab or arrow keys to move between focusable elements only.',
+      });
+    } else {
+      this.announce({
+        type: 'announcement',
+        content: 'Browse mode. Press arrow keys to read all content.',
+      });
+    }
   }
 
   /**

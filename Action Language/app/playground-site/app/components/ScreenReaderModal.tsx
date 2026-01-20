@@ -84,9 +84,20 @@ export default function ScreenReaderModal({
       }
 
       // Prevent default for navigation keys
-      const navKeys = ['ArrowDown', 'ArrowUp', 'Enter', 'h', 'H', 'k', 'K', 'b', 'B', 'l', 'L', 'f', 'F'];
+      const navKeys = ['ArrowDown', 'ArrowUp', 'Enter', 'h', 'H', 'k', 'K', 'b', 'B', 'l', 'L', 'f', 'F', 'm', 'M'];
       if (navKeys.includes(e.key)) {
         e.preventDefault();
+      }
+
+      // Tab key handling (only in focus mode - check mode from state)
+      if (e.key === 'Tab' && mode === 'focus') {
+        e.preventDefault();
+        if (e.shiftKey) {
+          sr.previousElement();
+        } else {
+          sr.nextElement();
+        }
+        return;
       }
 
       // Navigate based on key
@@ -128,6 +139,12 @@ export default function ScreenReaderModal({
         case 'f':
         case 'F':
           sr.nextFormControl();
+          break;
+        case 'm':
+        case 'M':
+          // Toggle mode
+          sr.toggleMode();
+          setMode(sr.getMode());
           break;
         case 'Enter':
           sr.activateElement();
@@ -337,7 +354,7 @@ export default function ScreenReaderModal({
               <h3 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">
                 Navigation Shortcuts
               </h3>
-              <div className="grid grid-cols-2 gap-2 text-sm mb-4">
+              <div className="grid grid-cols-2 gap-2 text-sm mb-3">
                 <div className="flex items-center gap-2">
                   <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">
                     ↓
@@ -349,6 +366,18 @@ export default function ScreenReaderModal({
                     ↑
                   </kbd>
                   <span className="text-gray-600">Previous</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">
+                    Tab
+                  </kbd>
+                  <span className="text-gray-600">Next (Focus mode)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">
+                    M
+                  </kbd>
+                  <span className="text-gray-600">Toggle mode</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">
@@ -387,7 +416,7 @@ export default function ScreenReaderModal({
                   <span className="text-gray-600">Activate</span>
                 </div>
               </div>
-              <div className="text-xs text-gray-500 italic">
+              <div className="text-xs text-gray-500 italic mb-3">
                 Use Shift + key for previous item (e.g., Shift+H for previous heading)
               </div>
 
