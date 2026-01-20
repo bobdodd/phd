@@ -481,6 +481,16 @@ export class AccessibilityTreeBuilder {
       if (valuetext) properties.valuetext = valuetext;
     }
 
+    // ARIA relationship attributes
+    const controls = element.getAttribute('aria-controls');
+    if (controls) properties.controls = controls;
+
+    const labelledby = element.getAttribute('aria-labelledby');
+    if (labelledby) properties.labelledby = labelledby;
+
+    const describedby = element.getAttribute('aria-describedby');
+    if (describedby) properties.describedby = describedby;
+
     return properties;
   }
 

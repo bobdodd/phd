@@ -42,6 +42,10 @@ export interface ARIAProperties {
   live?: 'off' | 'polite' | 'assertive';
   atomic?: boolean;
   relevant?: string;
+  // ARIA relationship attributes
+  controls?: string; // ID(s) of elements this element controls
+  labelledby?: string; // ID(s) of elements that label this element
+  describedby?: string; // ID(s) of elements that describe this element
 }
 
 /**

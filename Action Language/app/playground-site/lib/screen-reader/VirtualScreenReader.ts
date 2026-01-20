@@ -517,6 +517,10 @@ export class VirtualScreenReader {
         if (node.states.expanded !== undefined) {
           parts.push(node.states.expanded ? 'expanded' : 'collapsed');
         }
+        // Announce if this button controls another element (common in accordions)
+        if (node.properties.controls) {
+          parts.push('controls content');
+        }
         break;
 
       case 'link':
