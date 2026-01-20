@@ -432,6 +432,35 @@ export class AccessibilityTreeBuilder {
       states.pressed = ariaPressed === 'true' ? true : ariaPressed === 'mixed' ? 'mixed' : false;
     }
 
+    // required (for form controls)
+    const ariaRequired = element.getAttribute('aria-required');
+    if (ariaRequired === 'true') {
+      states.required = true;
+    } else if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement || element instanceof HTMLSelectElement) {
+      states.required = element.required;
+    }
+
+    // invalid (for form validation)
+    const ariaInvalid = element.getAttribute('aria-invalid');
+    if (ariaInvalid) {
+      if (ariaInvalid === 'true') {
+        states.invalid = true;
+      } else if (ariaInvalid === 'false') {
+        states.invalid = false;
+      } else {
+        // 'grammar' or 'spelling'
+        states.invalid = ariaInvalid as 'grammar' | 'spelling';
+      }
+    }
+
+    // readonly (for form controls)
+    const ariaReadonly = element.getAttribute('aria-readonly');
+    if (ariaReadonly === 'true') {
+      states.readonly = true;
+    } else if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
+      states.readonly = element.readOnly;
+    }
+
     return states;
   }
 
@@ -490,6 +519,47 @@ export class AccessibilityTreeBuilder {
 
     const describedby = element.getAttribute('aria-describedby');
     if (describedby) properties.describedby = describedby;
+
+    const errormessage = element.getAttribute('aria-errormessage');
+    if (errormessage) properties.errormessage = errormessage;
+
+    // modal (for dialogs)
+    if (role === 'dialog' || role === 'alertdialog') {
+      const ariaModal = element.getAttribute('aria-modal');
+      if (ariaModal === 'true') {
+        properties.modal = true;
+      }
+    }
+
+    // haspopup (for buttons, links, comboboxes)
+    const ariaHaspopup = element.getAttribute('aria-haspopup');
+    if (ariaHaspopup) {
+      if (ariaHaspopup === 'true') {
+        properties.haspopup = true;
+      } else {
+        properties.haspopup = ariaHaspopup as 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog';
+      }
+    }
+
+    // multiline (for textboxes)
+    const ariaMultiline = element.getAttribute('aria-multiline');
+    if (ariaMultiline === 'true') {
+      properties.multiline = true;
+    } else if (element.tagName.toLowerCase() === 'textarea') {
+      properties.multiline = true;
+    }
+
+    // multiselectable (for listboxes, grids, trees)
+    const ariaMultiselectable = element.getAttribute('aria-multiselectable');
+    if (ariaMultiselectable === 'true') {
+      properties.multiselectable = true;
+    }
+
+    // orientation (for sliders, tabs, etc.)
+    const ariaOrientation = element.getAttribute('aria-orientation');
+    if (ariaOrientation) {
+      properties.orientation = ariaOrientation as 'horizontal' | 'vertical';
+    }
 
     return properties;
   }

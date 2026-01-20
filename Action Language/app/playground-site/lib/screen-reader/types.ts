@@ -46,6 +46,7 @@ export interface ARIAProperties {
   controls?: string; // ID(s) of elements this element controls
   labelledby?: string; // ID(s) of elements that label this element
   describedby?: string; // ID(s) of elements that describe this element
+  errormessage?: string; // ID of element containing error message
 }
 
 /**

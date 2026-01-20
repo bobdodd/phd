@@ -457,8 +457,12 @@ export class VirtualScreenReader {
   private moveTo(index: number): void {
     if (index < 0 || index >= this.flatTree.length) return;
 
+    const previousNode = this.getCurrentNode();
     this.currentIndex = index;
     const node = this.flatTree[index];
+
+    // Check for landmark entry/exit
+    this.checkLandmarkTransition(previousNode, node);
 
     // Announce the element
     this.announceNode(node);
@@ -521,6 +525,14 @@ export class VirtualScreenReader {
         if (node.properties.controls) {
           parts.push('controls content');
         }
+        // Announce if this button has a popup
+        if (node.properties.haspopup) {
+          if (typeof node.properties.haspopup === 'string') {
+            parts.push(`has ${node.properties.haspopup} popup`);
+          } else {
+            parts.push('has popup');
+          }
+        }
         break;
 
       case 'link':
@@ -533,6 +545,12 @@ export class VirtualScreenReader {
         parts.push('Checkbox');
         parts.push(node.states.checked ? 'checked' : 'not checked');
         if (node.name) parts.push(node.name);
+        if (node.states.required) {
+          parts.push('required');
+        }
+        if (node.states.invalid) {
+          parts.push('invalid entry');
+        }
         break;
 
       case 'radio':
@@ -542,17 +560,49 @@ export class VirtualScreenReader {
         break;
 
       case 'textbox':
-        parts.push('Edit');
+        parts.push(node.properties.multiline ? 'Edit multiline' : 'Edit');
         if (node.name) parts.push(node.name);
         if (node.value) parts.push(`"${node.value}"`);
         else parts.push('blank');
+        // Announce readonly state
+        if (node.states.readonly) {
+          parts.push('read only');
+        }
+        // Announce required state
+        if (node.states.required) {
+          parts.push('required');
+        }
+        // Announce invalid state
+        if (node.states.invalid) {
+          if (typeof node.states.invalid === 'string') {
+            parts.push(`invalid ${node.states.invalid}`);
+          } else {
+            parts.push('invalid entry');
+          }
+        }
         break;
 
       case 'combobox':
         parts.push('Combo box');
         if (node.name) parts.push(node.name);
+        if (node.value) {
+          parts.push(node.value);
+        }
         if (node.states.expanded !== undefined) {
           parts.push(node.states.expanded ? 'expanded' : 'collapsed');
+        }
+        if (node.properties.haspopup) {
+          if (typeof node.properties.haspopup === 'string') {
+            parts.push(`has ${node.properties.haspopup} popup`);
+          } else {
+            parts.push('has popup');
+          }
+        }
+        if (node.states.required) {
+          parts.push('required');
+        }
+        if (node.states.invalid) {
+          parts.push('invalid entry');
         }
         break;
 
@@ -635,11 +685,58 @@ export class VirtualScreenReader {
         }
         break;
 
+      case 'listbox':
+        parts.push('Listbox');
+        if (node.name) parts.push(node.name);
+        if (node.properties.multiselectable) {
+          parts.push('multiselectable');
+        }
+        if (node.properties.orientation) {
+          parts.push(node.properties.orientation);
+        }
+        // Count options if possible
+        if (node.children.length > 0) {
+          const optionCount = node.children.filter(child => child.role === 'option').length;
+          if (optionCount > 0) {
+            parts.push(`${optionCount} options`);
+          }
+        }
+        break;
+
+      case 'option':
+        parts.push('Option');
+        if (node.name) parts.push(node.name);
+        if (node.states.selected !== undefined) {
+          parts.push(node.states.selected ? 'selected' : 'not selected');
+        }
+        // Announce position in listbox
+        if (node.properties.posinset && node.properties.setsize) {
+          parts.push(`${node.properties.posinset} of ${node.properties.setsize}`);
+        } else if (node.parent && node.parent.role === 'listbox') {
+          const options = node.parent.children.filter(child => child.role === 'option');
+          const position = options.indexOf(node) + 1;
+          if (position > 0) {
+            parts.push(`${position} of ${options.length}`);
+          }
+        }
+        break;
+
       case 'tab':
         parts.push('Tab');
         if (node.name) parts.push(node.name);
         if (node.states.selected !== undefined) {
           parts.push(node.states.selected ? 'selected' : 'not selected');
+        }
+        // Announce position in tablist
+        if (node.properties.posinset && node.properties.setsize) {
+          parts.push(`${node.properties.posinset} of ${node.properties.setsize}`);
+        } else if (node.parent && node.parent.role === 'tablist') {
+          // Calculate position if not explicitly set
+          const tabs = node.parent.children.filter(child => child.role === 'tab');
+          const position = tabs.indexOf(node) + 1;
+          if (position > 0) {
+            parts.push(`${position} of ${tabs.length}`);
+          }
         }
         break;
 
@@ -783,6 +880,17 @@ export class VirtualScreenReader {
       parts.push(`Description: ${node.description}`);
     }
 
+    // Add error message if invalid and errormessage is present
+    if (node.states.invalid && node.properties.errormessage && node.domElement) {
+      const errorElement = node.domElement.ownerDocument.getElementById(node.properties.errormessage);
+      if (errorElement) {
+        const errorText = errorElement.textContent?.trim();
+        if (errorText) {
+          parts.push(`Error: ${errorText}`);
+        }
+      }
+    }
+
     // Add disabled state
     if (node.states.disabled) {
       parts.push('disabled');
@@ -810,6 +918,60 @@ export class VirtualScreenReader {
     if (this.onAnnouncement) {
       this.onAnnouncement(message);
     }
+  }
+
+  /**
+   * Check for landmark entry/exit and announce
+   */
+  private checkLandmarkTransition(previousNode: AccessibilityNode | null, currentNode: AccessibilityNode): void {
+    const landmarkRoles = ['navigation', 'main', 'banner', 'contentinfo', 'complementary', 'region', 'search', 'form'];
+
+    // Find landmark ancestors for both nodes
+    const previousLandmark = this.findLandmarkAncestor(previousNode);
+    const currentLandmark = this.findLandmarkAncestor(currentNode);
+
+    // Exiting a landmark
+    if (previousLandmark && previousLandmark !== currentLandmark) {
+      this.announce({
+        type: 'announcement',
+        content: `Exiting ${previousLandmark.role}${previousLandmark.name ? ': ' + previousLandmark.name : ''}`,
+        politeness: 'polite',
+      });
+    }
+
+    // Entering a landmark
+    if (currentLandmark && currentLandmark !== previousLandmark) {
+      this.announce({
+        type: 'announcement',
+        content: `Entering ${currentLandmark.role}${currentLandmark.name ? ': ' + currentLandmark.name : ''}`,
+        politeness: 'polite',
+      });
+    }
+  }
+
+  /**
+   * Find the nearest landmark ancestor
+   */
+  private findLandmarkAncestor(node: AccessibilityNode | null): AccessibilityNode | null {
+    if (!node) return null;
+
+    const landmarkRoles = ['navigation', 'main', 'banner', 'contentinfo', 'complementary', 'region', 'search', 'form'];
+
+    // Check if current node is a landmark
+    if (landmarkRoles.includes(node.role)) {
+      return node;
+    }
+
+    // Traverse up the tree
+    let current = node.parent;
+    while (current) {
+      if (landmarkRoles.includes(current.role)) {
+        return current;
+      }
+      current = current.parent;
+    }
+
+    return null;
   }
 
   /**
