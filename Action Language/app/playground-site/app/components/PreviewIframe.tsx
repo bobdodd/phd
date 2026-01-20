@@ -101,6 +101,9 @@ export default function PreviewIframe({
 
   // Handle element highlighting
   useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe || !iframe.contentWindow) return;
+
     // Remove previous highlight
     if (previousHighlightRef.current) {
       previousHighlightRef.current.style.outline = '';
@@ -114,15 +117,19 @@ export default function PreviewIframe({
       // Store for cleanup
       previousHighlightRef.current = highlightedElement;
 
-      // Apply highlight styles
-      const originalPosition = window.getComputedStyle(highlightedElement).position;
+      // Apply highlight styles using iframe's window context
+      const iframeWindow = iframe.contentWindow;
+      const originalPosition = iframeWindow.getComputedStyle(highlightedElement).position;
       if (originalPosition === 'static') {
         highlightedElement.style.position = 'relative';
       }
 
-      highlightedElement.style.outline = '3px solid #3b82f6';
-      highlightedElement.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
-      highlightedElement.style.zIndex = '1000';
+      // Apply very visible highlight with animation
+      highlightedElement.style.outline = '4px solid #ef4444';
+      highlightedElement.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+      highlightedElement.style.zIndex = '9999';
+      highlightedElement.style.boxShadow = '0 0 0 4px rgba(239, 68, 68, 0.3)';
+      highlightedElement.style.transition = 'all 0.2s ease-in-out';
 
       // Scroll into view
       highlightedElement.scrollIntoView({
@@ -139,6 +146,8 @@ export default function PreviewIframe({
         previousHighlightRef.current.style.backgroundColor = '';
         previousHighlightRef.current.style.position = '';
         previousHighlightRef.current.style.zIndex = '';
+        previousHighlightRef.current.style.boxShadow = '';
+        previousHighlightRef.current.style.transition = '';
       }
     };
   }, [highlightedElement]);
