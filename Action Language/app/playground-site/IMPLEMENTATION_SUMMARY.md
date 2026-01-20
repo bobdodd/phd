@@ -84,7 +84,7 @@ A fully-functional virtual screen reader simulator built for Paradise Playground
 - ✅ atomic (live regions)
 - ✅ relevant (live regions)
 
-#### Roles (60+ roles)
+#### Roles (80+ roles)
 **Landmark Roles (8)**
 - navigation, main, banner, contentinfo, complementary, region, search, form
 

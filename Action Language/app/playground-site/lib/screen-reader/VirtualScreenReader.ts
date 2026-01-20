@@ -325,6 +325,162 @@ export class VirtualScreenReader {
   }
 
   /**
+   * Navigate to next edit field
+   */
+  nextEditField(): void {
+    const found = this.findNext(node => node.role === 'textbox' || node.role === 'searchbox');
+    if (!found) {
+      this.announce({
+        type: 'navigation',
+        content: 'No next edit field',
+      });
+    }
+  }
+
+  /**
+   * Navigate to previous edit field
+   */
+  previousEditField(): void {
+    const found = this.findPrevious(node => node.role === 'textbox' || node.role === 'searchbox');
+    if (!found) {
+      this.announce({
+        type: 'navigation',
+        content: 'No previous edit field',
+      });
+    }
+  }
+
+  /**
+   * Navigate to next checkbox
+   */
+  nextCheckbox(): void {
+    const found = this.findNext(node => node.role === 'checkbox');
+    if (!found) {
+      this.announce({
+        type: 'navigation',
+        content: 'No next checkbox',
+      });
+    }
+  }
+
+  /**
+   * Navigate to previous checkbox
+   */
+  previousCheckbox(): void {
+    const found = this.findPrevious(node => node.role === 'checkbox');
+    if (!found) {
+      this.announce({
+        type: 'navigation',
+        content: 'No previous checkbox',
+      });
+    }
+  }
+
+  /**
+   * Navigate to next radio button
+   */
+  nextRadioButton(): void {
+    const found = this.findNext(node => node.role === 'radio');
+    if (!found) {
+      this.announce({
+        type: 'navigation',
+        content: 'No next radio button',
+      });
+    }
+  }
+
+  /**
+   * Navigate to previous radio button
+   */
+  previousRadioButton(): void {
+    const found = this.findPrevious(node => node.role === 'radio');
+    if (!found) {
+      this.announce({
+        type: 'navigation',
+        content: 'No previous radio button',
+      });
+    }
+  }
+
+  /**
+   * Navigate to next combobox
+   */
+  nextCombobox(): void {
+    const found = this.findNext(node => node.role === 'combobox' || node.role === 'listbox');
+    if (!found) {
+      this.announce({
+        type: 'navigation',
+        content: 'No next combobox',
+      });
+    }
+  }
+
+  /**
+   * Navigate to previous combobox
+   */
+  previousCombobox(): void {
+    const found = this.findPrevious(node => node.role === 'combobox' || node.role === 'listbox');
+    if (!found) {
+      this.announce({
+        type: 'navigation',
+        content: 'No previous combobox',
+      });
+    }
+  }
+
+  /**
+   * Navigate to next article
+   */
+  nextArticle(): void {
+    const found = this.findNext(node => node.role === 'article');
+    if (!found) {
+      this.announce({
+        type: 'navigation',
+        content: 'No next article',
+      });
+    }
+  }
+
+  /**
+   * Navigate to previous article
+   */
+  previousArticle(): void {
+    const found = this.findPrevious(node => node.role === 'article');
+    if (!found) {
+      this.announce({
+        type: 'navigation',
+        content: 'No previous article',
+      });
+    }
+  }
+
+  /**
+   * Navigate to next separator
+   */
+  nextSeparator(): void {
+    const found = this.findNext(node => node.role === 'separator');
+    if (!found) {
+      this.announce({
+        type: 'navigation',
+        content: 'No next separator',
+      });
+    }
+  }
+
+  /**
+   * Navigate to previous separator
+   */
+  previousSeparator(): void {
+    const found = this.findPrevious(node => node.role === 'separator');
+    if (!found) {
+      this.announce({
+        type: 'navigation',
+        content: 'No previous separator',
+      });
+    }
+  }
+
+  /**
    * Get associated row and column headers for a table cell
    */
   private getTableHeaders(node: AccessibilityNode): { columnHeader?: string; rowHeader?: string } {
