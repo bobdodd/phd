@@ -538,6 +538,13 @@ export class VirtualScreenReader {
       case 'link':
         parts.push('Link');
         if (node.name) parts.push(node.name);
+        if (node.states.current) {
+          if (typeof node.states.current === 'string') {
+            parts.push(`current ${node.states.current}`);
+          } else {
+            parts.push('current');
+          }
+        }
         if (node.states.visited) parts.push('visited');
         break;
 
@@ -553,10 +560,32 @@ export class VirtualScreenReader {
         }
         break;
 
+      case 'switch':
+        parts.push('Switch');
+        if (node.name) parts.push(node.name);
+        parts.push(node.states.checked ? 'on' : 'off');
+        break;
+
       case 'radio':
         parts.push('Radio button');
         parts.push(node.states.checked ? 'selected' : 'not selected');
         if (node.name) parts.push(node.name);
+        // Announce position in radio group if possible
+        if (node.properties.posinset && node.properties.setsize) {
+          parts.push(`${node.properties.posinset} of ${node.properties.setsize}`);
+        } else if (node.domElement instanceof HTMLInputElement) {
+          // Find other radio buttons with same name
+          const radioName = node.domElement.name;
+          if (radioName) {
+            const radioGroup = Array.from(
+              node.domElement.ownerDocument.querySelectorAll(`input[type="radio"][name="${radioName}"]`)
+            );
+            const position = radioGroup.indexOf(node.domElement) + 1;
+            if (position > 0 && radioGroup.length > 1) {
+              parts.push(`${position} of ${radioGroup.length}`);
+            }
+          }
+        }
         break;
 
       case 'textbox':
@@ -579,6 +608,16 @@ export class VirtualScreenReader {
           } else {
             parts.push('invalid entry');
           }
+        }
+        break;
+
+      case 'searchbox':
+        parts.push('Search');
+        if (node.name) parts.push(node.name);
+        if (node.value) parts.push(`"${node.value}"`);
+        else parts.push('blank');
+        if (node.properties.multiline) {
+          parts.push('multiline');
         }
         break;
 
@@ -834,6 +873,22 @@ export class VirtualScreenReader {
         if (node.properties.valuemin !== undefined && node.properties.valuemax !== undefined) {
           parts.push(`Min ${node.properties.valuemin}, Max ${node.properties.valuemax}`);
         }
+        if (node.properties.orientation) {
+          parts.push(node.properties.orientation);
+        }
+        break;
+
+      case 'spinbutton':
+        parts.push('Spin button');
+        if (node.name) parts.push(node.name);
+        if (node.properties.valuenow !== undefined) {
+          parts.push(`${node.properties.valuenow}`);
+        } else if (node.value) {
+          parts.push(node.value);
+        }
+        if (node.properties.valuemin !== undefined && node.properties.valuemax !== undefined) {
+          parts.push(`Min ${node.properties.valuemin}, Max ${node.properties.valuemax}`);
+        }
         break;
 
       case 'img':
@@ -864,6 +919,58 @@ export class VirtualScreenReader {
 
       case 'form':
         parts.push('Form');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'toolbar':
+        parts.push('Toolbar');
+        if (node.name) parts.push(node.name);
+        if (node.properties.orientation) {
+          parts.push(node.properties.orientation);
+        }
+        break;
+
+      case 'group':
+        parts.push('Group');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'radiogroup':
+        parts.push('Radio group');
+        if (node.name) parts.push(node.name);
+        // Count radio buttons in group
+        if (node.children.length > 0) {
+          const radioCount = node.children.filter(child => child.role === 'radio').length;
+          if (radioCount > 0) {
+            parts.push(`${radioCount} items`);
+          }
+        }
+        break;
+
+      case 'separator':
+        parts.push('Separator');
+        if (node.properties.orientation) {
+          parts.push(node.properties.orientation);
+        }
+        break;
+
+      case 'feed':
+        parts.push('Feed');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'figure':
+        parts.push('Figure');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'term':
+        parts.push('Term');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'definition':
+        parts.push('Definition');
         if (node.name) parts.push(node.name);
         break;
 

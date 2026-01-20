@@ -384,6 +384,13 @@ export class AccessibilityTreeBuilder {
     }
 
     if (element instanceof HTMLSelectElement) {
+      // Get the text of the selected option(s)
+      if (element.multiple) {
+        const selectedOptions = Array.from(element.selectedOptions).map(opt => opt.text);
+        return selectedOptions.join(', ');
+      } else if (element.selectedIndex >= 0) {
+        return element.options[element.selectedIndex]?.text || element.value;
+      }
       return element.value;
     }
 
@@ -459,6 +466,19 @@ export class AccessibilityTreeBuilder {
       states.readonly = true;
     } else if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
       states.readonly = element.readOnly;
+    }
+
+    // current (for navigation items)
+    const ariaCurrent = element.getAttribute('aria-current');
+    if (ariaCurrent) {
+      if (ariaCurrent === 'true') {
+        states.current = true;
+      } else if (ariaCurrent === 'false') {
+        states.current = false;
+      } else {
+        // 'page', 'step', 'location', 'date', 'time'
+        states.current = ariaCurrent as 'page' | 'step' | 'location' | 'date' | 'time';
+      }
     }
 
     return states;
