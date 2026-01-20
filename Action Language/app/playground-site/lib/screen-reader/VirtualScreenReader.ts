@@ -325,6 +325,60 @@ export class VirtualScreenReader {
   }
 
   /**
+   * Get associated row and column headers for a table cell
+   */
+  private getTableHeaders(node: AccessibilityNode): { columnHeader?: string; rowHeader?: string } {
+    if (!node.domElement || (node.role !== 'cell' && node.role !== 'gridcell')) {
+      return {};
+    }
+
+    const result: { columnHeader?: string; rowHeader?: string } = {};
+    const cell = node.domElement;
+
+    // Check for explicit headers attribute
+    const headersAttr = cell.getAttribute('headers');
+    if (headersAttr) {
+      const headerIds = headersAttr.split(/\s+/);
+      const headerTexts = headerIds
+        .map(id => cell.ownerDocument.getElementById(id)?.textContent?.trim())
+        .filter(text => text);
+      if (headerTexts.length > 0) {
+        result.columnHeader = headerTexts.join(', ');
+        return result;
+      }
+    }
+
+    // Find parent row and table
+    const row = cell.closest('tr, [role="row"]') as HTMLElement | null;
+    if (!row) return result;
+
+    const table = row.closest('table, [role="table"], [role="grid"]') as HTMLElement | null;
+    if (!table) return result;
+
+    // Get column index
+    const cells = Array.from(row.querySelectorAll('td, th, [role="cell"], [role="gridcell"], [role="columnheader"]'));
+    const colIndex = cells.indexOf(cell);
+    if (colIndex < 0) return result;
+
+    // Find column header (first row)
+    const firstRow = table.querySelector('tr, [role="row"]');
+    if (firstRow) {
+      const headerCells = Array.from(firstRow.querySelectorAll('th, [role="columnheader"]'));
+      if (headerCells.length > colIndex) {
+        result.columnHeader = headerCells[colIndex].textContent?.trim();
+      }
+    }
+
+    // Find row header (first cell in current row)
+    const rowHeaderCell = row.querySelector('th, [role="rowheader"]');
+    if (rowHeaderCell && rowHeaderCell !== cell) {
+      result.rowHeader = rowHeaderCell.textContent?.trim();
+    }
+
+    return result;
+  }
+
+  /**
    * Get table information for current cell
    */
   getTableContext(): { row: number; col: number; rowCount: number; colCount: number } | null {
@@ -683,12 +737,25 @@ export class VirtualScreenReader {
           if (rows > 0) {
             parts.push(`${rows} rows`);
           }
+          // Announce caption if present
+          const caption = node.domElement.querySelector('caption');
+          if (caption && caption.textContent?.trim()) {
+            parts.push(`Caption: ${caption.textContent.trim()}`);
+          }
         }
         break;
 
       case 'cell':
       case 'gridcell':
         parts.push(node.role === 'gridcell' ? 'Grid cell' : 'Cell');
+        // Announce row and column headers first
+        const headers = this.getTableHeaders(node);
+        if (headers.columnHeader) {
+          parts.push(`Column: ${headers.columnHeader}`);
+        }
+        if (headers.rowHeader) {
+          parts.push(`Row: ${headers.rowHeader}`);
+        }
         if (node.name) parts.push(node.name);
         // Add table position info
         const tableContext = this.getTableContext();
