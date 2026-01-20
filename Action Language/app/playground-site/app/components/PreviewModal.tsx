@@ -3,10 +3,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import PreviewIframe from './PreviewIframe';
 import ReplayControls from './ReplayControls';
+import SwitchPanel from './SwitchPanel';
 import { AccessibilityNode, SRMessage, NavigationMode } from '../../lib/screen-reader/types';
 import { VirtualScreenReader } from '../../lib/screen-reader/VirtualScreenReader';
 import { Session, SessionRecorder } from '../../lib/screen-reader/SessionRecorder';
 import { SessionReplay } from '../../lib/screen-reader/SessionReplay';
+import { SwitchSimulator } from '../../lib/screen-reader/SwitchSimulator';
 
 interface PreviewModalProps {
   isOpen: boolean;
@@ -15,6 +17,7 @@ interface PreviewModalProps {
   cssContent: string;
   jsContent: string;
   initialScreenReaderEnabled?: boolean;
+  initialSwitchSimulatorEnabled?: boolean;
 }
 
 export default function PreviewModal({
@@ -23,7 +26,8 @@ export default function PreviewModal({
   htmlContent,
   cssContent,
   jsContent,
-  initialScreenReaderEnabled = false
+  initialScreenReaderEnabled = false,
+  initialSwitchSimulatorEnabled = false
 }: PreviewModalProps) {
   // Screen reader toggle state
   const [screenReaderEnabled, setScreenReaderEnabled] = useState(initialScreenReaderEnabled);
@@ -41,18 +45,24 @@ export default function PreviewModal({
   const [isReplayMode, setIsReplayMode] = useState(false);
   const [replaySession, setReplaySession] = useState<Session | null>(null);
 
+  // Switch simulator states
+  const [switchSimulatorEnabled, setSwitchSimulatorEnabled] = useState(false);
+  const [switchHighlightedElement, setSwitchHighlightedElement] = useState<HTMLElement | null>(null);
+
   const modalRef = useRef<HTMLDivElement>(null);
   const iframeDocRef = useRef<Document | null>(null);
   const screenReaderRef = useRef<VirtualScreenReader | null>(null);
   const srOutputRef = useRef<HTMLDivElement>(null);
   const replayRef = useRef<SessionReplay | null>(null);
+  const switchSimulatorRef = useRef<SwitchSimulator | null>(null);
 
-  // Set initial screen reader state when modal opens
+  // Set initial screen reader and switch simulator state when modal opens
   useEffect(() => {
     if (isOpen) {
       setScreenReaderEnabled(initialScreenReaderEnabled);
+      setSwitchSimulatorEnabled(initialSwitchSimulatorEnabled);
     }
-  }, [isOpen, initialScreenReaderEnabled]);
+  }, [isOpen, initialScreenReaderEnabled, initialSwitchSimulatorEnabled]);
 
   // Initialize screen reader when enabled
   useEffect(() => {
@@ -105,7 +115,85 @@ export default function PreviewModal({
     if (isReplayMode && replayRef.current) {
       replayRef.current.setIframeDocument(iframeDoc);
     }
-  }, [screenReaderEnabled, isReplayMode]);
+
+    // Load switch simulator if enabled
+    if (switchSimulatorEnabled && switchSimulatorRef.current) {
+      switchSimulatorRef.current.loadDocument(iframeDoc);
+    }
+  }, [screenReaderEnabled, isReplayMode, switchSimulatorEnabled]);
+
+  // Toggle switch simulator
+  const toggleSwitchSimulator = () => {
+    const newState = !switchSimulatorEnabled;
+    setSwitchSimulatorEnabled(newState);
+
+    if (newState) {
+      // Create simulator
+      const simulator = new SwitchSimulator(
+        {
+          mode: 'single',
+          scanSpeed: 1000,
+          autoRestart: true,
+          highlightColor: '#8b5cf6'
+        },
+        (element) => {
+          // Highlight callback
+          if (element && element.domElement) {
+            setSwitchHighlightedElement(element.domElement);
+          } else {
+            setSwitchHighlightedElement(null);
+          }
+        },
+        (element) => {
+          // Activate callback
+          console.log('Element activated:', element);
+        },
+        (message, type) => {
+          // Log callback
+          console.log(`[Switch] ${message}`);
+        }
+      );
+
+      // Load document if available
+      if (iframeDocRef.current) {
+        simulator.loadDocument(iframeDocRef.current);
+      }
+
+      switchSimulatorRef.current = simulator;
+    } else {
+      // Cleanup
+      if (switchSimulatorRef.current) {
+        switchSimulatorRef.current.destroy();
+        switchSimulatorRef.current = null;
+      }
+      setSwitchHighlightedElement(null);
+    }
+  };
+
+  // Handle switch simulator keyboard events
+  useEffect(() => {
+    if (!isOpen || !switchSimulatorEnabled || !switchSimulatorRef.current) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const simulator = switchSimulatorRef.current;
+      if (!simulator) return;
+
+      const state = simulator.getState();
+
+      if (e.key === ' ') {
+        e.preventDefault();
+        // Space = activate (single mode) or activate (dual mode switch 2)
+        simulator.handleSwitchPress(state.mode === 'single' ? 1 : 2);
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        // Arrow right = step (dual mode switch 1)
+        simulator.handleSwitchPress(1);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, switchSimulatorEnabled]);
 
   // Handle keyboard navigation (only when screen reader is enabled)
   useEffect(() => {
@@ -533,23 +621,32 @@ export default function PreviewModal({
               </button>
             </div>
 
-            {/* Future: Switch Simulation Toggle (commented for now) */}
-            {/*
-            <div className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2">
-              <span className="text-sm text-purple-100">Switches:</span>
+            {/* Switch Simulator Toggle */}
+            <div className="flex items-center gap-3 bg-white/10 rounded-lg px-4 py-2.5">
+              <span className="text-sm text-purple-100 font-medium">Switch Simulator</span>
               <button
-                onClick={handleSwitchToggle}
-                className={`px-3 py-1 rounded-md text-sm font-semibold transition-colors ${
-                  switchEnabled
-                    ? 'bg-green-600 hover:bg-green-700 text-white'
-                    : 'bg-white/20 hover:bg-white/30 text-white'
-                }`}
-                aria-pressed={switchEnabled}
+                onClick={toggleSwitchSimulator}
+                type="button"
+                className="relative focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-purple-800 rounded-full"
+                title={switchSimulatorEnabled ? 'Disable switch simulator' : 'Enable switch simulator'}
+                aria-label="Switch Simulator"
+                role="switch"
+                aria-checked={switchSimulatorEnabled}
               >
-                {switchEnabled ? 'On' : 'Off'}
+                <span
+                  className={`flex items-center w-11 h-6 rounded-full transition-colors duration-200 ${
+                    switchSimulatorEnabled ? 'bg-purple-600' : 'bg-gray-400'
+                  }`}
+                >
+                  <span
+                    className={`block w-5 h-5 bg-white rounded-full shadow-lg transform transition-transform duration-200 ${
+                      switchSimulatorEnabled ? 'translate-x-6' : 'translate-x-0.5'
+                    }`}
+                    aria-hidden="true"
+                  />
+                </span>
               </button>
             </div>
-            */}
 
             {/* Recording & Replay Controls (only when SR is enabled) */}
             {screenReaderEnabled && !isReplayMode && (
@@ -631,8 +728,8 @@ export default function PreviewModal({
 
         {/* Main Content Area */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Preview Panel - Full width when SR off, 60% when SR on */}
-          <div className={`flex flex-col ${screenReaderEnabled ? 'w-[60%] border-r border-gray-200' : 'w-full'}`}>
+          {/* Preview Panel - Full width when both off, 60% when either on */}
+          <div className={`flex flex-col ${(screenReaderEnabled || switchSimulatorEnabled) ? 'w-[60%] border-r border-gray-200' : 'w-full'}`}>
             {/* Preview Controls */}
             <div className="bg-gray-100 px-4 py-3 border-b border-gray-200 flex items-center gap-3">
               <button
@@ -664,7 +761,8 @@ export default function PreviewModal({
                 cssContent={isReplayMode && replaySession ? replaySession.cssContent : cssContent}
                 jsContent={isReplayMode && replaySession ? replaySession.jsContent : jsContent}
                 onDomReady={handleDomReady}
-                highlightedElement={highlightedElement}
+                highlightedElement={switchSimulatorEnabled ? switchHighlightedElement : highlightedElement}
+                isSwitchMode={switchSimulatorEnabled}
               />
             </div>
           </div>
@@ -906,6 +1004,16 @@ export default function PreviewModal({
                 </div>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Switch Simulator Panel - 40% - Only shown when enabled */}
+          {switchSimulatorEnabled && (
+            <div className="w-[40%] flex flex-col border-l border-gray-200">
+              <SwitchPanel
+                simulator={switchSimulatorRef.current}
+                isEnabled={switchSimulatorEnabled}
+              />
             </div>
           )}
         </div>

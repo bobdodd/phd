@@ -8,6 +8,7 @@ interface PreviewIframeProps {
   jsContent: string;
   onDomReady: (iframeDoc: Document) => void;
   highlightedElement?: HTMLElement | null;
+  isSwitchMode?: boolean;
 }
 
 export default function PreviewIframe({
@@ -15,7 +16,8 @@ export default function PreviewIframe({
   cssContent,
   jsContent,
   onDomReady,
-  highlightedElement
+  highlightedElement,
+  isSwitchMode = false
 }: PreviewIframeProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const previousHighlightRef = useRef<HTMLElement | null>(null);
@@ -110,6 +112,8 @@ export default function PreviewIframe({
       previousHighlightRef.current.style.backgroundColor = '';
       previousHighlightRef.current.style.position = '';
       previousHighlightRef.current.style.zIndex = '';
+      previousHighlightRef.current.style.boxShadow = '';
+      previousHighlightRef.current.style.animation = '';
     }
 
     // Add new highlight
@@ -124,12 +128,35 @@ export default function PreviewIframe({
         highlightedElement.style.position = 'relative';
       }
 
-      // Apply very visible highlight with animation
-      highlightedElement.style.outline = '4px solid #ef4444';
-      highlightedElement.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
-      highlightedElement.style.zIndex = '9999';
-      highlightedElement.style.boxShadow = '0 0 0 4px rgba(239, 68, 68, 0.3)';
-      highlightedElement.style.transition = 'all 0.2s ease-in-out';
+      if (isSwitchMode) {
+        // Switch scanning highlight: pulsing purple animation
+        highlightedElement.style.outline = '4px solid #8b5cf6';
+        highlightedElement.style.backgroundColor = 'rgba(139, 92, 246, 0.2)';
+        highlightedElement.style.zIndex = '9999';
+        highlightedElement.style.boxShadow = '0 0 0 4px rgba(139, 92, 246, 0.4), 0 0 20px rgba(139, 92, 246, 0.6)';
+        highlightedElement.style.animation = 'switch-pulse 0.8s ease-in-out infinite';
+
+        // Add keyframes for pulse animation to iframe's document
+        const iframeDoc = iframe.contentDocument;
+        if (iframeDoc && !iframeDoc.querySelector('#switch-pulse-styles')) {
+          const style = iframeDoc.createElement('style');
+          style.id = 'switch-pulse-styles';
+          style.textContent = `
+            @keyframes switch-pulse {
+              0%, 100% { transform: scale(1); opacity: 1; }
+              50% { transform: scale(1.02); opacity: 0.9; }
+            }
+          `;
+          iframeDoc.head.appendChild(style);
+        }
+      } else {
+        // Regular screen reader highlight: red
+        highlightedElement.style.outline = '4px solid #ef4444';
+        highlightedElement.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+        highlightedElement.style.zIndex = '9999';
+        highlightedElement.style.boxShadow = '0 0 0 4px rgba(239, 68, 68, 0.3)';
+        highlightedElement.style.transition = 'all 0.2s ease-in-out';
+      }
 
       // Scroll into view within the iframe only (don't affect parent page)
       // Get element's position relative to iframe's document
@@ -159,9 +186,10 @@ export default function PreviewIframe({
         previousHighlightRef.current.style.zIndex = '';
         previousHighlightRef.current.style.boxShadow = '';
         previousHighlightRef.current.style.transition = '';
+        previousHighlightRef.current.style.animation = '';
       }
     };
-  }, [highlightedElement]);
+  }, [highlightedElement, isSwitchMode]);
 
   return (
     <iframe

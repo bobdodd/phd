@@ -96,9 +96,38 @@ type FileType = 'html' | 'javascript' | 'css';
 
 // Sample examples organized by category
 const SAMPLE_CATEGORIES = {
+  'analyzer-examples': {
+    name: 'Analyzer Detection Examples',
+    description: 'Examples containing intentional accessibility issues to demonstrate what each analyzer detects',
+    examples: [
+      { name: 'Cross-File Analysis', file: 'cross-file-demo.html', type: 'demo', description: 'Shows how cross-file analysis eliminates false positives' },
+      { name: 'Orphaned Event Handlers', file: 'orphaned-handler-demo.html', type: 'demo', description: 'Contains handlers attached to non-existent elements' },
+      { name: 'Broken ARIA Connections', file: 'missing-aria-demo.html', type: 'demo', description: 'Contains missing aria-labelledby and aria-describedby targets' },
+      { name: 'CSS Visibility Conflicts', file: 'css-hidden-demo.html', type: 'demo', description: 'Contains focusable elements hidden by CSS' },
+      { name: 'Focus Order Problems', file: 'focus-order-demo.html', type: 'demo', description: 'Contains problematic tabindex patterns' },
+      { name: 'ARIA Semantic Issues', file: 'aria-semantics-demo.html', type: 'demo', description: 'Contains invalid roles and missing required attributes' },
+      { name: 'Performance Benchmarks', file: 'performance.html', type: 'demo', description: 'Performance metrics and scalability data' }
+    ]
+  },
+  'pattern-comparisons': {
+    name: 'Accessible vs Inaccessible Patterns',
+    description: 'Side-by-side comparisons showing correct and incorrect implementations of common patterns',
+    examples: [
+      { name: 'Interactive Buttons', file: 'buttons.html', type: 'comparison', description: 'Accessible and inaccessible button implementations' },
+      { name: 'Form Controls', file: 'forms.html', type: 'comparison', description: 'Form labeling and validation patterns' },
+      { name: 'Navigation Patterns', file: 'navigation.html', type: 'comparison', description: 'Menus, landmarks, and skip links' },
+      { name: 'Tab Widgets', file: 'tabs.html', type: 'comparison', description: 'Tab panel implementations with keyboard navigation' },
+      { name: 'Modal Dialogs', file: 'modals.html', type: 'comparison', description: 'Focus management in modal dialogs' },
+      { name: 'Accordions', file: 'disclosure.html', type: 'comparison', description: 'Disclosure widget implementations' },
+      { name: 'Keyboard Shortcuts', file: 'keyboard-shortcuts.html', type: 'comparison', description: 'Proper handling of keyboard shortcuts' },
+      { name: 'Focus Management', file: 'focus-management.html', type: 'comparison', description: 'Focus handling during content changes' },
+      { name: 'Live Regions', file: 'aria-live.html', type: 'comparison', description: 'Dynamic content announcements' },
+      { name: 'Complex Widgets', file: 'complex-widgets.html', type: 'comparison', description: 'Advanced widget patterns' }
+    ]
+  },
   'widget-patterns': {
-    name: 'ARIA Widget Patterns',
-    description: 'Complete APG widget implementations',
+    name: 'ARIA Widget Pattern Reference',
+    description: 'Accessible implementations following ARIA Authoring Practices Guide patterns',
     examples: [
       { name: 'Accordion', file: 'accordion.html', category: 'Disclosure Widgets' },
       { name: 'Dialog (Modal)', file: 'dialog.html', category: 'Disclosure Widgets' },
@@ -109,30 +138,6 @@ const SAMPLE_CATEGORIES = {
       { name: 'Toolbar', file: 'toolbar.html', category: 'Navigation Widgets' },
       { name: 'Tree View', file: 'tree.html', category: 'Navigation Widgets' },
       { name: 'Link Pattern', file: 'link-comprehensive.html', category: 'Basics' }
-    ]
-  },
-  'analyzer-demos': {
-    name: 'Analyzer Demonstrations',
-    description: 'Examples showing what each analyzer detects',
-    examples: [
-      { name: 'Cross-File Analysis', file: 'cross-file-demo.html', type: 'good' },
-      { name: 'CSS Hidden Elements', file: 'css-hidden-demo.html', type: 'errors' },
-      { name: 'Focus Order Conflicts', file: 'focus-order-demo.html', type: 'errors' },
-      { name: 'Missing ARIA Connections', file: 'missing-aria-demo.html', type: 'errors' },
-      { name: 'Orphaned Event Handlers', file: 'orphaned-handler-demo.html', type: 'errors' },
-      { name: 'ARIA Semantics', file: 'aria-semantics-demo.html', type: 'good' }
-    ]
-  },
-  'common-patterns': {
-    name: 'Common Accessible Patterns',
-    description: 'Standard UI patterns with best practices',
-    examples: [
-      { name: 'Buttons', file: 'buttons.html', type: 'good' },
-      { name: 'Forms', file: 'forms.html', type: 'good' },
-      { name: 'Modals', file: 'modals.html', type: 'good' },
-      { name: 'Tabs', file: 'tabs.html', type: 'good' },
-      { name: 'Focus Management', file: 'focus-management.html', type: 'good' },
-      { name: 'ARIA Live Regions', file: 'aria-live.html', type: 'good' }
     ]
   }
 };
@@ -145,13 +150,14 @@ export default function Home() {
   const [issues, setIssues] = useState<Issue[]>([]);
   const [selectedIssueIndex, setSelectedIssueIndex] = useState<number | null>(null);
   const [showSamplesModal, setShowSamplesModal] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>('widget-patterns');
+  const [selectedCategory, setSelectedCategory] = useState<string>('analyzer-examples');
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [helpContent, setHelpContent] = useState<{ type: string; title: string; content: string } | null>(null);
   const [showFixModal, setShowFixModal] = useState(false);
   const [selectedFix, setSelectedFix] = useState<IssueFix | null>(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [previewSRInitialState, setPreviewSRInitialState] = useState(false);
+  const [previewSwitchInitialState, setPreviewSwitchInitialState] = useState(false);
 
   // Save/Load state
   const [savedProjects, setSavedProjects] = useState<{ key: string; metadata?: PlaygroundFiles['metadata'] }[]>([]);
@@ -969,6 +975,7 @@ export default function Home() {
               <button
                 onClick={() => {
                   setPreviewSRInitialState(false);
+                  setPreviewSwitchInitialState(false);
                   setShowPreviewModal(true);
                 }}
                 className="bg-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-700 flex items-center gap-2"
@@ -978,11 +985,22 @@ export default function Home() {
               <button
                 onClick={() => {
                   setPreviewSRInitialState(true);
+                  setPreviewSwitchInitialState(false);
                   setShowPreviewModal(true);
                 }}
                 className="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-700 flex items-center gap-2"
               >
                 <span>🔊</span> Screen Reader
+              </button>
+              <button
+                onClick={() => {
+                  setPreviewSRInitialState(false);
+                  setPreviewSwitchInitialState(true);
+                  setShowPreviewModal(true);
+                }}
+                className="bg-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-700 flex items-center gap-2"
+              >
+                <span>🎛️</span> Switches
               </button>
               <button
                 onClick={() => setShowSamplesModal(true)}
@@ -1721,7 +1739,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Preview Modal with Screen Reader Toggle */}
+      {/* Preview Modal with Screen Reader and Switch Simulator */}
       <PreviewModal
         isOpen={showPreviewModal}
         onClose={() => setShowPreviewModal(false)}
@@ -1729,6 +1747,7 @@ export default function Home() {
         cssContent={files.css.map(f => f.content).join('\n')}
         jsContent={files.javascript.map(f => f.content).join('\n')}
         initialScreenReaderEnabled={previewSRInitialState}
+        initialSwitchSimulatorEnabled={previewSwitchInitialState}
       />
     </div>
   );
