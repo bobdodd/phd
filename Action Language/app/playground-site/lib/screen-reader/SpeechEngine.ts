@@ -95,7 +95,10 @@ export class SpeechEngine {
     };
 
     utterance.onerror = (event) => {
-      console.error('Speech synthesis error:', event);
+      // Only log non-canceled errors (canceled is expected when toggling off)
+      if (event.error !== 'canceled' && event.error !== 'interrupted') {
+        console.error('Speech synthesis error:', event.error);
+      }
       this.isSpeaking = false;
       this.currentUtterance = null;
       this.processQueue();
@@ -132,10 +135,15 @@ export class SpeechEngine {
   }
 
   /**
-   * Stop current speech
+   * Stop current speech and clear queue
    */
   cancel(): void {
-    this.synth.cancel();
+    try {
+      this.synth.cancel();
+    } catch (error) {
+      // Ignore errors from cancel (can happen if nothing is speaking)
+    }
+    this.queue = [];
     this.isSpeaking = false;
     this.currentUtterance = null;
   }
