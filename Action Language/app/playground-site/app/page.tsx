@@ -29,6 +29,7 @@ import { HeadingStructureAnalyzer } from '../../../src/analyzers/HeadingStructur
 import { FormLabelAnalyzer } from '../../../src/analyzers/FormLabelAnalyzer';
 import { AltTextAnalyzer } from '../../../src/analyzers/AltTextAnalyzer';
 import { LandmarkStructureAnalyzer } from '../../../src/analyzers/LandmarkStructureAnalyzer';
+import { LinkTextAnalyzer } from '../../../src/analyzers/LinkTextAnalyzer';
 import { ActionLanguageModelImpl } from '../../../src/models/ActionLanguageModel';
 import { HTMLParser } from '../../../src/parsers/HTMLParser';
 import { DocumentModel } from '../../../src/models/DocumentModel';
@@ -565,6 +566,34 @@ export default function Home() {
         });
 
         for (const issue of landmarkIssues) {
+          detected.push({
+            type: issue.type,
+            severity: issue.severity,
+            wcag: issue.wcagCriteria || [],
+            message: issue.message,
+            location: issue.location.file || 'HTML',
+            line: issue.location.line,
+            column: issue.location.column,
+            fix: issue.fix ? {
+              description: issue.fix.description,
+              code: issue.fix.code,
+              location: {
+                file: issue.fix.location?.file,
+                line: issue.fix.location?.line,
+                column: issue.fix.location?.column
+              }
+            } : undefined
+          });
+        }
+
+        // Run LinkTextAnalyzer
+        const linkTextAnalyzer = new LinkTextAnalyzer();
+        const linkTextIssues = linkTextAnalyzer.analyze({
+          documentModel,
+          scope: 'file'
+        });
+
+        for (const issue of linkTextIssues) {
           detected.push({
             type: issue.type,
             severity: issue.severity,

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Link Text Test Cases</title>
+</head>
+<body>
+  <h1>Link Text Test Cases</h1>
+
+  <!-- GOOD: Descriptive link text -->
+  <a href="/products">Browse our product catalog</a>
+
+  <!-- ISSUE: Generic "click here" -->
+  <a href="/info">Click here</a>
+
+  <!-- ISSUE: Generic "read more" -->
+  <a href="/article">Read more</a>
+
+  <!-- ISSUE: Generic "learn more" -->
+  <a href="/docs">Learn more</a>
+
+  <!-- ISSUE: Generic "here" -->
+  <a href="/page">here</a>
+
+  <!-- ISSUE: Generic "link" -->
+  <a href="/target">link</a>
+
+  <!-- ISSUE: Generic "more" -->
+  <a href="/content">More</a>
+
+  <!-- ISSUE: Empty link text -->
+  <a href="/empty"></a>
+
+  <!-- ISSUE: Link with URL as text -->
+  <a href="/url">http://example.com/page</a>
+  <a href="/url2">https://www.example.com/article</a>
+  <a href="/url3">www.example.com</a>
+
+  <!-- ISSUE: Link with only image but no alt text -->
+  <a href="/image-no-alt">
+    <img src="icon.png">
+  </a>
+
+  <!-- GOOD: Link with image and alt text -->
+  <a href="/image-good">
+    <img src="icon.png" alt="User profile settings">
+  </a>
+
+  <!-- ISSUE: Link text too long -->
+  <a href="/long">This is an extremely long link text that exceeds the recommended maximum of 100 characters and should probably be shortened to make it more concise and easier to understand for screen reader users who navigate by links</a>
+
+  <!-- ISSUE: Duplicate link text with different destinations -->
+  <a href="/destination1">View details</a>
+  <a href="/destination2">View details</a>
+  <a href="/destination3">View details</a>
+
+  <!-- GOOD: Duplicate link text with same destination (not flagged) -->
+  <a href="/same">Contact us</a>
+  <a href="/same">Contact us</a>
+
+  <!-- GOOD: Links with unique descriptive text -->
+  <a href="/report1">View Q1 financial report</a>
+  <a href="/report2">View Q2 financial report</a>
+  <a href="/report3">View Q3 financial report</a>
+
+  <!-- GOOD: Link with aria-label (used instead of text) -->
+  <a href="/aria" aria-label="View user dashboard"></a>
+
+  <!-- GOOD: Link with aria-labelledby -->
+  <span id="link-label">Company contact information</span>
+  <a href="/contact" aria-labelledby="link-label"></a>
+
+  <!-- ISSUE: Generic variations -->
+  <a href="/download">Download</a>
+  <a href="/continue">Continue</a>
+  <a href="/view">View</a>
+  <a href="/go">Go</a>
+
+  <!-- Skip anchors (internal links) - NOT flagged -->
+  <a href="#section1">Jump to section 1</a>
+  <a href="#main-content">Skip to main content</a>
+</body>
+</html>
