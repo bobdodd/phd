@@ -20,7 +20,7 @@ export default function AnalyzersPage() {
         <div className="mb-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="bg-white rounded-xl shadow-lg p-6 text-center border-2 border-paradise-blue/20">
-              <div className="text-4xl font-bold text-paradise-blue mb-2">20</div>
+              <div className="text-4xl font-bold text-paradise-blue mb-2">21</div>
               <div className="text-gray-600 font-medium">Total Analyzers</div>
               <div className="text-xs text-gray-500 mt-1">Behavioral + Structural + Framework</div>
             </div>
@@ -822,6 +822,50 @@ btn.addEventListener('click', handler);
 
               <div className="text-sm text-gray-600 bg-gray-50 rounded p-2">
                 <strong>WCAG:</strong> 3.1.1, 3.1.2 | <strong>Impact:</strong> Screen readers need valid language codes to pronounce content correctly
+              </div>
+            </div>
+
+            {/* Analyzer 21: AnimationControlAnalyzer */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border-l-8 border-green-500">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center text-white text-xl font-bold">21</div>
+                <div>
+                  <h3 className="text-2xl font-bold">AnimationControlAnalyzer</h3>
+                  <div className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">✓ IMPLEMENTED</div>
+                </div>
+              </div>
+              <p className="text-gray-700 mb-4">
+                Detects animations and auto-playing media without proper user controls. Checks for CSS animations, JavaScript animations, and video/audio autoplay without pause mechanisms.
+              </p>
+
+              <div className="space-y-3 mb-4">
+                <div className="bg-red-50 rounded p-3">
+                  <h4 className="font-semibold text-red-900 mb-2">Auto-Play Issues</h4>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">auto-play-audio-no-controls</div>
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">auto-play-video-no-controls</div>
+                  </div>
+                </div>
+                <div className="bg-yellow-50 rounded p-3">
+                  <h4 className="font-semibold text-yellow-900 mb-2">Animation Issues</h4>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">animation-no-reduced-motion</div>
+                    <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">looping-video-no-controls</div>
+                    <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">infinite-animation-no-controls</div>
+                    <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">setinterval-animation-no-controls</div>
+                  </div>
+                </div>
+                <div className="bg-blue-50 rounded p-3">
+                  <h4 className="font-semibold text-blue-900 mb-2">Motion Preference Issues</h4>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="bg-blue-100 text-blue-800 px-2 py-1 rounded">raf-no-reduced-motion</div>
+                    <div className="bg-blue-100 text-blue-800 px-2 py-1 rounded">parallax-no-reduced-motion</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2">
+                <strong>WCAG:</strong> 2.2.2, 2.3.3, 1.4.2 | <strong>Impact:</strong> Users must be able to pause/stop animations; respect prefers-reduced-motion for accessibility
               </div>
             </div>
           </div>

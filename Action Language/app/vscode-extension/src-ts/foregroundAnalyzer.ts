@@ -35,6 +35,7 @@ import { KeyboardTrapAnalyzer } from '../lib/analyzers/KeyboardTrapAnalyzer';
 import { LinkTextAnalyzer } from '../lib/analyzers/LinkTextAnalyzer';
 import { SingleLetterShortcutAnalyzer } from '../lib/analyzers/SingleLetterShortcutAnalyzer';
 import { LanguageAttributeAnalyzer } from '../lib/analyzers/LanguageAttributeAnalyzer';
+import { AnimationControlAnalyzer } from '../lib/analyzers/AnimationControlAnalyzer';
 import { ParadiseCodeActionProvider } from './codeActionProvider';
 
 export class ForegroundAnalyzer {
@@ -77,7 +78,8 @@ export class ForegroundAnalyzer {
       new KeyboardTrapAnalyzer(),
       new LinkTextAnalyzer(),
       new SingleLetterShortcutAnalyzer(),
-      new LanguageAttributeAnalyzer()
+      new LanguageAttributeAnalyzer(),
+      new AnimationControlAnalyzer()
     ];
 
     this.outputChannel.appendLine(`[ForegroundAnalyzer] Initialized with ${this.analyzers.length} analyzers`);

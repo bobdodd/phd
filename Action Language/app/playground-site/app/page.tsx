@@ -31,6 +31,7 @@ import { AltTextAnalyzer } from '../../../src/analyzers/AltTextAnalyzer';
 import { LandmarkStructureAnalyzer } from '../../../src/analyzers/LandmarkStructureAnalyzer';
 import { LinkTextAnalyzer } from '../../../src/analyzers/LinkTextAnalyzer';
 import { SingleLetterShortcutAnalyzer } from '../../../src/analyzers/SingleLetterShortcutAnalyzer';
+import { AnimationControlAnalyzer } from '../../../src/analyzers/AnimationControlAnalyzer';
 import { ActionLanguageModelImpl } from '../../../src/models/ActionLanguageModel';
 import { HTMLParser } from '../../../src/parsers/HTMLParser';
 import { DocumentModel } from '../../../src/models/DocumentModel';
@@ -625,6 +626,36 @@ export default function Home() {
         });
 
         for (const issue of languageIssues) {
+          detected.push({
+            type: issue.type,
+            severity: issue.severity,
+            wcag: issue.wcagCriteria || [],
+            message: issue.message,
+            location: issue.location?.file || 'HTML',
+            line: issue.location?.line,
+            column: issue.location?.column,
+            length: 10,
+            fix: issue.fix ? {
+              description: issue.fix.description,
+              code: issue.fix.code,
+              location: {
+                file: issue.fix.location?.file,
+                line: issue.fix.location?.line,
+                column: issue.fix.location?.column
+              }
+            } : undefined
+          });
+        }
+
+        // Run AnimationControlAnalyzer (needs both DocumentModel and ActionLanguageModel)
+        const animationAnalyzer = new AnimationControlAnalyzer();
+        const animationIssues = animationAnalyzer.analyze({
+          documentModel,
+          actionLanguageModel,
+          scope: 'file'
+        });
+
+        for (const issue of animationIssues) {
           detected.push({
             type: issue.type,
             severity: issue.severity,
