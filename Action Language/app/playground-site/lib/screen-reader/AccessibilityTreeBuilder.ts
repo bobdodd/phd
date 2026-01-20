@@ -18,10 +18,13 @@ export class AccessibilityTreeBuilder {
     const bodyElement = document.body;
     if (!bodyElement) return tree;
 
-    // Recursively build tree
-    const bodyNode = this.buildNode(bodyElement, null);
-    if (bodyNode) {
-      tree.push(bodyNode);
+    // Process body's children directly into tree
+    // (body itself is generic and shouldn't be in the tree)
+    for (const child of Array.from(bodyElement.children)) {
+      const childNode = this.buildNode(child, null);
+      if (childNode) {
+        tree.push(childNode);
+      }
     }
 
     // Flatten tree for navigation (add treeIndex)
