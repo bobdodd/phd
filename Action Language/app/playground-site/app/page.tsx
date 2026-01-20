@@ -151,6 +151,7 @@ export default function Home() {
   const [showFixModal, setShowFixModal] = useState(false);
   const [selectedFix, setSelectedFix] = useState<IssueFix | null>(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [previewSRInitialState, setPreviewSRInitialState] = useState(false);
 
   // Save/Load state
   const [savedProjects, setSavedProjects] = useState<{ key: string; metadata?: PlaygroundFiles['metadata'] }[]>([]);
@@ -966,10 +967,22 @@ export default function Home() {
                 </div>
               )}
               <button
-                onClick={() => setShowPreviewModal(true)}
+                onClick={() => {
+                  setPreviewSRInitialState(false);
+                  setShowPreviewModal(true);
+                }}
                 className="bg-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-700 flex items-center gap-2"
               >
                 <span>▶</span> Preview
+              </button>
+              <button
+                onClick={() => {
+                  setPreviewSRInitialState(true);
+                  setShowPreviewModal(true);
+                }}
+                className="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-700 flex items-center gap-2"
+              >
+                <span>🔊</span> Screen Reader
               </button>
               <button
                 onClick={() => setShowSamplesModal(true)}
@@ -1715,6 +1728,7 @@ export default function Home() {
         htmlContent={files.html.map(f => f.content).join('\n')}
         cssContent={files.css.map(f => f.content).join('\n')}
         jsContent={files.javascript.map(f => f.content).join('\n')}
+        initialScreenReaderEnabled={previewSRInitialState}
       />
     </div>
   );
