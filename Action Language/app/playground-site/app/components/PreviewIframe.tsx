@@ -131,12 +131,23 @@ export default function PreviewIframe({
       highlightedElement.style.boxShadow = '0 0 0 4px rgba(239, 68, 68, 0.3)';
       highlightedElement.style.transition = 'all 0.2s ease-in-out';
 
-      // Scroll into view
-      highlightedElement.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-        inline: 'nearest'
-      });
+      // Scroll into view within the iframe only (don't affect parent page)
+      // Get element's position relative to iframe's document
+      const rect = highlightedElement.getBoundingClientRect();
+      const iframeDoc = iframe.contentDocument;
+
+      if (iframeDoc && iframeDoc.documentElement) {
+        // Calculate target scroll position (center the element)
+        const targetScrollTop = rect.top + iframeDoc.documentElement.scrollTop - (iframeWindow.innerHeight / 2) + (rect.height / 2);
+        const targetScrollLeft = rect.left + iframeDoc.documentElement.scrollLeft - (iframeWindow.innerWidth / 2) + (rect.width / 2);
+
+        // Scroll the iframe's document smoothly
+        iframeDoc.documentElement.scrollTo({
+          top: Math.max(0, targetScrollTop),
+          left: Math.max(0, targetScrollLeft),
+          behavior: 'smooth'
+        });
+      }
     }
 
     return () => {

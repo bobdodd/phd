@@ -18,6 +18,9 @@ export interface SessionEvent {
     command?: string;
     speechEnabled?: boolean;
     speechRate?: number;
+    // Element identification for replay
+    elementSelector?: string; // CSS selector to find element in DOM
+    elementIndex?: number; // Index among elements with same selector
   };
 }
 
@@ -101,6 +104,15 @@ export class SessionRecorder {
   recordNavigation(message: SRMessage, node: AccessibilityNode | null, command?: string): void {
     if (!this.isRecording || !this.session) return;
 
+    // Generate element selector for replay
+    let elementSelector: string | undefined;
+    let elementIndex: number | undefined;
+
+    if (node?.domElement) {
+      elementSelector = this.generateSelector(node.domElement);
+      elementIndex = this.getElementIndex(node.domElement, elementSelector);
+    }
+
     const event: SessionEvent = {
       id: `event-${this.eventCounter++}`,
       timestamp: Date.now(),
@@ -110,7 +122,9 @@ export class SessionRecorder {
         command,
         nodeId: node?.id,
         nodeName: node?.name,
-        nodeRole: node?.role
+        nodeRole: node?.role,
+        elementSelector,
+        elementIndex
       }
     };
 
@@ -119,6 +133,44 @@ export class SessionRecorder {
 
     if (node) {
       this.visitedNodes.add(node.id);
+    }
+  }
+
+  /**
+   * Generate a CSS selector for an element
+   */
+  private generateSelector(element: HTMLElement): string {
+    // Try ID first
+    if (element.id) {
+      return `#${element.id}`;
+    }
+
+    // Build path from classes and tag
+    const tag = element.tagName.toLowerCase();
+    const classes = Array.from(element.classList).slice(0, 3).join('.');
+
+    if (classes) {
+      return `${tag}.${classes}`;
+    }
+
+    // Fallback to tag + role
+    const role = element.getAttribute('role');
+    if (role) {
+      return `${tag}[role="${role}"]`;
+    }
+
+    return tag;
+  }
+
+  /**
+   * Get index of element among elements matching selector
+   */
+  private getElementIndex(element: HTMLElement, selector: string): number {
+    try {
+      const matches = Array.from(element.ownerDocument.querySelectorAll(selector));
+      return matches.indexOf(element);
+    } catch {
+      return 0;
     }
   }
 

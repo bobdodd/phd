@@ -2,8 +2,11 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import PreviewIframe from './PreviewIframe';
+import ReplayControls from './ReplayControls';
 import { AccessibilityNode, SRMessage, NavigationMode } from '../../lib/screen-reader/types';
 import { VirtualScreenReader } from '../../lib/screen-reader/VirtualScreenReader';
+import { Session, SessionRecorder } from '../../lib/screen-reader/SessionRecorder';
+import { SessionReplay } from '../../lib/screen-reader/SessionReplay';
 
 interface PreviewModalProps {
   isOpen: boolean;
@@ -34,10 +37,15 @@ export default function PreviewModal({
   const [speechRate, setSpeechRate] = useState(1.5);
   const [isRecording, setIsRecording] = useState(false);
 
+  // Replay states
+  const [isReplayMode, setIsReplayMode] = useState(false);
+  const [replaySession, setReplaySession] = useState<Session | null>(null);
+
   const modalRef = useRef<HTMLDivElement>(null);
   const iframeDocRef = useRef<Document | null>(null);
   const screenReaderRef = useRef<VirtualScreenReader | null>(null);
   const srOutputRef = useRef<HTMLDivElement>(null);
+  const replayRef = useRef<SessionReplay | null>(null);
 
   // Set initial screen reader state when modal opens
   useEffect(() => {
@@ -89,10 +97,15 @@ export default function PreviewModal({
     iframeDocRef.current = iframeDoc;
 
     // Build accessibility tree and load into screen reader if enabled
-    if (screenReaderEnabled && screenReaderRef.current) {
+    if (screenReaderEnabled && screenReaderRef.current && !isReplayMode) {
       screenReaderRef.current.loadDocument(iframeDoc);
     }
-  }, [screenReaderEnabled]);
+
+    // If in replay mode, set iframe document for element highlighting
+    if (isReplayMode && replayRef.current) {
+      replayRef.current.setIframeDocument(iframeDoc);
+    }
+  }, [screenReaderEnabled, isReplayMode]);
 
   // Handle keyboard navigation (only when screen reader is enabled)
   useEffect(() => {
@@ -278,6 +291,154 @@ export default function PreviewModal({
     }
   };
 
+  // Replay the current session (most recent recording)
+  const replayCurrentSession = () => {
+    if (!screenReaderRef.current) return;
+
+    const session = screenReaderRef.current.getCurrentSession();
+    if (!session) {
+      alert('No session to replay');
+      return;
+    }
+
+    // Enter replay mode
+    setIsReplayMode(true);
+    setReplaySession(session);
+
+    // Clear SR output
+    setSrOutput([]);
+    setCurrentNode(null);
+    setHighlightedElement(null);
+
+    // Initialize replay engine with element highlighting
+    const replay = new SessionReplay(
+      (state) => {
+        console.log('Replay state:', state);
+      },
+      (event) => {
+        // Simulate SR announcement for this event
+        if (event.data.message) {
+          setSrOutput(prev => [...prev, event.data.message!]);
+
+          // Auto-scroll to latest message
+          setTimeout(() => {
+            if (srOutputRef.current) {
+              srOutputRef.current.scrollTop = srOutputRef.current.scrollHeight;
+            }
+          }, 0);
+        }
+      },
+      (progress) => {
+        console.log('Progress:', progress);
+      },
+      (element) => {
+        // Highlight the element during replay
+        setHighlightedElement(element);
+      }
+    );
+
+    replay.loadSession(session);
+
+    // Set iframe document if available
+    if (iframeDocRef.current) {
+      replay.setIframeDocument(iframeDocRef.current);
+    }
+
+    replayRef.current = replay;
+  };
+
+  // Load session for replay
+  const loadSession = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = async (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      const file = target.files?.[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const session = SessionRecorder.loadFromJSON(text);
+
+        // Validate session
+        if (!session.id || !session.events || !session.htmlContent) {
+          alert('Invalid session file');
+          return;
+        }
+
+        // Enter replay mode
+        setIsReplayMode(true);
+        setReplaySession(session);
+
+        // Stop any ongoing recording
+        if (isRecording && screenReaderRef.current) {
+          screenReaderRef.current.stopRecording();
+          setIsRecording(false);
+        }
+
+        // Clear SR output
+        setSrOutput([]);
+        setCurrentNode(null);
+        setHighlightedElement(null);
+
+        // Initialize replay engine with element highlighting
+        const replay = new SessionReplay(
+          (state) => {
+            console.log('Replay state:', state);
+          },
+          (event, index, total) => {
+            // Simulate SR announcement for this event
+            if (event.data.message) {
+              setSrOutput(prev => [...prev, event.data.message!]);
+
+              // Auto-scroll to latest message
+              setTimeout(() => {
+                if (srOutputRef.current) {
+                  srOutputRef.current.scrollTop = srOutputRef.current.scrollHeight;
+                }
+              }, 0);
+            }
+          },
+          (progress) => {
+            console.log('Progress:', progress);
+          },
+          (element) => {
+            // Highlight the element during replay
+            setHighlightedElement(element);
+          }
+        );
+
+        replay.loadSession(session);
+
+        // Set iframe document if available (will be set when iframe loads)
+        if (iframeDocRef.current) {
+          replay.setIframeDocument(iframeDocRef.current);
+        }
+
+        replayRef.current = replay;
+
+      } catch (error) {
+        console.error('Failed to load session:', error);
+        alert('Failed to load session file. Please check the file format.');
+      }
+    };
+    input.click();
+  };
+
+  // Exit replay mode
+  const exitReplayMode = () => {
+    if (replayRef.current) {
+      replayRef.current.destroy();
+      replayRef.current = null;
+    }
+    setIsReplayMode(false);
+    setReplaySession(null);
+    setSrOutput([]);
+    setCurrentNode(null);
+    setHighlightedElement(null);
+  };
+
   // Prevent body scroll when modal is open
   useEffect(() => {
     if (!isOpen) return;
@@ -390,10 +551,12 @@ export default function PreviewModal({
             </div>
             */}
 
-            {/* Recording Controls (only when SR is enabled) */}
-            {screenReaderEnabled && (
+            {/* Recording & Replay Controls (only when SR is enabled) */}
+            {screenReaderEnabled && !isReplayMode && (
               <>
                 <div className="h-6 w-px bg-white/30"></div>
+
+                {/* Recording Controls */}
                 <button
                   onClick={toggleRecording}
                   className={`px-4 py-2 rounded-lg font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-white ${
@@ -406,16 +569,53 @@ export default function PreviewModal({
                 >
                   {isRecording ? '⏹ Stop' : '⏺ Record'}
                 </button>
-                {isRecording && (
+
+                {/* Export and Replay buttons (only when stopped and has session) */}
+                {!isRecording && screenReaderRef.current?.getCurrentSession() && (
+                  <>
+                    <button
+                      onClick={exportSession}
+                      className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-white"
+                      title="Export session to files"
+                      aria-label="Export session"
+                    >
+                      💾 Save
+                    </button>
+                    <button
+                      onClick={replayCurrentSession}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-white"
+                      title="Replay current recording"
+                      aria-label="Replay session"
+                    >
+                      ▶ Replay
+                    </button>
+                  </>
+                )}
+
+                {/* Load button (always available when not recording) */}
+                {!isRecording && (
                   <button
-                    onClick={exportSession}
+                    onClick={loadSession}
                     className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-white"
-                    title="Export current session"
-                    aria-label="Export session"
+                    title="Load a saved session file"
+                    aria-label="Load session"
                   >
-                    💾 Export
+                    📂 Load
                   </button>
                 )}
+              </>
+            )}
+            {screenReaderEnabled && isReplayMode && (
+              <>
+                <div className="h-6 w-px bg-white/30"></div>
+                <button
+                  onClick={exitReplayMode}
+                  className="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-white"
+                  title="Exit replay mode"
+                  aria-label="Exit replay mode"
+                >
+                  ← Exit Replay
+                </button>
               </>
             )}
 
@@ -460,11 +660,11 @@ export default function PreviewModal({
             {/* Preview Iframe */}
             <div className="flex-1 overflow-auto bg-gray-50">
               <PreviewIframe
-                htmlContent={htmlContent}
-                cssContent={cssContent}
-                jsContent={jsContent}
+                htmlContent={isReplayMode && replaySession ? replaySession.htmlContent : htmlContent}
+                cssContent={isReplayMode && replaySession ? replaySession.cssContent : cssContent}
+                jsContent={isReplayMode && replaySession ? replaySession.jsContent : jsContent}
                 onDomReady={handleDomReady}
-                highlightedElement={screenReaderEnabled ? highlightedElement : null}
+                highlightedElement={highlightedElement}
               />
             </div>
           </div>
@@ -564,11 +764,20 @@ export default function PreviewModal({
                 </div>
               </div>
 
-              {/* Navigation Controls */}
-              <div className="bg-gray-50 border-t border-gray-200 px-6 py-4">
-                <h3 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">
-                  Navigation Shortcuts
-                </h3>
+              {/* Replay Controls (when in replay mode) */}
+              {isReplayMode && replaySession && replayRef.current && (
+                <ReplayControls
+                  replay={replayRef.current}
+                  session={replaySession}
+                />
+              )}
+
+              {/* Navigation Controls (when not in replay mode) */}
+              {!isReplayMode && (
+                <div className="bg-gray-50 border-t border-gray-200 px-6 py-4">
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">
+                    Navigation Shortcuts
+                  </h3>
                 <div className="grid grid-cols-2 gap-2 text-sm mb-3">
                   <div className="flex items-center gap-2">
                     <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">
@@ -695,7 +904,8 @@ export default function PreviewModal({
                     </button>
                   </div>
                 </div>
-              </div>
+                </div>
+              )}
             </div>
           )}
         </div>
