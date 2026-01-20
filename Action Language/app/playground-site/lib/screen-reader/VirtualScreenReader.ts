@@ -1180,8 +1180,87 @@ export class VirtualScreenReader {
         if (node.name) parts.push(node.name);
         break;
 
+      case 'legend':
+        parts.push('Legend');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'caption':
+        parts.push('Caption');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'rowgroup':
+        // For thead, tbody, tfoot
+        if (node.tagName === 'thead') {
+          parts.push('Table header');
+        } else if (node.tagName === 'tbody') {
+          parts.push('Table body');
+        } else if (node.tagName === 'tfoot') {
+          parts.push('Table footer');
+        } else {
+          parts.push('Row group');
+        }
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'strong':
+        parts.push('Important');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'emphasis':
+        parts.push('Emphasis');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'subscript':
+        parts.push('Subscript');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'superscript':
+        parts.push('Superscript');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'iframe':
+        parts.push('Frame');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'object':
+        parts.push('Embedded object');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'audio':
+        parts.push('Audio');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'video':
+        parts.push('Video');
+        if (node.name) parts.push(node.name);
+        break;
+
       default:
-        if (node.name) {
+        // For group role, check if it's a special element
+        if (node.role === 'group') {
+          if (node.tagName === 'fieldset') {
+            parts.push('Fieldset');
+            if (node.name) parts.push(node.name);
+          } else if (node.tagName === 'optgroup') {
+            parts.push('Option group');
+            if (node.name) parts.push(node.name);
+          } else if (node.tagName === 'address') {
+            parts.push('Contact information');
+            if (node.name) parts.push(node.name);
+          } else {
+            parts.push('Group');
+            if (node.name) parts.push(node.name);
+          }
+        } else if (node.name) {
           parts.push(node.name);
         } else {
           parts.push(node.role);

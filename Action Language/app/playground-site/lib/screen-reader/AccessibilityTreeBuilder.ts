@@ -272,6 +272,68 @@ export class AccessibilityTreeBuilder {
         return 'cite';
       case 'dfn':
         return 'definition'; // Defining term
+      case 'fieldset':
+        return 'group';
+      case 'legend':
+        return 'legend';
+      case 'optgroup':
+        return 'group';
+      case 'caption':
+        return 'caption';
+      case 'colgroup':
+      case 'col':
+        return 'none'; // Not exposed in accessibility tree
+      case 'thead':
+        return 'rowgroup';
+      case 'tbody':
+        return 'rowgroup';
+      case 'tfoot':
+        return 'rowgroup';
+      case 'address':
+        return 'group';
+      case 's':
+      case 'strike':
+        return 'deletion'; // Strikethrough indicates deletion
+      case 'u':
+        return 'generic'; // Underline doesn't have semantic meaning
+      case 'small':
+        return 'generic'; // Small text is presentational
+      case 'strong':
+      case 'b':
+        return 'strong';
+      case 'em':
+      case 'i':
+        return 'emphasis';
+      case 'sub':
+        return 'subscript';
+      case 'sup':
+        return 'superscript';
+      case 'br':
+      case 'wbr':
+        return 'none'; // Line breaks don't appear in accessibility tree
+      case 'hr':
+        return 'separator';
+      case 'iframe':
+        return 'iframe';
+      case 'object':
+      case 'embed':
+        return 'object';
+      case 'audio':
+        return 'audio';
+      case 'video':
+        return 'video';
+      case 'track':
+        return 'none'; // Track is metadata, not exposed
+      case 'source':
+        return 'none'; // Source is metadata, not exposed
+      case 'canvas':
+        return 'img'; // Canvas treated as image unless given role
+      case 'svg':
+        return 'img'; // SVG treated as image unless given role
+      case 'map':
+        return 'none'; // Image map container
+      case 'area':
+        return 'link'; // Image map area
       default:
         return 'generic';
     }
