@@ -111,7 +111,7 @@ export class SpeechEngine {
   /**
    * Add text to queue (doesn't interrupt current speech)
    */
-  queue(text: string): void {
+  enqueue(text: string): void {
     if (!this.settings.enabled || !text.trim()) return;
 
     this.queue.push(text);
