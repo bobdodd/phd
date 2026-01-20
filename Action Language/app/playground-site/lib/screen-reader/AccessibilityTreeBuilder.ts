@@ -50,6 +50,16 @@ export class AccessibilityTreeBuilder {
       return this.processChildren(htmlElement, parent);
     }
 
+    // For generic role, check if there's meaningful text content
+    // If it's just a container with no direct text, skip it
+    if (role === 'generic') {
+      const hasDirectText = this.hasDirectTextContent(htmlElement);
+      if (!hasDirectText) {
+        // No direct text, just process children
+        return this.processChildren(htmlElement, parent);
+      }
+    }
+
     // Build the node
     const node: AccessibilityNode = {
       id: `node-${this.nodeIdCounter++}`,
@@ -77,6 +87,21 @@ export class AccessibilityTreeBuilder {
     }
 
     return node;
+  }
+
+  /**
+   * Check if element has direct text content (not just whitespace)
+   */
+  private hasDirectTextContent(element: HTMLElement): boolean {
+    for (const node of Array.from(element.childNodes)) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.textContent?.trim();
+        if (text && text.length > 0) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   /**
@@ -248,8 +273,10 @@ export class AccessibilityTreeBuilder {
       }
     }
 
-    // 5. Text content (for most elements)
-    if (role === 'button' || role === 'link' || role === 'heading') {
+    // 5. Text content (for most elements including paragraphs, divs, spans)
+    if (role === 'button' || role === 'link' || role === 'heading' || role === 'generic' ||
+        role === 'listitem' || role === 'cell' || role === 'row' || role === 'article' ||
+        role === 'region' || role === 'navigation' || role === 'main' || role === 'complementary') {
       return element.textContent?.trim() || '';
     }
 
