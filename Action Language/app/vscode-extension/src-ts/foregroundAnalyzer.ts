@@ -36,6 +36,7 @@ import { LinkTextAnalyzer } from '../lib/analyzers/LinkTextAnalyzer';
 import { SingleLetterShortcutAnalyzer } from '../lib/analyzers/SingleLetterShortcutAnalyzer';
 import { LanguageAttributeAnalyzer } from '../lib/analyzers/LanguageAttributeAnalyzer';
 import { AnimationControlAnalyzer } from '../lib/analyzers/AnimationControlAnalyzer';
+import { ModalAccessibilityAnalyzer } from '../lib/analyzers/ModalAccessibilityAnalyzer';
 import { ParadiseCodeActionProvider } from './codeActionProvider';
 
 export class ForegroundAnalyzer {
@@ -79,7 +80,8 @@ export class ForegroundAnalyzer {
       new LinkTextAnalyzer(),
       new SingleLetterShortcutAnalyzer(),
       new LanguageAttributeAnalyzer(),
-      new AnimationControlAnalyzer()
+      new AnimationControlAnalyzer(),
+      new ModalAccessibilityAnalyzer()
     ];
 
     this.outputChannel.appendLine(`[ForegroundAnalyzer] Initialized with ${this.analyzers.length} analyzers`);

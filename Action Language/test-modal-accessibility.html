@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modal Accessibility Test Cases</title>
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+
+        .modal.open {
+            display: block;
+        }
+
+        .backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .backdrop.open {
+            display: block;
+        }
+
+        button {
+            padding: 8px 16px;
+            margin: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Modal Accessibility Test Cases (WCAG 2.1.2, 2.4.3, 4.1.2)</h1>
+
+    <!-- Test 1: Perfect accessible modal -->
+    <section>
+        <h2>Test 1: Fully Accessible Modal (COMPLIANT)</h2>
+        <button id="open-good-modal">Open Accessible Modal</button>
+
+        <div class="backdrop" id="good-backdrop"></div>
+        <div
+            class="modal"
+            id="good-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="good-modal-title"
+        >
+            <h2 id="good-modal-title">Accessible Dialog</h2>
+            <p>This modal has all required attributes and proper focus management.</p>
+            <button id="good-modal-close" aria-label="Close dialog">Close</button>
+        </div>
+    </section>
+
+    <!-- Test 2: Modal missing role -->
+    <section>
+        <h2>Test 2: Modal Missing role="dialog"</h2>
+        <!-- ❌ ISSUE: modal-missing-role (error) -->
+        <button id="open-no-role-modal">Open Modal</button>
+
+        <div class="modal" id="no-role-modal" aria-modal="true" aria-labelledby="no-role-title">
+            <h2 id="no-role-title">Modal Without Role</h2>
+            <p>This modal is missing role="dialog"</p>
+            <button id="no-role-close">Close</button>
+        </div>
+    </section>
+
+    <!-- Test 3: Modal missing aria-modal -->
+    <section>
+        <h2>Test 3: Modal Missing aria-modal="true"</h2>
+        <!-- ❌ ISSUE: modal-missing-aria-modal (warning) -->
+        <button id="open-no-aria-modal">Open Modal</button>
+
+        <div class="modal" id="no-aria-modal" role="dialog" aria-labelledby="no-aria-title">
+            <h2 id="no-aria-title">Modal Without aria-modal</h2>
+            <p>This modal is missing aria-modal="true"</p>
+            <button id="no-aria-close">Close</button>
+        </div>
+    </section>
+
+    <!-- Test 4: Modal missing label -->
+    <section>
+        <h2>Test 4: Modal Missing aria-labelledby or aria-label</h2>
+        <!-- ❌ ISSUE: modal-missing-label (error) -->
+        <button id="open-no-label-modal">Open Modal</button>
+
+        <div class="modal" id="no-label-modal" role="dialog" aria-modal="true">
+            <h2>Modal Without Label</h2>
+            <p>This modal has no aria-labelledby or aria-label</p>
+            <button id="no-label-close">Close</button>
+        </div>
+    </section>
+
+    <!-- Test 5: Modal without close button -->
+    <section>
+        <h2>Test 5: Modal Without Close Button</h2>
+        <!-- ❌ ISSUE: modal-no-close-button (warning) -->
+        <button id="open-no-close-modal">Open Modal</button>
+
+        <div class="modal" id="no-close-modal" role="dialog" aria-modal="true" aria-label="Dialog without close button">
+            <h2>No Close Button</h2>
+            <p>This modal has no visible close button - only Escape key works</p>
+        </div>
+    </section>
+
+    <!-- Test 6: Modal without Escape handler -->
+    <section>
+        <h2>Test 6: Modal Without Escape Key Handler</h2>
+        <!-- ❌ ISSUE: modal-no-escape-handler (error) -->
+        <button id="open-no-escape-modal">Open Modal</button>
+
+        <div class="modal" id="no-escape-modal" role="dialog" aria-modal="true" aria-label="Dialog without escape">
+            <h2>No Escape Handler</h2>
+            <p>This modal cannot be closed with Escape key - WCAG 2.1.2 violation!</p>
+            <button id="no-escape-close">Close</button>
+        </div>
+    </section>
+
+    <!-- Test 7: Modal without focus trap -->
+    <section>
+        <h2>Test 7: Modal Without Focus Trap</h2>
+        <!-- ❌ ISSUE: modal-no-focus-trap (warning) -->
+        <button id="open-no-trap-modal">Open Modal</button>
+
+        <div class="modal" id="no-trap-modal" role="dialog" aria-modal="true" aria-label="Dialog without focus trap">
+            <h2>No Focus Trap</h2>
+            <p>This modal doesn't trap focus - Tab can escape the dialog</p>
+            <button id="no-trap-close">Close</button>
+        </div>
+    </section>
+
+    <!-- Test 8: Modal without focus management -->
+    <section>
+        <h2>Test 8: Modal Without Focus Management</h2>
+        <!-- ❌ ISSUE: modal-no-focus-management (warning) -->
+        <button id="open-no-focus-modal">Open Modal</button>
+
+        <div class="modal" id="no-focus-modal" role="dialog" aria-modal="true" aria-label="Dialog without focus management">
+            <h2>No Focus Management</h2>
+            <p>This modal doesn't move focus when opened or return it when closed</p>
+            <button id="no-focus-close">Close</button>
+        </div>
+    </section>
+
+    <script>
+        // Test 1: GOOD - Fully accessible modal with all features
+        (function() {
+            const openBtn = document.getElementById('open-good-modal');
+            const modal = document.getElementById('good-modal');
+            const backdrop = document.getElementById('good-backdrop');
+            const closeBtn = document.getElementById('good-modal-close');
+            let previouslyFocusedElement = null;
+
+            // Get all focusable elements
+            function getFocusableElements(modal) {
+                return modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            }
+
+            function openModal() {
+                previouslyFocusedElement = document.activeElement;
+                modal.classList.add('open');
+                backdrop.classList.add('open');
+
+                // Move focus to first focusable element (or close button)
+                const focusable = getFocusableElements(modal);
+                if (focusable.length > 0) {
+                    focusable[0].focus();
+                }
+            }
+
+            function closeModal() {
+                modal.classList.remove('open');
+                backdrop.classList.remove('open');
+
+                // Return focus to trigger
+                if (previouslyFocusedElement) {
+                    previouslyFocusedElement.focus();
+                }
+            }
+
+            // Open on button click
+            openBtn.addEventListener('click', openModal);
+            closeBtn.addEventListener('click', closeModal);
+            backdrop.addEventListener('click', closeModal);
+
+            // Escape key handler
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('open')) {
+                    closeModal();
+                }
+            });
+
+            // Focus trap
+            modal.addEventListener('keydown', (e) => {
+                if (e.key === 'Tab') {
+                    const focusable = Array.from(getFocusableElements(modal));
+                    const firstFocusable = focusable[0];
+                    const lastFocusable = focusable[focusable.length - 1];
+
+                    if (e.shiftKey) {
+                        // Shift+Tab: if on first, go to last
+                        if (document.activeElement === firstFocusable) {
+                            e.preventDefault();
+                            lastFocusable.focus();
+                        }
+                    } else {
+                        // Tab: if on last, go to first
+                        if (document.activeElement === lastFocusable) {
+                            e.preventDefault();
+                            firstFocusable.focus();
+                        }
+                    }
+                }
+            });
+        })();
+
+        // Test 2: Modal missing role - has close button and escape
+        (function() {
+            const openBtn = document.getElementById('open-no-role-modal');
+            const modal = document.getElementById('no-role-modal');
+            const closeBtn = document.getElementById('no-role-close');
+
+            openBtn.addEventListener('click', () => modal.classList.add('open'));
+            closeBtn.addEventListener('click', () => modal.classList.remove('open'));
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('open')) {
+                    modal.classList.remove('open');
+                }
+            });
+        })();
+
+        // Test 3: Modal missing aria-modal - has close and escape
+        (function() {
+            const openBtn = document.getElementById('open-no-aria-modal');
+            const modal = document.getElementById('no-aria-modal');
+            const closeBtn = document.getElementById('no-aria-close');
+
+            openBtn.addEventListener('click', () => modal.classList.add('open'));
+            closeBtn.addEventListener('click', () => modal.classList.remove('open'));
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('open')) {
+                    modal.classList.remove('open');
+                }
+            });
+        })();
+
+        // Test 4: Modal missing label - has close and escape
+        (function() {
+            const openBtn = document.getElementById('open-no-label-modal');
+            const modal = document.getElementById('no-label-modal');
+            const closeBtn = document.getElementById('no-label-close');
+
+            openBtn.addEventListener('click', () => modal.classList.add('open'));
+            closeBtn.addEventListener('click', () => modal.classList.remove('open'));
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('open')) {
+                    modal.classList.remove('open');
+                }
+            });
+        })();
+
+        // Test 5: Modal without close button - only has escape
+        (function() {
+            const openBtn = document.getElementById('open-no-close-modal');
+            const modal = document.getElementById('no-close-modal');
+
+            openBtn.addEventListener('click', () => modal.classList.add('open'));
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('open')) {
+                    modal.classList.remove('open');
+                }
+            });
+        })();
+
+        // Test 6: Modal without Escape handler - only has close button
+        (function() {
+            const openBtn = document.getElementById('open-no-escape-modal');
+            const modal = document.getElementById('no-escape-modal');
+            const closeBtn = document.getElementById('no-escape-close');
+
+            openBtn.addEventListener('click', () => modal.classList.add('open'));
+            closeBtn.addEventListener('click', () => modal.classList.remove('open'));
+            // NO ESCAPE HANDLER - this is the issue!
+        })();
+
+        // Test 7: Modal without focus trap - has close and escape but no Tab trapping
+        (function() {
+            const openBtn = document.getElementById('open-no-trap-modal');
+            const modal = document.getElementById('no-trap-modal');
+            const closeBtn = document.getElementById('no-trap-close');
+
+            openBtn.addEventListener('click', () => modal.classList.add('open'));
+            closeBtn.addEventListener('click', () => modal.classList.remove('open'));
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('open')) {
+                    modal.classList.remove('open');
+                }
+            });
+            // NO FOCUS TRAP - Tab can escape the modal
+        })();
+
+        // Test 8: Modal without focus management - no .focus() calls
+        (function() {
+            const openBtn = document.getElementById('open-no-focus-modal');
+            const modal = document.getElementById('no-focus-modal');
+            const closeBtn = document.getElementById('no-focus-close');
+
+            openBtn.addEventListener('click', () => {
+                modal.classList.add('open');
+                // NO FOCUS MANAGEMENT - doesn't move focus to modal
+            });
+
+            closeBtn.addEventListener('click', () => {
+                modal.classList.remove('open');
+                // NO FOCUS RETURN - doesn't return focus to trigger
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('open')) {
+                    modal.classList.remove('open');
+                }
+            });
+        })();
+    </script>
+
+    <footer style="margin-top: 40px; padding: 40px; background: #f7fafc;">
+        <h3>Expected Issues Summary:</h3>
+        <ul>
+            <li><strong>modal-missing-role (error):</strong> Test 2 - Modal without role="dialog"</li>
+            <li><strong>modal-missing-aria-modal (warning):</strong> Test 3 - Modal without aria-modal="true"</li>
+            <li><strong>modal-missing-label (error):</strong> Test 4 - Modal without aria-labelledby or aria-label</li>
+            <li><strong>modal-no-close-button (warning):</strong> Test 5 - No visible close button</li>
+            <li><strong>modal-no-escape-handler (error):</strong> Test 6 - Cannot be closed with Escape</li>
+            <li><strong>modal-no-focus-trap (warning):</strong> Test 7 - Focus not trapped in modal</li>
+            <li><strong>modal-no-focus-management (warning):</strong> Test 8 - Focus not managed on open/close</li>
+        </ul>
+        <p><strong>Total expected:</strong> 3 errors + 4 warnings = 7 issues</p>
+        <p><strong>COMPLIANT example:</strong> Test 1 - Should have NO issues detected</p>
+    </footer>
+</body>
+</html>
