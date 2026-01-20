@@ -2,6 +2,7 @@ import { AccessibilityNode, SRMessage, NavigationMode } from './types';
 import { AccessibilityTreeBuilder } from './AccessibilityTreeBuilder';
 import { LiveRegionSimulator } from './LiveRegionSimulator';
 import { SpeechEngine } from './SpeechEngine';
+import { SessionRecorder, Session } from './SessionRecorder';
 
 /**
  * Virtual Screen Reader Engine
@@ -15,6 +16,7 @@ export class VirtualScreenReader {
   private messageIdCounter = 0;
   private liveRegionSimulator: LiveRegionSimulator;
   private speechEngine: SpeechEngine;
+  private sessionRecorder: SessionRecorder;
 
   private onAnnouncement?: (message: SRMessage) => void;
   private onPositionChange?: (node: AccessibilityNode | null, element: HTMLElement | null) => void;
@@ -28,6 +30,9 @@ export class VirtualScreenReader {
 
     // Initialize speech engine
     this.speechEngine = new SpeechEngine();
+
+    // Initialize session recorder
+    this.sessionRecorder = new SessionRecorder();
 
     // Initialize live region simulator with announcement callback
     this.liveRegionSimulator = new LiveRegionSimulator((messageData) => {
@@ -625,6 +630,9 @@ export class VirtualScreenReader {
   toggleMode(): void {
     this.mode = this.mode === 'browse' ? 'focus' : 'browse';
 
+    // Record mode change
+    this.sessionRecorder.recordModeChange(this.mode);
+
     if (this.mode === 'focus') {
       // When entering focus mode, move to nearest focusable element
       const currentNode = this.getCurrentNode();
@@ -669,7 +677,7 @@ export class VirtualScreenReader {
   /**
    * Move to a specific index in the tree
    */
-  private moveTo(index: number): void {
+  private moveTo(index: number, command?: string): void {
     if (index < 0 || index >= this.flatTree.length) return;
 
     const previousNode = this.getCurrentNode();
@@ -1509,6 +1517,13 @@ export class VirtualScreenReader {
       this.speechEngine.speak(message.content, interrupt);
     }
 
+    // Record to session
+    if (message.type === 'navigation') {
+      this.sessionRecorder.recordNavigation(message, this.getCurrentNode());
+    } else {
+      this.sessionRecorder.recordAnnouncement(message);
+    }
+
     if (this.onAnnouncement) {
       this.onAnnouncement(message);
     }
@@ -1594,6 +1609,10 @@ export class VirtualScreenReader {
   toggleSpeech(): boolean {
     const currentState = this.speechEngine.getSettings().enabled;
     this.speechEngine.setEnabled(!currentState);
+
+    // Record speech toggle
+    this.sessionRecorder.recordSpeechToggle(!currentState);
+
     return !currentState;
   }
 
@@ -1602,5 +1621,40 @@ export class VirtualScreenReader {
    */
   isSpeechEnabled(): boolean {
     return this.speechEngine.getSettings().enabled;
+  }
+
+  /**
+   * Start recording session
+   */
+  startRecording(htmlContent: string, cssContent: string, jsContent: string): void {
+    this.sessionRecorder.startRecording(htmlContent, cssContent, jsContent);
+  }
+
+  /**
+   * Stop recording and return session
+   */
+  stopRecording(): Session | null {
+    return this.sessionRecorder.stopRecording();
+  }
+
+  /**
+   * Check if recording
+   */
+  isRecording(): boolean {
+    return this.sessionRecorder.isSessionRecording();
+  }
+
+  /**
+   * Get current session
+   */
+  getCurrentSession(): Session | null {
+    return this.sessionRecorder.getCurrentSession();
+  }
+
+  /**
+   * Get session recorder for export operations
+   */
+  getSessionRecorder(): SessionRecorder {
+    return this.sessionRecorder;
   }
 }

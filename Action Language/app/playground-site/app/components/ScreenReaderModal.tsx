@@ -26,6 +26,7 @@ export default function ScreenReaderModal({
   const [highlightedElement, setHighlightedElement] = useState<HTMLElement | null>(null);
   const [speechEnabled, setSpeechEnabled] = useState(true);
   const [speechRate, setSpeechRate] = useState(1.5);
+  const [isRecording, setIsRecording] = useState(false);
 
   const modalRef = useRef<HTMLDivElement>(null);
   const iframeDocRef = useRef<Document | null>(null);
@@ -205,6 +206,41 @@ export default function ScreenReaderModal({
       const speechEngine = screenReaderRef.current.getSpeechEngine();
       speechEngine.updateSettings({ rate });
       setSpeechRate(rate);
+
+      // Record rate change
+      const recorder = screenReaderRef.current.getSessionRecorder();
+      recorder.recordRateChange(rate);
+    }
+  };
+
+  // Recording control handlers
+  const toggleRecording = () => {
+    if (!screenReaderRef.current) return;
+
+    if (isRecording) {
+      // Stop recording
+      const session = screenReaderRef.current.stopRecording();
+      setIsRecording(false);
+
+      if (session) {
+        // Auto-download session files
+        const recorder = screenReaderRef.current.getSessionRecorder();
+        recorder.downloadSession(session);
+      }
+    } else {
+      // Start recording
+      screenReaderRef.current.startRecording(htmlContent, cssContent, jsContent);
+      setIsRecording(true);
+    }
+  };
+
+  const exportSession = () => {
+    if (!screenReaderRef.current) return;
+
+    const session = screenReaderRef.current.getCurrentSession();
+    if (session) {
+      const recorder = screenReaderRef.current.getSessionRecorder();
+      recorder.downloadSession(session);
     }
   };
 
@@ -299,13 +335,38 @@ export default function ScreenReaderModal({
               Navigate with keyboard, experience what screen reader users hear
             </p>
           </div>
-          <button
-            onClick={onClose}
-            className="text-white/80 hover:text-white text-4xl leading-none px-3 focus:outline-none focus:ring-2 focus:ring-white rounded"
-            aria-label="Close screen reader modal"
-          >
-            ×
-          </button>
+          <div className="flex items-center gap-3">
+            {/* Recording Controls */}
+            <button
+              onClick={toggleRecording}
+              className={`px-4 py-2 rounded-lg font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-white ${
+                isRecording
+                  ? 'bg-red-600 hover:bg-red-700 animate-pulse'
+                  : 'bg-white/20 hover:bg-white/30'
+              }`}
+              title={isRecording ? 'Stop recording' : 'Start recording'}
+              aria-label={isRecording ? 'Stop recording session' : 'Start recording session'}
+            >
+              {isRecording ? '⏹ Stop' : '⏺ Record'}
+            </button>
+            {isRecording && (
+              <button
+                onClick={exportSession}
+                className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-white"
+                title="Export current session"
+                aria-label="Export session"
+              >
+                💾 Export
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="text-white/80 hover:text-white text-4xl leading-none px-3 focus:outline-none focus:ring-2 focus:ring-white rounded"
+              aria-label="Close screen reader modal"
+            >
+              ×
+            </button>
+          </div>
         </div>
 
         {/* Main Content Area */}
