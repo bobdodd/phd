@@ -89,6 +89,8 @@ class ARIASemanticAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
         const elementsWithHandlers = new Set();
         for (const node of nodes) {
             const elementKey = this.getElementKey(node.element);
+            if (!elementKey)
+                continue;
             if (node.actionType === 'ariaStateChange' &&
                 node.metadata.attribute === 'role' &&
                 this.interactiveRoles.has(node.metadata.value)) {
@@ -122,6 +124,8 @@ class ARIASemanticAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
             if (node.actionType === 'ariaStateChange' &&
                 node.metadata.attribute === 'aria-expanded') {
                 const elementKey = this.getElementKey(node.element);
+                if (!elementKey)
+                    continue;
                 if (node.timing === 'immediate' && !expandedInitialSets.has(elementKey)) {
                     expandedInitialSets.set(elementKey, node);
                 }
@@ -153,6 +157,8 @@ element.addEventListener('click', () => {
         for (const node of nodes) {
             if (node.actionType === 'ariaStateChange') {
                 const elementKey = this.getElementKey(node.element);
+                if (!elementKey)
+                    continue;
                 if (node.metadata.attribute === 'role' &&
                     (node.metadata.value === 'dialog' || node.metadata.value === 'alertdialog')) {
                     dialogElements.set(elementKey, node);
@@ -187,6 +193,8 @@ element.setAttribute('aria-label', 'Confirmation Dialog');`,
         for (const node of nodes) {
             if (node.actionType === 'ariaStateChange') {
                 const elementKey = this.getElementKey(node.element);
+                if (!elementKey)
+                    continue;
                 if (node.metadata.attribute === 'role') {
                     const role = node.metadata.value;
                     const required = this.requiredAttributes.get(role);
@@ -254,6 +262,8 @@ element.setAttribute('aria-label', 'Confirmation Dialog');`,
         const interactiveElements = new Set();
         for (const node of nodes) {
             const elementKey = this.getElementKey(node.element);
+            if (!elementKey)
+                continue;
             if (node.actionType === 'ariaStateChange' &&
                 node.metadata.attribute === 'aria-hidden' &&
                 node.metadata.value === 'true') {
@@ -302,7 +312,9 @@ element.removeAttribute('aria-label');`,
         return issues;
     }
     getElementKey(element) {
-        return element.binding || element.selector;
+        if (!element)
+            return '';
+        return element.binding || element.selector || '';
     }
     getSimilarRoles(role) {
         const similar = [];

@@ -177,6 +177,8 @@ element.addEventListener('keydown', (event) => {
     detectMissingEscapeHandler(nodes, context) {
         const issues = [];
         const modalPatterns = nodes.filter((node) => {
+            if (!node.element)
+                return false;
             const selector = node.element.selector?.toLowerCase() || '';
             const binding = node.element.binding?.toLowerCase() || '';
             const role = node.metadata?.role;

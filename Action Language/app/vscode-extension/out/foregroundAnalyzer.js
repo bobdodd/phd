@@ -58,6 +58,7 @@ const VueReactivityAnalyzer_1 = require("../lib/analyzers/VueReactivityAnalyzer"
 const AngularReactivityAnalyzer_1 = require("../lib/analyzers/AngularReactivityAnalyzer");
 const HeadingStructureAnalyzer_1 = require("../lib/analyzers/HeadingStructureAnalyzer");
 const FormLabelAnalyzer_1 = require("../lib/analyzers/FormLabelAnalyzer");
+const AltTextAnalyzer_1 = require("../lib/analyzers/AltTextAnalyzer");
 class ForegroundAnalyzer {
     constructor(diagnosticCollection, projectManager, codeActionProvider, outputChannel) {
         this.diagnosticCollection = diagnosticCollection;
@@ -80,7 +81,8 @@ class ForegroundAnalyzer {
             new VueReactivityAnalyzer_1.VueReactivityAnalyzer(),
             new AngularReactivityAnalyzer_1.AngularReactivityAnalyzer(),
             new HeadingStructureAnalyzer_1.HeadingStructureAnalyzer(),
-            new FormLabelAnalyzer_1.FormLabelAnalyzer()
+            new FormLabelAnalyzer_1.FormLabelAnalyzer(),
+            new AltTextAnalyzer_1.AltTextAnalyzer()
         ];
         this.outputChannel.appendLine(`[ForegroundAnalyzer] Initialized with ${this.analyzers.length} analyzers`);
     }

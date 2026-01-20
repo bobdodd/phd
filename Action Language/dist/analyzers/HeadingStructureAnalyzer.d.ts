@@ -12,4 +12,5 @@ export declare class HeadingStructureAnalyzer extends BaseAnalyzer {
     private getElementText;
     private isElementEmpty;
     private isElementHidden;
+    private isFullPage;
 }

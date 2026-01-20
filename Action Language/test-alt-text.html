@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Alt Text Test Cases</title>
+</head>
+<body>
+  <h1>Alt Text Test Cases</h1>
+
+  <!-- GOOD: Proper descriptive alt text -->
+  <img src="photo.jpg" alt="Golden retriever playing fetch in a sunny park">
+
+  <!-- GOOD: Empty alt for decorative images (CORRECT) -->
+  <img src="decorative-border.png" alt="">
+
+  <!-- ISSUE: Missing alt attribute entirely -->
+  <img src="missing-alt.jpg">
+
+  <!-- ISSUE: Alt with only whitespace -->
+  <img src="whitespace.jpg" alt="   ">
+
+  <!-- ISSUE: Alt contains HTML tags -->
+  <img src="styled.jpg" alt="This is <strong>important</strong> text">
+  <img src="breaks.jpg" alt="Line one<br/>Line two">
+
+  <!-- ISSUE: Alt contains URL -->
+  <img src="url.jpg" alt="http://example.com/images/photo.jpg">
+  <img src="url2.jpg" alt="https://cdn.example.com/banner.png">
+
+  <!-- ISSUE: Alt contains file path -->
+  <img src="path.jpg" alt="./images/photo.jpg">
+  <img src="path2.jpg" alt="/assets/img/logo.png">
+  <img src="path3.jpg" alt="../graphics/banner.jpg">
+
+  <!-- ISSUE: Alt ends with file extension -->
+  <img src="extension.jpg" alt="My vacation photo.jpg">
+  <img src="extension2.png" alt="Company logo.png">
+  <img src="extension3.gif" alt="animated-banner.gif">
+
+  <!-- ISSUE: Alt too long (warning) -->
+  <img src="long.jpg" alt="This is a very long description that exceeds the recommended 150 character limit for alt text and should probably be split into a shorter alt text with an aria-describedby reference to provide the full detailed description in a separate element for better screen reader compatibility and user experience.">
+
+  <!-- ISSUE: Generic alt text (warning) -->
+  <img src="generic1.jpg" alt="image">
+  <img src="generic2.jpg" alt="picture">
+  <img src="generic3.jpg" alt="photo">
+  <img src="generic4.jpg" alt="graphic">
+
+  <!-- GOOD: Role presentation (skip analysis) -->
+  <img src="decorative.jpg" role="presentation">
+  <img src="decorative2.jpg" role="none">
+
+  <!-- GOOD: Using aria-label -->
+  <img src="aria.jpg" aria-label="Descriptive text">
+
+  <!-- GOOD: Using aria-labelledby -->
+  <span id="img-label">Descriptive label</span>
+  <img src="labelledby.jpg" aria-labelledby="img-label">
+</body>
+</html>

@@ -15,6 +15,10 @@ class HeadingStructureAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
         if (!this.supportsDocumentModel(context)) {
             return issues;
         }
+        let effectiveScope = context.scope;
+        if (context.scope === 'file' && this.isFullPage(context)) {
+            effectiveScope = 'page';
+        }
         const headings = this.extractHeadings(context);
         if (headings.length === 0) {
             issues.push(this.createIssue('no-headings-on-page', 'error', 'Page contains no heading elements. Headings provide structure and enable navigation for screen reader users.', { file: '', line: 1, column: 1 }, ['1.3.1', '2.4.6'], context, {
@@ -26,10 +30,12 @@ class HeadingStructureAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
                     location: { file: '', line: 1, column: 1 }
                 }
             }));
-            return issues;
         }
-        issues.push(...this.analyzeH1(headings, context));
-        issues.push(...this.analyzeHierarchy(headings, context));
+        else {
+            const contextWithEffectiveScope = { ...context, scope: effectiveScope };
+            issues.push(...this.analyzeH1(headings, contextWithEffectiveScope));
+            issues.push(...this.analyzeHierarchy(headings, context));
+        }
         for (const heading of headings) {
             if (heading.isEmpty) {
                 issues.push(this.createIssue('empty-heading', 'error', `Heading level ${heading.level} contains no text content. Screen readers will announce it as empty, causing confusion.`, heading.element.location, ['2.4.6', '1.3.1'], context, {
@@ -109,6 +115,19 @@ class HeadingStructureAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
         const issues = [];
         const h1Headings = headings.filter(h => h.level === 1 && !h.isEmpty);
         const isPageScope = context.scope === 'page' || context.scope === 'workspace';
+        if (h1Headings.length > 1) {
+            issues.push(this.createIssue('multiple-h1-headings', 'warning', `Found ${h1Headings.length} H1 elements. There should be exactly one H1 per page representing the main topic.`, h1Headings[1].element.location, ['1.3.1'], context, {
+                relatedLocations: h1Headings.map(h => h.element.location),
+                fix: {
+                    description: 'Change additional H1 elements to H2 or lower',
+                    code: `<h1>Main Page Title</h1>
+<!-- Change other H1s to appropriate levels: -->
+<h2>Section Title</h2>
+<h2>Another Section</h2>`,
+                    location: h1Headings[1].element.location
+                }
+            }));
+        }
         if (isPageScope) {
             if (h1Headings.length === 0) {
                 const firstHeading = headings[0];
@@ -119,21 +138,6 @@ class HeadingStructureAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
                         location: firstHeading ? firstHeading.element.location : { file: '', line: 1, column: 1 }
                     }
                 }));
-            }
-            else if (h1Headings.length > 1) {
-                for (let i = 1; i < h1Headings.length; i++) {
-                    issues.push(this.createIssue('multiple-h1-headings', 'warning', `Page contains ${h1Headings.length} H1 elements. There should be exactly one H1 per page representing the main topic.`, h1Headings[i].element.location, ['1.3.1'], context, {
-                        relatedLocations: h1Headings.map(h => h.element.location),
-                        fix: {
-                            description: 'Change additional H1 elements to H2 or lower',
-                            code: `<h1>Main Page Title</h1>
-<!-- Change other H1s to appropriate levels: -->
-<h2>Section Title</h2>
-<h2>Another Section</h2>`,
-                            location: h1Headings[i].element.location
-                        }
-                    }));
-                }
             }
             if (headings.length > 0 && headings[0].level !== 1 && !headings[0].isEmpty) {
                 issues.push(this.createIssue('page-doesnt-start-with-h1', 'warning', `First heading on page is H${headings[0].level}, not H1. Pages should start with H1 as the main heading.`, headings[0].element.location, ['1.3.1', '2.4.6'], context, {
@@ -226,6 +230,17 @@ class HeadingStructureAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
         const className = element.attributes['class'];
         if (className) {
             if (/\b(hidden|hide|d-none|invisible)\b/.test(className)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    isFullPage(context) {
+        const doc = context.documentModel;
+        const allElements = doc.getAllElements();
+        for (const element of allElements) {
+            const tagName = element.tagName.toLowerCase();
+            if (tagName === 'html' || tagName === 'body') {
                 return true;
             }
         }

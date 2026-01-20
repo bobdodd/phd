@@ -29,6 +29,7 @@ import { VueReactivityAnalyzer } from '../lib/analyzers/VueReactivityAnalyzer';
 import { AngularReactivityAnalyzer } from '../lib/analyzers/AngularReactivityAnalyzer';
 import { HeadingStructureAnalyzer } from '../lib/analyzers/HeadingStructureAnalyzer';
 import { FormLabelAnalyzer } from '../lib/analyzers/FormLabelAnalyzer';
+import { AltTextAnalyzer } from '../lib/analyzers/AltTextAnalyzer';
 import { ParadiseCodeActionProvider } from './codeActionProvider';
 
 export class ForegroundAnalyzer {
@@ -65,7 +66,8 @@ export class ForegroundAnalyzer {
       new VueReactivityAnalyzer(),
       new AngularReactivityAnalyzer(),
       new HeadingStructureAnalyzer(),
-      new FormLabelAnalyzer()
+      new FormLabelAnalyzer(),
+      new AltTextAnalyzer()
     ];
 
     this.outputChannel.appendLine(`[ForegroundAnalyzer] Initialized with ${this.analyzers.length} analyzers`);
