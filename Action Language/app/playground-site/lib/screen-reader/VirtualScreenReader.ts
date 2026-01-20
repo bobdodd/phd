@@ -647,6 +647,10 @@ export class VirtualScreenReader {
         if (node.name) parts.push(node.name);
         if (node.value) parts.push(`"${node.value}"`);
         else parts.push('blank');
+        // Announce autocomplete
+        if (node.properties.autocomplete) {
+          parts.push(`autocomplete ${node.properties.autocomplete}`);
+        }
         // Announce readonly state
         if (node.states.readonly) {
           parts.push('read only');
@@ -1068,6 +1072,16 @@ export class VirtualScreenReader {
     // Add disabled state
     if (node.states.disabled) {
       parts.push('disabled');
+    }
+
+    // Add busy state
+    if (node.states.busy) {
+      parts.push('busy');
+    }
+
+    // Add grabbed state (drag and drop)
+    if (node.states.grabbed !== undefined) {
+      parts.push(node.states.grabbed ? 'grabbed' : 'not grabbed');
     }
 
     const content = parts.join(', ');

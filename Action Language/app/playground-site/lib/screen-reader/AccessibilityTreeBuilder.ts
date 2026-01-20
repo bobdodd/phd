@@ -481,6 +481,20 @@ export class AccessibilityTreeBuilder {
       }
     }
 
+    // busy (for loading states)
+    const ariaBusy = element.getAttribute('aria-busy');
+    if (ariaBusy === 'true') {
+      states.busy = true;
+    }
+
+    // grabbed (for drag and drop)
+    const ariaGrabbed = element.getAttribute('aria-grabbed');
+    if (ariaGrabbed === 'true') {
+      states.grabbed = true;
+    } else if (ariaGrabbed === 'false') {
+      states.grabbed = false;
+    }
+
     return states;
   }
 
@@ -579,6 +593,17 @@ export class AccessibilityTreeBuilder {
     const ariaOrientation = element.getAttribute('aria-orientation');
     if (ariaOrientation) {
       properties.orientation = ariaOrientation as 'horizontal' | 'vertical';
+    }
+
+    // autocomplete (for form controls)
+    const ariaAutocomplete = element.getAttribute('aria-autocomplete');
+    if (ariaAutocomplete) {
+      properties.autocomplete = ariaAutocomplete;
+    } else if (element instanceof HTMLInputElement) {
+      const autocomplete = element.getAttribute('autocomplete');
+      if (autocomplete && autocomplete !== 'off') {
+        properties.autocomplete = autocomplete;
+      }
     }
 
     return properties;
