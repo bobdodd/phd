@@ -346,12 +346,14 @@ export default function PreviewModal({
           </div>
           <div className="flex items-center gap-3">
             {/* Assistive Technology Toggles */}
-            <div className="flex items-center gap-3 bg-white/10 rounded-lg px-4 py-2">
+            <div className="flex items-center gap-3 bg-white/10 rounded-lg px-4 py-2.5">
               <span className="text-sm text-purple-100 font-medium">Screen Reader</span>
               <button
                 onClick={handleScreenReaderToggle}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-purple-800 ${
-                  screenReaderEnabled ? 'bg-green-600' : 'bg-white/20'
+                className={`relative inline-flex h-7 w-12 flex-shrink-0 items-center rounded-full border-2 transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-purple-800 ${
+                  screenReaderEnabled
+                    ? 'bg-green-600 border-green-600'
+                    : 'bg-gray-400 border-gray-400'
                 }`}
                 title={screenReaderEnabled ? 'Disable screen reader' : 'Enable screen reader'}
                 aria-label={screenReaderEnabled ? 'Disable screen reader' : 'Enable screen reader'}
@@ -360,8 +362,8 @@ export default function PreviewModal({
                 aria-checked={screenReaderEnabled}
               >
                 <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    screenReaderEnabled ? 'translate-x-6' : 'translate-x-1'
+                  className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-lg transition-transform duration-200 ease-in-out ${
+                    screenReaderEnabled ? 'translate-x-6' : 'translate-x-0.5'
                   }`}
                 />
               </button>
