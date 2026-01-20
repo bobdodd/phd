@@ -88,7 +88,7 @@ export default function ScreenReaderModal({
       }
 
       // Prevent default for navigation keys
-      const navKeys = ['ArrowDown', 'ArrowUp', 'Enter', 'h', 'H', 'k', 'K', 'b', 'B', 'l', 'L', 'f', 'F', 'm', 'M'];
+      const navKeys = ['ArrowDown', 'ArrowUp', 'Enter', 'h', 'H', 'k', 'K', 'b', 'B', 'l', 'L', 'f', 'F', 'm', 'M', 't', 'T', 'i', 'I', 'g', 'G', 'r', 'R'];
       if (navKeys.includes(e.key)) {
         e.preventDefault();
       }
@@ -143,6 +143,34 @@ export default function ScreenReaderModal({
         case 'f':
         case 'F':
           sr.nextFormControl();
+          break;
+        case 't':
+        case 'T':
+          if (e.shiftKey) {
+            sr.previousTable();
+          } else {
+            sr.nextTable();
+          }
+          break;
+        case 'i':
+        case 'I':
+          if (e.shiftKey) {
+            sr.previousList();
+          } else {
+            sr.nextList();
+          }
+          break;
+        case 'g':
+        case 'G':
+          if (e.shiftKey) {
+            sr.previousGraphic();
+          } else {
+            sr.nextGraphic();
+          }
+          break;
+        case 'r':
+        case 'R':
+          sr.nextRegion();
           break;
         case 'm':
         case 'M':
@@ -379,7 +407,7 @@ export default function ScreenReaderModal({
                   <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">
                     Tab
                   </kbd>
-                  <span className="text-gray-600">Next (Focus mode)</span>
+                  <span className="text-gray-600">Next (Focus)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">
@@ -413,9 +441,33 @@ export default function ScreenReaderModal({
                 </div>
                 <div className="flex items-center gap-2">
                   <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">
+                    R
+                  </kbd>
+                  <span className="text-gray-600">Regions</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">
                     F
                   </kbd>
                   <span className="text-gray-600">Form controls</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">
+                    T
+                  </kbd>
+                  <span className="text-gray-600">Tables</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">
+                    I
+                  </kbd>
+                  <span className="text-gray-600">Lists</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">
+                    G
+                  </kbd>
+                  <span className="text-gray-600">Graphics</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">

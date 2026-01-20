@@ -234,6 +234,143 @@ export class VirtualScreenReader {
   }
 
   /**
+   * Navigate to next table
+   */
+  nextTable(): void {
+    const found = this.findNext(node => node.role === 'table' || node.role === 'grid');
+    if (!found) {
+      this.announce({
+        type: 'navigation',
+        content: 'No next table',
+      });
+    }
+  }
+
+  /**
+   * Navigate to previous table
+   */
+  previousTable(): void {
+    const found = this.findPrevious(node => node.role === 'table' || node.role === 'grid');
+    if (!found) {
+      this.announce({
+        type: 'navigation',
+        content: 'No previous table',
+      });
+    }
+  }
+
+  /**
+   * Navigate to next list
+   */
+  nextList(): void {
+    const found = this.findNext(node => node.role === 'list');
+    if (!found) {
+      this.announce({
+        type: 'navigation',
+        content: 'No next list',
+      });
+    }
+  }
+
+  /**
+   * Navigate to previous list
+   */
+  previousList(): void {
+    const found = this.findPrevious(node => node.role === 'list');
+    if (!found) {
+      this.announce({
+        type: 'navigation',
+        content: 'No previous list',
+      });
+    }
+  }
+
+  /**
+   * Navigate to next graphic/image
+   */
+  nextGraphic(): void {
+    const found = this.findNext(node => node.role === 'img' || node.role === 'graphic');
+    if (!found) {
+      this.announce({
+        type: 'navigation',
+        content: 'No next graphic',
+      });
+    }
+  }
+
+  /**
+   * Navigate to previous graphic/image
+   */
+  previousGraphic(): void {
+    const found = this.findPrevious(node => node.role === 'img' || node.role === 'graphic');
+    if (!found) {
+      this.announce({
+        type: 'navigation',
+        content: 'No previous graphic',
+      });
+    }
+  }
+
+  /**
+   * Navigate to next region
+   */
+  nextRegion(): void {
+    const found = this.findNext(node => node.role === 'region');
+    if (!found) {
+      this.announce({
+        type: 'navigation',
+        content: 'No next region',
+      });
+    }
+  }
+
+  /**
+   * Get table information for current cell
+   */
+  getTableContext(): { row: number; col: number; rowCount: number; colCount: number } | null {
+    const node = this.getCurrentNode();
+    if (!node || !node.domElement) return null;
+
+    // Check if we're in a table cell
+    if (node.role !== 'cell' && node.role !== 'columnheader' && node.role !== 'rowheader') {
+      return null;
+    }
+
+    const cell = node.domElement;
+
+    // Find parent row
+    let row = cell.closest('tr, [role="row"]') as HTMLElement | null;
+    if (!row) return null;
+
+    // Find parent table
+    let table = row.closest('table, [role="table"], [role="grid"]') as HTMLElement | null;
+    if (!table) return null;
+
+    // Count rows and columns
+    const rows = table.querySelectorAll('tr, [role="row"]');
+    const rowIndex = Array.from(rows).indexOf(row) + 1;
+    const rowCount = rows.length;
+
+    // Count cells in current row
+    const cells = row.querySelectorAll('td, th, [role="cell"], [role="columnheader"], [role="rowheader"]');
+    const colIndex = Array.from(cells).indexOf(cell) + 1;
+
+    // Get max column count from any row
+    let maxCols = 0;
+    rows.forEach(r => {
+      const cellCount = r.querySelectorAll('td, th, [role="cell"], [role="columnheader"], [role="rowheader"]').length;
+      if (cellCount > maxCols) maxCols = cellCount;
+    });
+
+    return {
+      row: rowIndex,
+      col: colIndex,
+      rowCount: rowCount,
+      colCount: maxCols
+    };
+  }
+
+  /**
    * Activate the current element (simulate click/Enter)
    */
   activateElement(): void {
@@ -440,6 +577,192 @@ export class VirtualScreenReader {
 
       case 'contentinfo':
         parts.push('Content information');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'table':
+      case 'grid':
+        parts.push(node.role === 'grid' ? 'Grid' : 'Table');
+        if (node.name) parts.push(node.name);
+        // Count rows and columns if possible
+        if (node.domElement) {
+          const rows = node.domElement.querySelectorAll('tr, [role="row"]').length;
+          if (rows > 0) {
+            parts.push(`${rows} rows`);
+          }
+        }
+        break;
+
+      case 'cell':
+      case 'gridcell':
+        parts.push(node.role === 'gridcell' ? 'Grid cell' : 'Cell');
+        if (node.name) parts.push(node.name);
+        // Add table position info
+        const tableContext = this.getTableContext();
+        if (tableContext) {
+          parts.push(`Row ${tableContext.row} of ${tableContext.rowCount}, Column ${tableContext.col} of ${tableContext.colCount}`);
+        }
+        break;
+
+      case 'columnheader':
+        parts.push('Column header');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'rowheader':
+        parts.push('Row header');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'row':
+        parts.push('Row');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'list':
+        parts.push('List');
+        if (node.name) parts.push(node.name);
+        // Count items if possible
+        if (node.children.length > 0) {
+          const itemCount = node.children.filter(child => child.role === 'listitem').length;
+          if (itemCount > 0) {
+            parts.push(`${itemCount} items`);
+          }
+        }
+        break;
+
+      case 'tab':
+        parts.push('Tab');
+        if (node.name) parts.push(node.name);
+        if (node.states.selected !== undefined) {
+          parts.push(node.states.selected ? 'selected' : 'not selected');
+        }
+        break;
+
+      case 'tabpanel':
+        parts.push('Tab panel');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'tablist':
+        parts.push('Tab list');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'menu':
+        parts.push('Menu');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'menuitem':
+        parts.push('Menu item');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'menuitemcheckbox':
+        parts.push('Menu item checkbox');
+        parts.push(node.states.checked ? 'checked' : 'not checked');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'menuitemradio':
+        parts.push('Menu item radio');
+        parts.push(node.states.checked ? 'selected' : 'not selected');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'tree':
+        parts.push('Tree');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'treeitem':
+        parts.push('Tree item');
+        if (node.name) parts.push(node.name);
+        if (node.states.expanded !== undefined) {
+          parts.push(node.states.expanded ? 'expanded' : 'collapsed');
+        }
+        if (node.properties.level) {
+          parts.push(`Level ${node.properties.level}`);
+        }
+        if (node.properties.posinset && node.properties.setsize) {
+          parts.push(`${node.properties.posinset} of ${node.properties.setsize}`);
+        }
+        break;
+
+      case 'dialog':
+        parts.push('Dialog');
+        if (node.name) parts.push(node.name);
+        if (node.properties.modal) {
+          parts.push('modal');
+        }
+        break;
+
+      case 'alertdialog':
+        parts.push('Alert dialog');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'alert':
+        parts.push('Alert');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'status':
+        parts.push('Status');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'progressbar':
+        parts.push('Progress bar');
+        if (node.name) parts.push(node.name);
+        if (node.properties.valuenow !== undefined && node.properties.valuemax !== undefined) {
+          const percent = Math.round((node.properties.valuenow / node.properties.valuemax) * 100);
+          parts.push(`${percent}%`);
+        } else if (node.properties.valuetext) {
+          parts.push(node.properties.valuetext);
+        }
+        break;
+
+      case 'slider':
+        parts.push('Slider');
+        if (node.name) parts.push(node.name);
+        if (node.properties.valuenow !== undefined) {
+          parts.push(`${node.properties.valuenow}`);
+        }
+        if (node.properties.valuemin !== undefined && node.properties.valuemax !== undefined) {
+          parts.push(`Min ${node.properties.valuemin}, Max ${node.properties.valuemax}`);
+        }
+        break;
+
+      case 'img':
+      case 'graphic':
+        parts.push('Image');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'region':
+        parts.push('Region');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'article':
+        parts.push('Article');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'complementary':
+        parts.push('Complementary');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'search':
+        parts.push('Search');
+        if (node.name) parts.push(node.name);
+        break;
+
+      case 'form':
+        parts.push('Form');
         if (node.name) parts.push(node.name);
         break;
 
