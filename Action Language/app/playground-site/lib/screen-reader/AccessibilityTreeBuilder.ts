@@ -106,17 +106,30 @@ export class AccessibilityTreeBuilder {
 
   /**
    * Process children without creating a node for the current element
+   * Adds all child nodes directly to the parent
    */
   private processChildren(element: HTMLElement, parent: AccessibilityNode | null): AccessibilityNode | null {
-    // If there's exactly one child that creates a node, return it
-    // Otherwise return null (multiple children would need special handling)
+    // Process all children and add them to parent
+    // This is used when the current element shouldn't be in the tree but its children should
+    let firstChild: AccessibilityNode | null = null;
+
     for (const child of Array.from(element.children)) {
       const childNode = this.buildNode(child, parent);
       if (childNode) {
-        return childNode;
+        // If there's a parent, add child to parent's children array
+        if (parent) {
+          parent.children.push(childNode);
+        }
+        // Keep track of first child to return
+        if (!firstChild) {
+          firstChild = childNode;
+        }
       }
     }
-    return null;
+
+    // Return the first child (or null if no children)
+    // This maintains compatibility with how buildNode uses processChildren
+    return firstChild;
   }
 
   /**
