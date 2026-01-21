@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pointer Target Size Test Cases</title>
+    <style>
+        section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+        }
+        .error { border-color: #ef4444; }
+        .warning { border-color: #f59e0b; }
+        .info { border-color: #3b82f6; }
+        .compliant { border-color: #10b981; }
+        .code-example {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        .demo-container {
+            margin: 15px 0;
+            padding: 15px;
+            background: #fff;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pointer Target Size Test Cases</h1>
+    <p>WCAG 2.5.5 (Level AAA): 44×44 pixels | WCAG 2.5.8 (Level AA, WCAG 2.2): 24×24 pixels</p>
+
+    <!-- Test 1: Button too small (20×20) - ERROR -->
+    <section class="error">
+        <h2>Test 1: Button Too Small (20×20px) - ERROR</h2>
+        <p>❌ ISSUE: touch-target-too-small (error)</p>
+        <div class="code-example">&lt;button style="width: 20px; height: 20px;"&gt;×&lt;/button&gt;</div>
+        <div class="demo-container">
+            <button style="width: 20px; height: 20px;">×</button>
+        </div>
+        <p>Problem: Button is only 20×20 pixels, smaller than both AA (24px) and AAA (44px) requirements.</p>
+        <p>Users with motor disabilities, tremors, or limited dexterity will struggle to tap this target.</p>
+    </section>
+
+    <!-- Test 2: Button small (30×30) - WARNING -->
+    <section class="warning">
+        <h2>Test 2: Button Small (30×30px) - WARNING</h2>
+        <p>⚠️ ISSUE: touch-target-too-small (warning)</p>
+        <div class="code-example">&lt;button style="width: 30px; height: 30px;"&gt;🗑️&lt;/button&gt;</div>
+        <div class="demo-container">
+            <button style="width: 30px; height: 30px;">🗑️</button>
+        </div>
+        <p>Problem: Button is 30×30 pixels, meets AA minimum (24px) but not AAA (44px).</p>
+        <p>While compliant at Level AA, larger targets improve usability for all users.</p>
+    </section>
+
+    <!-- Test 3: Checkbox without explicit size - INFO -->
+    <section class="info">
+        <h2>Test 3: Checkbox Without Explicit Size - INFO</h2>
+        <p>ℹ️ ISSUE: touch-target-too-small (info)</p>
+        <div class="code-example">&lt;input type="checkbox" id="agree"&gt;
+&lt;label for="agree"&gt;I agree&lt;/label&gt;</div>
+        <div class="demo-container">
+            <input type="checkbox" id="agree">
+            <label for="agree">I agree</label>
+        </div>
+        <p>Info: Checkbox has no explicit size. Consider setting minimum dimensions.</p>
+        <p>Default checkbox size varies by browser and may be too small.</p>
+    </section>
+
+    <!-- Test 4: Radio buttons without explicit size - INFO -->
+    <section class="info">
+        <h2>Test 4: Radio Buttons Without Size - INFO</h2>
+        <p>ℹ️ ISSUE: touch-target-too-small (info)</p>
+        <div class="code-example">&lt;input type="radio" name="option" id="opt1"&gt;
+&lt;label for="opt1"&gt;Option 1&lt;/label&gt;
+&lt;input type="radio" name="option" id="opt2"&gt;
+&lt;label for="opt2"&gt;Option 2&lt;/label&gt;</div>
+        <div class="demo-container">
+            <input type="radio" name="option" id="opt1">
+            <label for="opt1">Option 1</label>
+            <input type="radio" name="option" id="opt2">
+            <label for="opt2">Option 2</label>
+        </div>
+        <p>Info: Radio buttons have no explicit size. Consider enlarging them.</p>
+    </section>
+
+    <!-- Test 5: Adjacent buttons without spacing - WARNING -->
+    <section class="warning">
+        <h2>Test 5: Adjacent Buttons Without Spacing - WARNING</h2>
+        <p>⚠️ ISSUE: adjacent-targets-too-close (warning)</p>
+        <div class="code-example">&lt;button&gt;Yes&lt;/button&gt;&lt;button&gt;No&lt;/button&gt;&lt;button&gt;Cancel&lt;/button&gt;</div>
+        <div class="demo-container">
+            <button>Yes</button><button>No</button><button>Cancel</button>
+        </div>
+        <p>Problem: Buttons are adjacent with no spacing, increasing risk of mis-taps.</p>
+        <p>Add at least 8px spacing between interactive targets.</p>
+    </section>
+
+    <!-- Test 6: Small icon button (16×16) - ERROR -->
+    <section class="error">
+        <h2>Test 6: Small Icon Button (16×16px) - ERROR</h2>
+        <p>❌ ISSUE: touch-target-too-small (error)</p>
+        <div class="code-example">&lt;button aria-label="Settings" style="width: 16px; height: 16px;"&gt;⚙️&lt;/button&gt;</div>
+        <div class="demo-container">
+            <button aria-label="Settings" style="width: 16px; height: 16px;">⚙️</button>
+        </div>
+        <p>Problem: Icon button is only 16×16 pixels, far below minimum requirements.</p>
+        <p>Icon buttons are commonly too small - ensure they meet size requirements.</p>
+    </section>
+
+    <!-- Test 7: Link with inline style too small (18×18) - ERROR -->
+    <section class="error">
+        <h2>Test 7: Link Too Small (18×18px) - ERROR</h2>
+        <p>❌ ISSUE: touch-target-too-small (error)</p>
+        <div class="code-example">&lt;a href="/home" style="display: inline-block; width: 18px; height: 18px;"&gt;Home&lt;/a&gt;</div>
+        <div class="demo-container">
+            <a href="/home" style="display: inline-block; width: 18px; height: 18px;">Home</a>
+        </div>
+        <p>Problem: Link is 18×18 pixels, below minimum requirements.</p>
+    </section>
+
+    <!-- Test 8: Button with adequate size (44×44) - COMPLIANT -->
+    <section class="compliant">
+        <h2>Test 8: Button With Adequate Size (44×44px) - COMPLIANT</h2>
+        <div class="code-example">&lt;button style="min-width: 44px; min-height: 44px; padding: 12px;"&gt;
+    Submit
+&lt;/button&gt;</div>
+        <div class="demo-container">
+            <button style="min-width: 44px; min-height: 44px; padding: 12px;">Submit</button>
+        </div>
+        <p>Compliant: Button meets Level AAA size requirement (44×44px).</p>
+    </section>
+
+    <!-- Test 9: Icon button with adequate size (48×48) - COMPLIANT -->
+    <section class="compliant">
+        <h2>Test 9: Icon Button With Adequate Size (48×48px) - COMPLIANT</h2>
+        <div class="code-example">&lt;button aria-label="Menu" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;"&gt;
+    ☰
+&lt;/button&gt;</div>
+        <div class="demo-container">
+            <button aria-label="Menu" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">☰</button>
+        </div>
+        <p>Compliant: Icon button is 48×48 pixels, exceeds Level AAA requirement.</p>
+    </section>
+
+    <!-- Test 10: Enlarged checkbox (44×44) - COMPLIANT -->
+    <section class="compliant">
+        <h2>Test 10: Enlarged Checkbox (44×44px) - COMPLIANT</h2>
+        <div class="code-example">&lt;style&gt;
+.large-checkbox {
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+}
+&lt;/style&gt;
+
+&lt;input type="checkbox" id="terms" class="large-checkbox"&gt;
+&lt;label for="terms"&gt;I accept the terms&lt;/label&gt;</div>
+        <style>
+        .large-checkbox {
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+        }
+        </style>
+        <div class="demo-container">
+            <input type="checkbox" id="terms" class="large-checkbox">
+            <label for="terms">I accept the terms</label>
+        </div>
+        <p>Compliant: Checkbox enlarged to 44×44 pixels using CSS.</p>
+    </section>
+
+    <!-- Test 11: Radio buttons with transform scale - COMPLIANT -->
+    <section class="compliant">
+        <h2>Test 11: Enlarged Radio Buttons - COMPLIANT</h2>
+        <div class="code-example">&lt;style&gt;
+.large-radio {
+    transform: scale(2);
+    margin: 0 12px;
+}
+&lt;/style&gt;
+
+&lt;input type="radio" name="size" id="small" class="large-radio"&gt;
+&lt;label for="small"&gt;Small&lt;/label&gt;
+&lt;input type="radio" name="size" id="large" class="large-radio"&gt;
+&lt;label for="large"&gt;Large&lt;/label&gt;</div>
+        <style>
+        .large-radio {
+            transform: scale(2);
+            margin: 0 12px;
+        }
+        </style>
+        <div class="demo-container">
+            <input type="radio" name="size" id="small" class="large-radio">
+            <label for="small">Small</label>
+            <input type="radio" name="size" id="large" class="large-radio">
+            <label for="large">Large</label>
+        </div>
+        <p>Compliant: Radio buttons enlarged using CSS transform: scale().</p>
+    </section>
+
+    <!-- Test 12: Buttons with adequate spacing - COMPLIANT -->
+    <section class="compliant">
+        <h2>Test 12: Buttons With Adequate Spacing - COMPLIANT</h2>
+        <div class="code-example">&lt;style&gt;
+.btn-group {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-group button {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 12px 20px;
+}
+&lt;/style&gt;
+
+&lt;div class="btn-group"&gt;
+    &lt;button&gt;Save&lt;/button&gt;
+    &lt;button&gt;Cancel&lt;/button&gt;
+    &lt;button&gt;Delete&lt;/button&gt;
+&lt;/div&gt;</div>
+        <style>
+        .btn-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-group button {
+            min-width: 44px;
+            min-height: 44px;
+            padding: 12px 20px;
+        }
+        </style>
+        <div class="demo-container">
+            <div class="btn-group">
+                <button>Save</button>
+                <button>Cancel</button>
+                <button>Delete</button>
+            </div>
+        </div>
+        <p>Compliant: Buttons have adequate size (44×44px) and spacing (12px gap).</p>
+    </section>
+
+    <!-- Test 13: Expanded hit area using pseudo-element - COMPLIANT -->
+    <section class="compliant">
+        <h2>Test 13: Expanded Hit Area (Pseudo-element) - COMPLIANT</h2>
+        <div class="code-example">&lt;style&gt;
+.close-btn {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+/* Expand clickable area without changing visual size */
+.close-btn::before {
+    content: '';
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    bottom: -12px;
+    left: -12px;
+    /* Creates 44×44px clickable area around 20×20px visual element */
+}
+&lt;/style&gt;
+
+&lt;button class="close-btn" aria-label="Close"&gt;×&lt;/button&gt;</div>
+        <style>
+        .close-btn {
+            position: relative;
+            width: 20px;
+            height: 20px;
+            font-size: 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+
+        .close-btn::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            right: -12px;
+            bottom: -12px;
+            left: -12px;
+        }
+        </style>
+        <div class="demo-container">
+            <button class="close-btn" aria-label="Close">×</button>
+            <p style="margin-top: 20px;">Try clicking around the × symbol - the hit area extends beyond the visual size.</p>
+        </div>
+        <p>Compliant: Visual size is 20×20px, but hit area is expanded to 44×44px using ::before pseudo-element.</p>
+        <p>This technique keeps visual design compact while ensuring adequate touch target.</p>
+    </section>
+
+    <!-- Test 14: Link in text (inline exception) - COMPLIANT -->
+    <section class="compliant">
+        <h2>Test 14: Inline Link (Exception) - COMPLIANT</h2>
+        <div class="code-example">&lt;p style="line-height: 1.6;"&gt;
+    Please read our &lt;a href="/privacy"&gt;privacy policy&lt;/a&gt; and
+    &lt;a href="/terms"&gt;terms of service&lt;/a&gt; before continuing.
+&lt;/p&gt;</div>
+        <div class="demo-container">
+            <p style="line-height: 1.6;">
+                Please read our <a href="/privacy">privacy policy</a> and
+                <a href="/terms">terms of service</a> before continuing.
+            </p>
+        </div>
+        <p>Compliant: Inline links in sentences are exempt from target size requirements.</p>
+        <p>However, adequate line-height (1.6) provides vertical spacing to help prevent mis-taps.</p>
+    </section>
+
+    <!-- Test 15: Card with large clickable area - COMPLIANT -->
+    <section class="compliant">
+        <h2>Test 15: Card With Large Target Area - COMPLIANT</h2>
+        <div class="code-example">&lt;style&gt;
+.card {
+    width: 200px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.card:hover {
+    background: #f5f5f5;
+}
+&lt;/style&gt;
+
+&lt;div class="card" role="button" tabindex="0" onclick="handleCardClick()"&gt;
+    &lt;h3&gt;Product Name&lt;/h3&gt;
+    &lt;p&gt;$99.99&lt;/p&gt;
+&lt;/div&gt;</div>
+        <style>
+        .card {
+            width: 200px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .card:hover {
+            background: #f5f5f5;
+        }
+        </style>
+        <div class="demo-container">
+            <div class="card" role="button" tabindex="0" onclick="alert('Card clicked!')">
+                <h3>Product Name</h3>
+                <p>$99.99</p>
+            </div>
+        </div>
+        <p>Compliant: Entire card is clickable, providing large target area (200px+ wide).</p>
+    </section>
+
+    <!-- Test 16: Mobile-first button sizing - COMPLIANT -->
+    <section class="compliant">
+        <h2>Test 16: Mobile-First Button Design - COMPLIANT</h2>
+        <div class="code-example">&lt;style&gt;
+/* Base size for mobile (Level AAA) */
+.action-btn {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 12px 24px;
+    font-size: 16px;
+    touch-action: manipulation; /* Removes 300ms tap delay */
+}
+
+/* Desktop can be slightly smaller but still accessible */
+@media (min-width: 768px) {
+    .action-btn {
+        min-width: 36px;
+        min-height: 36px;
+        padding: 10px 20px;
+    }
+}
+&lt;/style&gt;
+
+&lt;button class="action-btn"&gt;Add to Cart&lt;/button&gt;</div>
+        <style>
+        .action-btn {
+            min-width: 44px;
+            min-height: 44px;
+            padding: 12px 24px;
+            font-size: 16px;
+            touch-action: manipulation;
+        }
+
+        @media (min-width: 768px) {
+            .action-btn {
+                min-width: 36px;
+                min-height: 36px;
+                padding: 10px 20px;
+            }
+        }
+        </style>
+        <div class="demo-container">
+            <button class="action-btn">Add to Cart</button>
+        </div>
+        <p>Compliant: Mobile-first design with 44×44px targets on touch devices.</p>
+    </section>
+
+    <footer style="margin-top: 40px; padding: 40px; background: #f7fafc;">
+        <h3>Expected Issues Summary (PointerTargetAnalyzer):</h3>
+
+        <h4>Errors (3):</h4>
+        <ul>
+            <li><strong>touch-target-too-small (error):</strong> Tests 1, 6, 7 - Targets smaller than 24×24px (AA minimum)</li>
+        </ul>
+
+        <h4>Warnings (2):</h4>
+        <ul>
+            <li><strong>touch-target-too-small (warning):</strong> Test 2 - Target meets AA (24px) but not AAA (44px)</li>
+            <li><strong>adjacent-targets-too-close (warning):</strong> Test 5 - Adjacent buttons with insufficient spacing</li>
+        </ul>
+
+        <h4>Info (2):</h4>
+        <ul>
+            <li><strong>touch-target-too-small (info):</strong> Tests 3, 4 - Checkboxes/radios without explicit size</li>
+        </ul>
+
+        <p><strong>Total expected issues:</strong></p>
+        <ul>
+            <li>3 errors (targets smaller than 24×24px)</li>
+            <li>2 warnings (targets between 24-44px or spacing issues)</li>
+            <li>2 info (no explicit size on likely small targets)</li>
+        </ul>
+
+        <p><strong>COMPLIANT examples:</strong> Tests 8-16 demonstrate proper target sizing techniques</p>
+
+        <h3 style="margin-top: 20px;">WCAG Target Size Requirements:</h3>
+        <ul>
+            <li><strong>WCAG 2.5.5 (Level AAA):</strong> 44×44 CSS pixels (recommended best practice)</li>
+            <li><strong>WCAG 2.5.8 (Level AA, WCAG 2.2):</strong> 24×24 CSS pixels (minimum requirement)</li>
+            <li><strong>Spacing:</strong> At least 8px between adjacent interactive elements (or targets exceed size requirements)</li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">Exceptions:</h3>
+        <ul>
+            <li><strong>Inline text links:</strong> Links within sentences are exempt</li>
+            <li><strong>Essential:</strong> Target size is essential to the information being conveyed</li>
+            <li><strong>User control:</strong> User can change the target size (e.g., browser zoom)</li>
+            <li><strong>Equivalent:</strong> Another control on the page provides equivalent functionality with adequate size</li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">Common Elements That Need Size Checking:</h3>
+        <pre style="background: #fee; padding: 15px; border-radius: 4px;"><code>// ❌ Too small (fails WCAG)
+&lt;button style="width: 20px; height: 20px;"&gt;×&lt;/button&gt;
+
+&lt;input type="checkbox"&gt; (default size varies, often too small)
+
+&lt;a href="#" style="display: inline-block; width: 16px; height: 16px;"&gt;
+    &lt;svg&gt;...&lt;/svg&gt;
+&lt;/a&gt;
+
+&lt;button&gt;Yes&lt;/button&gt;&lt;button&gt;No&lt;/button&gt; (no spacing)</code></pre>
+
+        <h3 style="margin-top: 20px;">Compliant Target Sizing Techniques:</h3>
+        <pre style="background: #efe; padding: 15px; border-radius: 4px;"><code>// ✅ Adequate size (Level AAA)
+button {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 12px 20px;
+}
+
+// ✅ Enlarged form controls
+input[type="checkbox"],
+input[type="radio"] {
+    width: 44px;
+    height: 44px;
+}
+
+// Or use transform
+input[type="checkbox"] {
+    transform: scale(2);
+    margin: 12px;
+}
+
+// ✅ Expanded hit area (visual size stays small)
+.icon-btn {
+    position: relative;
+    width: 20px;
+    height: 20px;
+}
+
+.icon-btn::before {
+    content: '';
+    position: absolute;
+    inset: -12px; /* Expands to 44×44px */
+}
+
+// ✅ Adequate spacing
+.btn-group {
+    display: flex;
+    gap: 12px; /* At least 8px spacing */
+}
+
+// ✅ Mobile-first sizing
+@media (max-width: 767px) {
+    button {
+        min-width: 44px;
+        min-height: 44px;
+    }
+}</code></pre>
+
+        <h3 style="margin-top: 20px;">Why Target Size Matters:</h3>
+        <ul>
+            <li><strong>Motor disabilities:</strong> Users with tremors or limited fine motor control struggle with small targets</li>
+            <li><strong>Age-related factors:</strong> Older users often have reduced dexterity</li>
+            <li><strong>Situational limitations:</strong> Using device while moving, one-handed operation</li>
+            <li><strong>Touch screens:</strong> Finger size makes small targets difficult to tap accurately</li>
+            <li><strong>Assistive technology:</strong> Users with stylus, mouth stick, or head pointer benefit from larger targets</li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">Design Tips:</h3>
+        <ul>
+            <li>Start with 44×44px minimum for all interactive elements</li>
+            <li>Add padding to increase tappable area without changing visual size</li>
+            <li>Use flexbox/grid gap for spacing between adjacent targets</li>
+            <li>Enlarge checkboxes and radio buttons (default size is often too small)</li>
+            <li>Expand hit area using pseudo-elements when visual size must stay small</li>
+            <li>Ensure adequate line-height for inline links (1.5-1.6 minimum)</li>
+            <li>Test on actual touch devices with different finger sizes</li>
+            <li>Consider touch-action: manipulation to remove 300ms tap delay</li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">Testing:</h3>
+        <ul>
+            <li>Measure interactive elements in browser DevTools</li>
+            <li>Test with actual touch devices (phones, tablets)</li>
+            <li>Try tapping targets with different finger sizes</li>
+            <li>Check spacing between adjacent buttons and links</li>
+            <li>Verify checkboxes and radio buttons are large enough</li>
+            <li>Test with motor disability simulators</li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">PointerTargetAnalyzer Detection Strategy:</h3>
+        <ul>
+            <li>Identifies all interactive elements (buttons, links, inputs, ARIA roles)</li>
+            <li>Extracts dimensions from inline styles and attributes</li>
+            <li>Validates against 44×44px (AAA) and 24×24px (AA) thresholds</li>
+            <li>Reports errors for targets &lt; 24×24px</li>
+            <li>Reports warnings for targets 24-44px (meets AA but not AAA)</li>
+            <li>Reports info for elements without explicit size that are likely small</li>
+            <li>Checks spacing between adjacent interactive elements</li>
+            <li>Provides fixes with CSS examples for enlarging targets</li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">Limitations of Static Analysis:</h3>
+        <ul>
+            <li>Cannot compute actual rendered size (requires runtime CSS evaluation)</li>
+            <li>Cannot determine if padding increases effective target area</li>
+            <li>Cannot detect hit area expansion via pseudo-elements</li>
+            <li>Cannot measure actual spacing between elements in rendered page</li>
+            <li><strong>Recommendation:</strong> Combine with runtime testing tools for complete coverage</li>
+        </ul>
+    </footer>
+</body>
+</html>
