@@ -473,17 +473,17 @@ export default function SpeechDisabilities() {
         <div className="bg-gray-100 rounded-xl p-8 border-2 border-gray-300">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Next Steps</h2>
           <p className="text-gray-700 mb-4">
-            You've completed Domain 1! Continue with assistive technologies:
+            Continue learning about disabilities and assistive technologies:
           </p>
           <div className="space-y-2">
-            <a href="/learn/developers/modules/keyboard-and-pointing-devices" className="block text-blue-700 hover:text-blue-900 font-medium">
-              → Module 7: Keyboard & Pointing Devices
+            <a href="/learn/developers/modules/seizure-disorders" className="block text-blue-700 hover:text-blue-900 font-medium">
+              → Module 7: Seizure Disorders
+            </a>
+            <a href="/learn/developers/modules/temporary-situational-disabilities" className="block text-blue-700 hover:text-blue-900 font-medium">
+              → Module 8: Temporary and Situational Disabilities
             </a>
             <a href="/learn/developers/modules/screen-readers-deep-dive" className="block text-blue-700 hover:text-blue-900 font-medium">
               → Module 10: Screen Readers Deep Dive
-            </a>
-            <a href="/learn/developers/modules/wcag-overview" className="block text-blue-700 hover:text-blue-900 font-medium">
-              → Module 13: WCAG Overview (Start Domain 2)
             </a>
           </div>
         </div>
