@@ -843,15 +843,17 @@ Requires complete `<html><head></head><body></body></html>` document structure.
 - **Severity:** Error
 - **WCAG:** 1.4.3
 - **What it is:** Text/background contrast below 4.5:1 (normal text) or 3:1 (large text). Fails Level AA.
-- **How we detect:** Extract colors from CSS, calculate WCAG contrast ratio, compare to thresholds.
-- **Scope:** 🟢 Fragment-Safe (for inline styles) / 🔴 Full-Page (for CSS in `<head>`)
+- **How we detect:** Extract colors from CSS, calculate WCAG contrast ratio, compare to thresholds. **Requires both foreground and background colors, plus opacity values if present.**
+- **Scope:** 🟡 Context-Dependent (confidence: 1.0 if all color properties explicit, 0.6-0.7 if computed/external CSS)
+- **Confidence notes:** Can only report with high confidence if element has complete color information (color, background-color, opacity) in inline styles. If colors come from external CSS, inheritance, or computed styles, confidence reduced to 0.6-0.7.
 
 ### 100. `insufficient-contrast-aaa`
 - **Severity:** Warning
 - **WCAG:** 1.4.6
 - **What it is:** Text/background contrast below 7:1 (normal) or 4.5:1 (large). Fails Level AAA.
-- **How we detect:** Same as above, different thresholds.
-- **Scope:** 🟢 Fragment-Safe (inline) / 🔴 Full-Page (external CSS)
+- **How we detect:** Same as above, different thresholds. **Requires complete color information.**
+- **Scope:** 🟡 Context-Dependent (confidence: 1.0 if all color properties explicit, 0.6-0.7 if computed/external CSS)
+- **Confidence notes:** Same as insufficient-contrast-aa. Requires foreground color, background color, and opacity information to calculate accurately.
 
 ---
 
@@ -982,22 +984,24 @@ Requires complete `<html><head></head><body></body></html>` document structure.
 - **Severity:** Error (< 24px) / Warning (24-44px) / Info (no explicit size)
 - **WCAG:** 2.5.8 (Level AA: 24px), 2.5.5 (Level AAA: 44px)
 - **What it is:** Interactive element smaller than 24×24px (AA) or 44×44px (AAA). Hard to tap for users with motor disabilities.
-- **How we detect:** Extract width/height from inline styles or attributes, compare to thresholds.
-- **Scope:** 🟢 Fragment-Safe (for inline styles) / 🔴 Full-Page (for CSS sizing)
+- **How we detect:** Extract width/height from inline styles or attributes, compare to thresholds. **Requires explicit width AND height values.**
+- **Scope:** 🟡 Context-Dependent (confidence: 1.0 if explicit dimensions in inline styles/attributes, 0.65 if CSS-based sizing, 0.5 if no sizing)
+- **Confidence notes:** Can only report with high confidence if element has explicit width and height in inline styles or HTML attributes. If sized via CSS classes, computed styles, or not sized at all, confidence reduced to 0.5-0.65.
 
 ### 117. `adjacent-targets-too-close`
 - **Severity:** Warning
 - **WCAG:** 2.5.5
 - **What it is:** Interactive elements without sufficient spacing (< 8px). Easy to tap wrong target.
-- **How we detect:** Find adjacent interactive elements, check spacing (simplified: inline margins).
-- **Scope:** 🟢 Fragment-Safe (checks siblings)
+- **How we detect:** Find adjacent interactive elements, check spacing (simplified: inline margins). **Requires explicit margin/padding values.**
+- **Scope:** 🟡 Context-Dependent (confidence: 1.0 if explicit spacing in inline styles, 0.6 if CSS-based)
+- **Confidence notes:** Can accurately detect only if spacing is defined in inline styles. If spacing comes from CSS classes or layout properties (flexbox gap, grid gap), confidence reduced to 0.6.
 
 ### 118. `inline-link-insufficient-target`
 - **Severity:** Info
 - **WCAG:** 2.5.5
 - **What it is:** Inline link in paragraph without adequate padding/spacing. May be hard to tap accurately.
 - **How we detect:** Find links inside paragraphs, check for padding or line-height.
-- **Scope:** 🟢 Fragment-Safe
+- **Scope:** 🟢 Fragment-Safe (confidence: 0.7 - heuristic-based)
 
 ---
 
@@ -1014,12 +1018,15 @@ Requires complete `<html><head></head><body></body></html>` document structure.
 
 ## Summary Statistics
 
-### By Scope Requirement:
-- **🟢 Fragment-Safe:** 96 issue types (80.7%)
-- **🟡 Body-Required:** 16 issue types (13.4%)
-- **🔴 Full-Page Required:** 7 issue types (5.9%)
+### By Confidence Level (when adequate context available)
 
-### Body-Required Issues (16):
+- **🟢 High Confidence (1.0):** 96 issue types (80.7%) - Can detect with certainty in fragments
+- **🟡 Context-Dependent (0.5-0.9):** 23 issue types (19.3%) - Confidence varies based on available context
+
+### Context-Dependent Issues by Category
+
+**Body-Context Required (16 issues) - confidence 0.5 without body, 0.9-1.0 with body:**
+
 1. aria-labelledby-references-missing
 2. aria-describedby-references-missing
 3. aria-controls-references-missing
@@ -1037,80 +1044,354 @@ Requires complete `<html><head></head><body></body></html>` document structure.
 15. banner-not-in-body
 16. label-without-control
 
-### Full-Page Required Issues (7):
-1. html-missing-lang
-2. css-orientation-restriction (if in external CSS)
-3. viewport-orientation-lock
-4. insufficient-contrast-aa (if in external CSS)
-5. insufficient-contrast-aaa (if in external CSS)
-6. touch-target-too-small (if CSS-sized)
-7. adjacent-targets-too-close (if CSS-spaced)
+**Full-Page Required (3 issues) - confidence 0.5 without head, 1.0 with head:**
 
-**Note:** Some issues are marked as both Fragment-Safe AND Full-Page depending on context:
-- **CSS-related issues:** Fragment-Safe for inline styles, Full-Page for `<style>` or `<link>` in `<head>`
-- **Color contrast:** Fragment-Safe if colors in inline styles, Full-Page if in external CSS
-- **Touch targets:** Fragment-Safe if sized with inline styles/attributes, Full-Page if sized via CSS
+1. html-missing-lang
+2. viewport-orientation-lock
+3. css-orientation-restriction (if in external CSS)
+
+**Property-Dependent (4 issues) - confidence varies by completeness:**
+
+1. insufficient-contrast-aa (1.0 if all color properties explicit, 0.6-0.7 otherwise)
+2. insufficient-contrast-aaa (1.0 if all color properties explicit, 0.6-0.7 otherwise)
+3. touch-target-too-small (1.0 if explicit dimensions, 0.65 if CSS, 0.5 if none)
+4. adjacent-targets-too-close (1.0 if explicit spacing, 0.6 if CSS)
+
+### Key Insight: Confidence-Based vs Binary Filtering
+
+**Old Approach (Binary):** Suppress issues if context insufficient
+- ❌ User loses information
+- ❌ False sense of security ("no issues found" vs "couldn't check")
+
+**New Approach (Confidence-Based):** Report all issues with confidence levels
+- ✅ User sees all potential issues
+- ✅ Clear communication about certainty
+- ✅ Can make informed decisions
+- ✅ Understand context requirements
+
+### Confidence Score Interpretation
+
+- **1.0 (100%):** Definitive - issue definitely exists (or doesn't exist)
+- **0.9 (90%):** Very likely - high confidence but slight uncertainty
+- **0.8 (80%):** Likely - good confidence with known limitations
+- **0.7 (70%):** Moderate - may be accurate but context missing
+- **0.6 (60%):** Low - significant uncertainty, use full page mode
+- **0.5 (50%):** Very low - issue may not exist, definitely needs more context
 
 ---
 
-## Recommendations for Paradise Playground
+## Recommendations for Paradise Playground: Confidence-Based Approach
 
-### For Fragment Mode (Current Default):
-**Show only 🟢 Fragment-Safe issues** - 96 issue types that don't require document context.
+**Philosophy:** Don't suppress issues - report them with appropriate confidence levels based on available context.
 
-**Example suppression message for Body/Full-Page issues:**
-```
-ℹ️ Note: Some analyzers require full page context and are disabled in fragment mode:
-- Document structure (headings, landmarks)
-- ID reference validation (aria-labelledby, aria-describedby)
-- Global uniqueness checks
+### Confidence Scoring Strategy
 
-Switch to full-page mode to enable these checks.
-```
-
-### For Full-Page Mode:
-**Show all 119 issue types** - Complete analysis with document context.
-
-### Implementation Approach:
+Paradise already has confidence scoring infrastructure. Use it to communicate analysis limitations:
 
 ```typescript
-// In playground analyzer execution
-const BODY_REQUIRED_ISSUES = new Set([
-  'aria-labelledby-references-missing',
-  'aria-describedby-references-missing',
-  'aria-controls-references-missing',
-  // ... all 16 body-required issues
-]);
+interface Issue {
+  type: string;
+  severity: 'error' | 'warning' | 'info';
+  message: string;
+  confidence: number; // 0.0 to 1.0
+  confidenceReason?: string; // Why confidence is reduced
+  // ... other fields
+}
+```
 
-const FULL_PAGE_REQUIRED_ISSUES = new Set([
-  'html-missing-lang',
-  'viewport-orientation-lock',
-  // ... all 7 full-page issues
-]);
+### Confidence Calculation by Context
 
-function filterIssuesForFragmentMode(issues: Issue[], hasBodyTag: boolean, hasHtmlTag: boolean): Issue[] {
-  return issues.filter(issue => {
-    // Always exclude full-page issues in fragment mode
-    if (!hasHtmlTag && FULL_PAGE_REQUIRED_ISSUES.has(issue.type)) {
-      return false;
+**Full Context Available (confidence: 1.0)**
+- Complete `<html><head></head><body></body>` structure
+- All CSS available (inline + `<style>` + linked)
+- All JavaScript available
+- Can validate all 119 issue types with full confidence
+
+**Body Context Available (confidence: 0.8-0.9)**
+- Has `<body>` tag with content
+- Missing `<head>` section
+- **Can validate:** Most issues (96 Fragment-Safe + 16 Body-Required)
+- **Reduced confidence for:**
+  - Color contrast (may miss external CSS): confidence 0.7
+  - Touch targets (may miss CSS sizing): confidence 0.7
+  - Orientation locks (may miss viewport meta): confidence 0.8
+
+**Fragment Context Only (confidence: 0.6-0.8)**
+- Code snippets without `<body>` or `<html>`
+- **Can validate:** 96 Fragment-Safe issues with confidence 0.8-1.0
+- **Reduced confidence for:**
+  - ARIA ID references (can't verify targets exist): confidence 0.5
+    - Report as: "aria-labelledby references 'label-1' but target not found in visible code"
+  - Heading structure (can't verify document-wide): confidence 0.6
+    - Report as: "Heading level skip detected (H1→H3) but may be valid in full document"
+  - Landmark issues (incomplete structure): confidence 0.5
+    - Report as: "No main landmark found in visible code"
+  - Duplicate checks (can't verify uniqueness): confidence 0.6
+    - Report as: "Multiple H1 elements found but full document structure unknown"
+
+### Implementation Approach
+
+```typescript
+// Confidence modifier based on context availability
+function calculateConfidence(
+  issueType: string,
+  hasHtmlTag: boolean,
+  hasBodyTag: boolean,
+  hasHeadTag: boolean,
+  hasExternalCSS: boolean
+): { confidence: number; reason?: string } {
+
+  // Full-page required issues
+  if (FULL_PAGE_REQUIRED_ISSUES.has(issueType)) {
+    if (!hasHtmlTag || !hasHeadTag) {
+      return {
+        confidence: 0.5,
+        reason: 'Full HTML document with <head> required for accurate detection'
+      };
     }
+    return { confidence: 1.0 };
+  }
 
-    // Exclude body-required issues if no body tag
-    if (!hasBodyTag && BODY_REQUIRED_ISSUES.has(issue.type)) {
-      return false;
+  // Body-required issues
+  if (BODY_REQUIRED_ISSUES.has(issueType)) {
+    if (!hasBodyTag) {
+      return {
+        confidence: 0.6,
+        reason: 'Complete <body> structure required for accurate detection'
+      };
     }
+    return { confidence: 0.9 }; // Slight reduction if no <head>
+  }
 
-    return true;
+  // CSS-dependent issues
+  if (CSS_DEPENDENT_ISSUES.has(issueType)) {
+    if (hasExternalCSS && !hasHeadTag) {
+      return {
+        confidence: 0.7,
+        reason: 'May miss styles from external CSS or <style> in <head>'
+      };
+    }
+    return { confidence: 1.0 };
+  }
+
+  // ID reference issues
+  if (ID_REFERENCE_ISSUES.has(issueType)) {
+    if (!hasBodyTag) {
+      return {
+        confidence: 0.5,
+        reason: 'Referenced element may exist outside visible code fragment'
+      };
+    }
+    return { confidence: 1.0 };
+  }
+
+  // Fragment-safe issues
+  return { confidence: 1.0 };
+}
+
+// Apply to all detected issues
+function enrichIssuesWithConfidence(
+  issues: Issue[],
+  documentContext: DocumentContext
+): Issue[] {
+  return issues.map(issue => {
+    const { confidence, reason } = calculateConfidence(
+      issue.type,
+      documentContext.hasHtmlTag,
+      documentContext.hasBodyTag,
+      documentContext.hasHeadTag,
+      documentContext.hasExternalCSS
+    );
+
+    return {
+      ...issue,
+      confidence,
+      confidenceReason: reason
+    };
   });
 }
 ```
 
-### Documentation Updates:
+### Issue-Specific Confidence Adjustments
 
-1. **Update ANALYZERS.md** to note fragment vs full-page requirements
-2. **Update analyzer tooltips** in playground with scope badges: 🟢 Fragment | 🟡 Body | 🔴 Full-Page
-3. **Add mode toggle** in playground: "Fragment Mode" vs "Full-Page Mode"
-4. **Show suppressed issue count**: "5 additional issues require full page mode"
+**Color Contrast Issues (#99, #100):**
+```typescript
+if (issueType.includes('contrast')) {
+  if (hasInlineStyles && hasAllColorProperties) {
+    return { confidence: 1.0 }; // All info present
+  }
+  if (hasExternalCSS || !hasAllColorProperties) {
+    return {
+      confidence: 0.6,
+      reason: 'Color values may be defined in external CSS, computed styles, or inherited. Actual contrast may differ.'
+    };
+  }
+}
+```
+
+**Touch Target Issues (#116, #117):**
+```typescript
+if (issueType.includes('touch-target')) {
+  if (hasInlineDimensions) {
+    return { confidence: 1.0 };
+  }
+  if (hasExternalCSS) {
+    return {
+      confidence: 0.65,
+      reason: 'Element size may be defined in external CSS. Actual rendered size may differ.'
+    };
+  }
+  // No explicit size at all
+  return {
+    confidence: 0.5,
+    reason: 'Element size not specified. Cannot determine if touch target is adequate without CSS.'
+  };
+}
+```
+
+**ARIA Reference Issues (#16, #17, #18):**
+```typescript
+if (issueType.includes('references-missing')) {
+  if (!hasBodyTag) {
+    return {
+      confidence: 0.5,
+      reason: 'Referenced element may exist outside visible code fragment'
+    };
+  }
+  // Has body - can be confident it's actually missing
+  return { confidence: 1.0 };
+}
+```
+
+**Landmark Issues (#68, #69, #70):**
+```typescript
+if (issueType.includes('landmark') || issueType === 'no-main-landmark') {
+  if (!hasBodyTag) {
+    return {
+      confidence: 0.5,
+      reason: 'Document structure incomplete. Landmarks may exist in full page.'
+    };
+  }
+  return { confidence: 1.0 };
+}
+```
+
+**Heading Issues (#63, #64, #65):**
+```typescript
+if (issueType.includes('heading') || issueType === 'no-h1') {
+  if (!hasBodyTag) {
+    return {
+      confidence: 0.6,
+      reason: 'Document structure incomplete. Heading hierarchy may be correct in full page.'
+    };
+  }
+  return { confidence: 0.95 }; // Slight reduction - maybe sections exist
+}
+```
+
+### UI Display Strategy
+
+**Show all issues, but visually indicate confidence:**
+
+```tsx
+// High confidence (0.9-1.0): Normal display
+<IssueCard severity="error" confidence={0.95}>
+  <h4>Missing alt text on image</h4>
+  <p>Screen readers cannot describe this image...</p>
+</IssueCard>
+
+// Medium confidence (0.6-0.8): Show with info badge
+<IssueCard severity="warning" confidence={0.7}>
+  <h4>Insufficient color contrast (AA)</h4>
+  <ConfidenceBadge level="medium">
+    Confidence: 70% - May miss external CSS
+  </ConfidenceBadge>
+  <p>Text color and background may not meet 4.5:1 ratio...</p>
+</IssueCard>
+
+// Low confidence (0.4-0.6): Show with warning badge
+<IssueCard severity="error" confidence={0.5}>
+  <h4>aria-labelledby references missing element</h4>
+  <ConfidenceBadge level="low">
+    Confidence: 50% - Element may exist outside visible code
+  </ConfidenceBadge>
+  <p>aria-labelledby="label-1" but element with id="label-1" not found...</p>
+  <Note>This issue is uncertain in fragment mode. Use full page mode for accurate detection.</Note>
+</IssueCard>
+```
+
+### Confidence Badge Visual Design
+
+```css
+/* High confidence: subtle or no badge */
+.confidence-high {
+  /* No badge needed, or very subtle */
+}
+
+/* Medium confidence: amber info badge */
+.confidence-medium {
+  background: #f59e0b;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+/* Low confidence: red warning badge */
+.confidence-low {
+  background: #ef4444;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+```
+
+### Benefits of Confidence-Based Approach
+
+1. **No Information Loss:** Users see all potential issues, even uncertain ones
+2. **Transparency:** Clear communication about why confidence is reduced
+3. **Educational:** Teaches users about context requirements for accurate analysis
+4. **Actionable:** Users can switch to full-page mode if they want higher confidence
+5. **Flexible:** Works for any level of code completeness (snippet → full page)
+6. **Honest:** Doesn't claim certainty when context is missing
+
+### Summary Banner
+
+Display context-aware summary at top of results:
+
+```tsx
+// Fragment mode (no body tag)
+<ContextBanner>
+  📋 Analyzing code fragment
+  • 96 checks running with high confidence
+  • 23 checks running with reduced confidence (missing document context)
+  • Add <body> tags for 85% confidence on all checks
+  • Use full HTML document for 100% confidence
+</ContextBanner>
+
+// Body mode (has body, no head)
+<ContextBanner>
+  📄 Analyzing partial page (body only)
+  • 112 checks running with high confidence
+  • 7 checks running with reduced confidence (missing <head>)
+  • Add <head> section for full confidence on CSS and meta tag checks
+</ContextBanner>
+
+// Full page mode
+<ContextBanner>
+  ✅ Analyzing complete HTML document
+  • All 119 checks running with full confidence
+</ContextBanner>
+```
+
+### Documentation Updates
+
+1. **Update ANALYZERS.md** to explain confidence scoring
+2. **Add confidence badges** to issue type descriptions
+3. **Explain context requirements** for each analyzer
+4. **Show example confidence scenarios** in documentation
+5. **Link to full docs** from low-confidence issues
 
 ---
 
