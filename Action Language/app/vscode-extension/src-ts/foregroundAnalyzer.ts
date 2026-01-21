@@ -37,6 +37,7 @@ import { SingleLetterShortcutAnalyzer } from '../lib/analyzers/SingleLetterShort
 import { LanguageAttributeAnalyzer } from '../lib/analyzers/LanguageAttributeAnalyzer';
 import { AnimationControlAnalyzer } from '../lib/analyzers/AnimationControlAnalyzer';
 import { ModalAccessibilityAnalyzer } from '../lib/analyzers/ModalAccessibilityAnalyzer';
+import { ButtonLabelAnalyzer } from '../lib/analyzers/ButtonLabelAnalyzer';
 import { ParadiseCodeActionProvider } from './codeActionProvider';
 
 export class ForegroundAnalyzer {
@@ -81,7 +82,8 @@ export class ForegroundAnalyzer {
       new SingleLetterShortcutAnalyzer(),
       new LanguageAttributeAnalyzer(),
       new AnimationControlAnalyzer(),
-      new ModalAccessibilityAnalyzer()
+      new ModalAccessibilityAnalyzer(),
+      new ButtonLabelAnalyzer()
     ];
 
     this.outputChannel.appendLine(`[ForegroundAnalyzer] Initialized with ${this.analyzers.length} analyzers`);

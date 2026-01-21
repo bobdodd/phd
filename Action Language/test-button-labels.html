@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Label Test Cases</title>
+    <style>
+        button, input {
+            padding: 8px 16px;
+            margin: 10px 5px;
+            cursor: pointer;
+        }
+        .icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background: #333;
+        }
+        section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Button Label Test Cases (WCAG 4.1.2)</h1>
+
+    <!-- Test 1: Perfect accessible buttons (COMPLIANT) -->
+    <section>
+        <h2>Test 1: Fully Accessible Buttons (COMPLIANT)</h2>
+
+        <!-- Regular button with text -->
+        <button>Submit Form</button>
+
+        <!-- Button with aria-label -->
+        <button aria-label="Close dialog">×</button>
+
+        <!-- Button with aria-labelledby -->
+        <span id="save-label">Save</span>
+        <button aria-labelledby="save-label">💾</button>
+
+        <!-- Input buttons with value -->
+        <input type="button" value="Click Me">
+        <input type="submit" value="Submit">
+        <input type="reset" value="Reset">
+
+        <!-- Image button with alt text -->
+        <input type="image" src="submit.png" alt="Submit form">
+
+        <!-- Icon button with aria-label -->
+        <button aria-label="Delete item">
+            <i class="icon icon-trash"></i>
+        </button>
+    </section>
+
+    <!-- Test 2: Empty button - no label at all -->
+    <section>
+        <h2>Test 2: Empty Button (NO LABEL)</h2>
+        <!-- ❌ ISSUE: button-empty-label (error) -->
+        <button></button>
+
+        <!-- ❌ ISSUE: button-empty-label (error) -->
+        <button>   </button>
+
+        <!-- ❌ ISSUE: button-empty-label (error) -->
+        <button role="button"></button>
+    </section>
+
+    <!-- Test 3: Icon-only buttons without aria-label -->
+    <section>
+        <h2>Test 3: Icon-Only Buttons Without Labels</h2>
+
+        <!-- ❌ ISSUE: button-icon-no-label (error) - Has icon but no aria-label -->
+        <button>
+            <i class="icon icon-close"></i>
+        </button>
+
+        <!-- ❌ ISSUE: button-icon-no-label (error) - Has image but no aria-label -->
+        <button>
+            <img src="icon.png" alt="close">
+        </button>
+
+        <!-- ❌ ISSUE: button-icon-no-label (error) - Has SVG but no aria-label -->
+        <button>
+            <svg width="16" height="16"><circle cx="8" cy="8" r="8" /></svg>
+        </button>
+
+        <!-- ❌ ISSUE: button-icon-no-label (error) - Font Awesome icon -->
+        <button>
+            <i class="fa fa-trash"></i>
+        </button>
+
+        <!-- ❌ ISSUE: button-icon-no-label (error) - Material Icons -->
+        <button>
+            <i class="material-icons">delete</i>
+        </button>
+    </section>
+
+    <!-- Test 4: Input buttons without labels -->
+    <section>
+        <h2>Test 4: Input Buttons Without Labels</h2>
+
+        <!-- ❌ ISSUE: button-empty-label (error) - No value attribute -->
+        <input type="button">
+
+        <!-- ❌ ISSUE: button-empty-label (error) - Empty value -->
+        <input type="button" value="">
+
+        <!-- ❌ ISSUE: button-empty-label (error) - Whitespace value -->
+        <input type="button" value="   ">
+    </section>
+
+    <!-- Test 5: Image buttons without alt text -->
+    <section>
+        <h2>Test 5: Image Buttons Without Alt Text</h2>
+
+        <!-- ❌ ISSUE: button-image-no-alt (error) - No alt attribute -->
+        <input type="image" src="submit.png">
+
+        <!-- ❌ ISSUE: button-image-no-alt (error) - Empty alt -->
+        <input type="image" src="submit.png" alt="">
+
+        <!-- ❌ ISSUE: button-image-no-alt (error) - Whitespace alt -->
+        <input type="image" src="submit.png" alt="   ">
+    </section>
+
+    <!-- Test 6: Nested interactive elements -->
+    <section>
+        <h2>Test 6: Buttons with Nested Interactive Elements</h2>
+
+        <!-- ❌ ISSUE: button-nested-interactive (error) - Nested link -->
+        <button>
+            Submit <a href="#">Learn more</a>
+        </button>
+
+        <!-- ❌ ISSUE: button-nested-interactive (error) - Nested button -->
+        <button>
+            Actions
+            <button>Delete</button>
+        </button>
+
+        <!-- ❌ ISSUE: button-nested-interactive (error) - Nested input -->
+        <button>
+            Filter
+            <input type="checkbox">
+        </button>
+
+        <!-- ❌ ISSUE: button-nested-interactive (error) - ARIA button inside -->
+        <button>
+            Menu
+            <div role="button">Option</div>
+        </button>
+    </section>
+
+    <!-- Test 7: ARIA buttons without labels -->
+    <section>
+        <h2>Test 7: ARIA Buttons Without Labels</h2>
+
+        <!-- ❌ ISSUE: button-empty-label (error) - ARIA button, no label -->
+        <div role="button"></div>
+
+        <!-- ❌ ISSUE: button-empty-label (error) - ARIA button with whitespace -->
+        <div role="button">   </div>
+
+        <!-- ❌ ISSUE: button-icon-no-label (error) - ARIA button with icon -->
+        <div role="button">
+            <i class="icon icon-menu"></i>
+        </div>
+    </section>
+
+    <!-- Test 8: Buttons with only hidden content -->
+    <section>
+        <h2>Test 8: Buttons with Hidden Content</h2>
+
+        <!-- ❌ ISSUE: button-empty-label (error) - Content is aria-hidden -->
+        <button>
+            <span aria-hidden="true">Click</span>
+        </button>
+
+        <!-- ❌ ISSUE: button-empty-label (error) - Content is display:none -->
+        <button>
+            <span style="display: none;">Click</span>
+        </button>
+
+        <!-- ❌ ISSUE: button-empty-label (error) - Content is visibility:hidden -->
+        <button>
+            <span style="visibility: hidden;">Click</span>
+        </button>
+    </section>
+
+    <!-- Test 9: Edge cases that SHOULD pass -->
+    <section>
+        <h2>Test 9: Edge Cases (COMPLIANT)</h2>
+
+        <!-- Button with title attribute (last resort, but valid) -->
+        <button title="Close window">×</button>
+
+        <!-- Button with nested spans (text is still accessible) -->
+        <button>
+            <span>Submit</span>
+            <span>Form</span>
+        </button>
+
+        <!-- Icon button with aria-label AND visible text (redundant but valid) -->
+        <button aria-label="Delete item">
+            <i class="icon"></i>
+            Delete
+        </button>
+
+        <!-- Button with image that has alt text -->
+        <button>
+            <img src="icon.png" alt="Save">
+        </button>
+    </section>
+
+    <!-- Test 10: Default submit/reset buttons -->
+    <section>
+        <h2>Test 10: Default Input Button Values (COMPLIANT)</h2>
+
+        <!-- These get default labels from browser -->
+        <input type="submit">
+        <input type="reset">
+    </section>
+
+    <footer style="margin-top: 40px; padding: 40px; background: #f7fafc;">
+        <h3>Expected Issues Summary:</h3>
+        <ul>
+            <li><strong>button-empty-label (error):</strong> Tests 2, 4, 7, 8 - Buttons with no accessible label</li>
+            <li><strong>button-icon-no-label (error):</strong> Tests 3, 7 - Icon-only buttons without aria-label</li>
+            <li><strong>button-image-no-alt (error):</strong> Test 5 - Image buttons without alt text</li>
+            <li><strong>button-nested-interactive (error):</strong> Test 6 - Buttons with nested interactive elements</li>
+        </ul>
+        <p><strong>Total expected issues:</strong></p>
+        <ul>
+            <li>button-empty-label: ~11 instances (Tests 2, 4, 7, 8)</li>
+            <li>button-icon-no-label: ~6 instances (Tests 3, 7)</li>
+            <li>button-image-no-alt: ~3 instances (Test 5)</li>
+            <li>button-nested-interactive: ~4 instances (Test 6)</li>
+        </ul>
+        <p><strong>COMPLIANT examples:</strong> Tests 1, 9, 10 - Should have NO issues detected</p>
+    </footer>
+</body>
+</html>
