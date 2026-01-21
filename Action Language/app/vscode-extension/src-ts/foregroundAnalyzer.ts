@@ -45,6 +45,7 @@ import { NestedInteractiveElementsAnalyzer } from '../lib/analyzers/NestedIntera
 import { FormSubmissionAnalyzer } from '../lib/analyzers/FormSubmissionAnalyzer';
 import { ColorContrastAnalyzer } from '../lib/analyzers/ColorContrastAnalyzer';
 import { LiveRegionAnalyzer } from '../lib/analyzers/LiveRegionAnalyzer';
+import { AutocompleteAnalyzer } from '../lib/analyzers/AutocompleteAnalyzer';
 import { ParadiseCodeActionProvider } from './codeActionProvider';
 
 export class ForegroundAnalyzer {
@@ -97,7 +98,8 @@ export class ForegroundAnalyzer {
       new NestedInteractiveElementsAnalyzer(),
       new FormSubmissionAnalyzer(),
       new ColorContrastAnalyzer(),
-      new LiveRegionAnalyzer()
+      new LiveRegionAnalyzer(),
+      new AutocompleteAnalyzer()
     ];
 
     this.outputChannel.appendLine(`[ForegroundAnalyzer] Initialized with ${this.analyzers.length} analyzers`);
