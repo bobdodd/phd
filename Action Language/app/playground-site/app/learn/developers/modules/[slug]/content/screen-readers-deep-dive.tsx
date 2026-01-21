@@ -397,35 +397,44 @@ Name: "Close" (better to use aria-label)`}</pre>
       </p>
 
       <div className="bg-gray-50 p-6 rounded-lg my-6">
-        <ul className="space-y-3 mb-0">
-          <li>
-            <strong>Button:</strong> "Submit, button" (name + role)
-          </li>
-          <li>
-            <strong>Link:</strong> "Read more, link" (name + role, sometimes URL)
-          </li>
-          <li>
-            <strong>Heading:</strong> "About Us, heading level 2" (name + role + level)
-          </li>
-          <li>
-            <strong>Checkbox:</strong> "Agree to terms, checkbox, not checked" (name + role + state)
-          </li>
-          <li>
-            <strong>Text input:</strong> "Email address, edit, blank" (name + role + value state)
-          </li>
-          <li>
-            <strong>Navigation:</strong> "Navigation, main navigation, navigation landmark" (role + label + context)
-          </li>
-          <li>
-            <strong>List:</strong> "List, 3 items" (role + count), then "Bullet, item text" for each
-          </li>
-          <li>
-            <strong>Table:</strong> "Table, 5 rows, 3 columns" (role + dimensions)
-          </li>
-          <li>
-            <strong>Dialog:</strong> "Settings, dialog" (name + role, focus trapped inside)
-          </li>
-        </ul>
+        <dl className="space-y-3 mb-0">
+          <div>
+            <dt className="font-semibold">Button:</dt>
+            <dd className="ml-0 mt-1 text-gray-700">&quot;Submit, button&quot; (name + role)</dd>
+          </div>
+          <div>
+            <dt className="font-semibold">Link:</dt>
+            <dd className="ml-0 mt-1 text-gray-700">&quot;Read more, link&quot; (name + role, sometimes URL)</dd>
+          </div>
+          <div>
+            <dt className="font-semibold">Heading:</dt>
+            <dd className="ml-0 mt-1 text-gray-700">&quot;About Us, heading level 2&quot; (name + role + level)</dd>
+          </div>
+          <div>
+            <dt className="font-semibold">Checkbox:</dt>
+            <dd className="ml-0 mt-1 text-gray-700">&quot;Agree to terms, checkbox, not checked&quot; (name + role + state)</dd>
+          </div>
+          <div>
+            <dt className="font-semibold">Text input:</dt>
+            <dd className="ml-0 mt-1 text-gray-700">&quot;Email address, edit, blank&quot; (name + role + value state)</dd>
+          </div>
+          <div>
+            <dt className="font-semibold">Navigation:</dt>
+            <dd className="ml-0 mt-1 text-gray-700">&quot;Navigation, main navigation, navigation landmark&quot; (role + label + context)</dd>
+          </div>
+          <div>
+            <dt className="font-semibold">List:</dt>
+            <dd className="ml-0 mt-1 text-gray-700">&quot;List, 3 items&quot; (role + count), then &quot;Bullet, item text&quot; for each</dd>
+          </div>
+          <div>
+            <dt className="font-semibold">Table:</dt>
+            <dd className="ml-0 mt-1 text-gray-700">&quot;Table, 5 rows, 3 columns&quot; (role + dimensions)</dd>
+          </div>
+          <div>
+            <dt className="font-semibold">Dialog:</dt>
+            <dd className="ml-0 mt-1 text-gray-700">&quot;Settings, dialog&quot; (name + role, focus trapped inside)</dd>
+          </div>
+        </dl>
       </div>
 
       <h2>Navigation Strategies</h2>
@@ -530,48 +539,49 @@ Removes visible focus indicator`}</pre>
       <h2>Testing Your Site with Screen Readers</h2>
 
       <div className="bg-blue-50 border-l-4 border-blue-600 p-6 my-6">
-        <h3 className="text-blue-900 mt-0">Quick Testing Setup</h3>
-        <div className="text-blue-900 space-y-4">
-          <div>
-            <p className="font-semibold mb-1">Windows (Free):</p>
-            <ol className="text-sm space-y-1 mb-0">
+        <h3 className="text-blue-900 mt-0 mb-4">Quick Testing Setup</h3>
+
+        <div className="space-y-6">
+          <section>
+            <h4 className="font-semibold text-blue-900 mb-2">Windows (Free):</h4>
+            <ol className="text-sm text-blue-900 space-y-1 list-decimal list-inside">
               <li>Download NVDA: <a href="https://www.nvaccess.org/" className="underline">nvaccess.org</a></li>
               <li>Install and restart</li>
               <li>Press Insert to start/stop speech</li>
               <li>Navigate with arrows, H, K, B keys</li>
             </ol>
-          </div>
+          </section>
 
-          <div>
-            <p className="font-semibold mb-1">Mac (Built-in):</p>
-            <ol className="text-sm space-y-1 mb-0">
-              <li>System Preferences → Accessibility → VoiceOver</li>
+          <section>
+            <h4 className="font-semibold text-blue-900 mb-2">Mac (Built-in):</h4>
+            <ol className="text-sm text-blue-900 space-y-1 list-decimal list-inside">
+              <li>System Preferences &rarr; Accessibility &rarr; VoiceOver</li>
               <li>Enable VoiceOver (or press Cmd+F5)</li>
               <li>VO = Ctrl+Option (your modifier keys)</li>
               <li>Navigate with VO+arrows</li>
             </ol>
-          </div>
+          </section>
 
-          <div>
-            <p className="font-semibold mb-1">Chrome DevTools (Visual simulation):</p>
-            <ol className="text-sm space-y-1 mb-0">
-              <li>Open DevTools → Elements tab</li>
-              <li>Right-click element → Inspect Accessibility</li>
+          <section>
+            <h4 className="font-semibold text-blue-900 mb-2">Chrome DevTools (Visual simulation):</h4>
+            <ol className="text-sm text-blue-900 space-y-1 list-decimal list-inside">
+              <li>Open DevTools &rarr; Elements tab</li>
+              <li>Right-click element &rarr; Inspect Accessibility</li>
               <li>View computed name, role, properties</li>
               <li>See accessibility tree structure</li>
             </ol>
-          </div>
+          </section>
         </div>
       </div>
 
       <h2>Developer Checklist</h2>
       <div className="bg-gray-50 p-6 rounded-lg my-6">
-        <ul className="space-y-2 mb-0">
+        <ul className="space-y-2 mb-0 list-none">
           <li>✅ All interactive elements have meaningful accessible names</li>
           <li>✅ Semantic HTML used (buttons, links, headings, lists, nav, main)</li>
-          <li>✅ Heading hierarchy is logical (h1 → h2 → h3, no skipping levels)</li>
+          <li>✅ Heading hierarchy is logical (h1 &rarr; h2 &rarr; h3, no skipping levels)</li>
           <li>✅ Form inputs have associated labels (not just placeholders)</li>
-          <li>✅ Images have alt text (or alt="" for decorative)</li>
+          <li>✅ Images have alt text (or alt=&quot;&quot; for decorative)</li>
           <li>✅ Landmarks used (header, nav, main, aside, footer)</li>
           <li>✅ Focus order matches visual order (tabindex management)</li>
           <li>✅ No keyboard traps (can Tab out of everything)</li>
