@@ -4,7 +4,7 @@ export default function ScreenReadersDeepDive() {
       {/* What You'll Learn */}
       <section className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-8 mb-12 border-2 border-blue-200">
         <h2 className="text-2xl font-bold text-blue-900 mt-0 mb-4">What You'll Learn</h2>
-        <ul className="space-y-2 mb-0 text-blue-900">
+        <ul className="list-disc list-outside ml-6 space-y-2 mb-0 text-blue-900">
           <li>How screen readers convert visual interfaces to speech and Braille</li>
           <li>The accessibility tree and how browsers expose semantics</li>
           <li>Browse mode vs. focus mode and their different interaction models</li>
@@ -22,7 +22,7 @@ export default function ScreenReadersDeepDive() {
           Screen readers are the <strong>most important assistive technology</strong> for web accessibility. Understanding
           how they work is essential because:
         </p>
-        <ul className="space-y-2 text-gray-700 mb-4">
+        <ul className="list-disc list-outside ml-6 space-y-2 text-gray-700 mb-4">
           <li>Approximately <strong>2.2 billion people</strong> worldwide have vision impairment</li>
           <li>Screen readers are used by blind, low vision, and learning disabled users</li>
           <li>Your semantic HTML directly impacts screen reader output</li>
@@ -42,7 +42,7 @@ export default function ScreenReadersDeepDive() {
           A screen reader is software that reads digital content aloud using text-to-speech, and optionally outputs
           to a refreshable Braille display. It:
         </p>
-        <ul className="space-y-2 text-gray-700">
+        <ul className="list-disc list-outside ml-6 space-y-2 text-gray-700">
           <li>Extracts text, roles, and structure from the accessibility tree</li>
           <li>Announces elements sequentially as the user navigates</li>
           <li>Provides keyboard shortcuts for efficient navigation</li>
@@ -266,7 +266,7 @@ or links.`}
       <section className="mb-12">
         <h3 className="text-2xl font-bold text-gray-900 mb-4">What the Accessibility Tree Contains</h3>
         <p className="text-lg text-gray-700 leading-relaxed mb-4">Each node in the accessibility tree exposes:</p>
-        <ul className="space-y-2 text-gray-700">
+        <ul className="list-disc list-outside ml-6 space-y-2 text-gray-700">
           <li><strong>Role:</strong> What type of element (button, link, heading, list, etc.)</li>
           <li><strong>Name:</strong> The accessible name (computed from labels, text, ARIA)</li>
           <li><strong>State:</strong> Current condition (checked, expanded, selected, pressed)</li>
@@ -292,7 +292,7 @@ or links.`}
             </p>
             <div className="mb-3">
               <p className="font-semibold text-gray-900 mb-2">Navigation:</p>
-              <ul className="space-y-1 text-gray-700">
+              <ul className="list-disc list-outside ml-6 space-y-1 text-gray-700">
                 <li>Arrow keys move by line or element</li>
                 <li>H key jumps to next heading</li>
                 <li>K jumps to next link</li>
@@ -314,7 +314,7 @@ or links.`}
             </p>
             <div className="mb-3">
               <p className="font-semibold text-gray-900 mb-2">Navigation:</p>
-              <ul className="space-y-1 text-gray-700">
+              <ul className="list-disc list-outside ml-6 space-y-1 text-gray-700">
                 <li>Tab/Shift+Tab move between focusable elements</li>
                 <li>Arrow keys type text (not navigation)</li>
                 <li>Single-letter shortcuts are disabled</li>
@@ -560,7 +560,7 @@ Name: "Close" (better to use aria-label)`}</pre>
         <div className="space-y-6">
           <div className="bg-green-50 border-2 border-green-300 rounded-lg p-6">
             <h3 className="text-xl font-bold text-green-900 mb-3">🆕 First Visit: Exploratory Navigation</h3>
-            <ul className="space-y-2 text-gray-700">
+            <ul className="list-disc list-outside ml-6 space-y-2 text-gray-700">
               <li>Press H repeatedly to skim headings (get page outline)</li>
               <li>Press D to jump between landmarks (header, nav, main, footer)</li>
               <li>Open elements list (Insert+F7) to see all links, headings, landmarks</li>
@@ -570,7 +570,7 @@ Name: "Close" (better to use aria-label)`}</pre>
 
           <div className="bg-blue-50 border-2 border-blue-300 rounded-lg p-6">
             <h3 className="text-xl font-bold text-blue-900 mb-3">🔁 Return Visit: Targeted Navigation</h3>
-            <ul className="space-y-2 text-gray-700">
+            <ul className="list-disc list-outside ml-6 space-y-2 text-gray-700">
               <li>Press K repeatedly to jump through links, find &quot;Sign in&quot;</li>
               <li>Press B to jump to buttons</li>
               <li>Press F to jump to form fields</li>
@@ -580,7 +580,7 @@ Name: "Close" (better to use aria-label)`}</pre>
 
           <div className="bg-purple-50 border-2 border-purple-300 rounded-lg p-6">
             <h3 className="text-xl font-bold text-purple-900 mb-3">📝 Form Filling: Sequential Navigation</h3>
-            <ul className="space-y-2 text-gray-700">
+            <ul className="list-disc list-outside ml-6 space-y-2 text-gray-700">
               <li>Tab through form fields in order</li>
               <li>Listen to labels and instructions as each field receives focus</li>
               <li>Enter focus mode automatically when reaching input</li>
@@ -749,7 +749,7 @@ Removes visible focus indicator`}</pre>
       <section className="mb-12">
         <h2 className="text-3xl font-bold text-gray-900 mb-4">Key Takeaways</h2>
         <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300 rounded-lg p-6">
-          <ul className="space-y-3 text-gray-700">
+          <ul className="list-disc list-outside ml-6 space-y-3 text-gray-700">
             <li>
               <strong className="text-green-900">Accessibility tree is parallel to DOM:</strong> Browsers expose semantics to screen readers
             </li>
@@ -781,7 +781,7 @@ Removes visible focus indicator`}</pre>
         <p className="text-lg text-gray-700 leading-relaxed mb-4">
           Now that you understand how screen readers work:
         </p>
-        <ul className="space-y-2 text-gray-700 mb-4">
+        <ul className="list-disc list-outside ml-6 space-y-2 text-gray-700 mb-4">
           <li>Install NVDA (Windows) or enable VoiceOver (Mac) and test your current projects</li>
           <li>Navigate your site with keyboard only (no mouse) to identify issues</li>
           <li>Use Chrome DevTools Accessibility inspector to audit your accessibility tree</li>
