@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table Accessibility Test Cases</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        section {
+            margin: 40px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Table Accessibility Test Cases (WCAG 1.3.1)</h1>
+
+    <!-- Test 1: Perfect accessible data table (COMPLIANT) -->
+    <section>
+        <h2>Test 1: Fully Accessible Data Table (COMPLIANT)</h2>
+
+        <table>
+            <caption>Employee Directory - All accessibility features</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Job Title</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Department</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Alice Johnson</td>
+                    <td>Software Engineer</td>
+                    <td>alice@example.com</td>
+                    <td>Engineering</td>
+                </tr>
+                <tr>
+                    <td>Bob Smith</td>
+                    <td>Product Manager</td>
+                    <td>bob@example.com</td>
+                    <td>Product</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Test 2: Data table without headers -->
+    <section>
+        <h2>Test 2: Table Without Headers</h2>
+        <!-- ❌ ISSUE: table-no-headers (error) - No <th> elements -->
+
+        <table>
+            <tr>
+                <td>Name</td>
+                <td>Age</td>
+                <td>City</td>
+            </tr>
+            <tr>
+                <td>John</td>
+                <td>30</td>
+                <td>NYC</td>
+            </tr>
+            <tr>
+                <td>Jane</td>
+                <td>25</td>
+                <td>LA</td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- Test 3: Table without caption -->
+    <section>
+        <h2>Test 3: Table Without Caption or Label</h2>
+        <!-- ❌ ISSUE: table-no-caption (warning) - No caption, aria-label, or aria-labelledby -->
+
+        <table>
+            <tr>
+                <th scope="col">Product</th>
+                <th scope="col">Price</th>
+            </tr>
+            <tr>
+                <td>Widget</td>
+                <td>$10</td>
+            </tr>
+            <tr>
+                <td>Gadget</td>
+                <td>$20</td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- Test 4: Table with headers but no scope -->
+    <section>
+        <h2>Test 4: Headers Without Scope Attribute</h2>
+        <!-- ❌ ISSUE: table-header-no-scope (warning) - <th> elements lack scope -->
+
+        <table>
+            <caption>Products and Prices</caption>
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Stock</th>
+            </tr>
+            <tr>
+                <td>Laptop</td>
+                <td>$999</td>
+                <td>50</td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- Test 5: Table with aria-label instead of caption (COMPLIANT) -->
+    <section>
+        <h2>Test 5: Table with aria-label (COMPLIANT)</h2>
+
+        <table aria-label="Quarterly Sales Report">
+            <thead>
+                <tr>
+                    <th scope="col">Quarter</th>
+                    <th scope="col">Revenue</th>
+                    <th scope="col">Growth</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Q1</td>
+                    <td>$100K</td>
+                    <td>10%</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Test 6: Table without thead/tbody structure -->
+    <section>
+        <h2>Test 6: Table Without Structure Elements</h2>
+        <!-- ℹ️ ISSUE: table-no-structure (info) - No <thead>/<tbody> -->
+
+        <table>
+            <caption>Monthly Budget</caption>
+            <tr>
+                <th scope="col">Category</th>
+                <th scope="col">Amount</th>
+            </tr>
+            <tr>
+                <td>Rent</td>
+                <td>$1000</td>
+            </tr>
+            <tr>
+                <td>Food</td>
+                <td>$500</td>
+            </tr>
+            <tr>
+                <td>Utilities</td>
+                <td>$200</td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- Test 7: Complex table without proper header associations -->
+    <section>
+        <h2>Test 7: Complex Table Without Header IDs</h2>
+        <!-- ❌ ISSUE: table-complex-no-headers (warning) - Complex table needs id/headers -->
+
+        <table>
+            <caption>Sales by Region and Quarter</caption>
+            <tr>
+                <th rowspan="2">Region</th>
+                <th colspan="4">2024 Sales</th>
+            </tr>
+            <tr>
+                <th>Q1</th>
+                <th>Q2</th>
+                <th>Q3</th>
+                <th>Q4</th>
+            </tr>
+            <tr>
+                <td>North</td>
+                <td>$50K</td>
+                <td>$60K</td>
+                <td>$55K</td>
+                <td>$70K</td>
+            </tr>
+            <tr>
+                <td>South</td>
+                <td>$40K</td>
+                <td>$45K</td>
+                <td>$50K</td>
+                <td>$55K</td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- Test 8: Complex table WITH proper header associations (COMPLIANT) -->
+    <section>
+        <h2>Test 8: Complex Table With Proper Header Associations (COMPLIANT)</h2>
+
+        <table>
+            <caption>Employee Contact Information by Department</caption>
+            <tr>
+                <th id="name" rowspan="2">Name</th>
+                <th id="contact" colspan="2">Contact Information</th>
+            </tr>
+            <tr>
+                <th id="email">Email</th>
+                <th id="phone">Phone</th>
+            </tr>
+            <tr>
+                <td headers="name">Alice</td>
+                <td headers="contact email">alice@example.com</td>
+                <td headers="contact phone">555-0001</td>
+            </tr>
+            <tr>
+                <td headers="name">Bob</td>
+                <td headers="contact email">bob@example.com</td>
+                <td headers="contact phone">555-0002</td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- Test 9: Table with invalid headers reference -->
+    <section>
+        <h2>Test 9: Table With Invalid headers Attribute</h2>
+        <!-- ❌ ISSUE: table-invalid-headers (error) - headers references non-existent ID -->
+
+        <table>
+            <caption>Test Data</caption>
+            <tr>
+                <th id="col1" scope="col">Column 1</th>
+                <th id="col2" scope="col">Column 2</th>
+            </tr>
+            <tr>
+                <td headers="col1">Data 1</td>
+                <!-- ❌ References "col3" which doesn't exist -->
+                <td headers="col3">Data 2</td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- Test 10: Layout table without role (should warn) -->
+    <section>
+        <h2>Test 10: Layout Table Without role="presentation"</h2>
+        <!-- ℹ️ ISSUE: table-layout-missing-role (info) - Looks like layout table -->
+
+        <!-- This table has no headers, caption, or data indicators -->
+        <table>
+            <tr>
+                <td>
+                    <img src="logo.png" alt="Company Logo">
+                </td>
+                <td>
+                    <h3>Welcome Message</h3>
+                    <p>Some content here</p>
+                </td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- Test 11: Layout table WITH role="presentation" (COMPLIANT) -->
+    <section>
+        <h2>Test 11: Layout Table With role="presentation" (COMPLIANT)</h2>
+
+        <table role="presentation">
+            <tr>
+                <td>
+                    <nav>
+                        <a href="#home">Home</a>
+                        <a href="#about">About</a>
+                    </nav>
+                </td>
+                <td>
+                    <div>Main content area</div>
+                </td>
+                <td>
+                    <aside>Sidebar</aside>
+                </td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- Test 12: Table with row headers (COMPLIANT) -->
+    <section>
+        <h2>Test 12: Table With Row Headers (COMPLIANT)</h2>
+
+        <table>
+            <caption>Product Comparison</caption>
+            <tr>
+                <th scope="row">Price</th>
+                <td>$10</td>
+                <td>$20</td>
+                <td>$30</td>
+            </tr>
+            <tr>
+                <th scope="row">Weight</th>
+                <td>1 lb</td>
+                <td>2 lb</td>
+                <td>3 lb</td>
+            </tr>
+            <tr>
+                <th scope="row">Warranty</th>
+                <td>1 year</td>
+                <td>2 years</td>
+                <td>3 years</td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- Test 13: Empty table (edge case) -->
+    <section>
+        <h2>Test 13: Empty Table</h2>
+
+        <table>
+            <!-- Empty table - no rows -->
+        </table>
+    </section>
+
+    <!-- Test 14: Table with only one row (could be layout) -->
+    <section>
+        <h2>Test 14: Single Row Table</h2>
+
+        <table>
+            <tr>
+                <td>Cell 1</td>
+                <td>Cell 2</td>
+                <td>Cell 3</td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- Test 15: Table with aria-labelledby (COMPLIANT) -->
+    <section>
+        <h2>Test 15: Table With aria-labelledby (COMPLIANT)</h2>
+
+        <h3 id="inventory-heading">Warehouse Inventory</h3>
+        <table aria-labelledby="inventory-heading">
+            <thead>
+                <tr>
+                    <th scope="col">Item</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Location</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Widgets</td>
+                    <td>1000</td>
+                    <td>Aisle A</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <footer style="margin-top: 40px; padding: 40px; background: #f7fafc;">
+        <h3>Expected Issues Summary:</h3>
+        <ul>
+            <li><strong>table-no-headers (error):</strong> Test 2 - Data table with no &lt;th&gt; elements</li>
+            <li><strong>table-no-caption (warning):</strong> Test 3 - Data table without caption or label</li>
+            <li><strong>table-header-no-scope (warning):</strong> Test 4 - Headers without scope attribute (3 instances)</li>
+            <li><strong>table-no-structure (info):</strong> Test 6 - No thead/tbody organization</li>
+            <li><strong>table-complex-no-headers (warning):</strong> Test 7 - Complex table without id/headers associations</li>
+            <li><strong>table-invalid-headers (error):</strong> Test 9 - headers attribute references non-existent ID</li>
+            <li><strong>table-layout-missing-role (info):</strong> Test 10, 13, 14 - Potential layout tables</li>
+        </ul>
+        <p><strong>Total expected issues:</strong></p>
+        <ul>
+            <li>2 errors (table-no-headers, table-invalid-headers)</li>
+            <li>5+ warnings (table-no-caption, table-header-no-scope x3, table-complex-no-headers)</li>
+            <li>3+ info (table-no-structure, table-layout-missing-role x3)</li>
+        </ul>
+        <p><strong>COMPLIANT examples:</strong> Tests 1, 5, 8, 11, 12, 15 - Should have NO issues detected</p>
+
+        <h3 style="margin-top: 20px;">Table Accessibility Guidelines:</h3>
+        <ul>
+            <li><strong>Simple tables:</strong> Use &lt;th&gt; with scope="col" or scope="row"</li>
+            <li><strong>Complex tables:</strong> Use id on &lt;th&gt; and headers on &lt;td&gt;</li>
+            <li><strong>All data tables:</strong> Include &lt;caption&gt;, aria-label, or aria-labelledby</li>
+            <li><strong>Layout tables:</strong> Use role="presentation" (or better: use CSS instead)</li>
+            <li><strong>Best practice:</strong> Use &lt;thead&gt;, &lt;tbody&gt;, and &lt;tfoot&gt; for organization</li>
+        </ul>
+    </footer>
+</body>
+</html>

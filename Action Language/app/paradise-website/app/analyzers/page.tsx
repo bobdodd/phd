@@ -20,7 +20,7 @@ export default function AnalyzersPage() {
         <div className="mb-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="bg-white rounded-xl shadow-lg p-6 text-center border-2 border-paradise-blue/20">
-              <div className="text-4xl font-bold text-paradise-blue mb-2">23</div>
+              <div className="text-4xl font-bold text-paradise-blue mb-2">24</div>
               <div className="text-gray-600 font-medium">Total Analyzers</div>
               <div className="text-xs text-gray-500 mt-1">Behavioral + Structural + Framework</div>
             </div>
@@ -934,6 +934,49 @@ btn.addEventListener('click', handler);
 
               <div className="text-sm text-gray-600 bg-gray-50 rounded p-2">
                 <strong>WCAG:</strong> 4.1.2 (Name, Role, Value), 1.1.1 (Non-text Content) | <strong>Impact:</strong> Critical - screen reader users cannot interact with unlabeled buttons
+              </div>
+            </div>
+
+            {/* Analyzer 24: TableAccessibilityAnalyzer */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border-l-8 border-green-500">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center text-white text-xl font-bold">24</div>
+                <div>
+                  <h3 className="text-2xl font-bold">TableAccessibilityAnalyzer</h3>
+                  <div className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">✓ IMPLEMENTED</div>
+                </div>
+              </div>
+              <p className="text-gray-700 mb-4">
+                Detects accessibility issues with data tables. Verifies proper use of table headers, scope attributes, captions, and complex table associations for screen reader navigation.
+              </p>
+
+              <div className="space-y-3 mb-4">
+                <div className="bg-red-50 rounded p-3">
+                  <h4 className="font-semibold text-red-900 mb-2">Critical Table Issues</h4>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">table-no-headers</div>
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded">table-invalid-headers</div>
+                  </div>
+                </div>
+                <div className="bg-yellow-50 rounded p-3">
+                  <h4 className="font-semibold text-yellow-900 mb-2">Table Best Practices</h4>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">table-no-caption</div>
+                    <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">table-header-no-scope</div>
+                    <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">table-complex-no-headers</div>
+                  </div>
+                </div>
+                <div className="bg-blue-50 rounded p-3">
+                  <h4 className="font-semibold text-blue-900 mb-2">Recommendations</h4>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="bg-blue-100 text-blue-800 px-2 py-1 rounded">table-no-structure</div>
+                    <div className="bg-blue-100 text-blue-800 px-2 py-1 rounded">table-layout-missing-role</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2">
+                <strong>WCAG:</strong> 1.3.1 (Info and Relationships) | <strong>Impact:</strong> High - screen readers need table structure to navigate data relationships
               </div>
             </div>
           </div>
