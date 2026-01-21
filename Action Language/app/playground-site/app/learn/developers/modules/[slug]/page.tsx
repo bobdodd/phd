@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
-import { modules, getModuleBySlug } from '../../../../data/modules';
-import ModuleLayout from '../../../../components/ModuleLayout';
+import { modules, getModuleBySlug } from '../../../data/modules';
+import ModuleLayout from '../../../components/ModuleLayout';
 
 // Import individual module content components
 import UnderstandingDisabilityModels from './content/understanding-disability-models';
