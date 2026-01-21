@@ -50,6 +50,8 @@ import { HTMLParser } from '../../../src/parsers/HTMLParser';
 import { DocumentModel } from '../../../src/models/DocumentModel';
 import PreviewModal from './components/PreviewModal';
 import { FileManager, PlaygroundFiles } from '../lib/utils/FileManager';
+import ConfidenceBadge from './components/ConfidenceBadge';
+import DocumentContextBanner from './components/DocumentContextBanner';
 
 // Dynamically import Monaco to avoid SSR issues
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
@@ -83,6 +85,12 @@ interface IssueFix {
   };
 }
 
+interface IssueConfidence {
+  level: 'HIGH' | 'MEDIUM' | 'LOW';
+  score: number;
+  reason: string;
+}
+
 interface Issue {
   type: string;
   severity: 'error' | 'warning' | 'info';
@@ -92,6 +100,7 @@ interface Issue {
   line?: number;
   column?: number;
   length?: number;
+  confidence?: IssueConfidence;
   fix?: IssueFix;
 }
 
@@ -168,6 +177,7 @@ export default function Home() {
   const [analyzing, setAnalyzing] = useState(false);
   const [issues, setIssues] = useState<Issue[]>([]);
   const [selectedIssueIndex, setSelectedIssueIndex] = useState<number | null>(null);
+  const [documentContext, setDocumentContext] = useState({ hasHtmlTag: false, hasBodyTag: false, hasHeadTag: false });
   const [showSamplesModal, setShowSamplesModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('analyzer-examples');
   const [showHelpModal, setShowHelpModal] = useState(false);
@@ -460,6 +470,7 @@ export default function Home() {
             line: issue.location?.line,
             column: issue.location?.column,
             length: 10, // Default length for squiggle
+            confidence: issue.confidence,
             fix: issue.fix ? {
               description: issue.fix.description,
               code: issue.fix.code,
@@ -488,6 +499,10 @@ export default function Home() {
           javascript: []
         });
 
+        // Detect document context for confidence scoring
+        const docContext = documentModel.getDocumentContext();
+        setDocumentContext(docContext);
+
         const headingAnalyzer = new HeadingStructureAnalyzer();
         const headingIssues = headingAnalyzer.analyze({
           documentModel,
@@ -504,7 +519,7 @@ export default function Home() {
             line: issue.location?.line,
             column: issue.location?.column,
             length: 10,
-            fix: issue.fix ? {
+            confidence: issue.confidence,            fix: issue.fix ? {
               description: issue.fix.description,
               code: issue.fix.code,
               location: {
@@ -533,7 +548,7 @@ export default function Home() {
             line: issue.location?.line,
             column: issue.location?.column,
             length: 10,
-            fix: issue.fix ? {
+            confidence: issue.confidence,            fix: issue.fix ? {
               description: issue.fix.description,
               code: issue.fix.code,
               location: {
@@ -562,7 +577,7 @@ export default function Home() {
             line: issue.location?.line,
             column: issue.location?.column,
             length: 10,
-            fix: issue.fix ? {
+            confidence: issue.confidence,            fix: issue.fix ? {
               description: issue.fix.description,
               code: issue.fix.code,
               location: {
@@ -619,7 +634,7 @@ export default function Home() {
             line: issue.location?.line,
             column: issue.location?.column,
             length: 10,
-            fix: issue.fix ? {
+            confidence: issue.confidence,            fix: issue.fix ? {
               description: issue.fix.description,
               code: issue.fix.code,
               location: {
@@ -648,7 +663,7 @@ export default function Home() {
             line: issue.location?.line,
             column: issue.location?.column,
             length: 10,
-            fix: issue.fix ? {
+            confidence: issue.confidence,            fix: issue.fix ? {
               description: issue.fix.description,
               code: issue.fix.code,
               location: {
@@ -678,7 +693,7 @@ export default function Home() {
             line: issue.location?.line,
             column: issue.location?.column,
             length: 10,
-            fix: issue.fix ? {
+            confidence: issue.confidence,            fix: issue.fix ? {
               description: issue.fix.description,
               code: issue.fix.code,
               location: {
@@ -708,7 +723,7 @@ export default function Home() {
             line: issue.location?.line,
             column: issue.location?.column,
             length: 10,
-            fix: issue.fix ? {
+            confidence: issue.confidence,            fix: issue.fix ? {
               description: issue.fix.description,
               code: issue.fix.code,
               location: {
@@ -738,7 +753,7 @@ export default function Home() {
             line: issue.location?.line,
             column: issue.location?.column,
             length: 10,
-            fix: issue.fix ? {
+            confidence: issue.confidence,            fix: issue.fix ? {
               description: issue.fix.description,
               code: issue.fix.code,
               location: {
@@ -768,7 +783,7 @@ export default function Home() {
             line: issue.location?.line,
             column: issue.location?.column,
             length: 10,
-            fix: issue.fix ? {
+            confidence: issue.confidence,            fix: issue.fix ? {
               description: issue.fix.description,
               code: issue.fix.code,
               location: {
@@ -798,7 +813,7 @@ export default function Home() {
             line: issue.location?.line,
             column: issue.location?.column,
             length: 10,
-            fix: issue.fix ? {
+            confidence: issue.confidence,            fix: issue.fix ? {
               description: issue.fix.description,
               code: issue.fix.code,
               location: {
@@ -828,7 +843,7 @@ export default function Home() {
             line: issue.location?.line,
             column: issue.location?.column,
             length: 10,
-            fix: issue.fix ? {
+            confidence: issue.confidence,            fix: issue.fix ? {
               description: issue.fix.description,
               code: issue.fix.code,
               location: {
@@ -858,7 +873,7 @@ export default function Home() {
             line: issue.location?.line,
             column: issue.location?.column,
             length: 10,
-            fix: issue.fix ? {
+            confidence: issue.confidence,            fix: issue.fix ? {
               description: issue.fix.description,
               code: issue.fix.code,
               location: {
@@ -888,7 +903,7 @@ export default function Home() {
             line: issue.location?.line,
             column: issue.location?.column,
             length: 10,
-            fix: issue.fix ? {
+            confidence: issue.confidence,            fix: issue.fix ? {
               description: issue.fix.description,
               code: issue.fix.code,
               location: {
@@ -918,7 +933,7 @@ export default function Home() {
             line: issue.location?.line,
             column: issue.location?.column,
             length: 10,
-            fix: issue.fix ? {
+            confidence: issue.confidence,            fix: issue.fix ? {
               description: issue.fix.description,
               code: issue.fix.code,
               location: {
@@ -948,7 +963,7 @@ export default function Home() {
             line: issue.location?.line,
             column: issue.location?.column,
             length: 10,
-            fix: issue.fix ? {
+            confidence: issue.confidence,            fix: issue.fix ? {
               description: issue.fix.description,
               code: issue.fix.code,
               location: {
@@ -978,7 +993,7 @@ export default function Home() {
             line: issue.location?.line,
             column: issue.location?.column,
             length: 10,
-            fix: issue.fix ? {
+            confidence: issue.confidence,            fix: issue.fix ? {
               description: issue.fix.description,
               code: issue.fix.code,
               location: {
@@ -1008,7 +1023,7 @@ export default function Home() {
             line: issue.location?.line,
             column: issue.location?.column,
             length: 10,
-            fix: issue.fix ? {
+            confidence: issue.confidence,            fix: issue.fix ? {
               description: issue.fix.description,
               code: issue.fix.code,
               location: {
@@ -1038,7 +1053,7 @@ export default function Home() {
             line: issue.location?.line,
             column: issue.location?.column,
             length: 10,
-            fix: issue.fix ? {
+            confidence: issue.confidence,            fix: issue.fix ? {
               description: issue.fix.description,
               code: issue.fix.code,
               location: {
@@ -1068,7 +1083,7 @@ export default function Home() {
             line: issue.location?.line,
             column: issue.location?.column,
             length: 10,
-            fix: issue.fix ? {
+            confidence: issue.confidence,            fix: issue.fix ? {
               description: issue.fix.description,
               code: issue.fix.code,
               location: {
@@ -1792,6 +1807,17 @@ export default function Home() {
             <div className="bg-white rounded-lg shadow-lg p-6 sticky top-6">
               <h2 className="text-2xl font-bold mb-4 text-gray-900">Analysis Results</h2>
 
+              {/* Document Context Banner */}
+              <DocumentContextBanner
+                hasHtmlTag={documentContext.hasHtmlTag}
+                hasBodyTag={documentContext.hasBodyTag}
+                hasHeadTag={documentContext.hasHeadTag}
+                issueCount={issues.length}
+                highConfidenceCount={issues.filter(i => i.confidence && i.confidence.score >= 0.9).length}
+                mediumConfidenceCount={issues.filter(i => i.confidence && i.confidence.score >= 0.6 && i.confidence.score < 0.9).length}
+                lowConfidenceCount={issues.filter(i => i.confidence && i.confidence.score < 0.6).length}
+              />
+
               {issues.length === 0 ? (
                 <div className="text-center py-8">
                   <div className="text-6xl mb-4" aria-hidden="true">
@@ -1881,6 +1907,16 @@ export default function Home() {
                             {issue.wcag.length > 0 && (
                               <div className="text-xs mt-1 text-gray-600">
                                 WCAG: {issue.wcag.join(', ')}
+                              </div>
+                            )}
+                            {issue.confidence && (
+                              <div className="mt-2">
+                                <ConfidenceBadge
+                                  level={issue.confidence.level}
+                                  score={issue.confidence.score}
+                                  reason={issue.confidence.reason}
+                                  compact={true}
+                                />
                               </div>
                             )}
                           </div>

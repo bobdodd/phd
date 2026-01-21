@@ -60,6 +60,24 @@ export interface ElementContext {
 }
 
 /**
+ * Document context for confidence scoring.
+ * Indicates what HTML structure and CSS context is available.
+ */
+export interface DocumentContext {
+  /** Does the document have an <html> tag? */
+  hasHtmlTag: boolean;
+
+  /** Does the document have a <body> tag? */
+  hasBodyTag: boolean;
+
+  /** Does the document have a <head> tag? */
+  hasHeadTag: boolean;
+
+  /** Does the document reference external CSS files or have CSS models? */
+  hasExternalCSS: boolean;
+}
+
+/**
  * Document Model - Integration Layer
  *
  * Merges DOMModel, ActionLanguageModel, and CSSModel to enable
@@ -540,6 +558,64 @@ export class DocumentModel {
     }
 
     return true;
+  }
+
+  /**
+   * NEW: Detect document context for confidence scoring.
+   * Analyzes the HTML structure to determine what context is available.
+   * Used by analyzers to calculate confidence scores based on available information.
+   *
+   * @returns DocumentContext with flags for html, body, head tags and external CSS
+   */
+  getDocumentContext(): DocumentContext {
+    if (!this.dom || this.dom.length === 0) {
+      return {
+        hasHtmlTag: false,
+        hasBodyTag: false,
+        hasHeadTag: false,
+        hasExternalCSS: false,
+      };
+    }
+
+    let hasHtmlTag = false;
+    let hasBodyTag = false;
+    let hasHeadTag = false;
+    let hasExternalCSS = false;
+
+    // Check all fragments for structural tags
+    for (const fragment of this.dom) {
+      const allElements = fragment.getAllElements();
+
+      for (const element of allElements) {
+        const tagName = element.tagName.toLowerCase();
+
+        if (tagName === 'html') {
+          hasHtmlTag = true;
+        } else if (tagName === 'body') {
+          hasBodyTag = true;
+        } else if (tagName === 'head') {
+          hasHeadTag = true;
+        } else if (tagName === 'link' && element.attributes.rel === 'stylesheet') {
+          hasExternalCSS = true;
+        } else if (tagName === 'style') {
+          // Internal styles are handled differently, but presence of <style>
+          // suggests this might be a full document
+          hasHeadTag = true; // Likely in <head>
+        }
+      }
+    }
+
+    // Check if we have external CSS files
+    if (this.css && this.css.length > 0) {
+      hasExternalCSS = true;
+    }
+
+    return {
+      hasHtmlTag,
+      hasBodyTag,
+      hasHeadTag,
+      hasExternalCSS,
+    };
   }
 }
 

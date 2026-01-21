@@ -41,6 +41,9 @@ export interface IssueConfidence {
   /** Confidence level for this issue */
   level: 'HIGH' | 'MEDIUM' | 'LOW';
 
+  /** Numerical confidence score (0.0 to 1.0) */
+  score: number;
+
   /** Human-readable reason for the confidence level */
   reason: string;
 
@@ -200,10 +203,36 @@ export abstract class BaseAnalyzer {
       relatedLocations?: SourceLocation[];
       elementContext?: ElementContext;
       fix?: IssueFix;
+      customConfidence?: { score: number; reason?: string };
     }
   ): Issue {
     // Compute confidence based on analysis scope and context
-    const confidence = this.computeConfidence(context, options?.elementContext);
+    let confidence: IssueConfidence;
+
+    if (options?.customConfidence) {
+      // Use custom confidence if provided
+      const { score, reason } = options.customConfidence;
+      confidence = {
+        level: score >= 0.9 ? 'HIGH' : score >= 0.6 ? 'MEDIUM' : 'LOW',
+        score,
+        reason: reason || 'Custom confidence score',
+        scope: context.scope,
+      };
+    } else {
+      // Calculate issue-specific confidence
+      const { score, reason } = this.calculateIssueConfidence(
+        type,
+        context,
+        options?.elementContext
+      );
+
+      confidence = {
+        level: score >= 0.9 ? 'HIGH' : score >= 0.6 ? 'MEDIUM' : 'LOW',
+        score,
+        reason: reason || this.getDefaultConfidenceReason(context, options?.elementContext),
+        scope: context.scope,
+      };
+    }
 
     return {
       type,
@@ -219,12 +248,31 @@ export abstract class BaseAnalyzer {
   }
 
   /**
+   * Get default confidence reason based on context.
+   */
+  private getDefaultConfidenceReason(
+    context: AnalyzerContext,
+    elementContext?: ElementContext
+  ): string {
+    if (context.documentModel && elementContext) {
+      return 'Full document analysis with complete DOM and JavaScript context';
+    }
+    if (context.documentModel && context.scope !== 'file') {
+      return 'Document-scope analysis with HTML, CSS, and JavaScript';
+    }
+    if (context.documentModel) {
+      return 'Partial document context available';
+    }
+    return 'File-scope analysis only - may have false positives if handler is in another file';
+  }
+
+  /**
    * Compute confidence level for an issue based on available context.
    *
    * Confidence levels:
-   * - HIGH: Full DocumentModel available, complete context, no false positive risk
-   * - MEDIUM: Partial context, some uncertainty
-   * - LOW: File-scope only, may have false positives
+   * - HIGH (0.9-1.0): Full DocumentModel available, complete context, no false positive risk
+   * - MEDIUM (0.6-0.8): Partial context, some uncertainty
+   * - LOW (0.4-0.5): File-scope only, may have false positives
    */
   private computeConfidence(
     context: AnalyzerContext,
@@ -234,6 +282,7 @@ export abstract class BaseAnalyzer {
     if (context.documentModel && elementContext) {
       return {
         level: 'HIGH',
+        score: 1.0,
         reason: 'Full document analysis with complete DOM and JavaScript context',
         scope: context.scope,
       };
@@ -243,6 +292,7 @@ export abstract class BaseAnalyzer {
     if (context.documentModel && context.scope !== 'file') {
       return {
         level: 'HIGH',
+        score: 0.95,
         reason: 'Document-scope analysis with HTML, CSS, and JavaScript',
         scope: context.scope,
       };
@@ -252,6 +302,7 @@ export abstract class BaseAnalyzer {
     if (context.documentModel) {
       return {
         level: 'MEDIUM',
+        score: 0.7,
         reason: 'Partial document context available',
         scope: context.scope,
       };
@@ -260,8 +311,140 @@ export abstract class BaseAnalyzer {
     // LOW confidence: File-scope only
     return {
       level: 'LOW',
+      score: 0.5,
       reason: 'File-scope analysis only - may have false positives if handler is in another file',
       scope: 'file',
     };
+  }
+
+  /**
+   * Calculate confidence score for a specific issue type based on document context.
+   * This method should be overridden by analyzers for issue-specific confidence calculation.
+   *
+   * @param issueType - The type of issue being reported
+   * @param context - Analysis context
+   * @param elementContext - Element context (if available)
+   * @returns Confidence score and reason
+   */
+  protected calculateIssueConfidence(
+    issueType: string,
+    context: AnalyzerContext,
+    elementContext?: ElementContext
+  ): { score: number; reason?: string } {
+    // Default implementation: use document context for base confidence
+    if (!context.documentModel) {
+      return {
+        score: 0.5,
+        reason: 'File-scope analysis only - may have false positives',
+      };
+    }
+
+    const docContext = context.documentModel.getDocumentContext();
+
+    // Fragment-safe issues (most issues): high confidence regardless of context
+    // These can be detected accurately in code fragments
+    const fragmentSafeIssues = new Set([
+      'mouse-only-click',
+      'potential-keyboard-trap',
+      'screen-reader-conflict',
+      'positive-tabindex',
+      'invalid-role',
+      'missing-required-aria',
+      'orphaned-event-handler',
+      // ... many more (see ISSUE_TYPES_REFERENCE.md)
+    ]);
+
+    if (fragmentSafeIssues.has(issueType)) {
+      return { score: 1.0 };
+    }
+
+    // Body-required issues: reduced confidence without body
+    const bodyRequiredIssues = new Set([
+      'missing-main-landmark',
+      'multiple-main-landmarks',
+      'missing-h1',
+      'skipped-heading-level',
+      'missing-lang-attribute',
+      // ... others
+    ]);
+
+    if (bodyRequiredIssues.has(issueType)) {
+      if (!docContext.hasBodyTag) {
+        return {
+          score: 0.6,
+          reason: 'Complete <body> structure required for accurate detection',
+        };
+      }
+      return { score: 0.9 };
+    }
+
+    // Full-page required issues: reduced confidence without head
+    const fullPageRequiredIssues = new Set([
+      'missing-viewport-meta',
+      'no-prefers-reduced-motion',
+      'no-prefers-contrast',
+    ]);
+
+    if (fullPageRequiredIssues.has(issueType)) {
+      if (!docContext.hasHtmlTag || !docContext.hasHeadTag) {
+        return {
+          score: 0.5,
+          reason: 'Full HTML document with <head> required for accurate detection',
+        };
+      }
+      return { score: 1.0 };
+    }
+
+    // Property-dependent issues (color contrast, touch targets)
+    // These need special handling based on available CSS
+    if (issueType.includes('contrast')) {
+      if (!docContext.hasExternalCSS && elementContext) {
+        // Check if element has inline color properties
+        const hasInlineColor = elementContext.element.attributes.style?.includes('color');
+        const hasInlineBackground = elementContext.element.attributes.style?.includes('background');
+
+        if (hasInlineColor && hasInlineBackground) {
+          return { score: 1.0 };
+        }
+      }
+
+      if (docContext.hasExternalCSS && !docContext.hasHeadTag) {
+        return {
+          score: 0.6,
+          reason: 'Color values may be defined in external CSS. Actual contrast may differ.',
+        };
+      }
+
+      return { score: 0.7 };
+    }
+
+    if (issueType.includes('touch-target')) {
+      if (elementContext) {
+        const hasInlineSize =
+          elementContext.element.attributes.style?.includes('width') ||
+          elementContext.element.attributes.style?.includes('height') ||
+          elementContext.element.attributes.width ||
+          elementContext.element.attributes.height;
+
+        if (hasInlineSize) {
+          return { score: 1.0 };
+        }
+      }
+
+      if (docContext.hasExternalCSS) {
+        return {
+          score: 0.65,
+          reason: 'Element size may be defined in external CSS. Actual rendered size may differ.',
+        };
+      }
+
+      return {
+        score: 0.5,
+        reason: 'Element size not specified. Cannot determine if touch target is adequate without CSS.',
+      };
+    }
+
+    // Default: medium confidence
+    return { score: 0.8 };
   }
 }
