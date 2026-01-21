@@ -19,9 +19,40 @@ export default function AboutScreenReadersPage() {
       {/* Main Content */}
       <main className="max-w-5xl mx-auto px-6 py-12">
 
+        {/* Table of Contents */}
+        <nav className="bg-white rounded-xl shadow-lg p-8 mb-8" aria-labelledby="toc-heading">
+          <h2 id="toc-heading" className="text-2xl font-bold text-gray-900 mb-6">On This Page</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            <a href="#what-are" className="group block p-4 rounded-lg border-2 border-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors">
+              <span className="font-semibold text-blue-900">What Are Screen Readers?</span>
+            </a>
+            <a href="#popular" className="group block p-4 rounded-lg border-2 border-green-600 bg-green-50 hover:bg-green-100 transition-colors">
+              <span className="font-semibold text-green-900">Popular Screen Readers</span>
+            </a>
+            <a href="#navigation" className="group block p-4 rounded-lg border-2 border-purple-600 bg-purple-50 hover:bg-purple-100 transition-colors">
+              <span className="font-semibold text-purple-900">How Users Navigate</span>
+            </a>
+            <a href="#announces" className="group block p-4 rounded-lg border-2 border-orange-600 bg-orange-50 hover:bg-orange-100 transition-colors">
+              <span className="font-semibold text-orange-900">What Gets Announced</span>
+            </a>
+            <a href="#mistakes" className="group block p-4 rounded-lg border-2 border-red-600 bg-red-50 hover:bg-red-100 transition-colors">
+              <span className="font-semibold text-red-900">Common Mistakes</span>
+            </a>
+            <a href="#design-impact" className="group block p-4 rounded-lg border-2 border-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors">
+              <span className="font-semibold text-indigo-900">Design Impact</span>
+            </a>
+            <a href="#testing" className="group block p-4 rounded-lg border-2 border-teal-700 bg-teal-50 hover:bg-teal-100 transition-colors">
+              <span className="font-semibold text-teal-900">Testing Guide</span>
+            </a>
+            <a href="#takeaways" className="group block p-4 rounded-lg border-2 border-pink-600 bg-pink-50 hover:bg-pink-100 transition-colors">
+              <span className="font-semibold text-pink-900">Key Takeaways</span>
+            </a>
+          </div>
+        </nav>
+
         {/* Introduction */}
-        <section className="bg-white rounded-xl shadow-lg p-8 mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">What Are Screen Readers?</h2>
+        <section id="what-are" className="bg-white rounded-xl shadow-lg p-8 mb-8 scroll-mt-24">
+          <h2 className="text-3xl font-bold text-blue-700 mb-4 border-l-4 border-blue-600 pl-4">What Are Screen Readers?</h2>
           <div className="prose prose-lg max-w-none">
             <p className="text-lg text-gray-700 leading-relaxed mb-4">
               Screen readers are assistive technology software programs that convert on-screen content into synthesized speech or refreshable Braille,
@@ -36,8 +67,8 @@ export default function AboutScreenReadersPage() {
         </section>
 
         {/* Popular Screen Readers */}
-        <section className="bg-white rounded-xl shadow-lg p-8 mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Popular Screen Readers</h2>
+        <section id="popular" className="bg-white rounded-xl shadow-lg p-8 mb-8 scroll-mt-24">
+          <h2 className="text-3xl font-bold text-green-700 mb-6 border-l-4 border-green-600 pl-4">Popular Screen Readers</h2>
           <div className="grid md:grid-cols-2 gap-6">
 
             {/* JAWS */}
@@ -111,8 +142,8 @@ export default function AboutScreenReadersPage() {
         </section>
 
         {/* How Blind Users Navigate */}
-        <section className="bg-white rounded-xl shadow-lg p-8 mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">How Blind Users Navigate the Web</h2>
+        <section id="navigation" className="bg-white rounded-xl shadow-lg p-8 mb-8 scroll-mt-24">
+          <h2 className="text-3xl font-bold text-purple-700 mb-6 border-l-4 border-purple-600 pl-4">How Blind Users Navigate the Web</h2>
 
           <div className="mb-8">
             <h3 className="text-2xl font-semibold text-gray-800 mb-4">Keyboard-First Navigation</h3>
@@ -219,8 +250,8 @@ export default function AboutScreenReadersPage() {
         </section>
 
         {/* What Screen Readers Announce */}
-        <section className="bg-white rounded-xl shadow-lg p-8 mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">What Screen Readers Announce</h2>
+        <section id="announces" className="bg-white rounded-xl shadow-lg p-8 mb-8 scroll-mt-24">
+          <h2 className="text-3xl font-bold text-orange-700 mb-6 border-l-4 border-orange-600 pl-4">What Screen Readers Announce</h2>
 
           <p className="text-lg text-gray-700 leading-relaxed mb-6">
             Screen readers don't just read text - they announce semantic information about elements. Understanding what gets announced
@@ -312,8 +343,8 @@ export default function AboutScreenReadersPage() {
         </section>
 
         {/* Common Developer Mistakes */}
-        <section className="bg-white rounded-xl shadow-lg p-8 mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Common Developer Mistakes That Break Screen Readers</h2>
+        <section id="mistakes" className="bg-white rounded-xl shadow-lg p-8 mb-8 scroll-mt-24">
+          <h2 className="text-3xl font-bold text-red-700 mb-6 border-l-4 border-red-600 pl-4">Common Developer Mistakes That Break Screen Readers</h2>
 
           <div className="space-y-6">
             {/* Mistake 1 */}
@@ -465,8 +496,8 @@ export default function AboutScreenReadersPage() {
         </section>
 
         {/* Impact on Design Decisions */}
-        <section className="bg-white rounded-xl shadow-lg p-8 mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">How This Impacts Your Design Decisions</h2>
+        <section id="design-impact" className="bg-white rounded-xl shadow-lg p-8 mb-8 scroll-mt-24">
+          <h2 className="text-3xl font-bold text-indigo-700 mb-6 border-l-4 border-indigo-600 pl-4">How This Impacts Your Design Decisions</h2>
 
           <div className="space-y-6">
             <div className="bg-blue-50 border-l-4 border-blue-600 p-6 rounded-r">
@@ -530,8 +561,8 @@ export default function AboutScreenReadersPage() {
         </section>
 
         {/* Testing with Screen Readers */}
-        <section className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-xl shadow-lg p-8 mb-8 border-2 border-indigo-200">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Testing Your Site with Screen Readers</h2>
+        <section id="testing" className="bg-gradient-to-br from-teal-50 to-blue-50 rounded-xl shadow-lg p-8 mb-8 border-2 border-teal-300 scroll-mt-24">
+          <h2 className="text-3xl font-bold text-teal-800 mb-6 border-l-4 border-teal-700 pl-4">Testing Your Site with Screen Readers</h2>
 
           <div className="bg-white rounded-lg p-6 mb-6">
             <h3 className="text-2xl font-semibold text-indigo-900 mb-4">Quick Start Guide</h3>
@@ -607,8 +638,8 @@ export default function AboutScreenReadersPage() {
         </section>
 
         {/* Key Takeaways */}
-        <section className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl shadow-lg p-8 text-white">
-          <h2 className="text-3xl font-bold mb-6">Key Takeaways for Developers</h2>
+        <section id="takeaways" className="bg-gradient-to-r from-pink-600 to-purple-700 rounded-xl shadow-lg p-8 text-white scroll-mt-24">
+          <h2 className="text-3xl font-bold mb-6 border-l-4 border-white pl-4">Key Takeaways for Developers</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div className="bg-white/10 rounded-lg p-6">
               <h3 className="text-xl font-semibold mb-3">1. Semantic HTML First</h3>

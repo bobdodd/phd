@@ -19,9 +19,40 @@ export default function AboutSwitchesPage() {
       {/* Main Content */}
       <main className="max-w-5xl mx-auto px-6 py-12">
 
+        {/* Table of Contents */}
+        <nav className="bg-white rounded-xl shadow-lg p-8 mb-8" aria-labelledby="toc-heading">
+          <h2 id="toc-heading" className="text-2xl font-bold text-gray-900 mb-6">On This Page</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            <a href="#what-is" className="group block p-4 rounded-lg border-2 border-purple-600 bg-purple-50 hover:bg-purple-100 transition-colors">
+              <span className="font-semibold text-purple-900">What is Switch Access?</span>
+            </a>
+            <a href="#who-uses" className="group block p-4 rounded-lg border-2 border-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors">
+              <span className="font-semibold text-blue-900">Who Uses Switches?</span>
+            </a>
+            <a href="#types" className="group block p-4 rounded-lg border-2 border-green-600 bg-green-50 hover:bg-green-100 transition-colors">
+              <span className="font-semibold text-green-900">Types of Switches</span>
+            </a>
+            <a href="#how-scanning" className="group block p-4 rounded-lg border-2 border-orange-600 bg-orange-50 hover:bg-orange-100 transition-colors">
+              <span className="font-semibold text-orange-900">How Scanning Works</span>
+            </a>
+            <a href="#web-requirements" className="group block p-4 rounded-lg border-2 border-red-600 bg-red-50 hover:bg-red-100 transition-colors">
+              <span className="font-semibold text-red-900">Web Requirements</span>
+            </a>
+            <a href="#testing" className="group block p-4 rounded-lg border-2 border-teal-700 bg-teal-50 hover:bg-teal-100 transition-colors">
+              <span className="font-semibold text-teal-900">Testing Guide</span>
+            </a>
+            <a href="#impact" className="group block p-4 rounded-lg border-2 border-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors">
+              <span className="font-semibold text-indigo-900">Real User Impact</span>
+            </a>
+            <a href="#takeaways" className="group block p-4 rounded-lg border-2 border-pink-600 bg-pink-50 hover:bg-pink-100 transition-colors">
+              <span className="font-semibold text-pink-900">Key Takeaways</span>
+            </a>
+          </div>
+        </nav>
+
         {/* Introduction */}
-        <section className="bg-white rounded-xl shadow-lg p-8 mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">What is Switch Access Technology?</h2>
+        <section id="what-is" className="bg-white rounded-xl shadow-lg p-8 mb-8 scroll-mt-24">
+          <h2 className="text-3xl font-bold text-purple-700 mb-4 border-l-4 border-purple-600 pl-4">What is Switch Access Technology?</h2>
           <div className="prose prose-lg max-w-none">
             <p className="text-lg text-gray-700 leading-relaxed mb-4">
               Switch access is assistive technology that allows people with severe motor disabilities to control computers, smartphones,
@@ -41,8 +72,8 @@ export default function AboutSwitchesPage() {
         </section>
 
         {/* Who Uses Switches */}
-        <section className="bg-white rounded-xl shadow-lg p-8 mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Who Uses Switch Access?</h2>
+        <section id="who-uses" className="bg-white rounded-xl shadow-lg p-8 mb-8 scroll-mt-24">
+          <h2 className="text-3xl font-bold text-blue-700 mb-6 border-l-4 border-blue-600 pl-4">Who Uses Switch Access?</h2>
 
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             <div className="border border-purple-200 bg-purple-50 rounded-lg p-6">
@@ -88,8 +119,8 @@ export default function AboutSwitchesPage() {
         </section>
 
         {/* Types of Switches */}
-        <section className="bg-white rounded-xl shadow-lg p-8 mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Types of Adaptive Switches</h2>
+        <section id="types" className="bg-white rounded-xl shadow-lg p-8 mb-8 scroll-mt-24">
+          <h2 className="text-3xl font-bold text-green-700 mb-6 border-l-4 border-green-600 pl-4">Types of Adaptive Switches</h2>
 
           <div className="space-y-6">
             {/* Button Switches */}
@@ -167,8 +198,8 @@ export default function AboutSwitchesPage() {
         </section>
 
         {/* How Switch Scanning Works */}
-        <section className="bg-white rounded-xl shadow-lg p-8 mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">How Switch Scanning Works</h2>
+        <section id="how-scanning" className="bg-white rounded-xl shadow-lg p-8 mb-8 scroll-mt-24">
+          <h2 className="text-3xl font-bold text-orange-700 mb-6 border-l-4 border-orange-600 pl-4">How Switch Scanning Works</h2>
 
           <p className="text-lg text-gray-700 leading-relaxed mb-6">
             Since switch users can only press one or two buttons, they can't directly point to what they want (like with a mouse).
@@ -296,8 +327,8 @@ export default function AboutSwitchesPage() {
         </section>
 
         {/* Web Accessibility Requirements */}
-        <section className="bg-white rounded-xl shadow-lg p-8 mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">What This Means for Web Development</h2>
+        <section id="web-requirements" className="bg-white rounded-xl shadow-lg p-8 mb-8 scroll-mt-24">
+          <h2 className="text-3xl font-bold text-red-700 mb-6 border-l-4 border-red-600 pl-4">What This Means for Web Development</h2>
 
           <div className="bg-red-50 border-2 border-red-300 rounded-lg p-6 mb-6">
             <h3 className="text-2xl font-semibold text-red-900 mb-3">Critical Insight</h3>
@@ -450,8 +481,8 @@ export default function AboutSwitchesPage() {
         </section>
 
         {/* Testing with Switches */}
-        <section className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl shadow-lg p-8 mb-8 border-2 border-purple-200">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Testing Your Site for Switch Access</h2>
+        <section id="testing" className="bg-gradient-to-br from-teal-50 to-blue-50 rounded-xl shadow-lg p-8 mb-8 border-2 border-teal-300 scroll-mt-24">
+          <h2 className="text-3xl font-bold text-teal-800 mb-6 border-l-4 border-teal-700 pl-4">Testing Your Site for Switch Access</h2>
 
           <div className="bg-white rounded-lg p-6 mb-6">
             <h3 className="text-2xl font-semibold text-purple-900 mb-4">Keyboard-Only Testing (Simulates Switch Access)</h3>
@@ -574,8 +605,8 @@ export default function AboutSwitchesPage() {
         </section>
 
         {/* Real User Impact */}
-        <section className="bg-white rounded-xl shadow-lg p-8 mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Understanding the Real Impact</h2>
+        <section id="impact" className="bg-white rounded-xl shadow-lg p-8 mb-8 scroll-mt-24">
+          <h2 className="text-3xl font-bold text-indigo-700 mb-6 border-l-4 border-indigo-600 pl-4">Understanding the Real Impact</h2>
 
           <div className="bg-purple-50 border-2 border-purple-300 rounded-lg p-6 mb-6">
             <h3 className="text-xl font-semibold text-purple-900 mb-3">Time and Effort</h3>
@@ -616,8 +647,8 @@ export default function AboutSwitchesPage() {
         </section>
 
         {/* Key Takeaways */}
-        <section className="bg-gradient-to-r from-purple-600 to-indigo-700 rounded-xl shadow-lg p-8 text-white">
-          <h2 className="text-3xl font-bold mb-6">Key Takeaways for Developers</h2>
+        <section id="takeaways" className="bg-gradient-to-r from-pink-600 to-purple-700 rounded-xl shadow-lg p-8 text-white scroll-mt-24">
+          <h2 className="text-3xl font-bold mb-6 border-l-4 border-white pl-4">Key Takeaways for Developers</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div className="bg-white/10 rounded-lg p-6">
               <h3 className="text-xl font-semibold mb-3">1. Keyboard Accessibility = Switch Accessibility</h3>
