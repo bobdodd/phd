@@ -39,6 +39,7 @@ import { AnimationControlAnalyzer } from '../lib/analyzers/AnimationControlAnaly
 import { ModalAccessibilityAnalyzer } from '../lib/analyzers/ModalAccessibilityAnalyzer';
 import { ButtonLabelAnalyzer } from '../lib/analyzers/ButtonLabelAnalyzer';
 import { TableAccessibilityAnalyzer } from '../lib/analyzers/TableAccessibilityAnalyzer';
+import { DeprecatedKeyCodeAnalyzer } from '../lib/analyzers/DeprecatedKeyCodeAnalyzer';
 import { ParadiseCodeActionProvider } from './codeActionProvider';
 
 export class ForegroundAnalyzer {
@@ -85,7 +86,8 @@ export class ForegroundAnalyzer {
       new AnimationControlAnalyzer(),
       new ModalAccessibilityAnalyzer(),
       new ButtonLabelAnalyzer(),
-      new TableAccessibilityAnalyzer()
+      new TableAccessibilityAnalyzer(),
+      new DeprecatedKeyCodeAnalyzer()
     ];
 
     this.outputChannel.appendLine(`[ForegroundAnalyzer] Initialized with ${this.analyzers.length} analyzers`);

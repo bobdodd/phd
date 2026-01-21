@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deprecated KeyCode Test Cases</title>
+    <style>
+        section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+        }
+        button, input {
+            padding: 8px 16px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Deprecated KeyCode API Test Cases (WCAG 2.1.1)</h1>
+
+    <!-- Test 1: Modern keyboard event handling (COMPLIANT) -->
+    <section>
+        <h2>Test 1: Modern event.key (COMPLIANT)</h2>
+        <input type="text" id="modern-input" placeholder="Press Enter or Escape">
+
+        <script>
+            document.getElementById('modern-input').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    console.log('Enter key pressed - modern way');
+                }
+                if (e.key === 'Escape') {
+                    console.log('Escape key pressed - modern way');
+                }
+                if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                    console.log('Arrow key pressed - modern way');
+                }
+            });
+        </script>
+    </section>
+
+    <!-- Test 2: Deprecated event.keyCode -->
+    <section>
+        <h2>Test 2: Deprecated event.keyCode</h2>
+        <!-- ❌ ISSUE: deprecated-keycode (warning) -->
+        <input type="text" id="keycode-input" placeholder="Press Enter">
+
+        <script>
+            document.getElementById('keycode-input').addEventListener('keydown', function(e) {
+                // ❌ Using deprecated keyCode
+                if (e.keyCode === 13) {
+                    console.log('Enter pressed (deprecated keyCode)');
+                }
+                if (e.keyCode === 27) {
+                    console.log('Escape pressed (deprecated keyCode)');
+                }
+                if (e.keyCode === 32) {
+                    console.log('Space pressed (deprecated keyCode)');
+                }
+            });
+        </script>
+    </section>
+
+    <!-- Test 3: Deprecated event.which -->
+    <section>
+        <h2>Test 3: Deprecated event.which</h2>
+        <!-- ❌ ISSUE: deprecated-which (warning) -->
+        <input type="text" id="which-input" placeholder="Press any key">
+
+        <script>
+            document.getElementById('which-input').addEventListener('keydown', function(e) {
+                // ❌ Using deprecated which
+                if (e.which === 13) {
+                    console.log('Enter via which');
+                }
+                if (e.which === 27) {
+                    console.log('Escape via which');
+                }
+            });
+        </script>
+    </section>
+
+    <!-- Test 4: Deprecated event.charCode -->
+    <section>
+        <h2>Test 4: Deprecated event.charCode</h2>
+        <!-- ℹ️ ISSUE: deprecated-charcode (info) -->
+        <input type="text" id="charcode-input" placeholder="Type a character">
+
+        <script>
+            document.getElementById('charcode-input').addEventListener('keypress', function(e) {
+                // ❌ Using deprecated charCode
+                const char = String.fromCharCode(e.charCode);
+                console.log('Character:', char);
+            });
+        </script>
+    </section>
+
+    <!-- Test 5: Numeric key code comparisons -->
+    <section>
+        <h2>Test 5: Numeric Key Code Comparisons</h2>
+        <!-- ℹ️ ISSUE: numeric-key-comparison (info) -->
+        <div id="arrow-keys">Use arrow keys to navigate</div>
+
+        <script>
+            document.addEventListener('keydown', function(e) {
+                // ❌ Numeric comparisons with keyCode (hard to read)
+                if (e.keyCode === 37) {
+                    console.log('Left arrow');
+                }
+                if (e.keyCode === 38) {
+                    console.log('Up arrow');
+                }
+                if (e.keyCode === 39) {
+                    console.log('Right arrow');
+                }
+                if (e.keyCode === 40) {
+                    console.log('Down arrow');
+                }
+                if (e.keyCode === 9) {
+                    console.log('Tab key');
+                }
+            });
+        </script>
+    </section>
+
+    <!-- Test 6: Mixed deprecated and modern -->
+    <section>
+        <h2>Test 6: Mixed Usage</h2>
+        <!-- ❌ ISSUE: deprecated-keycode (warning) -->
+        <button id="mixed-button">Click or press Enter/Space</button>
+
+        <script>
+            document.getElementById('mixed-button').addEventListener('keydown', function(e) {
+                // ❌ Mixing deprecated keyCode with modern key
+                if (e.keyCode === 13 || e.key === 'Enter') {
+                    console.log('Enter - mixed approach');
+                }
+                // ❌ Another deprecated usage
+                if (e.keyCode === 32) {
+                    console.log('Space via keyCode');
+                }
+            });
+        </script>
+    </section>
+
+    <!-- Test 7: Complex keyboard shortcuts with deprecated API -->
+    <section>
+        <h2>Test 7: Keyboard Shortcuts (Deprecated)</h2>
+        <!-- ❌ ISSUE: deprecated-keycode (warning), numeric-key-comparison (info) -->
+
+        <script>
+            document.addEventListener('keydown', function(e) {
+                // ❌ Deprecated keyCode for shortcuts
+                if (e.ctrlKey && e.keyCode === 83) { // Ctrl+S
+                    e.preventDefault();
+                    console.log('Save shortcut (deprecated)');
+                }
+                if (e.ctrlKey && e.keyCode === 90) { // Ctrl+Z
+                    e.preventDefault();
+                    console.log('Undo shortcut (deprecated)');
+                }
+                if (e.altKey && e.keyCode === 70) { // Alt+F
+                    e.preventDefault();
+                    console.log('File menu (deprecated)');
+                }
+            });
+        </script>
+    </section>
+
+    <!-- Test 8: Modern keyboard shortcuts (COMPLIANT) -->
+    <section>
+        <h2>Test 8: Keyboard Shortcuts (Modern) (COMPLIANT)</h2>
+
+        <script>
+            document.addEventListener('keydown', function(e) {
+                // ✅ Modern event.key for shortcuts
+                if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    console.log('Save shortcut (modern)');
+                }
+                if (e.ctrlKey && e.key === 'z') {
+                    e.preventDefault();
+                    console.log('Undo shortcut (modern)');
+                }
+                if (e.altKey && e.key === 'f') {
+                    e.preventDefault();
+                    console.log('File menu (modern)');
+                }
+            });
+        </script>
+    </section>
+
+    <!-- Test 9: Arrow key navigation (deprecated) -->
+    <section>
+        <h2>Test 9: Arrow Navigation (Deprecated)</h2>
+        <!-- ❌ ISSUE: deprecated-keycode (warning), numeric-key-comparison (info) -->
+        <div id="nav-menu">
+            <button>Item 1</button>
+            <button>Item 2</button>
+            <button>Item 3</button>
+        </div>
+
+        <script>
+            const buttons = document.querySelectorAll('#nav-menu button');
+            let currentIndex = 0;
+
+            document.getElementById('nav-menu').addEventListener('keydown', function(e) {
+                // ❌ Deprecated arrow key handling
+                if (e.keyCode === 37 || e.keyCode === 38) { // Left or Up
+                    currentIndex = Math.max(0, currentIndex - 1);
+                    buttons[currentIndex].focus();
+                }
+                if (e.keyCode === 39 || e.keyCode === 40) { // Right or Down
+                    currentIndex = Math.min(buttons.length - 1, currentIndex + 1);
+                    buttons[currentIndex].focus();
+                }
+            });
+        </script>
+    </section>
+
+    <!-- Test 10: Arrow key navigation (modern) (COMPLIANT) -->
+    <section>
+        <h2>Test 10: Arrow Navigation (Modern) (COMPLIANT)</h2>
+        <div id="modern-nav-menu">
+            <button>Option A</button>
+            <button>Option B</button>
+            <button>Option C</button>
+        </div>
+
+        <script>
+            const modernButtons = document.querySelectorAll('#modern-nav-menu button');
+            let modernIndex = 0;
+
+            document.getElementById('modern-nav-menu').addEventListener('keydown', function(e) {
+                // ✅ Modern arrow key handling
+                if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                    modernIndex = Math.max(0, modernIndex - 1);
+                    modernButtons[modernIndex].focus();
+                }
+                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                    modernIndex = Math.min(modernButtons.length - 1, modernIndex + 1);
+                    modernButtons[modernIndex].focus();
+                }
+                // Also handle Home/End keys
+                if (e.key === 'Home') {
+                    modernIndex = 0;
+                    modernButtons[modernIndex].focus();
+                }
+                if (e.key === 'End') {
+                    modernIndex = modernButtons.length - 1;
+                    modernButtons[modernIndex].focus();
+                }
+            });
+        </script>
+    </section>
+
+    <footer style="margin-top: 40px; padding: 40px; background: #f7fafc;">
+        <h3>Expected Issues Summary:</h3>
+        <ul>
+            <li><strong>deprecated-keycode (warning):</strong> Tests 2, 6, 7, 9 - Use of event.keyCode</li>
+            <li><strong>deprecated-which (warning):</strong> Test 3 - Use of event.which</li>
+            <li><strong>deprecated-charcode (info):</strong> Test 4 - Use of event.charCode</li>
+            <li><strong>numeric-key-comparison (info):</strong> Tests 5, 7, 9 - Numeric key code comparisons</li>
+        </ul>
+        <p><strong>Total expected issues:</strong></p>
+        <ul>
+            <li>~6-8 warnings (deprecated-keycode, deprecated-which)</li>
+            <li>~4-6 info (numeric-key-comparison, deprecated-charcode)</li>
+        </ul>
+        <p><strong>COMPLIANT examples:</strong> Tests 1, 8, 10 - Using modern event.key</p>
+
+        <h3 style="margin-top: 20px;">Migration Guide:</h3>
+        <table border="1" cellpadding="10" style="border-collapse: collapse; margin-top: 10px;">
+            <thead>
+                <tr>
+                    <th>Deprecated (OLD)</th>
+                    <th>Modern (NEW)</th>
+                    <th>Key Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>e.keyCode === 13</td>
+                    <td>e.key === 'Enter'</td>
+                    <td>Enter</td>
+                </tr>
+                <tr>
+                    <td>e.keyCode === 27</td>
+                    <td>e.key === 'Escape'</td>
+                    <td>Escape</td>
+                </tr>
+                <tr>
+                    <td>e.keyCode === 32</td>
+                    <td>e.key === ' '</td>
+                    <td>Space</td>
+                </tr>
+                <tr>
+                    <td>e.keyCode === 9</td>
+                    <td>e.key === 'Tab'</td>
+                    <td>Tab</td>
+                </tr>
+                <tr>
+                    <td>e.keyCode === 37</td>
+                    <td>e.key === 'ArrowLeft'</td>
+                    <td>Left Arrow</td>
+                </tr>
+                <tr>
+                    <td>e.keyCode === 38</td>
+                    <td>e.key === 'ArrowUp'</td>
+                    <td>Up Arrow</td>
+                </tr>
+                <tr>
+                    <td>e.keyCode === 39</td>
+                    <td>e.key === 'ArrowRight'</td>
+                    <td>Right Arrow</td>
+                </tr>
+                <tr>
+                    <td>e.keyCode === 40</td>
+                    <td>e.key === 'ArrowDown'</td>
+                    <td>Down Arrow</td>
+                </tr>
+            </tbody>
+        </table>
+    </footer>
+</body>
+</html>

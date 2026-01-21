@@ -20,7 +20,7 @@ export default function AnalyzersPage() {
         <div className="mb-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="bg-white rounded-xl shadow-lg p-6 text-center border-2 border-paradise-blue/20">
-              <div className="text-4xl font-bold text-paradise-blue mb-2">24</div>
+              <div className="text-4xl font-bold text-paradise-blue mb-2">25</div>
               <div className="text-gray-600 font-medium">Total Analyzers</div>
               <div className="text-xs text-gray-500 mt-1">Behavioral + Structural + Framework</div>
             </div>
@@ -977,6 +977,41 @@ btn.addEventListener('click', handler);
 
               <div className="text-sm text-gray-600 bg-gray-50 rounded p-2">
                 <strong>WCAG:</strong> 1.3.1 (Info and Relationships) | <strong>Impact:</strong> High - screen readers need table structure to navigate data relationships
+              </div>
+            </div>
+
+            {/* Analyzer 25: DeprecatedKeyCodeAnalyzer */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border-l-8 border-green-500">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center text-white text-xl font-bold">25</div>
+                <div>
+                  <h3 className="text-2xl font-bold">DeprecatedKeyCodeAnalyzer</h3>
+                  <div className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">✓ IMPLEMENTED</div>
+                </div>
+              </div>
+              <p className="text-gray-700 mb-4">
+                Detects usage of deprecated keyboard event properties (keyCode, which, charCode). Recommends modern event.key and event.code alternatives for better maintainability.
+              </p>
+
+              <div className="space-y-3 mb-4">
+                <div className="bg-yellow-50 rounded p-3">
+                  <h4 className="font-semibold text-yellow-900 mb-2">Deprecated APIs</h4>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">deprecated-keycode</div>
+                    <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">deprecated-which</div>
+                  </div>
+                </div>
+                <div className="bg-blue-50 rounded p-3">
+                  <h4 className="font-semibold text-blue-900 mb-2">Code Quality</h4>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="bg-blue-100 text-blue-800 px-2 py-1 rounded">numeric-key-comparison</div>
+                    <div className="bg-blue-100 text-blue-800 px-2 py-1 rounded">deprecated-charcode</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2">
+                <strong>WCAG:</strong> 2.1.1 (Keyboard) | <strong>Impact:</strong> Low - still works but deprecated since 2016, use event.key for modern code
               </div>
             </div>
           </div>

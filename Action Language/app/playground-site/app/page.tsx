@@ -35,6 +35,7 @@ import { AnimationControlAnalyzer } from '../../../src/analyzers/AnimationContro
 import { ModalAccessibilityAnalyzer } from '../../../src/analyzers/ModalAccessibilityAnalyzer';
 import { ButtonLabelAnalyzer } from '../../../src/analyzers/ButtonLabelAnalyzer';
 import { TableAccessibilityAnalyzer } from '../../../src/analyzers/TableAccessibilityAnalyzer';
+import { DeprecatedKeyCodeAnalyzer } from '../../../src/analyzers/DeprecatedKeyCodeAnalyzer';
 import { ActionLanguageModelImpl } from '../../../src/models/ActionLanguageModel';
 import { HTMLParser } from '../../../src/parsers/HTMLParser';
 import { DocumentModel } from '../../../src/models/DocumentModel';
@@ -755,6 +756,36 @@ export default function Home() {
             wcag: issue.wcagCriteria || [],
             message: issue.message,
             location: issue.location?.file || 'HTML',
+            line: issue.location?.line,
+            column: issue.location?.column,
+            length: 10,
+            fix: issue.fix ? {
+              description: issue.fix.description,
+              code: issue.fix.code,
+              location: {
+                file: issue.fix.location?.file,
+                line: issue.fix.location?.line,
+                column: issue.fix.location?.column
+              }
+            } : undefined
+          });
+        }
+
+        // Run DeprecatedKeyCodeAnalyzer (needs ActionLanguageModel)
+        const keyCodeAnalyzer = new DeprecatedKeyCodeAnalyzer();
+        const keyCodeIssues = keyCodeAnalyzer.analyze({
+          documentModel,
+          actionLanguageModel,
+          scope: 'file'
+        });
+
+        for (const issue of keyCodeIssues) {
+          detected.push({
+            type: issue.type,
+            severity: issue.severity,
+            wcag: issue.wcagCriteria || [],
+            message: issue.message,
+            location: issue.location?.file || 'JavaScript',
             line: issue.location?.line,
             column: issue.location?.column,
             length: 10,
