@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nested Interactive Elements Test Cases</title>
+    <style>
+        section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+        }
+        .error { border-color: #ef4444; }
+        .warning { border-color: #f59e0b; }
+        .compliant { border-color: #10b981; }
+    </style>
+</head>
+<body>
+    <h1>Nested Interactive Elements Test Cases (WCAG 2.1.1)</h1>
+
+    <!-- Test 1: Button inside link (ERROR) -->
+    <section class="error">
+        <h2>Test 1: Button Inside Link (ERROR)</h2>
+        <!-- ❌ ISSUE: button-inside-link (error) -->
+        <a href="/page">
+            Go to page
+            <button>Click me</button>
+        </a>
+    </section>
+
+    <!-- Test 2: Link inside button (ERROR) -->
+    <section class="error">
+        <h2>Test 2: Link Inside Button (ERROR)</h2>
+        <!-- ❌ ISSUE: link-inside-button (error) -->
+        <button>
+            Actions:
+            <a href="/help">Help</a>
+        </button>
+    </section>
+
+    <!-- Test 3: Nested links (ERROR) -->
+    <section class="error">
+        <h2>Test 3: Nested Links (ERROR)</h2>
+        <!-- ❌ ISSUE: nested-links (error) -->
+        <a href="/parent">
+            Parent link
+            <a href="/child">Child link</a>
+        </a>
+    </section>
+
+    <!-- Test 4: Nested buttons (ERROR) -->
+    <section class="error">
+        <h2>Test 4: Nested Buttons (ERROR)</h2>
+        <!-- ❌ ISSUE: nested-buttons (error) -->
+        <button>
+            Outer button
+            <button>Inner button</button>
+        </button>
+    </section>
+
+    <!-- Test 5: Interactive element inside label (WARNING) -->
+    <section class="warning">
+        <h2>Test 5: Button Inside Label (WARNING)</h2>
+        <!-- ❌ ISSUE: interactive-inside-label (warning) -->
+        <label>
+            Name:
+            <input type="text" name="name">
+            <button type="button">Clear</button>
+        </label>
+    </section>
+
+    <!-- Test 6: Link inside label (WARNING) -->
+    <section class="warning">
+        <h2>Test 6: Link Inside Label (WARNING)</h2>
+        <!-- ❌ ISSUE: interactive-inside-label (warning) -->
+        <label>
+            I agree to the
+            <a href="/terms">terms and conditions</a>
+            <input type="checkbox">
+        </label>
+    </section>
+
+    <!-- Test 7: ARIA button inside link (ERROR) -->
+    <section class="error">
+        <h2>Test 7: ARIA Button Inside Link (ERROR)</h2>
+        <!-- ❌ ISSUE: button-inside-link (error) -->
+        <a href="/page">
+            Go to page
+            <div role="button" tabindex="0">Click me</div>
+        </a>
+    </section>
+
+    <!-- Test 8: ARIA link inside button (ERROR) -->
+    <section class="error">
+        <h2>Test 8: ARIA Link Inside Button (ERROR)</h2>
+        <!-- ❌ ISSUE: link-inside-button (error) -->
+        <button>
+            Actions:
+            <span role="link" tabindex="0">More info</span>
+        </button>
+    </section>
+
+    <!-- Test 9: Deeply nested interactive elements (ERROR) -->
+    <section class="error">
+        <h2>Test 9: Deeply Nested Interactive (ERROR)</h2>
+        <!-- ❌ ISSUE: nested-interactive-elements (warning) -->
+        <a href="/page">
+            <div>
+                <span>
+                    <button>Deeply nested button</button>
+                </span>
+            </div>
+        </a>
+    </section>
+
+    <!-- Test 10: Multiple nested interactive elements (ERROR) -->
+    <section class="error">
+        <h2>Test 10: Multiple Nested Interactive (ERROR x2)</h2>
+        <!-- ❌ ISSUE: button-inside-link (error) x2 -->
+        <a href="/page">
+            Link with multiple interactive children
+            <button>Button 1</button>
+            <button>Button 2</button>
+        </a>
+    </section>
+
+    <!-- Test 11: Input inside link (WARNING) -->
+    <section class="warning">
+        <h2>Test 11: Input Inside Link (WARNING)</h2>
+        <!-- ❌ ISSUE: nested-interactive-elements (warning) -->
+        <a href="/page">
+            Click to go
+            <input type="text" placeholder="Search">
+        </a>
+    </section>
+
+    <!-- Test 12: Select inside button (WARNING) -->
+    <section class="warning">
+        <h2>Test 12: Select Inside Button (WARNING)</h2>
+        <!-- ❌ ISSUE: nested-interactive-elements (warning) -->
+        <button>
+            Choose option:
+            <select>
+                <option>Option 1</option>
+                <option>Option 2</option>
+            </select>
+        </button>
+    </section>
+
+    <!-- Test 13: Compliant - Separate interactive elements -->
+    <section class="compliant">
+        <h2>Test 13: Separate Interactive Elements (COMPLIANT)</h2>
+        <div>
+            <a href="/page">Go to page</a>
+            <button>Click me</button>
+        </div>
+    </section>
+
+    <!-- Test 14: Compliant - Non-interactive content inside link -->
+    <section class="compliant">
+        <h2>Test 14: Non-Interactive Content Inside Link (COMPLIANT)</h2>
+        <a href="/page">
+            <span>Some text</span>
+            <img src="icon.png" alt="Icon">
+            <strong>Bold text</strong>
+        </a>
+    </section>
+
+    <!-- Test 15: Compliant - Icon button (no nested interactive) -->
+    <section class="compliant">
+        <h2>Test 15: Icon Button (COMPLIANT)</h2>
+        <button aria-label="Delete">
+            <span class="icon">🗑️</span>
+            Delete
+        </button>
+    </section>
+
+    <!-- Test 16: Compliant - Link with icon -->
+    <section class="compliant">
+        <h2>Test 16: Link With Icon (COMPLIANT)</h2>
+        <a href="/home">
+            <svg width="20" height="20"><circle cx="10" cy="10" r="10"/></svg>
+            Home
+        </a>
+    </section>
+
+    <!-- Test 17: Card with nested link and button (WARNING) -->
+    <section class="warning">
+        <h2>Test 17: Card With Nested Interactive (WARNING)</h2>
+        <!-- Common mistake: wrapping entire card in link -->
+        <!-- ❌ ISSUE: button-inside-link (error) -->
+        <a href="/article" class="card-link">
+            <div class="card">
+                <h3>Article Title</h3>
+                <p>Article description...</p>
+                <button>Read more</button>
+            </div>
+        </a>
+    </section>
+
+    <!-- Test 18: Compliant card - Separate clickable areas -->
+    <section class="compliant">
+        <h2>Test 18: Card With Separate Clickable Areas (COMPLIANT)</h2>
+        <div class="card">
+            <a href="/article">
+                <h3>Article Title</h3>
+            </a>
+            <p>Article description...</p>
+            <button>Read more</button>
+        </div>
+    </section>
+
+    <!-- Test 19: Complex form with nested interactive (ERROR) -->
+    <section class="error">
+        <h2>Test 19: Complex Form With Nesting (ERROR)</h2>
+        <form>
+            <!-- ❌ ISSUE: interactive-inside-label (warning) -->
+            <label>
+                Username:
+                <input type="text" name="username">
+                <a href="/forgot-username">Forgot username?</a>
+            </label>
+
+            <!-- ❌ ISSUE: interactive-inside-label (warning) -->
+            <label>
+                Email:
+                <input type="email" name="email">
+                <button type="button">Verify</button>
+            </label>
+
+            <button type="submit">Submit</button>
+        </form>
+    </section>
+
+    <!-- Test 20: Compliant form - Proper structure -->
+    <section class="compliant">
+        <h2>Test 20: Compliant Form Structure</h2>
+        <form>
+            <div>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username">
+                <a href="/forgot-username">Forgot username?</a>
+            </div>
+
+            <div>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email">
+                <button type="button">Verify</button>
+            </div>
+
+            <button type="submit">Submit</button>
+        </form>
+    </section>
+
+    <!-- Test 21: Role=button inside link with click handler (ERROR) -->
+    <section class="error">
+        <h2>Test 21: Role=button With Handler Inside Link (ERROR)</h2>
+        <!-- ❌ ISSUE: nested-interactive-elements (error) -->
+        <a href="/page">
+            Go to page
+            <div role="button" onclick="alert('clicked')">Click me</div>
+        </a>
+    </section>
+
+    <!-- Test 22: Link without href (not interactive) inside button -->
+    <section class="compliant">
+        <h2>Test 22: Anchor Without href Inside Button (COMPLIANT)</h2>
+        <!-- ✅ <a> without href is not interactive, so this is OK -->
+        <button>
+            <a>Not a link, just styling</a>
+        </button>
+    </section>
+
+    <!-- Test 23: Hidden input inside label (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 23: Hidden Input Inside Label (COMPLIANT)</h2>
+        <!-- ✅ Hidden inputs are not interactive -->
+        <label>
+            Option A
+            <input type="hidden" name="hidden-value">
+            <input type="checkbox">
+        </label>
+    </section>
+
+    <footer style="margin-top: 40px; padding: 40px; background: #f7fafc;">
+        <h3>Expected Issues Summary (NestedInteractiveElementsAnalyzer):</h3>
+        <ul>
+            <li><strong>button-inside-link (error):</strong> Tests 1, 7, 10 (4 total - 1 + 1 + 2), 17 (1 total)</li>
+            <li><strong>link-inside-button (error):</strong> Tests 2, 8 (2 total)</li>
+            <li><strong>nested-links (error):</strong> Test 3 (1 total)</li>
+            <li><strong>nested-buttons (error):</strong> Test 4 (1 total)</li>
+            <li><strong>interactive-inside-label (warning):</strong> Tests 5, 6, 19 (4 total - 1 + 1 + 2)</li>
+            <li><strong>nested-interactive-elements (warning):</strong> Tests 9, 11, 12, 21 (4 total)</li>
+        </ul>
+
+        <p><strong>Total expected issues:</strong></p>
+        <ul>
+            <li>~9 errors (button-inside-link, link-inside-button, nested-links, nested-buttons)</li>
+            <li>~8 warnings (interactive-inside-label, nested-interactive-elements)</li>
+        </ul>
+
+        <p><strong>COMPLIANT examples:</strong> Tests 13, 14, 15, 16, 18, 20, 22, 23 - Should have NO issues detected</p>
+
+        <h3 style="margin-top: 20px;">Why This Matters:</h3>
+        <p><strong>Nested interactive elements cause severe accessibility issues:</strong></p>
+        <ul>
+            <li><strong>Focus conflicts:</strong> Only the outer element is keyboard accessible</li>
+            <li><strong>Screen reader confusion:</strong> SR announces outer element, inner element unreachable</li>
+            <li><strong>Unpredictable behavior:</strong> Which action happens on click? Outer or inner?</li>
+            <li><strong>Mobile issues:</strong> Touch targets overlap, hard to activate correct element</li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">Common Real-World Mistakes:</h3>
+        <ol>
+            <li><strong>Wrapping entire cards in links:</strong> Card has link + "Read more" button inside link (Test 17)</li>
+            <li><strong>Buttons in navigation links:</strong> Navigation item has link + action button nested</li>
+            <li><strong>Form labels with actions:</strong> Label contains input + "Clear" button (Test 5)</li>
+            <li><strong>Terms acceptance:</strong> "I agree to the <a>terms</a>" inside <label> (Test 6)</li>
+        </ol>
+
+        <h3 style="margin-top: 20px;">Proper Solutions:</h3>
+        <ul>
+            <li><strong>Separate elements:</strong> Place interactive elements side-by-side, not nested</li>
+            <li><strong>Card pattern:</strong> Make only heading a link, keep button separate</li>
+            <li><strong>Form actions:</strong> Place buttons outside labels, use for= attribute</li>
+            <li><strong>Choose one action:</strong> If element needs to be clickable, choose link OR button, not both</li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">Test Coverage (6 Issue Types):</h3>
+        <ol>
+            <li><strong>button-inside-link</strong> - Tests 1, 7, 10, 17</li>
+            <li><strong>link-inside-button</strong> - Tests 2, 8</li>
+            <li><strong>nested-links</strong> - Test 3</li>
+            <li><strong>nested-buttons</strong> - Test 4</li>
+            <li><strong>interactive-inside-label</strong> - Tests 5, 6, 19</li>
+            <li><strong>nested-interactive-elements</strong> - Tests 9, 11, 12, 21 (catch-all)</li>
+        </ol>
+    </footer>
+</body>
+</html>

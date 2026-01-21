@@ -37,6 +37,7 @@ import { ButtonLabelAnalyzer } from '../../../src/analyzers/ButtonLabelAnalyzer'
 import { TableAccessibilityAnalyzer } from '../../../src/analyzers/TableAccessibilityAnalyzer';
 import { DeprecatedKeyCodeAnalyzer } from '../../../src/analyzers/DeprecatedKeyCodeAnalyzer';
 import { AriaStateManagementAnalyzer } from '../../../src/analyzers/AriaStateManagementAnalyzer';
+import { NestedInteractiveElementsAnalyzer } from '../../../src/analyzers/NestedInteractiveElementsAnalyzer';
 import { ActionLanguageModelImpl } from '../../../src/models/ActionLanguageModel';
 import { HTMLParser } from '../../../src/parsers/HTMLParser';
 import { DocumentModel } from '../../../src/models/DocumentModel';
@@ -811,6 +812,36 @@ export default function Home() {
         });
 
         for (const issue of ariaStateIssues) {
+          detected.push({
+            type: issue.type,
+            severity: issue.severity,
+            wcag: issue.wcagCriteria || [],
+            message: issue.message,
+            location: issue.location?.file || 'HTML',
+            line: issue.location?.line,
+            column: issue.location?.column,
+            length: 10,
+            fix: issue.fix ? {
+              description: issue.fix.description,
+              code: issue.fix.code,
+              location: {
+                file: issue.fix.location?.file,
+                line: issue.fix.location?.line,
+                column: issue.fix.location?.column
+              }
+            } : undefined
+          });
+        }
+
+        // Run NestedInteractiveElementsAnalyzer (needs DocumentModel only)
+        const nestedInteractiveAnalyzer = new NestedInteractiveElementsAnalyzer();
+        const nestedInteractiveIssues = nestedInteractiveAnalyzer.analyze({
+          documentModel,
+          actionLanguageModel,
+          scope: 'file'
+        });
+
+        for (const issue of nestedInteractiveIssues) {
           detected.push({
             type: issue.type,
             severity: issue.severity,
