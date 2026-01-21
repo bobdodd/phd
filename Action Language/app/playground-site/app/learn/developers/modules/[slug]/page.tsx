@@ -7,6 +7,7 @@ import UnderstandingDisabilityModels from './content/understanding-disability-mo
 import VisualDisabilities from './content/visual-disabilities';
 import AuditoryDisabilities from './content/auditory-disabilities';
 import MotorDisabilities from './content/motor-disabilities';
+import CognitiveDisabilities from './content/cognitive-disabilities';
 
 // Map slugs to content components
 const moduleContentMap: Record<string, React.ComponentType> = {
@@ -14,6 +15,7 @@ const moduleContentMap: Record<string, React.ComponentType> = {
   'visual-disabilities': VisualDisabilities,
   'auditory-disabilities': AuditoryDisabilities,
   'motor-disabilities': MotorDisabilities,
+  'cognitive-disabilities': CognitiveDisabilities,
 };
 
 export default async function ModulePage({ params }: { params: Promise<{ slug: string }> }) {
