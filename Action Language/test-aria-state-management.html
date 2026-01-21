@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARIA State Management Test Cases</title>
+    <style>
+        section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+        }
+        button, [role="button"] {
+            padding: 8px 16px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .content {
+            display: none;
+            padding: 15px;
+            border: 1px solid #ccc;
+            margin-top: 10px;
+        }
+        .content.visible {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>ARIA State Management Test Cases (WCAG 4.1.2)</h1>
+
+    <!-- Test 1: aria-expanded without updates (ERROR) -->
+    <section>
+        <h2>Test 1: aria-expanded Without JavaScript Updates</h2>
+        <!-- ❌ ISSUE: aria-expanded-never-updated (warning) -->
+        <button id="broken-accordion" aria-expanded="false" aria-controls="broken-content">
+            Toggle Section (Broken)
+        </button>
+        <div id="broken-content" class="content">
+            Content here that toggles visibility, but aria-expanded never updates.
+        </div>
+
+        <script>
+            // ❌ Missing: setAttribute('aria-expanded', ...)
+            document.getElementById('broken-accordion').addEventListener('click', function() {
+                const content = document.getElementById('broken-content');
+                content.classList.toggle('visible');
+                // BAD: aria-expanded stays "false" forever
+            });
+        </script>
+    </section>
+
+    <!-- Test 2: aria-expanded WITH proper updates (COMPLIANT) -->
+    <section>
+        <h2>Test 2: aria-expanded With Proper Updates (COMPLIANT)</h2>
+        <button id="proper-accordion" aria-expanded="false" aria-controls="proper-content">
+            Toggle Section (Proper)
+        </button>
+        <div id="proper-content" class="content">
+            Content with proper ARIA state management.
+        </div>
+
+        <script>
+            // ✅ COMPLIANT: Updates aria-expanded
+            document.getElementById('proper-accordion').addEventListener('click', function() {
+                const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                this.setAttribute('aria-expanded', String(!isExpanded));
+
+                const content = document.getElementById('proper-content');
+                content.classList.toggle('visible');
+            });
+        </script>
+    </section>
+
+    <!-- Test 3: aria-selected without updates (ERROR) -->
+    <section>
+        <h2>Test 3: aria-selected Without JavaScript Updates</h2>
+        <!-- ❌ ISSUE: aria-selected-never-updated (warning) -->
+        <div role="tablist">
+            <button role="tab" aria-selected="true" aria-controls="panel1">Tab 1</button>
+            <button role="tab" aria-selected="false" aria-controls="panel2">Tab 2</button>
+            <button role="tab" aria-selected="false" aria-controls="panel3">Tab 3</button>
+        </div>
+
+        <script>
+            // ❌ Missing: setAttribute('aria-selected', ...)
+            const tabs = document.querySelectorAll('[role="tab"]');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // BAD: Changes visual style but doesn't update aria-selected
+                    tabs.forEach(t => t.style.fontWeight = 'normal');
+                    this.style.fontWeight = 'bold';
+                });
+            });
+        </script>
+    </section>
+
+    <!-- Test 4: aria-selected WITH proper updates (COMPLIANT) -->
+    <section>
+        <h2>Test 4: aria-selected With Proper Updates (COMPLIANT)</h2>
+        <div role="tablist">
+            <button role="tab" id="proper-tab1" aria-selected="true">Option 1</button>
+            <button role="tab" id="proper-tab2" aria-selected="false">Option 2</button>
+            <button role="tab" id="proper-tab3" aria-selected="false">Option 3</button>
+        </div>
+
+        <script>
+            // ✅ COMPLIANT: Updates aria-selected properly
+            const properTabs = document.querySelectorAll('#proper-tab1, #proper-tab2, #proper-tab3');
+            properTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Clear all selections
+                    properTabs.forEach(t => t.setAttribute('aria-selected', 'false'));
+                    // Set current as selected
+                    this.setAttribute('aria-selected', 'true');
+                });
+            });
+        </script>
+    </section>
+
+    <!-- Test 5: aria-checked without updates (ERROR) -->
+    <section>
+        <h2>Test 5: aria-checked Without JavaScript Updates</h2>
+        <!-- ❌ ISSUE: aria-checked-never-updated (warning) -->
+        <div role="checkbox" aria-checked="false" tabindex="0">
+            Custom Checkbox (Broken)
+        </div>
+
+        <script>
+            // ❌ Missing: setAttribute('aria-checked', ...)
+            const brokenCheckbox = document.querySelector('[role="checkbox"]');
+            brokenCheckbox.addEventListener('click', function() {
+                // BAD: Changes visual indicator but not aria-checked
+                this.textContent = this.textContent.includes('✓') ? 'Custom Checkbox (Broken)' : '✓ Custom Checkbox (Broken)';
+            });
+        </script>
+    </section>
+
+    <!-- Test 6: aria-checked WITH proper updates (COMPLIANT) -->
+    <section>
+        <h2>Test 6: aria-checked With Proper Updates (COMPLIANT)</h2>
+        <div role="checkbox" id="proper-checkbox" aria-checked="false" tabindex="0">
+            Custom Checkbox (Proper)
+        </div>
+
+        <script>
+            // ✅ COMPLIANT: Updates aria-checked
+            document.getElementById('proper-checkbox').addEventListener('click', function() {
+                const checked = this.getAttribute('aria-checked') === 'true';
+                this.setAttribute('aria-checked', String(!checked));
+                this.textContent = checked ? 'Custom Checkbox (Proper)' : '✓ Custom Checkbox (Proper)';
+            });
+        </script>
+    </section>
+
+    <!-- Test 7: Multiple aria-live="assertive" (INFO/WARNING) -->
+    <section>
+        <h2>Test 7: Excessive aria-live="assertive" Usage</h2>
+        <!-- ❌ ISSUE: aria-live-assertive-overuse (info) -->
+        <!-- Found 3+ assertive regions: should use "polite" for most -->
+
+        <div aria-live="assertive" role="alert">
+            Critical error messages
+        </div>
+
+        <div aria-live="assertive">
+            Form validation feedback (should be polite!)
+        </div>
+
+        <div aria-live="assertive">
+            Success messages (should be polite!)
+        </div>
+
+        <div aria-live="assertive">
+            General status updates (should be polite!)
+        </div>
+    </section>
+
+    <!-- Test 8: aria-live="assertive" for non-critical content (INFO) -->
+    <section>
+        <h2>Test 8: aria-live="assertive" for Non-Critical Content</h2>
+        <!-- ❌ ISSUE: aria-live-assertive-usage (info) -->
+        <!-- Single assertive region but should consider polite -->
+
+        <div aria-live="assertive">
+            Loading complete (not critical, should use aria-live="polite")
+        </div>
+    </section>
+
+    <!-- Test 9: Proper aria-live="polite" usage (COMPLIANT) -->
+    <section>
+        <h2>Test 9: Proper aria-live="polite" Usage (COMPLIANT)</h2>
+
+        <div aria-live="polite" aria-atomic="true">
+            Status updates and non-critical messages
+        </div>
+
+        <div aria-live="assertive" role="alert">
+            Only critical errors here
+        </div>
+    </section>
+
+    <!-- Test 10: aria-pressed without updates (ERROR) -->
+    <section>
+        <h2>Test 10: aria-pressed Without JavaScript Updates</h2>
+        <!-- ❌ ISSUE: aria-expanded-never-updated (warning) -->
+        <!-- Note: aria-pressed uses same check as aria-expanded -->
+
+        <button aria-pressed="false">
+            Toggle Button (Broken)
+        </button>
+
+        <script>
+            // ❌ Missing: setAttribute('aria-pressed', ...)
+            document.querySelector('[aria-pressed]').addEventListener('click', function() {
+                // BAD: Changes style but not aria-pressed
+                this.style.backgroundColor = this.style.backgroundColor === 'blue' ? 'gray' : 'blue';
+            });
+        </script>
+    </section>
+
+    <!-- Test 11: Complex accordion with multiple buttons (ERROR) -->
+    <section>
+        <h2>Test 11: Complex Accordion Without State Updates</h2>
+        <!-- ❌ ISSUE: aria-expanded-never-updated (warning) x3 -->
+
+        <div class="accordion">
+            <button aria-expanded="false" aria-controls="section1">Section 1</button>
+            <div id="section1" class="content">Content 1</div>
+
+            <button aria-expanded="false" aria-controls="section2">Section 2</button>
+            <div id="section2" class="content">Content 2</div>
+
+            <button aria-expanded="false" aria-controls="section3">Section 3</button>
+            <div id="section3" class="content">Content 3</div>
+        </div>
+
+        <script>
+            // ❌ Missing: setAttribute('aria-expanded', ...) for all buttons
+            document.querySelectorAll('.accordion button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const contentId = this.getAttribute('aria-controls');
+                    const content = document.getElementById(contentId);
+                    content.classList.toggle('visible');
+                    // BAD: aria-expanded never updates
+                });
+            });
+        </script>
+    </section>
+
+    <!-- Test 12: Radio group with aria-checked (ERROR) -->
+    <section>
+        <h2>Test 12: Radio Group Without aria-checked Updates</h2>
+        <!-- ❌ ISSUE: aria-checked-never-updated (warning) x3 -->
+
+        <div role="radiogroup" aria-label="Color selection">
+            <div role="radio" aria-checked="true" tabindex="0">Red</div>
+            <div role="radio" aria-checked="false" tabindex="-1">Green</div>
+            <div role="radio" aria-checked="false" tabindex="-1">Blue</div>
+        </div>
+
+        <script>
+            // ❌ Missing: setAttribute('aria-checked', ...)
+            const radios = document.querySelectorAll('[role="radio"]');
+            radios.forEach(radio => {
+                radio.addEventListener('click', function() {
+                    // BAD: Changes tabindex but not aria-checked
+                    radios.forEach(r => r.setAttribute('tabindex', '-1'));
+                    this.setAttribute('tabindex', '0');
+                    this.focus();
+                });
+            });
+        </script>
+    </section>
+
+    <!-- Test 13: Mixed proper and broken states -->
+    <section>
+        <h2>Test 13: Mixed Proper and Broken State Management</h2>
+
+        <!-- ✅ This one is proper -->
+        <button id="proper-toggle" aria-expanded="false">Proper Toggle</button>
+        <div id="proper-toggle-content" class="content">Content</div>
+
+        <!-- ❌ This one is broken -->
+        <button id="broken-toggle" aria-expanded="false">Broken Toggle</button>
+        <div id="broken-toggle-content" class="content">Content</div>
+
+        <script>
+            // ✅ Proper: Updates aria-expanded
+            document.getElementById('proper-toggle').addEventListener('click', function() {
+                const expanded = this.getAttribute('aria-expanded') === 'true';
+                this.setAttribute('aria-expanded', String(!expanded));
+                document.getElementById('proper-toggle-content').classList.toggle('visible');
+            });
+
+            // ❌ Broken: Doesn't update aria-expanded
+            document.getElementById('broken-toggle').addEventListener('click', function() {
+                document.getElementById('broken-toggle-content').classList.toggle('visible');
+            });
+        </script>
+    </section>
+
+    <!-- Test 14: Using .ariaExpanded property (COMPLIANT) -->
+    <section>
+        <h2>Test 14: Using Modern .ariaExpanded Property (COMPLIANT)</h2>
+
+        <button id="modern-toggle" aria-expanded="false">Modern Toggle</button>
+        <div id="modern-content" class="content">Content</div>
+
+        <script>
+            // ✅ COMPLIANT: Uses modern .ariaExpanded property
+            document.getElementById('modern-toggle').addEventListener('click', function() {
+                const expanded = this.ariaExpanded === 'true';
+                this.ariaExpanded = String(!expanded);
+                document.getElementById('modern-content').classList.toggle('visible');
+            });
+        </script>
+    </section>
+
+    <!-- Test 15: Document-level handler updating ARIA (COMPLIANT) -->
+    <section>
+        <h2>Test 15: Document-Level Handler Updating ARIA (COMPLIANT)</h2>
+
+        <button id="delegate-toggle" class="toggle-button" aria-expanded="false" data-target="delegate-content">
+            Delegated Toggle
+        </button>
+        <div id="delegate-content" class="content">Content</div>
+
+        <script>
+            // ✅ COMPLIANT: Document-level handler updates aria-expanded via querySelector
+            document.addEventListener('click', function(event) {
+                if (event.target.classList.contains('toggle-button')) {
+                    const button = event.target;
+                    const expanded = button.getAttribute('aria-expanded') === 'true';
+                    button.setAttribute('aria-expanded', String(!expanded));
+
+                    const targetId = button.dataset.target;
+                    const content = document.getElementById(targetId);
+                    content.classList.toggle('visible');
+                }
+            });
+        </script>
+    </section>
+
+    <footer style="margin-top: 40px; padding: 40px; background: #f7fafc;">
+        <h3>Expected Issues Summary (AriaStateManagementAnalyzer):</h3>
+        <ul>
+            <li><strong>aria-expanded-never-updated (warning):</strong> Tests 1, 10, 11 (5 total - 1 + 1 + 3)</li>
+            <li><strong>aria-selected-never-updated (warning):</strong> Test 3 (1 total - group issue)</li>
+            <li><strong>aria-checked-never-updated (warning):</strong> Tests 5, 12 (4 total - 1 + 3)</li>
+            <li><strong>aria-live-assertive-overuse (info):</strong> Test 7 (1 total)</li>
+            <li><strong>aria-live-assertive-usage (info):</strong> Test 8 (1 total)</li>
+        </ul>
+
+        <p><strong>Total expected issues:</strong></p>
+        <ul>
+            <li>~10 warnings (aria state never updated)</li>
+            <li>~2 info (aria-live assertive usage guidance)</li>
+        </ul>
+
+        <p><strong>COMPLIANT examples:</strong> Tests 2, 4, 6, 9, 14, 15 - Should have NO issues detected</p>
+
+        <h3 style="margin-top: 20px;">Test Coverage (4 Issue Types):</h3>
+        <ol>
+            <li><strong>aria-expanded-never-updated</strong> - Tests 1, 10, 11</li>
+            <li><strong>aria-selected-never-updated</strong> - Test 3</li>
+            <li><strong>aria-checked-never-updated</strong> - Tests 5, 12</li>
+            <li><strong>aria-live-assertive-overuse</strong> - Test 7</li>
+            <li><strong>aria-live-assertive-usage</strong> - Test 8 (guidance)</li>
+        </ol>
+
+        <h3 style="margin-top: 20px;">Real-World Impact:</h3>
+        <p>Screen reader users rely on ARIA states to understand the current state of interactive elements:</p>
+        <ul>
+            <li><strong>aria-expanded:</strong> "collapsed" vs "expanded" for accordions, dropdowns</li>
+            <li><strong>aria-selected:</strong> Which tab/option is currently active</li>
+            <li><strong>aria-checked:</strong> Checkbox/radio state for custom controls</li>
+            <li><strong>aria-live:</strong> Assertive interrupts immediately (use sparingly!)</li>
+        </ul>
+
+        <p><strong>Common Developer Mistake:</strong> Updating visual state (CSS classes, styles) but forgetting to update ARIA attributes, causing screen readers to announce incorrect states.</p>
+    </footer>
+</body>
+</html>
