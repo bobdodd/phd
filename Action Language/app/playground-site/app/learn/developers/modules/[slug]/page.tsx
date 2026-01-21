@@ -15,6 +15,7 @@ import MultipleDisabilities from './content/multiple-disabilities';
 import ScreenReadersDeepDive from './content/screen-readers-deep-dive';
 import SwitchAccessScanning from './content/switch-access-scanning';
 import AlternativeInputOutput from './content/alternative-input-output';
+import WCAGOverview from './content/wcag-overview';
 
 // Map slugs to content components
 const moduleContentMap: Record<string, React.ComponentType> = {
@@ -30,6 +31,7 @@ const moduleContentMap: Record<string, React.ComponentType> = {
   'screen-readers-deep-dive': ScreenReadersDeepDive,
   'switch-access-scanning': SwitchAccessScanning,
   'alternative-input-output': AlternativeInputOutput,
+  'wcag-overview': WCAGOverview,
 };
 
 export default async function ModulePage({ params }: { params: Promise<{ slug: string }> }) {
