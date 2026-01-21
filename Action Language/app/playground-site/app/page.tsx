@@ -605,6 +605,8 @@ export default function Home() {
             location: issue.location.file || 'HTML',
             line: issue.location.line,
             column: issue.location.column,
+            length: 10,
+            confidence: issue.confidence,
             fix: issue.fix ? {
               description: issue.fix.description,
               code: issue.fix.code,

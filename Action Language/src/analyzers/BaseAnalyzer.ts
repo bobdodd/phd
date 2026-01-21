@@ -351,6 +351,15 @@ export abstract class BaseAnalyzer {
       'invalid-role',
       'missing-required-aria',
       'orphaned-event-handler',
+      'empty-heading',
+      'heading-missing-text',
+      'missing-alt-text',
+      'alt-text-filename',
+      'redundant-alt-text',
+      'form-input-missing-label',
+      'button-missing-label',
+      'link-no-text',
+      'link-ambiguous-text',
       // ... many more (see ISSUE_TYPES_REFERENCE.md)
     ]);
 
