@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Keyboard Navigation Test Cases</title>
+    <style>
+        section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+        }
+        button, input {
+            padding: 8px 16px;
+            margin: 10px 5px;
+        }
+        .widget {
+            border: 1px solid #999;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Comprehensive Keyboard Navigation Test Cases (Enhanced Analyzer)</h1>
+
+    <!-- Test 1: Proper keyboard navigation (COMPLIANT) -->
+    <section>
+        <h2>Test 1: Proper Keyboard Navigation (COMPLIANT)</h2>
+
+        <div role="listbox" aria-label="Options (use arrow keys)">
+            <div role="option" tabindex="0">Option 1</div>
+            <div role="option" tabindex="-1">Option 2</div>
+            <div role="option" tabindex="-1">Option 3</div>
+        </div>
+
+        <script>
+            // ✅ COMPLIANT: Arrow keys within ARIA widget
+            const listbox = document.querySelector('[role="listbox"]');
+            listbox.addEventListener('keydown', (event) => {
+                if (event.key === 'ArrowDown') {
+                    event.preventDefault(); // OK: within ARIA widget
+                    // Move to next option
+                }
+                if (event.key === 'ArrowUp') {
+                    event.preventDefault(); // OK: within ARIA widget
+                    // Move to previous option
+                }
+            });
+        </script>
+    </section>
+
+    <!-- Test 2: Arrow keys without ARIA context -->
+    <section>
+        <h2>Test 2: Arrow Keys Without ARIA Widget Context</h2>
+        <!-- ❌ ISSUE: screen-reader-arrow-conflict (warning) -->
+
+        <div id="custom-nav" class="widget">
+            Use arrow keys to navigate
+        </div>
+
+        <script>
+            // ❌ Arrow keys on regular div (conflicts with screen reader browse mode)
+            document.getElementById('custom-nav').addEventListener('keydown', (event) => {
+                if (event.key === 'ArrowDown') {
+                    console.log('Down pressed');
+                    // Missing: ARIA widget role
+                }
+                if (event.key === 'ArrowUp') {
+                    console.log('Up pressed');
+                    // Missing: ARIA widget role
+                }
+            });
+        </script>
+    </section>
+
+    <!-- Test 3: Tab without Shift check -->
+    <section>
+        <h2>Test 3: Tab Key Without Shift+Tab Support</h2>
+        <!-- ❌ ISSUE: tab-without-shift (info) -->
+
+        <div id="focus-container">
+            <button>Item 1</button>
+            <button>Item 2</button>
+            <button>Item 3</button>
+        </div>
+
+        <script>
+            // ❌ Tab handling without Shift check (backward navigation broken)
+            document.getElementById('focus-container').addEventListener('keydown', (event) => {
+                if (event.key === 'Tab') {
+                    event.preventDefault();
+                    moveToNextElement(); // Missing: Shift+Tab for backward
+                }
+            });
+
+            function moveToNextElement() {
+                console.log('Moving forward only');
+            }
+        </script>
+    </section>
+
+    <!-- Test 4: Single-key shortcuts (screen reader conflict) -->
+    <section>
+        <h2>Test 4: Single-Character Shortcuts (Screen Reader Conflict)</h2>
+        <!-- ❌ ISSUE: screen-reader-conflict (warning) -->
+
+        <div id="editor">
+            Press 'h' to go home, 'k' for previous, 'j' for next
+        </div>
+
+        <script>
+            // ❌ Single-key shortcuts conflict with screen readers
+            document.getElementById('editor').addEventListener('keydown', (event) => {
+                if (event.key === 'h') { // H = headings in screen readers
+                    window.location.href = '/home';
+                }
+                if (event.key === 'k') { // K = links in screen readers
+                    previousItem();
+                }
+                if (event.key === 'j') { // Common vim binding but conflicts
+                    nextItem();
+                }
+            });
+
+            function previousItem() { console.log('Previous'); }
+            function nextItem() { console.log('Next'); }
+        </script>
+    </section>
+
+    <!-- Test 5: preventDefault on navigation keys -->
+    <section>
+        <h2>Test 5: preventDefault() on Navigation Keys</h2>
+        <!-- ❌ ISSUE: prevent-default-nav-keys (warning) -->
+
+        <div id="scroll-area" style="height: 200px; overflow: auto;">
+            <p>Content here...</p>
+            <p>More content...</p>
+            <p>Even more content...</p>
+            <p>Lots of content...</p>
+            <p>Final content...</p>
+        </div>
+
+        <script>
+            // ❌ Preventing Space key breaks scrolling
+            document.getElementById('scroll-area').addEventListener('keydown', (event) => {
+                if (event.key === ' ') {
+                    event.preventDefault(); // BAD: Breaks page scrolling
+                    customSpaceAction();
+                }
+                if (event.key === 'ArrowDown') {
+                    event.preventDefault(); // BAD: Not in ARIA widget
+                    customDownAction();
+                }
+            });
+
+            function customSpaceAction() { console.log('Custom space'); }
+            function customDownAction() { console.log('Custom down'); }
+        </script>
+    </section>
+
+    <!-- Test 6: Keyboard trap without escape -->
+    <section>
+        <h2>Test 6: Potential Keyboard Trap</h2>
+        <!-- ❌ ISSUE: potential-keyboard-trap (warning) -->
+
+        <div id="trap-container">
+            <button>Trapped button 1</button>
+            <button>Trapped button 2</button>
+        </div>
+
+        <script>
+            // ❌ Tab key trap without Escape handler
+            document.getElementById('trap-container').addEventListener('keydown', (event) => {
+                if (event.key === 'Tab') {
+                    event.preventDefault();
+                    // Cycling through buttons indefinitely
+                    // Missing: Escape key to exit trap
+                }
+            });
+        </script>
+    </section>
+
+    <!-- Test 7: Modal without Escape handler -->
+    <section>
+        <h2>Test 7: Modal Without Escape Key</h2>
+        <!-- ❌ ISSUE: missing-escape-handler (warning) -->
+
+        <div id="modal" role="dialog" aria-label="Settings" style="display: none;">
+            <h3>Modal Title</h3>
+            <p>Modal content</p>
+            <button>Close</button>
+        </div>
+
+        <script>
+            // ❌ Modal without Escape key handler
+            function showModal() {
+                document.getElementById('modal').style.display = 'block';
+                // Missing: Escape key handler
+            }
+
+            // Close button works, but Escape key doesn't
+        </script>
+    </section>
+
+    <!-- Test 8: ARIA widget without arrow navigation -->
+    <section>
+        <h2>Test 8: ARIA Widget Without Arrow Keys</h2>
+        <!-- ❌ ISSUE: missing-arrow-navigation (info) -->
+
+        <div role="menu" aria-label="Actions">
+            <div role="menuitem">Copy</div>
+            <div role="menuitem">Paste</div>
+            <div role="menuitem">Delete</div>
+        </div>
+
+        <script>
+            // ❌ Menu role but no arrow key navigation
+            // ARIA Authoring Practices requires arrow keys for menus
+        </script>
+    </section>
+
+    <!-- Test 9: Undocumented keyboard shortcuts -->
+    <section>
+        <h2>Test 9: Undocumented Keyboard Shortcuts</h2>
+        <!-- ❌ ISSUE: keyboard-shortcuts-undocumented (info) -->
+
+        <div id="app">
+            <!-- No visible indication of shortcuts -->
+            <p>Application content</p>
+        </div>
+
+        <script>
+            // ❌ Keyboard shortcuts without documentation
+            document.getElementById('app').addEventListener('keydown', (event) => {
+                if (event.ctrlKey && event.key === 's') {
+                    event.preventDefault();
+                    save();
+                }
+                if (event.ctrlKey && event.key === 'z') {
+                    event.preventDefault();
+                    undo();
+                }
+                if (event.altKey && event.key === 'f') {
+                    event.preventDefault();
+                    openFile();
+                }
+                // No aria-label, aria-description, or visible help
+            });
+
+            function save() { console.log('Save'); }
+            function undo() { console.log('Undo'); }
+            function openFile() { console.log('Open file'); }
+        </script>
+    </section>
+
+    <!-- Test 10: Deprecated keyCode usage -->
+    <section>
+        <h2>Test 10: Deprecated keyCode Usage</h2>
+        <!-- ❌ ISSUE: deprecated-keycode (info) -->
+
+        <input type="text" id="old-input" placeholder="Press Enter">
+
+        <script>
+            // ❌ Using deprecated keyCode
+            document.getElementById('old-input').addEventListener('keydown', (event) => {
+                if (event.keyCode === 13) { // Deprecated
+                    console.log('Enter pressed');
+                }
+                if (event.keyCode === 27) { // Deprecated
+                    console.log('Escape pressed');
+                }
+            });
+        </script>
+    </section>
+
+    <!-- Test 11: Proper Tab with Shift handling (COMPLIANT) -->
+    <section>
+        <h2>Test 11: Proper Tab + Shift+Tab (COMPLIANT)</h2>
+
+        <div id="proper-tab-container">
+            <button>Button A</button>
+            <button>Button B</button>
+            <button>Button C</button>
+        </div>
+
+        <script>
+            // ✅ COMPLIANT: Handles both Tab and Shift+Tab
+            document.getElementById('proper-tab-container').addEventListener('keydown', (event) => {
+                if (event.key === 'Tab') {
+                    event.preventDefault();
+                    if (event.shiftKey) {
+                        moveToPrevious(); // Backward navigation
+                    } else {
+                        moveToNext(); // Forward navigation
+                    }
+                }
+            });
+
+            function moveToNext() { console.log('Next'); }
+            function moveToPrevious() { console.log('Previous'); }
+        </script>
+    </section>
+
+    <!-- Test 12: Proper keyboard shortcuts with modifiers (COMPLIANT) -->
+    <section>
+        <h2>Test 12: Proper Keyboard Shortcuts with Modifiers (COMPLIANT)</h2>
+
+        <div role="application"
+             aria-label="Text editor"
+             aria-description="Keyboard shortcuts: Ctrl+S to save, Ctrl+Z to undo, Ctrl+Y to redo">
+            Editor content
+        </div>
+
+        <script>
+            // ✅ COMPLIANT: Uses modifier keys + documented
+            document.querySelector('[role="application"]').addEventListener('keydown', (event) => {
+                if (event.ctrlKey && event.key === 's') {
+                    event.preventDefault();
+                    save();
+                }
+                if (event.ctrlKey && event.key === 'z') {
+                    event.preventDefault();
+                    undo();
+                }
+                // Properly documented in aria-description
+            });
+        </script>
+    </section>
+
+    <!-- Test 13: Modal with Escape handler (COMPLIANT) -->
+    <section>
+        <h2>Test 13: Modal With Escape Handler (COMPLIANT)</h2>
+
+        <div id="proper-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" style="display: none;">
+            <h3 id="modal-title">Proper Modal</h3>
+            <p>Content</p>
+            <button onclick="closeProperModal()">Close</button>
+        </div>
+
+        <script>
+            // ✅ COMPLIANT: Modal with Escape handler
+            function showProperModal() {
+                document.getElementById('proper-modal').style.display = 'block';
+                document.addEventListener('keydown', handleModalEscape);
+            }
+
+            function closeProperModal() {
+                document.getElementById('proper-modal').style.display = 'none';
+                document.removeEventListener('keydown', handleModalEscape);
+            }
+
+            function handleModalEscape(event) {
+                if (event.key === 'Escape') {
+                    closeProperModal();
+                }
+            }
+        </script>
+    </section>
+
+    <footer style="margin-top: 40px; padding: 40px; background: #f7fafc;">
+        <h3>Expected Issues Summary (Enhanced KeyboardNavigationAnalyzer):</h3>
+        <ul>
+            <li><strong>screen-reader-arrow-conflict (warning):</strong> Test 2 - Arrow keys without ARIA widget context</li>
+            <li><strong>tab-without-shift (info):</strong> Test 3 - Tab handler without Shift+Tab support</li>
+            <li><strong>screen-reader-conflict (warning):</strong> Test 4 - Single-key shortcuts (h, k, j)</li>
+            <li><strong>prevent-default-nav-keys (warning):</strong> Test 5 - preventDefault on Space/ArrowDown</li>
+            <li><strong>potential-keyboard-trap (warning):</strong> Test 6 - Tab trap without Escape</li>
+            <li><strong>missing-escape-handler (warning):</strong> Test 7 - Modal without Escape key</li>
+            <li><strong>missing-arrow-navigation (info):</strong> Test 8 - Menu role without arrow keys</li>
+            <li><strong>keyboard-shortcuts-undocumented (info):</strong> Test 9 - Shortcuts without documentation</li>
+            <li><strong>deprecated-keycode (info):</strong> Test 10 - Using event.keyCode</li>
+        </ul>
+        <p><strong>Total expected issues:</strong></p>
+        <ul>
+            <li>~6-7 warnings (various keyboard navigation issues)</li>
+            <li>~4-5 info (tab-without-shift, missing-arrow-navigation, undocumented shortcuts, deprecated-keycode)</li>
+        </ul>
+        <p><strong>COMPLIANT examples:</strong> Tests 1, 11, 12, 13 - Should have NO issues detected</p>
+
+        <h3 style="margin-top: 20px;">Analyzer Coverage (9 Issue Types):</h3>
+        <ol>
+            <li><strong>potential-keyboard-trap</strong> - Test 6</li>
+            <li><strong>screen-reader-conflict</strong> - Test 4 (single-key shortcuts)</li>
+            <li><strong>screen-reader-arrow-conflict</strong> - Test 2 (arrow keys without ARIA)</li>
+            <li><strong>deprecated-keycode</strong> - Test 10</li>
+            <li><strong>tab-without-shift</strong> - Test 3</li>
+            <li><strong>missing-escape-handler</strong> - Test 7</li>
+            <li><strong>missing-arrow-navigation</strong> - Test 8</li>
+            <li><strong>prevent-default-nav-keys</strong> - Test 5 (NEW)</li>
+            <li><strong>keyboard-shortcuts-undocumented</strong> - Test 9 (NEW)</li>
+        </ol>
+    </footer>
+</body>
+</html>

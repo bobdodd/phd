@@ -800,6 +800,7 @@ export default function Home() {
             } : undefined
           });
         }
+
       } catch (error) {
         console.error('HTML Analyzer error:', error);
       }

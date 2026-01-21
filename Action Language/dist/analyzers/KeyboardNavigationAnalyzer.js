@@ -6,7 +6,7 @@ class KeyboardNavigationAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
     constructor() {
         super(...arguments);
         this.name = 'KeyboardNavigationAnalyzer';
-        this.description = 'Detects 7 types of keyboard navigation issues including keyboard traps, screen reader conflicts, and missing arrow navigation';
+        this.description = 'Detects 9 types of keyboard navigation issues including keyboard traps, screen reader conflicts, and missing arrow navigation';
         this.screenReaderKeys = new Set([
             'h', 'b', 'k', 't', 'l', 'f', 'g', 'd', 'e', 'r', 'i', 'm',
             'n', 'p', 'q', 's', 'x', 'c', 'v', 'z', 'o', 'a', 'u',
@@ -44,6 +44,9 @@ class KeyboardNavigationAnalyzer extends BaseAnalyzer_1.BaseAnalyzer {
         issues.push(...this.detectTabWithoutShift(nodes, context));
         issues.push(...this.detectMissingEscapeHandler(nodes, context));
         issues.push(...this.detectMissingArrowNavigation(nodes, context));
+        issues.push(...this.detectArrowKeysWithoutARIAContext(nodes, context));
+        issues.push(...this.detectPreventDefaultOnNavKeys(nodes, context));
+        issues.push(...this.detectUndocumentedShortcuts(nodes, context));
         return issues;
     }
     detectKeyboardTrap(nodes, context) {
@@ -370,6 +373,114 @@ element.addEventListener('keydown', (event) => {
   // See: https://www.w3.org/WAI/ARIA/apg/patterns/${role}/
 });`;
         }
+    }
+    detectArrowKeysWithoutARIAContext(nodes, context) {
+        const issues = [];
+        const arrowKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+        for (const node of nodes) {
+            if (node.actionType === 'eventHandler' &&
+                node.event === 'keydown' &&
+                node.metadata?.keysHandled?.some((key) => arrowKeys.includes(key))) {
+                const hasARIAWidget = node.metadata?.role && this.arrowNavigationRoles.has(node.metadata.role);
+                if (!hasARIAWidget) {
+                    const detectedArrows = node.metadata.keysHandled.filter((key) => arrowKeys.includes(key));
+                    const message = `Arrow key handler (${detectedArrows.join(', ')}) may conflict with screen reader navigation. Screen readers use arrow keys to navigate content in browse mode. Only use arrow keys within ARIA widgets (role="listbox", "menu", "tree", etc.) or when the element has focus.`;
+                    const fix = {
+                        description: 'Add ARIA widget role or check if element is focused',
+                        code: `// Option 1: Add ARIA role if this is a widget
+<div role="listbox" aria-label="Options">
+  <!-- Arrow key navigation is expected here -->
+</div>
+
+// Option 2: Only handle when element is focused
+element.addEventListener('keydown', (event) => {
+  // Only handle if this element or its children have focus
+  if (!element.contains(document.activeElement)) return;
+
+  if (event.key === 'ArrowDown') {
+    event.preventDefault();
+    // Your navigation logic
+  }
+});`,
+                        location: node.location,
+                    };
+                    issues.push(this.createIssue('screen-reader-arrow-conflict', 'warning', message, node.location, ['2.1.1'], context, { fix }));
+                }
+            }
+        }
+        return issues;
+    }
+    detectPreventDefaultOnNavKeys(nodes, context) {
+        const issues = [];
+        const navigationKeys = ['Space', ' ', 'Enter', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'];
+        for (const node of nodes) {
+            if (node.actionType === 'eventHandler' &&
+                node.event === 'keydown' &&
+                node.metadata?.callsPreventDefault === true &&
+                node.metadata?.keysHandled?.some((key) => navigationKeys.includes(key))) {
+                const hasARIAWidget = node.metadata?.role && (this.arrowNavigationRoles.has(node.metadata.role) ||
+                    this.modalRoles.has(node.metadata.role));
+                if (!hasARIAWidget) {
+                    const preventedKeys = node.metadata.keysHandled.filter((key) => navigationKeys.includes(key));
+                    const message = `preventDefault() called on navigation keys (${preventedKeys.join(', ')}). Preventing default on Space, Enter, or Arrow keys can trap keyboard users by breaking expected browser navigation. Only prevent default within ARIA widgets or when providing equivalent functionality.`;
+                    const fix = {
+                        description: 'Only preventDefault within ARIA widgets',
+                        code: `// Only preventDefault when appropriate
+element.addEventListener('keydown', (event) => {
+  if (event.key === 'ArrowDown') {
+    // Check if this is an ARIA widget
+    const role = element.getAttribute('role');
+    if (role === 'listbox' || role === 'menu' || role === 'tree') {
+      event.preventDefault(); // OK: Standard widget behavior
+      // Custom navigation
+    }
+    // Otherwise, let browser handle it (scrolling, etc.)
+  }
+});`,
+                        location: node.location,
+                    };
+                    issues.push(this.createIssue('prevent-default-nav-keys', 'warning', message, node.location, ['2.1.1', '2.1.2'], context, { fix }));
+                }
+            }
+        }
+        return issues;
+    }
+    detectUndocumentedShortcuts(nodes, context) {
+        const issues = [];
+        const shortcutHandlers = nodes.filter((node) => node.actionType === 'eventHandler' &&
+            node.event === 'keydown' &&
+            node.metadata?.requiresModifier === true &&
+            node.metadata?.keysHandled);
+        if (shortcutHandlers.length === 0)
+            return issues;
+        const hasDocumentation = nodes.some((node) => node.metadata?.ariaLabel?.toLowerCase().includes('shortcut') ||
+            node.metadata?.ariaLabel?.toLowerCase().includes('keyboard') ||
+            node.metadata?.ariaDescription?.toLowerCase().includes('shortcut'));
+        if (!hasDocumentation) {
+            const message = `Keyboard shortcuts detected (Ctrl/Alt/Meta + keys) but may not be documented. Users need to discover available shortcuts through aria-label, aria-description, help dialog, or visible instructions.`;
+            const fix = {
+                description: 'Document keyboard shortcuts for users',
+                code: `// Option 1: Add aria-description to container
+<div role="application"
+     aria-label="Text editor"
+     aria-description="Keyboard shortcuts: Ctrl+S to save, Ctrl+Z to undo">
+  <!-- editor content -->
+</div>
+
+// Option 2: Provide help dialog
+<button aria-label="Keyboard shortcuts" onclick="showShortcutsDialog()">
+  ?
+</button>
+
+// Option 3: Visible instructions
+<div class="shortcuts-hint">
+  Press <kbd>Ctrl+S</kbd> to save, <kbd>Ctrl+Z</kbd> to undo
+</div>`,
+                location: shortcutHandlers[0].location,
+            };
+            issues.push(this.createIssue('keyboard-shortcuts-undocumented', 'info', message, shortcutHandlers[0].location, ['2.1.1'], context, { fix }));
+        }
+        return issues;
     }
 }
 exports.KeyboardNavigationAnalyzer = KeyboardNavigationAnalyzer;

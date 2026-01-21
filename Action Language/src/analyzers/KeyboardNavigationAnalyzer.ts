@@ -4,20 +4,22 @@ import { ActionLanguageNode } from '../models/ActionLanguageModel';
 /**
  * KeyboardNavigationAnalyzer
  *
- * Detects 7 types of keyboard navigation issues:
+ * Detects 9 types of keyboard navigation issues:
  * 1. potential-keyboard-trap - Focus trapped without Escape handler
  * 2. screen-reader-conflict - Single-character shortcuts conflict with screen readers
- * 3. screen-reader-arrow-conflict - Arrow keys interfere with browse mode
+ * 3. screen-reader-arrow-conflict - Arrow keys without ARIA widget context
  * 4. deprecated-keycode - Using event.keyCode instead of event.key
  * 5. tab-without-shift - Tab key without Shift consideration
  * 6. missing-escape-handler - Modal/dialog without Escape key
  * 7. missing-arrow-navigation - ARIA widget without arrow key handlers
+ * 8. prevent-default-nav-keys - preventDefault() on navigation keys that trap users
+ * 9. keyboard-shortcuts-undocumented - Keyboard shortcuts without documentation
  *
  * WCAG: 2.1.1 (Keyboard), 2.1.2 (No Keyboard Trap), 2.1.4 (Character Key Shortcuts), 4.1.2
  */
 export class KeyboardNavigationAnalyzer extends BaseAnalyzer {
   readonly name = 'KeyboardNavigationAnalyzer';
-  readonly description = 'Detects 7 types of keyboard navigation issues including keyboard traps, screen reader conflicts, and missing arrow navigation';
+  readonly description = 'Detects 9 types of keyboard navigation issues including keyboard traps, screen reader conflicts, and missing arrow navigation';
   // Screen reader navigation keys that should not be used as single-character shortcuts
   private readonly screenReaderKeys = new Set([
     'h', 'b', 'k', 't', 'l', 'f', 'g', 'd', 'e', 'r', 'i', 'm',
@@ -82,6 +84,15 @@ export class KeyboardNavigationAnalyzer extends BaseAnalyzer {
 
     // Detect missing arrow navigation in ARIA widgets
     issues.push(...this.detectMissingArrowNavigation(nodes, context));
+
+    // Detect arrow keys used without ARIA widget context (screen reader conflict)
+    issues.push(...this.detectArrowKeysWithoutARIAContext(nodes, context));
+
+    // Detect preventDefault on navigation keys
+    issues.push(...this.detectPreventDefaultOnNavKeys(nodes, context));
+
+    // Detect undocumented keyboard shortcuts
+    issues.push(...this.detectUndocumentedShortcuts(nodes, context));
 
     return issues;
   }
@@ -611,5 +622,213 @@ element.addEventListener('keydown', (event) => {
   // See: https://www.w3.org/WAI/ARIA/apg/patterns/${role}/
 });`;
     }
+  }
+
+  /**
+   * Detect arrow key handlers used without proper ARIA widget context.
+   *
+   * Pattern: Arrow key handlers on elements without ARIA widget roles
+   * Problem: Conflicts with screen reader browse mode navigation
+   * WCAG: 2.1.1 (Keyboard)
+   */
+  private detectArrowKeysWithoutARIAContext(
+    nodes: ActionLanguageNode[],
+    context: AnalyzerContext
+  ): Issue[] {
+    const issues: Issue[] = [];
+
+    const arrowKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+
+    for (const node of nodes) {
+      if (
+        node.actionType === 'eventHandler' &&
+        node.event === 'keydown' &&
+        node.metadata?.keysHandled?.some((key: string) => arrowKeys.includes(key))
+      ) {
+        // Check if element has proper ARIA widget role
+        const hasARIAWidget = node.metadata?.role && this.arrowNavigationRoles.has(node.metadata.role);
+
+        if (!hasARIAWidget) {
+          const detectedArrows = node.metadata.keysHandled.filter((key: string) => arrowKeys.includes(key));
+
+          const message = `Arrow key handler (${detectedArrows.join(', ')}) may conflict with screen reader navigation. Screen readers use arrow keys to navigate content in browse mode. Only use arrow keys within ARIA widgets (role="listbox", "menu", "tree", etc.) or when the element has focus.`;
+
+          const fix: IssueFix = {
+            description: 'Add ARIA widget role or check if element is focused',
+            code: `// Option 1: Add ARIA role if this is a widget
+<div role="listbox" aria-label="Options">
+  <!-- Arrow key navigation is expected here -->
+</div>
+
+// Option 2: Only handle when element is focused
+element.addEventListener('keydown', (event) => {
+  // Only handle if this element or its children have focus
+  if (!element.contains(document.activeElement)) return;
+
+  if (event.key === 'ArrowDown') {
+    event.preventDefault();
+    // Your navigation logic
+  }
+});`,
+            location: node.location,
+          };
+
+          issues.push(
+            this.createIssue(
+              'screen-reader-arrow-conflict',
+              'warning',
+              message,
+              node.location,
+              ['2.1.1'],
+              context,
+              { fix }
+            )
+          );
+        }
+      }
+    }
+
+    return issues;
+  }
+
+  /**
+   * Detect preventDefault on navigation keys that trap users.
+   *
+   * Pattern: preventDefault() called on Space, Enter, Arrow keys, etc.
+   * Problem: Prevents default browser navigation, may trap users
+   * WCAG: 2.1.1 (Keyboard), 2.1.2 (No Keyboard Trap)
+   */
+  private detectPreventDefaultOnNavKeys(
+    nodes: ActionLanguageNode[],
+    context: AnalyzerContext
+  ): Issue[] {
+    const issues: Issue[] = [];
+
+    const navigationKeys = ['Space', ' ', 'Enter', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'];
+
+    for (const node of nodes) {
+      if (
+        node.actionType === 'eventHandler' &&
+        node.event === 'keydown' &&
+        node.metadata?.callsPreventDefault === true &&
+        node.metadata?.keysHandled?.some((key: string) => navigationKeys.includes(key))
+      ) {
+        // Check if this is within an ARIA widget (which is allowed)
+        const hasARIAWidget = node.metadata?.role && (
+          this.arrowNavigationRoles.has(node.metadata.role) ||
+          this.modalRoles.has(node.metadata.role)
+        );
+
+        if (!hasARIAWidget) {
+          const preventedKeys = node.metadata.keysHandled.filter((key: string) => navigationKeys.includes(key));
+
+          const message = `preventDefault() called on navigation keys (${preventedKeys.join(', ')}). Preventing default on Space, Enter, or Arrow keys can trap keyboard users by breaking expected browser navigation. Only prevent default within ARIA widgets or when providing equivalent functionality.`;
+
+          const fix: IssueFix = {
+            description: 'Only preventDefault within ARIA widgets',
+            code: `// Only preventDefault when appropriate
+element.addEventListener('keydown', (event) => {
+  if (event.key === 'ArrowDown') {
+    // Check if this is an ARIA widget
+    const role = element.getAttribute('role');
+    if (role === 'listbox' || role === 'menu' || role === 'tree') {
+      event.preventDefault(); // OK: Standard widget behavior
+      // Custom navigation
+    }
+    // Otherwise, let browser handle it (scrolling, etc.)
+  }
+});`,
+            location: node.location,
+          };
+
+          issues.push(
+            this.createIssue(
+              'prevent-default-nav-keys',
+              'warning',
+              message,
+              node.location,
+              ['2.1.1', '2.1.2'],
+              context,
+              { fix }
+            )
+          );
+        }
+      }
+    }
+
+    return issues;
+  }
+
+  /**
+   * Detect keyboard shortcuts without documentation.
+   *
+   * Pattern: Keyboard shortcuts (Ctrl+Key, Alt+Key) without visible documentation
+   * Problem: Users can't discover available shortcuts
+   * WCAG: 2.1.1 (Keyboard)
+   */
+  private detectUndocumentedShortcuts(
+    nodes: ActionLanguageNode[],
+    context: AnalyzerContext
+  ): Issue[] {
+    const issues: Issue[] = [];
+
+    // Find shortcuts (handlers that require modifier keys)
+    const shortcutHandlers = nodes.filter(
+      (node) =>
+        node.actionType === 'eventHandler' &&
+        node.event === 'keydown' &&
+        node.metadata?.requiresModifier === true &&
+        node.metadata?.keysHandled
+    );
+
+    if (shortcutHandlers.length === 0) return issues;
+
+    // Check if there's any documentation pattern nearby
+    // This is a heuristic - look for aria-label/description with "shortcut" or "keyboard"
+    const hasDocumentation = nodes.some((node) =>
+      node.metadata?.ariaLabel?.toLowerCase().includes('shortcut') ||
+      node.metadata?.ariaLabel?.toLowerCase().includes('keyboard') ||
+      node.metadata?.ariaDescription?.toLowerCase().includes('shortcut')
+    );
+
+    if (!hasDocumentation) {
+      // Report once for all shortcuts
+      const message = `Keyboard shortcuts detected (Ctrl/Alt/Meta + keys) but may not be documented. Users need to discover available shortcuts through aria-label, aria-description, help dialog, or visible instructions.`;
+
+      const fix: IssueFix = {
+        description: 'Document keyboard shortcuts for users',
+        code: `// Option 1: Add aria-description to container
+<div role="application"
+     aria-label="Text editor"
+     aria-description="Keyboard shortcuts: Ctrl+S to save, Ctrl+Z to undo">
+  <!-- editor content -->
+</div>
+
+// Option 2: Provide help dialog
+<button aria-label="Keyboard shortcuts" onclick="showShortcutsDialog()">
+  ?
+</button>
+
+// Option 3: Visible instructions
+<div class="shortcuts-hint">
+  Press <kbd>Ctrl+S</kbd> to save, <kbd>Ctrl+Z</kbd> to undo
+</div>`,
+        location: shortcutHandlers[0].location,
+      };
+
+      issues.push(
+        this.createIssue(
+          'keyboard-shortcuts-undocumented',
+          'info',
+          message,
+          shortcutHandlers[0].location,
+          ['2.1.1'],
+          context,
+          { fix }
+        )
+      );
+    }
+
+    return issues;
   }
 }

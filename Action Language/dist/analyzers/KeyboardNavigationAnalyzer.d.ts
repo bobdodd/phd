@@ -1,7 +1,7 @@
 import { BaseAnalyzer, AnalyzerContext, Issue } from './BaseAnalyzer';
 export declare class KeyboardNavigationAnalyzer extends BaseAnalyzer {
     readonly name = "KeyboardNavigationAnalyzer";
-    readonly description = "Detects 7 types of keyboard navigation issues including keyboard traps, screen reader conflicts, and missing arrow navigation";
+    readonly description = "Detects 9 types of keyboard navigation issues including keyboard traps, screen reader conflicts, and missing arrow navigation";
     private readonly screenReaderKeys;
     private readonly arrowNavigationRoles;
     private readonly modalRoles;
@@ -16,4 +16,7 @@ export declare class KeyboardNavigationAnalyzer extends BaseAnalyzer {
     private hasEscapeHandlerNearby;
     private hasArrowHandlersNearby;
     private generateArrowNavigationCode;
+    private detectArrowKeysWithoutARIAContext;
+    private detectPreventDefaultOnNavKeys;
+    private detectUndocumentedShortcuts;
 }
