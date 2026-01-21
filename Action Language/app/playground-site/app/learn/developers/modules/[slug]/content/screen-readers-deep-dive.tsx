@@ -590,7 +590,7 @@ Removes visible focus indicator`}</pre>
             <strong>Semantic HTML is critical:</strong> Use native elements (button, nav, h1) whenever possible
           </li>
           <li>
-            <strong>Accessible names are computed:</strong> aria-labelledby > aria-label > native label > text content
+            <strong>Accessible names are computed:</strong> aria-labelledby &gt; aria-label &gt; native label &gt; text content
           </li>
           <li>
             <strong>Two modes:</strong> Browse mode for reading, focus mode for forms and widgets
