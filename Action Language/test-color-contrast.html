@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Contrast Test Cases</title>
+    <style>
+        section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+        }
+        .error { border-color: #ef4444; }
+        .warning { border-color: #f59e0b; }
+        .compliant { border-color: #10b981; }
+    </style>
+</head>
+<body>
+    <h1>Color Contrast Test Cases (WCAG 1.4.3 Level AA)</h1>
+
+    <!-- Test 1: Insufficient contrast - light gray on white (ERROR) -->
+    <section class="error">
+        <h2>Test 1: Insufficient Contrast - Light Gray on White (ERROR)</h2>
+        <!-- ❌ ISSUE: insufficient-contrast (error) -->
+        <p style="color: #ccc; background-color: #fff;">
+            This text has insufficient contrast (2.3:1). Light gray (#ccc) on white (#fff) is too low for WCAG AA compliance.
+        </p>
+    </section>
+
+    <!-- Test 2: Sufficient contrast - black on white (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 2: Sufficient Contrast - Black on White (COMPLIANT)</h2>
+        <p style="color: #000; background-color: #fff;">
+            This text has excellent contrast (21:1). Black text on white background exceeds WCAG AA requirements.
+        </p>
+    </section>
+
+    <!-- Test 3: Insufficient contrast - normal text (ERROR) -->
+    <section class="error">
+        <h2>Test 3: Insufficient Contrast - Normal Text (ERROR)</h2>
+        <!-- ❌ ISSUE: insufficient-contrast (error) -->
+        <p style="color: #777; background-color: #fff; font-size: 14px;">
+            Gray text (#777) on white background has 4.0:1 contrast. Requires 4.5:1 for normal text (< 18px).
+        </p>
+    </section>
+
+    <!-- Test 4: Sufficient contrast - large text with lower ratio (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 4: Large Text Meets Lower Threshold (COMPLIANT)</h2>
+        <p style="color: #777; background-color: #fff; font-size: 20px;">
+            Same gray (#777) on white with 4.0:1 contrast is OK for large text (≥ 18px) which only needs 3.0:1.
+        </p>
+    </section>
+
+    <!-- Test 5: Background image - indeterminate (WARNING) -->
+    <section class="warning">
+        <h2>Test 5: Background Image - Indeterminate (WARNING)</h2>
+        <!-- ⚠️ ISSUE: contrast-indeterminate (warning) - background-image-or-gradient -->
+        <div style="background-image: url('hero.jpg'); padding: 20px;">
+            <p style="color: #fff;">
+                Text on background image - contrast cannot be reliably calculated.
+            </p>
+        </div>
+    </section>
+
+    <!-- Test 6: Gradient background - indeterminate (WARNING) -->
+    <section class="warning">
+        <h2>Test 6: Gradient Background - Indeterminate (WARNING)</h2>
+        <!-- ⚠️ ISSUE: contrast-indeterminate (warning) - background-image-or-gradient -->
+        <div style="background: linear-gradient(to right, #fff, #000); padding: 20px;">
+            <p style="color: #333;">
+                Text on gradient background - contrast varies across the gradient, cannot be reliably calculated.
+            </p>
+        </div>
+    </section>
+
+    <!-- Test 7: Z-index before solid background - indeterminate (WARNING) -->
+    <section class="warning">
+        <h2>Test 7: Z-Index Detected - Indeterminate (WARNING)</h2>
+        <!-- ⚠️ ISSUE: contrast-indeterminate (warning) - z-index-detected -->
+        <div style="position: relative; background-color: #fff;">
+            <div style="position: absolute; z-index: 10; background-color: rgba(0,0,0,0.5); padding: 10px;">
+                <p style="color: #fff;">
+                    Text with z-index in ancestor tree - may overlay other content, contrast indeterminate.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Test 8: Low opacity text - indeterminate (WARNING) -->
+    <section class="warning">
+        <h2>Test 8: Low Opacity Text - Indeterminate (WARNING)</h2>
+        <!-- ⚠️ ISSUE: contrast-indeterminate (warning) - low-opacity-text -->
+        <p style="color: rgba(0, 0, 0, 0.5); background-color: #fff;">
+            Text with 50% opacity - effective color depends on what's beneath, contrast indeterminate.
+        </p>
+    </section>
+
+    <!-- Test 9: Low opacity background - indeterminate (WARNING) -->
+    <section class="warning">
+        <h2>Test 9: Low Opacity Background - Indeterminate (WARNING)</h2>
+        <!-- ⚠️ ISSUE: contrast-indeterminate (warning) - low-opacity-background -->
+        <div style="background-color: rgba(255, 255, 255, 0.5); padding: 20px;">
+            <p style="color: #000;">
+                Background with 50% opacity - effective background depends on what's beneath, contrast indeterminate.
+            </p>
+        </div>
+    </section>
+
+    <!-- Test 10: Color transition/animation - indeterminate (WARNING) -->
+    <section class="warning">
+        <h2>Test 10: Color Transition - Indeterminate (WARNING)</h2>
+        <!-- ⚠️ ISSUE: contrast-indeterminate (warning) - color-transition -->
+        <p style="color: #000; background-color: #fff; transition: color 0.3s;">
+            Text color has transition - color changes dynamically, contrast indeterminate.
+        </p>
+    </section>
+
+    <!-- Test 11: Background transition - indeterminate (WARNING) -->
+    <section class="warning">
+        <h2>Test 11: Background Transition - Indeterminate (WARNING)</h2>
+        <!-- ⚠️ ISSUE: contrast-indeterminate (warning) - background-transition -->
+        <p style="color: #000; background-color: #fff; transition: background-color 0.3s;">
+            Background color has transition - may change dynamically, contrast indeterminate.
+        </p>
+    </section>
+
+    <!-- Test 12: Multiple violations - dark gray on light gray (ERROR) -->
+    <section class="error">
+        <h2>Test 12: Dark Gray on Light Gray (ERROR)</h2>
+        <!-- ❌ ISSUE: insufficient-contrast (error) -->
+        <p style="color: #666; background-color: #ddd; font-size: 14px;">
+            Dark gray (#666) on light gray (#ddd) has approximately 3.5:1 contrast. Fails WCAG AA for normal text (needs 4.5:1).
+        </p>
+    </section>
+
+    <!-- Test 13: Bold text with lower contrast - may pass large text threshold -->
+    <section class="compliant">
+        <h2>Test 13: Bold Large Text Threshold (COMPLIANT)</h2>
+        <p style="color: #757575; background-color: #fff; font-size: 14px; font-weight: bold;">
+            Bold 14px text meets "large text" criteria, so only needs 3.0:1 contrast ratio (not 4.5:1).
+        </p>
+    </section>
+
+    <!-- Test 14: Nested elements inheriting background -->
+    <section class="compliant">
+        <h2>Test 14: Inherited Background (COMPLIANT)</h2>
+        <div style="background-color: #fff; padding: 20px;">
+            <p style="color: #000;">
+                Text inherits background from parent div - analyzer walks up tree to find white background.
+            </p>
+        </div>
+    </section>
+
+    <!-- Test 15: Multiple backgrounds - image takes precedence (WARNING) -->
+    <section class="warning">
+        <h2>Test 15: Background Shorthand With Image (WARNING)</h2>
+        <!-- ⚠️ ISSUE: contrast-indeterminate (warning) - background-image-or-gradient -->
+        <div style="background: #fff url('pattern.png'); padding: 20px;">
+            <p style="color: #000;">
+                Background shorthand includes image - image takes precedence, contrast indeterminate.
+            </p>
+        </div>
+    </section>
+
+    <!-- Test 16: RGB color format (ERROR) -->
+    <section class="error">
+        <h2>Test 16: RGB Color Format (ERROR)</h2>
+        <!-- ❌ ISSUE: insufficient-contrast (error) -->
+        <p style="color: rgb(170, 170, 170); background-color: rgb(255, 255, 255);">
+            Using RGB format: rgb(170, 170, 170) on rgb(255, 255, 255) has ~2.8:1 contrast. Insufficient for WCAG AA.
+        </p>
+    </section>
+
+    <!-- Test 17: Hex color format (ERROR) -->
+    <section class="error">
+        <h2>Test 17: Hex Color Format (ERROR)</h2>
+        <!-- ❌ ISSUE: insufficient-contrast (error) -->
+        <p style="color: #888; background-color: #fff;">
+            Using hex format: #888 on #fff has ~3.7:1 contrast. Below 4.5:1 threshold for normal text.
+        </p>
+    </section>
+
+    <!-- Test 18: Named colors (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 18: Named Colors (COMPLIANT)</h2>
+        <p style="color: black; background-color: white;">
+            Using named colors: black text on white background has 21:1 contrast. Excellent!
+        </p>
+    </section>
+
+    <!-- Test 19: Animation on element - indeterminate (WARNING) -->
+    <section class="warning">
+        <h2>Test 19: Animation Detected - Indeterminate (WARNING)</h2>
+        <!-- ⚠️ ISSUE: contrast-indeterminate (warning) - color-transition -->
+        <p style="color: #000; background-color: #fff; animation: pulse 2s infinite;">
+            Element has animation - colors may change dynamically, contrast indeterminate.
+        </p>
+    </section>
+
+    <!-- Test 20: White text on light background (ERROR) -->
+    <section class="error">
+        <h2>Test 20: White on Light Gray (ERROR)</h2>
+        <!-- ❌ ISSUE: insufficient-contrast (error) -->
+        <p style="color: #fff; background-color: #eee;">
+            White (#fff) on light gray (#eee) has very low contrast (~1.2:1). Severely insufficient.
+        </p>
+    </section>
+
+    <!-- Test 21: Transparent background inherits from parent -->
+    <section class="compliant">
+        <h2>Test 21: Transparent Background - Walks Tree (COMPLIANT)</h2>
+        <div style="background-color: #fff;">
+            <div style="background-color: transparent; padding: 10px;">
+                <p style="color: #000;">
+                    Transparent background - analyzer walks up tree to find solid white background from grandparent.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Test 22: Sufficient contrast for links -->
+    <section class="compliant">
+        <h2>Test 22: Link Colors (COMPLIANT)</h2>
+        <div style="background-color: #fff;">
+            <p>
+                Regular text with <a href="#" style="color: #0066cc;">blue link (#0066cc)</a> has 5.0:1 contrast. Sufficient for WCAG AA.
+            </p>
+        </div>
+    </section>
+
+    <!-- Test 23: Radial gradient - indeterminate (WARNING) -->
+    <section class="warning">
+        <h2>Test 23: Radial Gradient - Indeterminate (WARNING)</h2>
+        <!-- ⚠️ ISSUE: contrast-indeterminate (warning) - background-image-or-gradient -->
+        <div style="background: radial-gradient(circle, #fff, #ccc); padding: 20px;">
+            <p style="color: #333;">
+                Text on radial gradient - contrast varies across the gradient, indeterminate.
+            </p>
+        </div>
+    </section>
+
+    <!-- Test 24: Very dark gray on black (ERROR) -->
+    <section class="error">
+        <h2>Test 24: Dark on Dark (ERROR)</h2>
+        <!-- ❌ ISSUE: insufficient-contrast (error) -->
+        <div style="background-color: #000; padding: 20px;">
+            <p style="color: #333;">
+                Dark gray (#333) on black (#000) has ~2.5:1 contrast. Insufficient for dark themes too.
+            </p>
+        </div>
+    </section>
+
+    <!-- Test 25: RGBA with full opacity (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 25: RGBA With Full Opacity (COMPLIANT)</h2>
+        <p style="color: rgba(0, 0, 0, 1); background-color: rgba(255, 255, 255, 1);">
+            RGBA with full opacity (alpha = 1) is treated as solid color - 21:1 contrast. Excellent!
+        </p>
+    </section>
+
+    <footer style="margin-top: 40px; padding: 40px; background: #f7fafc;">
+        <h3>Expected Issues Summary (ColorContrastAnalyzer):</h3>
+
+        <h4>Errors (Actual Contrast Violations):</h4>
+        <ul>
+            <li><strong>insufficient-contrast (error):</strong> Tests 1, 3, 12, 16, 17, 20, 24 (7 total)</li>
+        </ul>
+
+        <h4>Warnings (Indeterminate - Cannot Calculate):</h4>
+        <ul>
+            <li><strong>contrast-indeterminate (warning) - background-image-or-gradient:</strong> Tests 5, 6, 15, 23 (4 total)</li>
+            <li><strong>contrast-indeterminate (warning) - z-index-detected:</strong> Test 7 (1 total)</li>
+            <li><strong>contrast-indeterminate (warning) - low-opacity-text:</strong> Test 8 (1 total)</li>
+            <li><strong>contrast-indeterminate (warning) - low-opacity-background:</strong> Test 9 (1 total)</li>
+            <li><strong>contrast-indeterminate (warning) - color-transition:</strong> Tests 10, 19 (2 total)</li>
+            <li><strong>contrast-indeterminate (warning) - background-transition:</strong> Test 11 (1 total)</li>
+        </ul>
+
+        <p><strong>Total expected issues:</strong></p>
+        <ul>
+            <li>~7 errors (actual contrast violations)</li>
+            <li>~10 warnings (indeterminate cases requiring manual verification)</li>
+        </ul>
+
+        <p><strong>COMPLIANT examples:</strong> Tests 2, 4, 13, 14, 18, 21, 22, 25 - No issues detected</p>
+
+        <h3 style="margin-top: 20px;">WCAG AA Contrast Requirements:</h3>
+        <table border="1" cellpadding="10" style="border-collapse: collapse; margin-top: 10px;">
+            <thead>
+                <tr>
+                    <th>Text Type</th>
+                    <th>Minimum Ratio</th>
+                    <th>Definition</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Normal Text</td>
+                    <td>4.5:1</td>
+                    <td>Text less than 18px (or less than 14px bold)</td>
+                </tr>
+                <tr>
+                    <td>Large Text</td>
+                    <td>3.0:1</td>
+                    <td>Text 18px or larger (or 14px+ bold)</td>
+                </tr>
+                <tr>
+                    <td>WCAG AAA</td>
+                    <td>7:1 / 4.5:1</td>
+                    <td>Enhanced contrast (normal / large)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3 style="margin-top: 20px;">Why Analyzer Skips Calculation:</h3>
+        <ul>
+            <li><strong>Background images/gradients:</strong> Contrast varies across image, cannot determine single ratio</li>
+            <li><strong>Z-index detected:</strong> Element may overlay other content, actual background unknown</li>
+            <li><strong>Low opacity (&lt; 80%):</strong> Effective color depends on what's beneath, varies by context</li>
+            <li><strong>Color transitions:</strong> Colors change dynamically, contrast not constant</li>
+            <li><strong>Animations:</strong> Colors may animate, contrast varies over time</li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">Manual Verification Tools:</h3>
+        <ul>
+            <li><strong>Browser DevTools:</strong> Inspect element → Accessibility panel shows contrast ratio</li>
+            <li><strong>WebAIM Contrast Checker:</strong> https://webaim.org/resources/contrastchecker/</li>
+            <li><strong>Chrome Lighthouse:</strong> Automated accessibility audit</li>
+            <li><strong>WAVE Extension:</strong> Browser extension for accessibility testing</li>
+            <li><strong>axe DevTools:</strong> Comprehensive accessibility testing</li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">Conservative Approach:</h3>
+        <p>
+            This analyzer takes a <strong>conservative approach</strong>: it only reports <strong>errors</strong> when
+            it can reliably calculate contrast and confirm a violation. For all <strong>indeterminate cases</strong>
+            (gradients, images, animations, low opacity), it reports <strong>warnings</strong> with detailed explanations
+            of why calculation was skipped and guidance for manual verification.
+        </p>
+
+        <p>
+            This prevents false positives while ensuring developers are aware of situations requiring manual review.
+        </p>
+    </footer>
+</body>
+</html>

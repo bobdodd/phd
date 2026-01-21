@@ -43,6 +43,7 @@ import { DeprecatedKeyCodeAnalyzer } from '../lib/analyzers/DeprecatedKeyCodeAna
 import { AriaStateManagementAnalyzer } from '../lib/analyzers/AriaStateManagementAnalyzer';
 import { NestedInteractiveElementsAnalyzer } from '../lib/analyzers/NestedInteractiveElementsAnalyzer';
 import { FormSubmissionAnalyzer } from '../lib/analyzers/FormSubmissionAnalyzer';
+import { ColorContrastAnalyzer } from '../lib/analyzers/ColorContrastAnalyzer';
 import { ParadiseCodeActionProvider } from './codeActionProvider';
 
 export class ForegroundAnalyzer {
@@ -93,7 +94,8 @@ export class ForegroundAnalyzer {
       new DeprecatedKeyCodeAnalyzer(),
       new AriaStateManagementAnalyzer(),
       new NestedInteractiveElementsAnalyzer(),
-      new FormSubmissionAnalyzer()
+      new FormSubmissionAnalyzer(),
+      new ColorContrastAnalyzer()
     ];
 
     this.outputChannel.appendLine(`[ForegroundAnalyzer] Initialized with ${this.analyzers.length} analyzers`);

@@ -1,0 +1,32 @@
+import { BaseAnalyzer, Issue, AnalyzerContext } from './BaseAnalyzer';
+export declare class ColorContrastAnalyzer extends BaseAnalyzer {
+    readonly name = "ColorContrastAnalyzer";
+    readonly description = "Detects insufficient color contrast and warns when contrast cannot be reliably determined";
+    private readonly NORMAL_TEXT_RATIO;
+    private readonly LARGE_TEXT_RATIO;
+    private readonly LARGE_TEXT_SIZE_PX;
+    private readonly LARGE_TEXT_BOLD_SIZE_PX;
+    private readonly MIN_OPACITY;
+    analyze(context: AnalyzerContext): Issue[];
+    private findTextElements;
+    private analyzeTextContrast;
+    private getForegroundColor;
+    private getBackgroundColor;
+    private hasZIndex;
+    private hasBackgroundImage;
+    private hasGradient;
+    private hasColorTransition;
+    private getFontSize;
+    private getFontWeight;
+    private isLargeText;
+    private parseFontSize;
+    private parseColor;
+    private calculateContrastRatio;
+    private relativeLuminance;
+    private isHidden;
+    private reportIndeterminateContrast;
+    private reportInsufficientContrast;
+    private generateContrastSuggestions;
+    private generateFixCode;
+    private colorToString;
+}
