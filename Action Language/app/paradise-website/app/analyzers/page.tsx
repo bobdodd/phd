@@ -1538,6 +1538,215 @@ btn.addEventListener('click', handler);
                     </td>
                     <td className="px-6 py-4 text-sm font-mono text-gray-600">2.1.1, 2.4.3, 4.1.2</td>
                   </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">17</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">AriaStateManagementAnalyzer</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-purple-500/20 text-purple-700 px-2 py-1 rounded">Phase 4</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">4.1.2, 4.1.3</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">18</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">FormSubmissionAnalyzer</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-purple-500/20 text-purple-700 px-2 py-1 rounded">Phase 4</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">3.3.1, 3.3.4</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">19</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">KeyboardTrapAnalyzer</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-purple-500/20 text-purple-700 px-2 py-1 rounded">Phase 4</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">2.1.2</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">20</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">NestedInteractiveElementsAnalyzer</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-purple-500/20 text-purple-700 px-2 py-1 rounded">Phase 4</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">4.1.2</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">21</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">WidgetPatternAnalyzer</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-purple-500/20 text-purple-700 px-2 py-1 rounded">Phase 4</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">4.1.2</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">22</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">HeadingStructureAnalyzer</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-purple-500/20 text-purple-700 px-2 py-1 rounded">Phase 4</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">1.3.1, 2.4.6</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">23</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">LandmarkAnalyzer</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-purple-500/20 text-purple-700 px-2 py-1 rounded">Phase 4</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">1.3.1</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">24</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">TableAccessibilityAnalyzer</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-purple-500/20 text-purple-700 px-2 py-1 rounded">Phase 4</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">1.3.1</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">25</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">LinkAnalyzer</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-purple-500/20 text-purple-700 px-2 py-1 rounded">Phase 4</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">2.4.4</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">26</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">LanguageAnalyzer</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-purple-500/20 text-purple-700 px-2 py-1 rounded">Phase 4</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">3.1.1, 3.1.2</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50 bg-orange-50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">27</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">AngularReactivityAnalyzer</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-purple-500/20 text-purple-700 px-2 py-1 rounded">Phase 4</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">4.1.2, 4.1.3</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50 bg-orange-50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">28</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">VueReactivityAnalyzer</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-purple-500/20 text-purple-700 px-2 py-1 rounded">Phase 4</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">4.1.2, 4.1.3</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50 bg-orange-50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">29</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">SvelteReactivityAnalyzer</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-purple-500/20 text-purple-700 px-2 py-1 rounded">Phase 4</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">4.1.2, 4.1.3</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50 bg-green-50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">30</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">ColorContrastAnalyzer</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-green-500/20 text-green-700 px-2 py-1 rounded">Sprint 14</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">1.4.3, 1.4.6</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50 bg-green-50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">31</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">LiveRegionAnalyzer</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-green-500/20 text-green-700 px-2 py-1 rounded">Sprint 14</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">4.1.3</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50 bg-green-50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">32</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">AutocompleteAnalyzer</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-green-500/20 text-green-700 px-2 py-1 rounded">Sprint 14</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">1.3.5</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50 bg-green-50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">33</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">OrientationLockAnalyzer</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-green-500/20 text-green-700 px-2 py-1 rounded">Sprint 14</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">1.3.4</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50 bg-green-50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">34</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">TimeoutAnalyzer</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-green-500/20 text-green-700 px-2 py-1 rounded">Sprint 14</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">2.2.1</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50 bg-green-50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">35</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">PointerTargetAnalyzer</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-green-500/20 text-green-700 px-2 py-1 rounded">Sprint 14</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">No</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-600">2.5.5, 2.5.8</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -1547,10 +1756,10 @@ btn.addEventListener('click', handler);
         {/* CTA */}
         <div className="max-w-4xl mx-auto text-center">
           <div className="bg-gradient-to-r from-paradise-blue to-paradise-purple rounded-2xl shadow-2xl p-12 text-white">
-            <h2 className="text-3xl font-bold mb-4">Experience All 19 Analyzers</h2>
+            <h2 className="text-3xl font-bold mb-4">Experience All 35 Analyzers</h2>
             <p className="text-lg opacity-95 mb-8">
-              Try Paradise's complete analyzer suite - from JavaScript-only to multi-model to unified React analysis - and see how
-              the evolution eliminates false positives while catching more real issues.
+              Try Paradise's complete analyzer suite - from behavioral to structural to framework-specific analysis - and see how
+              multi-model analysis catches real accessibility issues across HTML, CSS, JavaScript, and ARIA.
             </p>
             <div className="flex gap-4 justify-center flex-wrap">
               <a
