@@ -788,7 +788,7 @@ Removes visible focus indicator`}</pre>
           <li>Review all interactive elements for accessible names</li>
         </ul>
         <p className="text-lg text-gray-700 leading-relaxed">
-          Continue to <strong>Module 11: Switch Access and Scanning</strong> to learn about another critical
+          Continue to <a href="/learn/developers/modules/switch-access-scanning" className="text-blue-700 hover:text-blue-900 font-medium underline">Module 11: Switch Access and Scanning</a> to learn about another critical
           assistive technology for motor disabilities.
         </p>
       </section>

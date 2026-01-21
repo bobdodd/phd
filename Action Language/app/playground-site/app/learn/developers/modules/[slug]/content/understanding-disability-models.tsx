@@ -297,9 +297,9 @@ export default function UnderstandingDisabilityModels() {
         <div className="bg-gray-100 rounded-lg p-6">
           <h3 className="font-semibold text-gray-900 mb-3">Recommended next modules:</h3>
           <ul className="space-y-2 text-gray-700">
-            <li>• <strong>Module 2: Visual Disabilities</strong> - Learn about blindness, low vision, and color blindness</li>
-            <li>• <strong>Module 10: Screen Readers Deep Dive</strong> - Understand how screen readers work</li>
-            <li>• <strong>Module 13: WCAG 2.2 Overview</strong> - Start learning the standards</li>
+            <li>• <a href="/learn/developers/modules/visual-disabilities" className="text-blue-700 hover:text-blue-900 font-medium underline">Module 2: Visual Disabilities</a> - Learn about blindness, low vision, and color blindness</li>
+            <li>• <a href="/learn/developers/modules/screen-readers-deep-dive" className="text-blue-700 hover:text-blue-900 font-medium underline">Module 10: Screen Readers Deep Dive</a> - Understand how screen readers work</li>
+            <li>• <strong>Module 13: WCAG 2.2 Overview</strong> - Start learning the standards (coming in Domain 2)</li>
           </ul>
         </div>
       </section>

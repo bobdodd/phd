@@ -640,7 +640,7 @@ buttons.forEach((btn, index) => {
           <li>Ensure semantic landmarks are properly implemented</li>
         </ul>
         <p className="text-lg text-gray-700 leading-relaxed">
-          Continue to <strong>Module 12: Alternative Input and Output Devices</strong> to explore the full spectrum
+          Continue to <a href="/learn/developers/modules/alternative-input-output" className="text-blue-700 hover:text-blue-900 font-medium underline">Module 12: Alternative Input and Output Devices</a> to explore the full spectrum
           of assistive technologies.
         </p>
       </section>

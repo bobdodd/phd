@@ -574,8 +574,8 @@ export default function MotorDisabilities() {
             <a href="/learn/developers/modules/cognitive-disabilities" className="block text-blue-700 hover:text-blue-900 font-medium">
               → Module 5: Cognitive Disabilities
             </a>
-            <a href="/learn/developers/modules/switch-access" className="block text-blue-700 hover:text-blue-900 font-medium">
-              → Module 11: Switch Access Deep Dive
+            <a href="/learn/developers/modules/switch-access-scanning" className="block text-blue-700 hover:text-blue-900 font-medium">
+              → Module 11: Switch Access and Scanning
             </a>
             <a href="/learn/developers/modules/keyboard-navigation-patterns" className="block text-blue-700 hover:text-blue-900 font-medium">
               → Module 28: Keyboard Navigation Patterns (hands-on implementation)

@@ -492,19 +492,21 @@ function announceToScreenReader(message: string) {
         </ul>
       </div>
 
-      <h2>Next Steps</h2>
-      <p>
-        Now that you understand complex disability combinations:
-      </p>
-      <ul>
-        <li>Audit your current projects for single-pathway dependencies (mouse-only, audio-only, etc.)</li>
-        <li>Add multiple feedback types to critical interactions</li>
-        <li>Test how your site works with combinations: screen reader + magnification, keyboard + reduced motion</li>
-        <li>
-          Continue to <strong>Module 10: Screen Readers Deep Dive</strong> for an in-depth technical understanding
-          of the most important assistive technology
-        </li>
-      </ul>
+      <section className="mb-12">
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">Next Steps</h2>
+        <p className="text-lg text-gray-700 leading-relaxed mb-4">
+          Now that you understand complex disability combinations:
+        </p>
+        <ul className="list-disc list-outside ml-6 space-y-2 text-gray-700 mb-4">
+          <li>Audit your current projects for single-pathway dependencies (mouse-only, audio-only, etc.)</li>
+          <li>Add multiple feedback types to critical interactions</li>
+          <li>Test how your site works with combinations: screen reader + magnification, keyboard + reduced motion</li>
+        </ul>
+        <p className="text-lg text-gray-700 leading-relaxed">
+          Continue to <a href="/learn/developers/modules/screen-readers-deep-dive" className="text-blue-700 hover:text-blue-900 font-medium underline">Module 10: Screen Readers Deep Dive</a> for an in-depth technical understanding
+          of the most important assistive technology.
+        </p>
+      </section>
     </div>
   );
 }

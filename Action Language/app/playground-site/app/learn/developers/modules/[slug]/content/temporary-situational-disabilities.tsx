@@ -378,19 +378,21 @@ export default function TemporaryAndSituationalDisabilities() {
         </ul>
       </div>
 
-      <h2>Next Steps</h2>
-      <p>
-        Now that you understand how temporary and situational factors create universal accessibility needs:
-      </p>
-      <ul>
-        <li>Review your current project: Which features assume perfect conditions?</li>
-        <li>Test your site in challenging contexts (bright sun, one-handed, no audio)</li>
-        <li>Consider the Persona Spectrum when designing new features</li>
-        <li>
-          Continue to <strong>Module 9: Multiple and Compound Disabilities</strong> to learn about users with
-          complex combinations of accessibility needs
-        </li>
-      </ul>
+      <section className="mb-12">
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">Next Steps</h2>
+        <p className="text-lg text-gray-700 leading-relaxed mb-4">
+          Now that you understand how temporary and situational factors create universal accessibility needs:
+        </p>
+        <ul className="list-disc list-outside ml-6 space-y-2 text-gray-700 mb-4">
+          <li>Review your current project: Which features assume perfect conditions?</li>
+          <li>Test your site in challenging contexts (bright sun, one-handed, no audio)</li>
+          <li>Consider the Persona Spectrum when designing new features</li>
+        </ul>
+        <p className="text-lg text-gray-700 leading-relaxed">
+          Continue to <a href="/learn/developers/modules/multiple-disabilities" className="text-blue-700 hover:text-blue-900 font-medium underline">Module 9: Multiple and Compound Disabilities</a> to learn about users with
+          complex combinations of accessibility needs.
+        </p>
+      </section>
     </div>
   );
 }
