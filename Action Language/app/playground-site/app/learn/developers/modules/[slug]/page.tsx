@@ -12,6 +12,7 @@ import SpeechDisabilities from './content/speech-disabilities';
 import SeizureDisorders from './content/seizure-disorders';
 import TemporaryAndSituationalDisabilities from './content/temporary-situational-disabilities';
 import MultipleDisabilities from './content/multiple-disabilities';
+import ScreenReadersDeepDive from './content/screen-readers-deep-dive';
 
 // Map slugs to content components
 const moduleContentMap: Record<string, React.ComponentType> = {
@@ -24,6 +25,7 @@ const moduleContentMap: Record<string, React.ComponentType> = {
   'seizure-disorders': SeizureDisorders,
   'temporary-situational-disabilities': TemporaryAndSituationalDisabilities,
   'multiple-disabilities': MultipleDisabilities,
+  'screen-readers-deep-dive': ScreenReadersDeepDive,
 };
 
 export default async function ModulePage({ params }: { params: Promise<{ slug: string }> }) {
