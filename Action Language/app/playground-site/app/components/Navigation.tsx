@@ -41,13 +41,13 @@ export default function Navigation() {
               Playground
             </Link>
             <Link
-              href="/learn/"
+              href="/learn"
               className={`px-4 py-2 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                isActive('/learn/') || isActive('/learn')
+                pathname?.startsWith('/learn')
                   ? 'bg-blue-700 text-white'
                   : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
               }`}
-              aria-current={isActive('/learn/') || isActive('/learn') ? 'page' : undefined}
+              aria-current={pathname?.startsWith('/learn') ? 'page' : undefined}
             >
               Learn
             </Link>

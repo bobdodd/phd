@@ -1,36 +1,96 @@
 import Link from 'next/link';
+import { learningPaths } from './data/learningPaths';
 
 export default function LearnPage() {
+  const quickStart = learningPaths.find((p) => p.id === 'quick-start');
+  const comprehensive = learningPaths.find((p) => p.id === 'comprehensive');
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero */}
-      <section className="bg-gradient-to-r from-blue-700 to-blue-900 text-white py-16">
-        <div className="container mx-auto px-6 text-center">
-          <h1 className="text-5xl font-bold mb-4">Learn Web Accessibility</h1>
-          <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-            Master the fundamentals of accessible web development with interactive examples and best practices
+      <section className="bg-gradient-to-r from-indigo-700 to-purple-900 text-white py-20">
+        <div className="container mx-auto px-6">
+          <h1 className="text-5xl font-bold mb-4">Learn Accessibility</h1>
+          <p className="text-2xl text-indigo-100 max-w-3xl mb-6">
+            Master digital accessibility through practical, hands-on learning that builds real-world skills
+          </p>
+          <p className="text-lg text-indigo-200 max-w-3xl">
+            Self-paced, profession-specific courses aligned with WCAG 2.2 and IAAP standards. Choose your track and start learning today.
           </p>
         </div>
       </section>
 
-      {/* Content */}
-      <div className="container mx-auto px-6 py-12 max-w-6xl">
+      {/* Choose Your Track */}
+      <div className="container mx-auto px-6 py-16 max-w-7xl">
+        <h2 className="text-4xl font-bold text-gray-900 mb-4 text-center">Choose Your Learning Path</h2>
+        <p className="text-xl text-gray-600 text-center mb-12 max-w-3xl mx-auto">
+          Learn accessibility through your professional lens. Same concepts, tailored to how you work.
+        </p>
 
-        {/* Introduction */}
-        <section className="bg-white rounded-lg p-8 shadow-lg mb-8">
-          <h2 className="text-3xl font-bold mb-4 text-gray-900">Why Accessibility Matters</h2>
-          <p className="text-lg text-gray-700 mb-4">
-            Web accessibility ensures that websites, tools, and technologies are designed and developed
-            so that people with disabilities can use them. More specifically, people can perceive, understand,
-            navigate, and interact with the Web.
-          </p>
-          <div className="bg-blue-50 border-l-4 border-blue-700 p-4 my-4">
-            <p className="text-gray-900">
-              <strong>Did you know?</strong> Over 1 billion people worldwide have disabilities.
-              Making your website accessible isn't just the right thing to do—it's also good business and required by law in many jurisdictions.
+        <div className="grid md:grid-cols-3 gap-8 mb-16">
+          {/* Developer Track */}
+          <Link
+            href="/learn/developers"
+            className="group bg-white rounded-xl shadow-lg p-8 hover:shadow-2xl transition-all border-4 border-blue-600 hover:border-blue-700 hover:-translate-y-1"
+          >
+            <div className="text-5xl mb-4">👨‍💻</div>
+            <h3 className="text-2xl font-bold text-blue-700 mb-3 group-hover:text-blue-800">Developers</h3>
+            <p className="text-gray-700 mb-4">
+              Learn through code examples, APIs, and patterns. Build accessible web applications with confidence.
             </p>
-          </div>
-        </section>
+            <ul className="text-sm text-gray-600 space-y-2 mb-6">
+              <li>✓ Working code examples</li>
+              <li>✓ Before/after comparisons</li>
+              <li>✓ Framework-specific guides</li>
+              <li>✓ Testing automation</li>
+            </ul>
+            <div className="text-blue-700 font-semibold group-hover:text-blue-800">
+              Start Developer Track →
+            </div>
+          </Link>
+
+          {/* Designer Track */}
+          <Link
+            href="/learn/designers"
+            className="group bg-white rounded-xl shadow-lg p-8 hover:shadow-2xl transition-all border-4 border-purple-600 hover:border-purple-700 hover:-translate-y-1"
+          >
+            <div className="text-5xl mb-4">🎨</div>
+            <h3 className="text-2xl font-bold text-purple-700 mb-3 group-hover:text-purple-800">Designers</h3>
+            <p className="text-gray-700 mb-4">
+              Learn through visual examples and UX principles. Create designs that are beautiful and accessible.
+            </p>
+            <ul className="text-sm text-gray-600 space-y-2 mb-6">
+              <li>✓ Visual mockups</li>
+              <li>✓ Color contrast tools</li>
+              <li>✓ Figma/Sketch templates</li>
+              <li>✓ Design specifications</li>
+            </ul>
+            <div className="text-purple-700 font-semibold group-hover:text-purple-800">
+              Start Designer Track →
+            </div>
+          </Link>
+
+          {/* QA Track */}
+          <Link
+            href="/learn/qa"
+            className="group bg-white rounded-xl shadow-lg p-8 hover:shadow-2xl transition-all border-4 border-green-600 hover:border-green-700 hover:-translate-y-1"
+          >
+            <div className="text-5xl mb-4">✅</div>
+            <h3 className="text-2xl font-bold text-green-700 mb-3 group-hover:text-green-800">QA Testers</h3>
+            <p className="text-gray-700 mb-4">
+              Learn through testing scenarios and validation criteria. Ensure quality accessibility in every release.
+            </p>
+            <ul className="text-sm text-gray-600 space-y-2 mb-6">
+              <li>✓ Test case libraries</li>
+              <li>✓ Testing procedures</li>
+              <li>✓ Tool tutorials</li>
+              <li>✓ Bug report templates</li>
+            </ul>
+            <div className="text-green-700 font-semibold group-hover:text-green-800">
+              Start QA Track →
+            </div>
+          </Link>
+        </div>
 
         {/* Key Topics */}
         <section className="mb-12">
