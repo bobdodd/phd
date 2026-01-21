@@ -1,6 +1,8 @@
 # All Detectable Accessibility Issues
 
-This document lists all accessibility issues that the ActionLanguage Accessibility Analyzer can detect, organized by category.
+⚠️ **NOTE:** This document is outdated. For the complete, up-to-date list of all 35 analyzers and 100+ issue types, see **[COMPLETE_ANALYZER_LIST.md](./COMPLETE_ANALYZER_LIST.md)**.
+
+This legacy document lists early accessibility issues from the initial prototype. It covers only ~10 analyzers from Phase 1.
 
 ## Focus Management Issues (FocusAnalyzer)
 
