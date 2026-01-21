@@ -16,9 +16,52 @@ export default function AboutPage() {
       {/* Main Content */}
       <div className="container mx-auto px-6 py-12 max-w-5xl">
 
+        {/* Table of Contents */}
+        <nav className="bg-white rounded-xl shadow-lg p-8 mb-8" aria-labelledby="toc-heading">
+          <h2 id="toc-heading" className="text-2xl font-bold text-gray-900 mb-6">On This Page</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            <a
+              href="#what-is"
+              className="group block p-4 rounded-lg border-2 border-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors"
+            >
+              <span className="font-semibold text-blue-900">What is Paradise?</span>
+            </a>
+            <a
+              href="#problem"
+              className="group block p-4 rounded-lg border-2 border-red-600 bg-red-50 hover:bg-red-100 transition-colors"
+            >
+              <span className="font-semibold text-red-900">The Problem</span>
+            </a>
+            <a
+              href="#solution"
+              className="group block p-4 rounded-lg border-2 border-green-600 bg-green-50 hover:bg-green-100 transition-colors"
+            >
+              <span className="font-semibold text-green-900">The Paradise Solution</span>
+            </a>
+            <a
+              href="#how-it-works"
+              className="group block p-4 rounded-lg border-2 border-purple-600 bg-purple-50 hover:bg-purple-100 transition-colors"
+            >
+              <span className="font-semibold text-purple-900">How Paradise Works</span>
+            </a>
+            <a
+              href="#features"
+              className="group block p-4 rounded-lg border-2 border-orange-600 bg-orange-50 hover:bg-orange-100 transition-colors"
+            >
+              <span className="font-semibold text-orange-900">What Paradise Detects</span>
+            </a>
+            <a
+              href="#technology"
+              className="group block p-4 rounded-lg border-2 border-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors"
+            >
+              <span className="font-semibold text-indigo-900">Technology Stack</span>
+            </a>
+          </div>
+        </nav>
+
         {/* What is Paradise */}
-        <section className="bg-white rounded-lg p-8 shadow-lg mb-8">
-          <h2 className="text-3xl font-bold mb-4 text-gray-900">What is Paradise?</h2>
+        <section id="what-is" className="bg-white rounded-lg p-8 shadow-lg mb-8 scroll-mt-24">
+          <h2 className="text-3xl font-bold mb-4 text-blue-700 border-l-4 border-blue-600 pl-4">What is Paradise?</h2>
           <p className="text-lg text-gray-700 mb-4">
             Paradise is a universal accessibility analysis framework built on ActionLanguage - a declarative
             language for describing user interactions and UI state across any framework or technology.
@@ -30,8 +73,8 @@ export default function AboutPage() {
         </section>
 
         {/* The Problem */}
-        <section className="bg-gradient-to-br from-red-50 to-orange-50 rounded-lg p-8 shadow-lg mb-8">
-          <h2 className="text-3xl font-bold mb-4 text-gray-900">The Problem</h2>
+        <section id="problem" className="bg-gradient-to-br from-red-50 to-orange-50 rounded-lg p-8 shadow-lg mb-8 scroll-mt-24">
+          <h2 className="text-3xl font-bold mb-4 text-red-700 border-l-4 border-red-600 pl-4">The Problem</h2>
           <div className="space-y-4 text-gray-700">
             <p>
               <strong className="text-red-700">Traditional accessibility testing tools have critical limitations:</strong>
@@ -58,8 +101,8 @@ export default function AboutPage() {
         </section>
 
         {/* The Solution */}
-        <section className="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-8 shadow-lg mb-8">
-          <h2 className="text-3xl font-bold mb-4 text-gray-900">The Paradise Solution</h2>
+        <section id="solution" className="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-8 shadow-lg mb-8 scroll-mt-24">
+          <h2 className="text-3xl font-bold mb-4 text-green-700 border-l-4 border-green-600 pl-4">The Paradise Solution</h2>
           <div className="space-y-4 text-gray-700">
             <p>
               <strong className="text-green-700">Paradise solves these problems with a revolutionary approach:</strong>
@@ -86,8 +129,8 @@ export default function AboutPage() {
         </section>
 
         {/* How It Works */}
-        <section className="bg-white rounded-lg p-8 shadow-lg mb-8">
-          <h2 className="text-3xl font-bold mb-4 text-gray-900">How Paradise Works</h2>
+        <section id="how-it-works" className="bg-white rounded-lg p-8 shadow-lg mb-8 scroll-mt-24">
+          <h2 className="text-3xl font-bold mb-4 text-purple-700 border-l-4 border-purple-600 pl-4">How Paradise Works</h2>
           <div className="space-y-6">
             <div>
               <h3 className="text-xl font-semibold text-blue-700 mb-2">1. Parse Multiple Sources</h3>
@@ -132,8 +175,8 @@ export default function AboutPage() {
         </section>
 
         {/* Features */}
-        <section className="bg-white rounded-lg p-8 shadow-lg mb-8">
-          <h2 className="text-3xl font-bold mb-4 text-gray-900">What Paradise Detects</h2>
+        <section id="features" className="bg-white rounded-lg p-8 shadow-lg mb-8 scroll-mt-24">
+          <h2 className="text-3xl font-bold mb-4 text-orange-700 border-l-4 border-orange-600 pl-4">What Paradise Detects</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <h4 className="font-semibold text-blue-700">Keyboard Navigation</h4>
@@ -198,8 +241,8 @@ export default function AboutPage() {
         </section>
 
         {/* Technology */}
-        <section className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-8 shadow-lg mb-8">
-          <h2 className="text-3xl font-bold mb-4 text-gray-900">Technology Stack</h2>
+        <section id="technology" className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-8 shadow-lg mb-8 scroll-mt-24">
+          <h2 className="text-3xl font-bold mb-4 text-indigo-700 border-l-4 border-indigo-600 pl-4">Technology Stack</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <h4 className="font-semibold text-purple-700 mb-2">Core Technologies</h4>
