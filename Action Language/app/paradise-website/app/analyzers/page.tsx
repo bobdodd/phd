@@ -108,25 +108,27 @@ export default function AnalyzersPage() {
                 <h3 className="text-xl font-bold text-gray-900">KeyboardNavigationAnalyzer</h3>
               </div>
               <p className="text-gray-700 mb-3">
-                Detects 7 types of keyboard navigation issues: keyboard traps without Escape, screen reader conflicts,
-                deprecated keyCode usage, Tab without Shift handling, missing Escape handlers, missing arrow navigation,
-                and arrow key conflicts with browse mode. Critical for keyboard and screen reader users.
+                Detects 9 types of keyboard navigation issues: keyboard traps without Escape, single-key shortcuts conflicting with screen readers,
+                arrow keys without ARIA context, deprecated keyCode usage, Tab without Shift handling, missing Escape handlers,
+                missing arrow navigation, preventDefault on nav keys, and undocumented shortcuts. Critical for keyboard and screen reader users.
               </p>
               <div className="text-sm text-gray-600 bg-gray-50 rounded p-2 mb-2">
                 <strong>WCAG:</strong> 2.1.1, 2.1.2, 2.1.4, 4.1.2 | <strong>Scope:</strong> JavaScript-only
               </div>
               <details className="text-sm text-gray-600">
                 <summary className="cursor-pointer font-medium text-paradise-blue hover:text-paradise-purple">
-                  View 7 Issue Types
+                  View 9 Issue Types
                 </summary>
                 <ul className="mt-2 ml-4 space-y-1 list-disc">
-                  <li>potential-keyboard-trap</li>
-                  <li>screen-reader-conflict</li>
-                  <li>deprecated-keycode</li>
-                  <li>tab-without-shift</li>
-                  <li>missing-escape-handler</li>
-                  <li>missing-arrow-navigation</li>
-                  <li>screen-reader-arrow-conflict</li>
+                  <li>potential-keyboard-trap - Tab trap without Escape</li>
+                  <li>screen-reader-conflict - Single-key shortcuts (h, k, j)</li>
+                  <li>screen-reader-arrow-conflict - Arrow keys without ARIA widget</li>
+                  <li>deprecated-keycode - Using event.keyCode</li>
+                  <li>tab-without-shift - Tab without Shift+Tab support</li>
+                  <li>missing-escape-handler - Modal without Escape key</li>
+                  <li>missing-arrow-navigation - ARIA widget without arrow keys</li>
+                  <li>prevent-default-nav-keys - preventDefault on Space/Enter/Arrow</li>
+                  <li>keyboard-shortcuts-undocumented - Shortcuts without docs</li>
                 </ul>
               </details>
             </div>
@@ -1074,7 +1076,7 @@ btn.addEventListener('click', handler);
                     <td className="px-6 py-4 text-sm font-mono text-gray-600">3</td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">
                       KeyboardNavigationAnalyzer
-                      <span className="block text-xs text-gray-500 mt-1">(7 issue types)</span>
+                      <span className="block text-xs text-gray-500 mt-1">(9 issue types)</span>
                     </td>
                     <td className="px-6 py-4 text-sm">
                       <span className="bg-paradise-blue/10 text-paradise-blue px-2 py-1 rounded">Phase 1</span>
