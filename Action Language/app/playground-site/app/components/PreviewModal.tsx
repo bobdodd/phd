@@ -595,57 +595,77 @@ export default function PreviewModal({
           </div>
           <div className="flex items-center gap-3">
             {/* Assistive Technology Toggles */}
-            <div className="flex items-center gap-3 bg-white/10 rounded-lg px-4 py-2.5">
-              <span className="text-sm text-purple-100 font-medium">Screen Reader</span>
-              <button
-                onClick={handleScreenReaderToggle}
-                type="button"
-                className="relative focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-purple-800 rounded-full"
-                title={screenReaderEnabled ? 'Disable screen reader' : 'Enable screen reader'}
-                aria-label="Screen Reader"
-                role="switch"
-                aria-checked={screenReaderEnabled}
-              >
-                <span
-                  className={`flex items-center w-11 h-6 rounded-full transition-colors duration-200 ${
-                    screenReaderEnabled ? 'bg-green-500' : 'bg-gray-400'
-                  }`}
+            <div className="flex flex-col gap-2 bg-white/10 rounded-lg px-4 py-2.5">
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-purple-100 font-medium">Screen Reader</span>
+                <button
+                  onClick={handleScreenReaderToggle}
+                  type="button"
+                  className="relative focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-purple-800 rounded-full"
+                  title={screenReaderEnabled ? 'Disable screen reader' : 'Enable screen reader'}
+                  aria-label="Screen Reader"
+                  role="switch"
+                  aria-checked={screenReaderEnabled}
                 >
                   <span
-                    className={`block w-5 h-5 bg-white rounded-full shadow-lg transform transition-transform duration-200 ${
-                      screenReaderEnabled ? 'translate-x-6' : 'translate-x-0.5'
+                    className={`flex items-center w-11 h-6 rounded-full transition-colors duration-200 ${
+                      screenReaderEnabled ? 'bg-green-500' : 'bg-gray-400'
                     }`}
-                    aria-hidden="true"
-                  />
-                </span>
-              </button>
+                  >
+                    <span
+                      className={`block w-5 h-5 bg-white rounded-full shadow-lg transform transition-transform duration-200 ${
+                        screenReaderEnabled ? 'translate-x-6' : 'translate-x-0.5'
+                      }`}
+                      aria-hidden="true"
+                    />
+                  </span>
+                </button>
+              </div>
+              <a
+                href="/about-screen-readers"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-blue-200 hover:text-white hover:underline transition-colors"
+              >
+                About Screen Readers →
+              </a>
             </div>
 
             {/* Switch Simulator Toggle */}
-            <div className="flex items-center gap-3 bg-white/10 rounded-lg px-4 py-2.5">
-              <span className="text-sm text-purple-100 font-medium">Switch Simulator</span>
-              <button
-                onClick={toggleSwitchSimulator}
-                type="button"
-                className="relative focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-purple-800 rounded-full"
-                title={switchSimulatorEnabled ? 'Disable switch simulator' : 'Enable switch simulator'}
-                aria-label="Switch Simulator"
-                role="switch"
-                aria-checked={switchSimulatorEnabled}
-              >
-                <span
-                  className={`flex items-center w-11 h-6 rounded-full transition-colors duration-200 ${
-                    switchSimulatorEnabled ? 'bg-purple-600' : 'bg-gray-400'
-                  }`}
+            <div className="flex flex-col gap-2 bg-white/10 rounded-lg px-4 py-2.5">
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-purple-100 font-medium">Switch Simulator</span>
+                <button
+                  onClick={toggleSwitchSimulator}
+                  type="button"
+                  className="relative focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-purple-800 rounded-full"
+                  title={switchSimulatorEnabled ? 'Disable switch simulator' : 'Enable switch simulator'}
+                  aria-label="Switch Simulator"
+                  role="switch"
+                  aria-checked={switchSimulatorEnabled}
                 >
                   <span
-                    className={`block w-5 h-5 bg-white rounded-full shadow-lg transform transition-transform duration-200 ${
-                      switchSimulatorEnabled ? 'translate-x-6' : 'translate-x-0.5'
+                    className={`flex items-center w-11 h-6 rounded-full transition-colors duration-200 ${
+                      switchSimulatorEnabled ? 'bg-purple-600' : 'bg-gray-400'
                     }`}
-                    aria-hidden="true"
-                  />
-                </span>
-              </button>
+                  >
+                    <span
+                      className={`block w-5 h-5 bg-white rounded-full shadow-lg transform transition-transform duration-200 ${
+                        switchSimulatorEnabled ? 'translate-x-6' : 'translate-x-0.5'
+                      }`}
+                      aria-hidden="true"
+                    />
+                  </span>
+                </button>
+              </div>
+              <a
+                href="/about-switches"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-blue-200 hover:text-white hover:underline transition-colors"
+              >
+                About Switches →
+              </a>
             </div>
 
             {/* Recording & Replay Controls (only when SR is enabled) */}
