@@ -29,6 +29,8 @@ import { HeadingStructureAnalyzer } from '../../../../src/analyzers/HeadingStruc
 import { ActionLanguageModelImpl } from '../../../../src/models/ActionLanguageModel';
 import { HTMLParser } from '../../../../src/parsers/HTMLParser';
 import { DocumentModel } from '../../../../src/models/DocumentModel';
+import ConfidenceBadge from '../components/ConfidenceBadge';
+import DocumentContextBanner from '../components/DocumentContextBanner';
 
 // Dynamically import Monaco to avoid SSR issues
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
@@ -1812,6 +1814,7 @@ export default function Playground() {
   });
   const [actionLanguage, setActionLanguage] = useState<any[]>([]);
   const [issues, setIssues] = useState<any[]>([]);
+  const [documentContext, setDocumentContext] = useState({ hasHtmlTag: false, hasBodyTag: false, hasHeadTag: false });
   const [activeResultTab, setActiveResultTab] = useState<'issues' | 'actionlanguage' | 'models'>('issues');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [monacoEditor, setMonacoEditor] = useState<any>(null);
@@ -2295,7 +2298,8 @@ export default function Playground() {
             message: issue.message,
             location: issue.location?.file || 'JavaScript',
             line: issue.location?.line,
-            column: issue.location?.column
+            column: issue.location?.column,
+            confidence: issue.confidence
           });
         }
       } catch (error) {
@@ -2317,6 +2321,10 @@ export default function Playground() {
           javascript: []
         });
 
+        // Detect document context for confidence scoring
+        const docContext = documentModel.getDocumentContext();
+        setDocumentContext(docContext);
+
         const headingAnalyzer = new HeadingStructureAnalyzer();
         const headingIssues = headingAnalyzer.analyze({
           documentModel,
@@ -2331,7 +2339,8 @@ export default function Playground() {
             message: issue.message,
             location: issue.location?.file || 'HTML',
             line: issue.location?.line,
-            column: issue.location?.column
+            column: issue.location?.column,
+            confidence: issue.confidence
           });
         }
       } catch (error) {
@@ -2362,7 +2371,8 @@ export default function Playground() {
             message: issue.message,
             location: issue.location?.file || 'HTML',
             line: issue.location?.line,
-            column: issue.location?.column
+            column: issue.location?.column,
+            confidence: issue.confidence
           });
         }
       } catch (error) {
@@ -2389,7 +2399,8 @@ export default function Playground() {
             message: issue.message,
             location: issue.location?.file || 'HTML',
             line: issue.location?.line,
-            column: issue.location?.column
+            column: issue.location?.column,
+            confidence: issue.confidence
           });
         }
       } catch (error) {
@@ -2416,7 +2427,8 @@ export default function Playground() {
             message: issue.message,
             location: issue.location?.file || 'HTML',
             line: issue.location?.line,
-            column: issue.location?.column
+            column: issue.location?.column,
+            confidence: issue.confidence
           });
         }
       } catch (error) {
@@ -3182,6 +3194,17 @@ export default function Playground() {
                     </p>
                   </div>
 
+                  {/* Document Context Banner */}
+                  <DocumentContextBanner
+                    hasHtmlTag={documentContext.hasHtmlTag}
+                    hasBodyTag={documentContext.hasBodyTag}
+                    hasHeadTag={documentContext.hasHeadTag}
+                    issueCount={issues.length}
+                    highConfidenceCount={issues.filter((i: any) => i.confidence && i.confidence.score >= 0.9).length}
+                    mediumConfidenceCount={issues.filter((i: any) => i.confidence && i.confidence.score >= 0.6 && i.confidence.score < 0.9).length}
+                    lowConfidenceCount={issues.filter((i: any) => i.confidence && i.confidence.score < 0.6).length}
+                  />
+
                   {issues.length === 0 ? (
                     <div className="bg-paradise-green/10 border border-paradise-green rounded-lg p-8 text-center">
                       <div className="text-5xl mb-3">✅</div>
@@ -3228,6 +3251,16 @@ export default function Playground() {
                             </div>
                           </div>
                           <p className="text-sm font-semibold mb-2">{issue.message}</p>
+                          {issue.confidence && (
+                            <div className="mb-2">
+                              <ConfidenceBadge
+                                level={issue.confidence.level}
+                                score={issue.confidence.score}
+                                reason={issue.confidence.reason}
+                                compact={true}
+                              />
+                            </div>
+                          )}
                           <div className="flex items-center justify-between gap-4 text-xs text-gray-600">
                             <div className="flex items-center gap-4">
                               <span>WCAG: {issue.wcag.join(', ')}</span>
