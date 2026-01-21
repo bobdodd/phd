@@ -1616,9 +1616,9 @@ export default function Home() {
               </button>
               <Link
                 href="/learn/"
-                className="bg-blue-800 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-700"
+                className="bg-white text-blue-700 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-700 border-2 border-white shadow-lg"
               >
-                Learn Accessibility
+                📚 Learn Accessibility
               </Link>
             </div>
           </div>
@@ -1811,7 +1811,15 @@ export default function Home() {
           {/* Results Panel - 1/3 width */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow-lg p-6 sticky top-6">
-              <h2 className="text-2xl font-bold mb-4 text-gray-900">Analysis Results</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-gray-900">Analysis Results</h2>
+                <Link
+                  href="/analyzers"
+                  className="px-3 py-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg border border-blue-300 transition-colors flex items-center gap-1"
+                >
+                  📚 What we test
+                </Link>
+              </div>
 
               {/* Document Context Banner */}
               <DocumentContextBanner
