@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Submission Test Cases</title>
+    <style>
+        section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+        }
+        .error { border-color: #ef4444; }
+        .warning { border-color: #f59e0b; }
+        .info { border-color: #3b82f6; }
+        .compliant { border-color: #10b981; }
+        input, select, textarea {
+            display: block;
+            margin: 10px 0;
+            padding: 5px;
+        }
+        button {
+            padding: 8px 16px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Form Submission Test Cases (WCAG 2.1.1)</h1>
+
+    <!-- Test 1: Form with no submit button, no onSubmit (ERROR) -->
+    <section class="error">
+        <h2>Test 1: No Submit Button, No onSubmit (ERROR)</h2>
+        <!-- ❌ ISSUE: form-no-submit-button (error) -->
+        <form id="broken-form">
+            <label>Email: <input type="email" name="email"></label>
+            <!-- Missing: submit button -->
+        </form>
+
+        <script>
+            // No submission mechanism at all
+        </script>
+    </section>
+
+    <!-- Test 2: Form with proper submit button (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 2: Proper Submit Button (COMPLIANT)</h2>
+        <form onsubmit="handleSubmit(event)">
+            <label>Email: <input type="email" name="email"></label>
+            <button type="submit">Submit</button>
+        </form>
+
+        <script>
+            function handleSubmit(event) {
+                event.preventDefault();
+                console.log('Form submitted via Enter or button click');
+            }
+        </script>
+    </section>
+
+    <!-- Test 3: Form with disabled submit button (WARNING) -->
+    <section class="warning">
+        <h2>Test 3: Submit Button Disabled (WARNING)</h2>
+        <!-- ❌ ISSUE: form-submit-button-disabled (warning) -->
+        <form id="disabled-form">
+            <label>Email: <input type="email" name="email"></label>
+            <button type="submit" disabled>Submit</button>
+        </form>
+    </section>
+
+    <!-- Test 4: Form with hidden submit button (WARNING) -->
+    <section class="warning">
+        <h2>Test 4: Submit Button Hidden (WARNING)</h2>
+        <!-- ❌ ISSUE: form-submit-button-disabled (warning) -->
+        <form id="hidden-form">
+            <label>Email: <input type="email" name="email"></label>
+            <button type="submit" hidden>Submit</button>
+        </form>
+    </section>
+
+    <!-- Test 5: Form with only type="button" buttons (WARNING) -->
+    <section class="warning">
+        <h2>Test 5: Only type="button" Buttons (WARNING)</h2>
+        <!-- ❌ ISSUE: form-only-button-type (warning) -->
+        <form id="button-type-form">
+            <label>Email: <input type="email" name="email"></label>
+            <button type="button" onclick="submitForm()">Submit</button>
+        </form>
+
+        <script>
+            function submitForm() {
+                console.log('Manual submission');
+            }
+        </script>
+    </section>
+
+    <!-- Test 6: Form with onClick instead of onSubmit (INFO) -->
+    <section class="info">
+        <h2>Test 6: onClick Instead of onSubmit (INFO)</h2>
+        <!-- ❌ ISSUE: form-click-instead-of-submit (info) -->
+        <form id="onclick-form">
+            <label>Email: <input type="email" name="email"></label>
+            <button type="button" onclick="submitData()">Submit</button>
+        </form>
+
+        <script>
+            function submitData() {
+                console.log('onClick submission');
+            }
+        </script>
+    </section>
+
+    <!-- Test 7: Form that prevents Enter key (WARNING) -->
+    <section class="warning">
+        <h2>Test 7: Prevents Enter Key (WARNING)</h2>
+        <!-- ❌ ISSUE: form-prevents-enter-submission (warning) -->
+        <form onkeydown="if (event.key === 'Enter') event.preventDefault()">
+            <label>Email: <input type="email" name="email"></label>
+            <button type="submit">Submit</button>
+        </form>
+    </section>
+
+    <!-- Test 8: Form with input type="submit" (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 8: Input type="submit" (COMPLIANT)</h2>
+        <form onsubmit="handleSubmit(event)">
+            <label>Email: <input type="email" name="email"></label>
+            <input type="submit" value="Submit">
+        </form>
+    </section>
+
+    <!-- Test 9: Form with addEventListener('submit') (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 9: addEventListener('submit') (COMPLIANT)</h2>
+        <form id="event-listener-form">
+            <label>Email: <input type="email" name="email"></label>
+            <button type="submit">Submit</button>
+        </form>
+
+        <script>
+            document.getElementById('event-listener-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                console.log('Submit via event listener');
+            });
+        </script>
+    </section>
+
+    <!-- Test 10: Complex form - proper (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 10: Complex Form (COMPLIANT)</h2>
+        <form onsubmit="validateAndSubmit(event)">
+            <label>Name: <input type="text" name="name" required></label>
+            <label>Email: <input type="email" name="email" required></label>
+            <label>Age: <input type="number" name="age" min="18"></label>
+            <label>Country:
+                <select name="country">
+                    <option>USA</option>
+                    <option>Canada</option>
+                </select>
+            </label>
+            <button type="submit">Submit</button>
+            <button type="reset">Reset</button>
+        </form>
+
+        <script>
+            function validateAndSubmit(event) {
+                event.preventDefault();
+                console.log('Complex form submitted');
+            }
+        </script>
+    </section>
+
+    <!-- Test 11: Multiple submit buttons (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 11: Multiple Submit Buttons (COMPLIANT)</h2>
+        <form onsubmit="handleMultiSubmit(event)">
+            <label>Email: <input type="email" name="email"></label>
+            <button type="submit" name="action" value="save">Save Draft</button>
+            <button type="submit" name="action" value="publish">Publish</button>
+        </form>
+
+        <script>
+            function handleMultiSubmit(event) {
+                event.preventDefault();
+                const action = event.submitter.value;
+                console.log('Action:', action);
+            }
+        </script>
+    </section>
+
+    <!-- Test 12: Form with only disabled submit buttons (WARNING) -->
+    <section class="warning">
+        <h2>Test 12: Multiple Submit Buttons, All Disabled (WARNING)</h2>
+        <!-- ❌ ISSUE: form-submit-button-disabled (warning) -->
+        <form id="all-disabled-form">
+            <label>Email: <input type="email" name="email"></label>
+            <button type="submit" disabled>Save</button>
+            <button type="submit" disabled>Publish</button>
+        </form>
+    </section>
+
+    <!-- Test 13: Form with progressive enhancement (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 13: Progressive Enhancement (COMPLIANT)</h2>
+        <form onsubmit="enhancedSubmit(event)">
+            <label>Email: <input type="email" name="email" required></label>
+            <button type="submit" id="progressive-submit">Submit</button>
+        </form>
+
+        <script>
+            // Enable submit button only when valid
+            const form = document.querySelector('#progressive-submit').closest('form');
+            const submitBtn = document.getElementById('progressive-submit');
+
+            form.addEventListener('input', () => {
+                submitBtn.disabled = !form.checkValidity();
+            });
+
+            function enhancedSubmit(event) {
+                event.preventDefault();
+                console.log('Enhanced submission');
+            }
+        </script>
+    </section>
+
+    <!-- Test 14: Form with div role="button" (ERROR) -->
+    <section class="error">
+        <h2>Test 14: ARIA Button Instead of Submit (ERROR)</h2>
+        <!-- ❌ ISSUE: form-no-submit-button (error) -->
+        <form id="aria-button-form">
+            <label>Email: <input type="email" name="email"></label>
+            <div role="button" onclick="submitAria()">Submit</div>
+        </form>
+
+        <script>
+            function submitAria() {
+                console.log('ARIA button submission - not accessible!');
+            }
+        </script>
+    </section>
+
+    <!-- Test 15: Enter key prevention on specific field (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 15: Prevent Enter on Textarea Only (COMPLIANT)</h2>
+        <form onsubmit="handleTextareaForm(event)">
+            <label>Name: <input type="text" name="name"></label>
+            <label>Message:
+                <textarea name="message" onkeydown="if (event.key === 'Enter' && !event.shiftKey) event.preventDefault()"></textarea>
+            </label>
+            <button type="submit">Submit</button>
+        </form>
+
+        <script>
+            function handleTextareaForm(event) {
+                event.preventDefault();
+                console.log('Form submitted');
+            }
+        </script>
+    </section>
+
+    <!-- Test 16: Form with keyCode check (WARNING) -->
+    <section class="warning">
+        <h2>Test 16: Prevents Enter via keyCode (WARNING)</h2>
+        <!-- ❌ ISSUE: form-prevents-enter-submission (warning) -->
+        <form onkeypress="if (event.keyCode === 13) event.preventDefault()">
+            <label>Email: <input type="email" name="email"></label>
+            <button type="submit">Submit</button>
+        </form>
+    </section>
+
+    <!-- Test 17: Form inside form (nested, broken) -->
+    <section class="error">
+        <h2>Test 17: Nested Forms (Both Broken)</h2>
+        <!-- ❌ ISSUE: form-no-submit-button (error) x2 -->
+        <form id="outer-form">
+            <label>Outer: <input type="text" name="outer"></label>
+
+            <!-- Invalid HTML: nested form -->
+            <form id="inner-form">
+                <label>Inner: <input type="text" name="inner"></label>
+            </form>
+        </form>
+    </section>
+
+    <!-- Test 18: Form with onSubmit but no button (WARNING) -->
+    <section class="warning">
+        <h2>Test 18: onSubmit Handler, No Visual Submit Button (WARNING)</h2>
+        <!-- Note: Has onSubmit so Enter works, but no visual button -->
+        <!-- Technically works but poor UX, might flag depending on implementation -->
+        <form onsubmit="handleInvisible(event)">
+            <label>Email: <input type="email" name="email"></label>
+            <!-- No visible submit button, but Enter works -->
+        </form>
+
+        <script>
+            function handleInvisible(event) {
+                event.preventDefault();
+                console.log('Invisible submit via Enter only');
+            }
+        </script>
+    </section>
+
+    <!-- Test 19: Search form with proper semantics (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 19: Search Form (COMPLIANT)</h2>
+        <form role="search" onsubmit="handleSearch(event)">
+            <label>Search: <input type="search" name="q"></label>
+            <button type="submit">Search</button>
+        </form>
+
+        <script>
+            function handleSearch(event) {
+                event.preventDefault();
+                console.log('Search submitted');
+            }
+        </script>
+    </section>
+
+    <!-- Test 20: Form with button but wrong type attribute (WARNING) -->
+    <section class="warning">
+        <h2>Test 20: Button With Explicit type="button" (WARNING)</h2>
+        <!-- ❌ ISSUE: form-only-button-type (warning) -->
+        <form>
+            <label>Email: <input type="email" name="email"></label>
+            <button type="button">Submit</button>
+        </form>
+    </section>
+
+    <footer style="margin-top: 40px; padding: 40px; background: #f7fafc;">
+        <h3>Expected Issues Summary (FormSubmissionAnalyzer):</h3>
+        <ul>
+            <li><strong>form-no-submit-button (error):</strong> Tests 1, 14, 17 (3 total - 1 + 1 + 2 nested)</li>
+            <li><strong>form-submit-button-disabled (warning):</strong> Tests 3, 4, 12 (3 total)</li>
+            <li><strong>form-only-button-type (warning):</strong> Tests 5, 20 (2 total)</li>
+            <li><strong>form-click-instead-of-submit (info):</strong> Test 6 (1 total)</li>
+            <li><strong>form-prevents-enter-submission (warning):</strong> Tests 7, 16 (2 total)</li>
+        </ul>
+
+        <p><strong>Total expected issues:</strong></p>
+        <ul>
+            <li>~3 errors (form-no-submit-button)</li>
+            <li>~7 warnings (disabled buttons, wrong type, Enter prevention)</li>
+            <li>~1 info (onClick instead of onSubmit)</li>
+        </ul>
+
+        <p><strong>COMPLIANT examples:</strong> Tests 2, 8, 9, 10, 11, 13, 15, 19 - Should have NO issues detected</p>
+
+        <h3 style="margin-top: 20px;">Why This Matters:</h3>
+        <p><strong>Keyboard users rely on Enter key to submit forms:</strong></p>
+        <ul>
+            <li><strong>No submit button:</strong> Enter key doesn't work, no way to submit via keyboard</li>
+            <li><strong>Disabled submit button:</strong> Enter key disabled, form unusable</li>
+            <li><strong>Wrong button type:</strong> type="button" prevents Enter submission</li>
+            <li><strong>onClick handlers:</strong> Only work via mouse click, not Enter key</li>
+            <li><strong>Enter prevention:</strong> Breaks expected form behavior</li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">Common Mistakes:</h3>
+        <ol>
+            <li><strong>JavaScript-only submission:</strong> onClick on div/button without form onSubmit (Test 14)</li>
+            <li><strong>Wrong button type:</strong> <code>&lt;button type="button"&gt;</code> prevents form submission (Test 5)</li>
+            <li><strong>Disabled until valid:</strong> Submit button starts disabled, never enabled (Test 3)</li>
+            <li><strong>Preventing Enter:</strong> onKeyDown prevents Enter on entire form (Test 7)</li>
+            <li><strong>Missing submit button:</strong> Form with inputs but no way to submit (Test 1)</li>
+        </ol>
+
+        <h3 style="margin-top: 20px;">Proper Patterns:</h3>
+        <ul>
+            <li><strong>Always use onSubmit:</strong> <code>&lt;form onsubmit="handler(event)"&gt;</code></li>
+            <li><strong>Use type="submit":</strong> <code>&lt;button type="submit"&gt;Submit&lt;/button&gt;</code></li>
+            <li><strong>Progressive enhancement:</strong> Enable submit button when form is valid (Test 13)</li>
+            <li><strong>Multiple buttons:</strong> Use name/value attributes to distinguish (Test 11)</li>
+            <li><strong>Search forms:</strong> Use role="search" for semantics (Test 19)</li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">Test Coverage (5 Issue Types):</h3>
+        <ol>
+            <li><strong>form-no-submit-button</strong> - Tests 1, 14, 17</li>
+            <li><strong>form-submit-button-disabled</strong> - Tests 3, 4, 12</li>
+            <li><strong>form-only-button-type</strong> - Tests 5, 20</li>
+            <li><strong>form-click-instead-of-submit</strong> - Test 6</li>
+            <li><strong>form-prevents-enter-submission</strong> - Tests 7, 16</li>
+        </ol>
+
+        <h3 style="margin-top: 20px;">Button Type Defaults:</h3>
+        <table border="1" cellpadding="10" style="border-collapse: collapse; margin-top: 10px;">
+            <thead>
+                <tr>
+                    <th>Element</th>
+                    <th>Default Behavior</th>
+                    <th>Submit Form?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>&lt;button&gt;</code></td>
+                    <td>type="submit" (default)</td>
+                    <td>✅ Yes</td>
+                </tr>
+                <tr>
+                    <td><code>&lt;button type="submit"&gt;</code></td>
+                    <td>Submit form</td>
+                    <td>✅ Yes</td>
+                </tr>
+                <tr>
+                    <td><code>&lt;button type="button"&gt;</code></td>
+                    <td>Do nothing</td>
+                    <td>❌ No</td>
+                </tr>
+                <tr>
+                    <td><code>&lt;input type="submit"&gt;</code></td>
+                    <td>Submit form</td>
+                    <td>✅ Yes</td>
+                </tr>
+                <tr>
+                    <td><code>&lt;input type="button"&gt;</code></td>
+                    <td>Do nothing</td>
+                    <td>❌ No</td>
+                </tr>
+            </tbody>
+        </table>
+    </footer>
+</body>
+</html>

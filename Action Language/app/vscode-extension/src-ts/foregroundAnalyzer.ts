@@ -42,6 +42,7 @@ import { TableAccessibilityAnalyzer } from '../lib/analyzers/TableAccessibilityA
 import { DeprecatedKeyCodeAnalyzer } from '../lib/analyzers/DeprecatedKeyCodeAnalyzer';
 import { AriaStateManagementAnalyzer } from '../lib/analyzers/AriaStateManagementAnalyzer';
 import { NestedInteractiveElementsAnalyzer } from '../lib/analyzers/NestedInteractiveElementsAnalyzer';
+import { FormSubmissionAnalyzer } from '../lib/analyzers/FormSubmissionAnalyzer';
 import { ParadiseCodeActionProvider } from './codeActionProvider';
 
 export class ForegroundAnalyzer {
@@ -91,7 +92,8 @@ export class ForegroundAnalyzer {
       new TableAccessibilityAnalyzer(),
       new DeprecatedKeyCodeAnalyzer(),
       new AriaStateManagementAnalyzer(),
-      new NestedInteractiveElementsAnalyzer()
+      new NestedInteractiveElementsAnalyzer(),
+      new FormSubmissionAnalyzer()
     ];
 
     this.outputChannel.appendLine(`[ForegroundAnalyzer] Initialized with ${this.analyzers.length} analyzers`);
