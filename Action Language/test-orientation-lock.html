@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orientation Lock Test Cases</title>
+    <style>
+        section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+        }
+        .error { border-color: #ef4444; }
+        .warning { border-color: #f59e0b; }
+        .compliant { border-color: #10b981; }
+        .code-example {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Orientation Lock Test Cases (WCAG 1.3.4 Level AA)</h1>
+
+    <!-- Test 1: Screen Orientation API lock (ERROR) -->
+    <section class="error">
+        <h2>Test 1: Screen Orientation API lock() (ERROR)</h2>
+        <p>❌ ISSUE: screen-orientation-lock (error)</p>
+        <div class="code-example">// Locks to portrait orientation
+async function lockToPortrait() {
+    await screen.orientation.lock('portrait');
+}</div>
+        <button onclick="lockToPortrait()">Lock to Portrait (FAILS WCAG)</button>
+        <p>Problem: Using screen.orientation.lock() prevents users from rotating to landscape.</p>
+    </section>
+
+    <!-- Test 2: Legacy lockOrientation (ERROR) -->
+    <section class="error">
+        <h2>Test 2: Legacy screen.lockOrientation() (ERROR)</h2>
+        <p>❌ ISSUE: screen-orientation-lock (error)</p>
+        <div class="code-example">// Legacy API for locking orientation
+function lockToLandscape() {
+    screen.lockOrientation('landscape');
+    // Also: screen.mozLockOrientation, screen.msLockOrientation
+}</div>
+        <button onclick="lockToLandscape()">Lock to Landscape (FAILS WCAG)</button>
+        <p>Problem: Legacy orientation lock methods prevent orientation changes.</p>
+    </section>
+
+    <!-- Test 3: matchMedia with content restriction (WARNING) -->
+    <section class="warning">
+        <h2>Test 3: matchMedia Blocking Content (WARNING)</h2>
+        <p>⚠️ ISSUE: matchmedia-orientation-restriction (warning)</p>
+        <div class="code-example">// Hides content in portrait mode
+function checkOrientation() {
+    if (window.matchMedia('(orientation: portrait)').matches) {
+        document.getElementById('content').style.display = 'none';
+        alert('Please rotate to landscape to view content');
+    }
+}</div>
+        <button onclick="checkOrientation()">Check Orientation (Blocks Content)</button>
+        <p>Problem: Hiding content based on orientation violates WCAG 1.3.4.</p>
+    </section>
+
+    <!-- Test 4: matchMedia disabling functionality (WARNING) -->
+    <section class="warning">
+        <h2>Test 4: matchMedia Disabling Buttons (WARNING)</h2>
+        <p>⚠️ ISSUE: matchmedia-orientation-restriction (warning)</p>
+        <div class="code-example">// Disables buttons in portrait
+function restrictByOrientation() {
+    const button = document.getElementById('action-button');
+    if (window.matchMedia('(orientation: portrait)').matches) {
+        button.disabled = true;
+        button.setAttribute('disabled', 'true');
+    }
+}</div>
+        <button id="action-button" onclick="alert('Action!')">Action Button</button>
+        <button onclick="restrictByOrientation()">Restrict by Orientation</button>
+        <p>Problem: Disabling functionality based on orientation fails WCAG.</p>
+    </section>
+
+    <!-- Test 5: Responsive matchMedia (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 5: Responsive Layout with matchMedia (COMPLIANT)</h2>
+        <div class="code-example">// Adapts layout without blocking content
+function adaptLayout() {
+    const container = document.getElementById('responsive-container');
+    if (window.matchMedia('(orientation: portrait)').matches) {
+        container.classList.add('portrait-layout');
+        container.classList.remove('landscape-layout');
+    } else {
+        container.classList.add('landscape-layout');
+        container.classList.remove('portrait-layout');
+    }
+}</div>
+        <div id="responsive-container" style="padding: 20px; background: #e0f2fe;">
+            <p>This content is accessible in both orientations!</p>
+        </div>
+        <button onclick="adaptLayout()">Adapt Layout (Compliant)</button>
+        <p>Compliant: Changes layout but keeps all content accessible.</p>
+    </section>
+
+    <!-- Test 6: CSS Media Queries (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 6: CSS Media Queries (COMPLIANT)</h2>
+        <style>
+            #css-responsive {
+                background: #fef3c7;
+                padding: 20px;
+            }
+            @media (orientation: portrait) {
+                #css-responsive {
+                    flex-direction: column;
+                    background: #dbeafe;
+                }
+                #css-responsive::before {
+                    content: "Portrait Mode: ";
+                    font-weight: bold;
+                }
+            }
+            @media (orientation: landscape) {
+                #css-responsive {
+                    flex-direction: row;
+                    background: #fef3c7;
+                }
+                #css-responsive::before {
+                    content: "Landscape Mode: ";
+                    font-weight: bold;
+                }
+            }
+        </style>
+        <div id="css-responsive">
+            All content visible in both orientations, just different layouts.
+        </div>
+        <p>Compliant: Pure CSS adaptation without hiding content.</p>
+    </section>
+
+    <!-- Test 7: OrientationChange Event Listener (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 7: orientationchange Event (COMPLIANT)</h2>
+        <div class="code-example">// Listens for orientation change to adapt UI
+window.addEventListener('orientationchange', function() {
+    const angle = screen.orientation?.angle || window.orientation;
+    console.log('Orientation changed to angle:', angle);
+    // Adapt UI, but don't block content
+    updateUIForOrientation();
+});</div>
+        <p id="orientation-info">Current orientation: <span id="current-angle">-</span>°</p>
+        <p>Compliant: Detecting orientation to adapt UI, not to restrict content.</p>
+    </section>
+
+    <!-- Test 8: Essential Use Case - Bank Check Deposit -->
+    <section class="compliant">
+        <h2>Test 8: Essential Use Case - Bank Check (COMPLIANT)</h2>
+        <div class="code-example">// Essential orientation lock for check deposit
+/*
+ * ESSENTIAL USE CASE: Bank check deposit
+ * Reason: Camera must align with check in landscape
+ * Alternative: Web-based deposit that works in any orientation
+ */
+async function startCheckDeposit() {
+    // Document why this is essential
+    console.log('Locking to landscape for check capture');
+
+    // Only lock during capture, unlock after
+    await screen.orientation.lock('landscape');
+
+    // ... capture check photo ...
+
+    // Unlock when done
+    screen.orientation.unlock();
+}</div>
+        <button onclick="alert('Check deposit (essential use case)')">Start Check Deposit</button>
+        <p>Compliant: Documented essential use case with unlock after task.</p>
+    </section>
+
+    <script>
+        // Test 1: Screen orientation lock
+        async function lockToPortrait() {
+            try {
+                if (screen.orientation && screen.orientation.lock) {
+                    await screen.orientation.lock('portrait');
+                    alert('Locked to portrait (this fails WCAG 1.3.4)');
+                } else {
+                    alert('Screen Orientation API not supported');
+                }
+            } catch (e) {
+                alert('Lock failed (may not be in fullscreen): ' + e.message);
+            }
+        }
+
+        // Test 2: Legacy lock
+        function lockToLandscape() {
+            try {
+                if (screen.lockOrientation) {
+                    screen.lockOrientation('landscape');
+                } else if (screen.mozLockOrientation) {
+                    screen.mozLockOrientation('landscape');
+                } else if (screen.msLockOrientation) {
+                    screen.msLockOrientation('landscape');
+                } else {
+                    alert('Legacy orientation lock not supported');
+                }
+            } catch (e) {
+                alert('Lock failed: ' + e.message);
+            }
+        }
+
+        // Test 3: matchMedia blocking content
+        function checkOrientation() {
+            const content = document.getElementById('test3-content');
+            if (!content) {
+                const newContent = document.createElement('div');
+                newContent.id = 'test3-content';
+                newContent.textContent = 'Hidden content';
+                newContent.style.padding = '10px';
+                newContent.style.background = '#fee';
+                document.querySelector('section.warning').appendChild(newContent);
+            }
+
+            if (window.matchMedia('(orientation: portrait)').matches) {
+                document.getElementById('test3-content').style.display = 'none';
+                alert('Content hidden in portrait (FAILS WCAG)');
+            } else {
+                document.getElementById('test3-content').style.display = 'block';
+            }
+        }
+
+        // Test 4: matchMedia disabling
+        function restrictByOrientation() {
+            const button = document.getElementById('action-button');
+            if (window.matchMedia('(orientation: portrait)').matches) {
+                button.disabled = true;
+                alert('Button disabled in portrait (FAILS WCAG)');
+            } else {
+                button.disabled = false;
+            }
+        }
+
+        // Test 5: Responsive layout (compliant)
+        function adaptLayout() {
+            const container = document.getElementById('responsive-container');
+            if (window.matchMedia('(orientation: portrait)').matches) {
+                container.style.flexDirection = 'column';
+                container.style.background = '#dbeafe';
+            } else {
+                container.style.flexDirection = 'row';
+                container.style.background = '#fef3c7';
+            }
+        }
+
+        // Test 7: Update orientation info
+        function updateOrientationInfo() {
+            const angleSpan = document.getElementById('current-angle');
+            if (screen.orientation) {
+                angleSpan.textContent = screen.orientation.angle;
+            } else {
+                angleSpan.textContent = window.orientation || '0';
+            }
+        }
+
+        window.addEventListener('orientationchange', updateOrientationInfo);
+        window.addEventListener('load', updateOrientationInfo);
+
+        // Test 8: Essential use case example
+        async function startCheckDeposit() {
+            try {
+                if (screen.orientation && screen.orientation.lock) {
+                    // Document why this is essential
+                    console.log('Locking to landscape for bank check deposit (essential use case)');
+                    await screen.orientation.lock('landscape');
+
+                    // Simulate check capture
+                    alert('Capturing check in landscape (essential for camera alignment)');
+
+                    // Unlock after task completes
+                    setTimeout(() => {
+                        screen.orientation.unlock();
+                        console.log('Check capture complete, unlocking orientation');
+                    }, 3000);
+                } else {
+                    alert('Screen Orientation API not supported');
+                }
+            } catch (e) {
+                alert('Essential orientation lock failed: ' + e.message);
+            }
+        }
+    </script>
+
+    <footer style="margin-top: 40px; padding: 40px; background: #f7fafc;">
+        <h3>Expected Issues Summary (OrientationLockAnalyzer):</h3>
+
+        <h4>Errors (2):</h4>
+        <ul>
+            <li><strong>screen-orientation-lock (error):</strong> Tests 1, 2 - Uses Screen Orientation API to lock orientation</li>
+        </ul>
+
+        <h4>Warnings (2):</h4>
+        <ul>
+            <li><strong>matchmedia-orientation-restriction (warning):</strong> Tests 3, 4 - JavaScript blocks content/functionality based on orientation</li>
+        </ul>
+
+        <p><strong>Total expected issues:</strong></p>
+        <ul>
+            <li>2 errors (orientation lock API calls)</li>
+            <li>2 warnings (content/functionality restrictions)</li>
+        </ul>
+
+        <p><strong>COMPLIANT examples:</strong> Tests 5, 6, 7, 8 - Responsive design without blocking content</p>
+
+        <h3 style="margin-top: 20px;">WCAG 1.3.4 Orientation Requirements:</h3>
+        <ul>
+            <li><strong>Level AA:</strong> Content must not restrict viewing and operation to a single display orientation (portrait or landscape)</li>
+            <li><strong>Exception:</strong> Unless a specific orientation is essential (very rare)</li>
+            <li><strong>Examples of essential:</strong>
+                <ul>
+                    <li>Bank check deposit (camera must align with check in landscape)</li>
+                    <li>Piano app (keyboard requires horizontal layout)</li>
+                    <li>Signature capture (may need landscape width)</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">Screen Orientation API Methods (Fail WCAG):</h3>
+        <pre style="background: #fee; padding: 15px; border-radius: 4px;"><code>// ❌ These lock orientation (WCAG failure)
+await screen.orientation.lock('portrait');
+await screen.orientation.lock('landscape');
+
+// Legacy methods (also fail)
+screen.lockOrientation('portrait');
+screen.mozLockOrientation('landscape');
+screen.msLockOrientation('portrait-primary');</code></pre>
+
+        <h3 style="margin-top: 20px;">Responsive Design Patterns (Compliant):</h3>
+        <pre style="background: #efe; padding: 15px; border-radius: 4px;"><code>// ✅ Use CSS media queries
+@media (orientation: portrait) {
+  .container { flex-direction: column; }
+}
+
+@media (orientation: landscape) {
+  .container { flex-direction: row; }
+}
+
+// ✅ Adapt layout with JavaScript (don't hide content)
+if (window.matchMedia('(orientation: portrait)').matches) {
+  container.classList.add('portrait-layout');
+} else {
+  container.classList.add('landscape-layout');
+}
+
+// ✅ Listen for orientation changes
+window.addEventListener('orientationchange', () => {
+  updateLayout(); // Adapt, don't block
+});</code></pre>
+
+        <h3 style="margin-top: 20px;">Common Violations:</h3>
+        <ul>
+            <li><strong>Hiding content:</strong> element.style.display = 'none' in one orientation</li>
+            <li><strong>Disabling controls:</strong> button.disabled = true in portrait/landscape</li>
+            <li><strong>Blocking with alerts:</strong> "Please rotate your device to continue"</li>
+            <li><strong>Preventing interactions:</strong> event.preventDefault() based on orientation</li>
+            <li><strong>API locks:</strong> screen.orientation.lock() without essential reason</li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">Why Orientation Lock Fails WCAG:</h3>
+        <ul>
+            <li><strong>User preferences:</strong> Users may mount devices in fixed positions</li>
+            <li><strong>Physical limitations:</strong> Users may not be able to rotate devices</li>
+            <li><strong>Assistive technology:</strong> May work better in specific orientation</li>
+            <li><strong>Device mounting:</strong> Wheelchair mounts, car mounts, bed frames</li>
+            <li><strong>Content accessibility:</strong> All content must be accessible in any orientation</li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">Testing:</h3>
+        <ul>
+            <li>Test your site in both portrait and landscape</li>
+            <li>Verify all content is visible in both orientations</li>
+            <li>Check that all functionality works in both orientations</li>
+            <li>Use browser DevTools device emulation to test rotations</li>
+            <li>Test with actual mobile devices</li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">Note About Screen Orientation API:</h3>
+        <p>The Screen Orientation API requires fullscreen mode to lock orientation. Most locks will fail outside fullscreen. However, the attempt to lock still violates WCAG 1.3.4 unless the use case is truly essential and documented.</p>
+    </footer>
+</body>
+</html>
