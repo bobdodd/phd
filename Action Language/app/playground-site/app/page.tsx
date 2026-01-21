@@ -1896,7 +1896,7 @@ export default function Home() {
                     // Filter issues based on confidence level
                     const filteredIssues = issues.filter(issue => {
                       if (confidenceFilter === 'all') return true;
-                      if (!issue.confidence) return confidenceFilter === 'all'; // Show issues without confidence in 'all'
+                      if (!issue.confidence) return false; // Issues without confidence only show in 'all' mode
 
                       const score = issue.confidence.score;
                       if (confidenceFilter === 'high') return score >= 0.9;
