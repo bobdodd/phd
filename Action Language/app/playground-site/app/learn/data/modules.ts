@@ -1,6 +1,6 @@
 // Module registry for all 65 modules across 8 domains
 
-import { Module } from './types';
+import { Module, Domain } from './types';
 
 export const modules: Module[] = [
   // ========================================
