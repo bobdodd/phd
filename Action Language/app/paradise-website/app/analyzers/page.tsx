@@ -20,14 +20,14 @@ export default function AnalyzersPage() {
         <div className="mb-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="bg-white rounded-xl shadow-lg p-6 text-center border-2 border-paradise-blue/20">
-              <div className="text-4xl font-bold text-paradise-blue mb-2">25</div>
+              <div className="text-4xl font-bold text-paradise-blue mb-2">35</div>
               <div className="text-gray-600 font-medium">Total Analyzers</div>
               <div className="text-xs text-gray-500 mt-1">Behavioral + Structural + Framework</div>
             </div>
             <div className="bg-white rounded-xl shadow-lg p-6 text-center border-2 border-green-500/20">
-              <div className="text-4xl font-bold text-green-600 mb-2">0</div>
-              <div className="text-gray-600 font-medium">False Positives</div>
-              <div className="text-xs text-gray-500 mt-1">With Multi-Model</div>
+              <div className="text-4xl font-bold text-green-600 mb-2">100+</div>
+              <div className="text-gray-600 font-medium">Issue Types</div>
+              <div className="text-xs text-gray-500 mt-1">Comprehensive Coverage</div>
             </div>
             <div className="bg-white rounded-xl shadow-lg p-6 text-center border-2 border-purple-500/20">
               <div className="text-4xl font-bold text-purple-600 mb-2">95</div>
@@ -1016,15 +1016,317 @@ btn.addEventListener('click', handler);
                 <strong>WCAG:</strong> 2.1.1 (Keyboard) | <strong>Impact:</strong> Low - still works but deprecated since 2016, use event.key for modern code
               </div>
             </div>
+
+            {/* AriaStateManagementAnalyzer */}
+            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition-shadow border-l-4 border-orange-500">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold">AriaStateManagementAnalyzer</h3>
+                  <div className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">✓ IMPLEMENTED</div>
+                </div>
+              </div>
+              <p className="text-gray-700 mb-3">
+                Detects ARIA state attributes (aria-expanded, aria-checked, aria-pressed, aria-selected) that are set
+                initially but never updated when state changes. Critical for dynamic widgets like accordions, tabs, and toggles.
+              </p>
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2">
+                <strong>WCAG:</strong> 4.1.2 (Name, Role, Value) | <strong>Issue Types:</strong> 1 (aria-state-static)
+              </div>
+            </div>
+
+            {/* FormSubmissionAnalyzer */}
+            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition-shadow border-l-4 border-orange-500">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold">FormSubmissionAnalyzer</h3>
+                  <div className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">✓ IMPLEMENTED</div>
+                </div>
+              </div>
+              <p className="text-gray-700 mb-3">
+                Detects forms submitted via JavaScript without proper validation, error handling, or success feedback.
+                Ensures forms use native submit buttons and provide accessible feedback for all submission outcomes.
+              </p>
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2">
+                <strong>WCAG:</strong> 3.3.1 (Error Identification), 3.3.3 (Error Suggestion) | <strong>Issue Types:</strong> 4
+              </div>
+            </div>
+
+            {/* KeyboardTrapAnalyzer */}
+            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition-shadow border-l-4 border-orange-500">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold">KeyboardTrapAnalyzer</h3>
+                  <div className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">✓ IMPLEMENTED</div>
+                </div>
+              </div>
+              <p className="text-gray-700 mb-3">
+                Detects potential keyboard traps where Tab key is intercepted without providing an escape mechanism
+                (Escape key or documented exit method). Critical for modals, dialogs, and custom focus management.
+              </p>
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2">
+                <strong>WCAG:</strong> 2.1.2 (No Keyboard Trap) | <strong>Issue Types:</strong> 2 (keyboard-trap, modal-keyboard-trap)
+              </div>
+            </div>
+
+            {/* MouseOnlyClickAnalyzer */}
+            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition-shadow border-l-4 border-orange-500">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold">MouseOnlyClickAnalyzer</h3>
+                  <div className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">✓ IMPLEMENTED</div>
+                </div>
+              </div>
+              <p className="text-gray-700 mb-3">
+                Detects click handlers on non-interactive elements without keyboard equivalents. Ensures all
+                clickable elements respond to Enter and Space keys. Critical for keyboard-only users.
+              </p>
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2">
+                <strong>WCAG:</strong> 2.1.1 (Keyboard) | <strong>Issue Types:</strong> 1 (mouse-only-click)
+              </div>
+            </div>
+
+            {/* NestedInteractiveElementsAnalyzer */}
+            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition-shadow border-l-4 border-orange-500">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold">NestedInteractiveElementsAnalyzer</h3>
+                  <div className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">✓ IMPLEMENTED</div>
+                </div>
+              </div>
+              <p className="text-gray-700 mb-3">
+                Detects nested interactive elements (button inside button, link inside button, etc.) which cause
+                unpredictable behavior and confuse screen readers. Validates proper interactive element nesting.
+              </p>
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2">
+                <strong>WCAG:</strong> 4.1.2 (Name, Role, Value) | <strong>Issue Types:</strong> 3 (nested-buttons, nested-links, nested-interactive)
+              </div>
+            </div>
+
+            {/* OrphanedEventHandlerAnalyzer */}
+            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition-shadow border-l-4 border-orange-500">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold">OrphanedEventHandlerAnalyzer</h3>
+                  <div className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">✓ IMPLEMENTED</div>
+                </div>
+              </div>
+              <p className="text-gray-700 mb-3">
+                Detects event handlers that target elements by selector but the target element doesn't exist in the DOM.
+                Identifies broken interactions and helps prevent runtime errors in accessibility features.
+              </p>
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2">
+                <strong>WCAG:</strong> 4.1.2 (Name, Role, Value) | <strong>Issue Types:</strong> 2 (orphaned-click-handler, orphaned-keyboard-handler)
+              </div>
+            </div>
+
+            {/* WidgetPatternAnalyzer */}
+            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition-shadow border-l-4 border-orange-500">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold">WidgetPatternAnalyzer</h3>
+                  <div className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">✓ IMPLEMENTED</div>
+                </div>
+              </div>
+              <p className="text-gray-700 mb-3">
+                Validates 21 WAI-ARIA widget patterns (tabs, accordion, dialog, combobox, menu, tree, etc.). Checks for
+                required ARIA attributes, keyboard navigation, and focus management. Comprehensive pattern validation
+                for complex interactive widgets.
+              </p>
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2">
+                <strong>WCAG:</strong> 4.1.2 (Name, Role, Value) | <strong>Issue Types:</strong> 21+ widget patterns
+              </div>
+            </div>
           </div>
 
-          <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 mt-8">
-            <h3 className="text-xl font-bold text-blue-900 mb-3">Coming Soon in Phase 4</h3>
-            <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-700">
+          {/* Framework-Specific Analyzers */}
+          <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-6 mt-8">
+            <h3 className="text-xl font-bold text-purple-900 mb-3">Framework-Specific Analyzers</h3>
+            <div className="grid md:grid-cols-3 gap-4 text-sm text-gray-700">
               <div>
-                <strong className="text-blue-900">AccessibleNameAnalyzer</strong>
-                <p className="text-xs mt-1">Computes accessible names, detects generic/missing names</p>
+                <strong className="text-purple-900">AngularReactivityAnalyzer</strong>
+                <p className="text-xs mt-1">Detects Angular change detection issues affecting accessibility updates</p>
               </div>
+              <div>
+                <strong className="text-purple-900">SvelteReactivityAnalyzer</strong>
+                <p className="text-xs mt-1">Validates Svelte reactive statements update ARIA attributes correctly</p>
+              </div>
+              <div>
+                <strong className="text-purple-900">VueReactivityAnalyzer</strong>
+                <p className="text-xs mt-1">Checks Vue reactivity system properly updates accessibility state</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Phase 5: Production Hardening & Edge Cases (Sprint 14) */}
+        <div className="max-w-6xl mx-auto mb-16">
+          <div className="bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl shadow-xl p-8 text-white mb-8">
+            <h2 className="text-4xl font-bold mb-4 text-center">Phase 5: Production Hardening & Edge Cases</h2>
+            <p className="text-lg text-center opacity-95 max-w-3xl mx-auto">
+              Sprint 14 adds 6 advanced analyzers covering color contrast, live regions, autocomplete,
+              orientation locks, timing requirements, and touch target sizes. These analyzers catch
+              production-critical issues often missed by other tools.
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-6">
+            {/* ColorContrastAnalyzer */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 hover:shadow-2xl transition-shadow">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">Sprint 14</div>
+                <h3 className="text-2xl font-bold">ColorContrastAnalyzer</h3>
+              </div>
+              <p className="text-gray-700 mb-3">
+                Calculates color contrast ratios between text and backgrounds. Detects insufficient contrast
+                that makes text difficult to read for users with low vision or color blindness. Validates
+                against WCAG Level AA (4.5:1) and AAA (7:1) requirements.
+              </p>
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2 mb-2">
+                <strong>WCAG:</strong> 1.4.3 (Contrast Minimum) | <strong>Issue Types:</strong> 2
+              </div>
+              <details className="text-sm text-gray-600">
+                <summary className="cursor-pointer font-medium text-green-600 hover:text-green-700">
+                  View Issue Types
+                </summary>
+                <ul className="mt-2 ml-4 space-y-1 list-disc">
+                  <li><strong>insufficient-contrast-ratio</strong> (error/warning) - Text contrast below WCAG thresholds</li>
+                  <li><strong>insufficient-contrast-large-text</strong> (warning) - Large text with insufficient contrast</li>
+                </ul>
+              </details>
+            </div>
+
+            {/* LiveRegionAnalyzer */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 hover:shadow-2xl transition-shadow">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">Sprint 14</div>
+                <h3 className="text-2xl font-bold">LiveRegionAnalyzer</h3>
+              </div>
+              <p className="text-gray-700 mb-3">
+                Detects ARIA live regions that are never updated, dynamic content updates without live regions,
+                incorrect politeness levels, and excessive update frequency. Critical for status messages,
+                notifications, and dynamic content announcements.
+              </p>
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2 mb-2">
+                <strong>WCAG:</strong> 4.1.3 (Status Messages) | <strong>Issue Types:</strong> 5
+              </div>
+              <details className="text-sm text-gray-600">
+                <summary className="cursor-pointer font-medium text-green-600 hover:text-green-700">
+                  View Issue Types
+                </summary>
+                <ul className="mt-2 ml-4 space-y-1 list-disc">
+                  <li><strong>live-region-never-updated</strong> (warning) - aria-live set but content never changes</li>
+                  <li><strong>updates-without-live-region</strong> (warning) - Dynamic updates not in live region</li>
+                  <li><strong>incorrect-politeness</strong> (info) - Wrong aria-live politeness level</li>
+                  <li><strong>redundant-role-alert</strong> (info) - Using both role="alert" and aria-live</li>
+                  <li><strong>invalid-live-region-role</strong> (error) - Invalid role for live region</li>
+                </ul>
+              </details>
+            </div>
+
+            {/* AutocompleteAnalyzer */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 hover:shadow-2xl transition-shadow">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">Sprint 14</div>
+                <h3 className="text-2xl font-bold">AutocompleteAnalyzer</h3>
+              </div>
+              <p className="text-gray-700 mb-3">
+                Detects missing or incorrect autocomplete attributes on form inputs. Validates against 53
+                autocomplete tokens from HTML spec. Critical for form usability, especially on mobile devices
+                and with assistive technologies. Enables password managers and autofill features.
+              </p>
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2 mb-2">
+                <strong>WCAG:</strong> 1.3.5 (Identify Input Purpose) | <strong>Issue Types:</strong> 3
+              </div>
+              <details className="text-sm text-gray-600">
+                <summary className="cursor-pointer font-medium text-green-600 hover:text-green-700">
+                  View Issue Types
+                </summary>
+                <ul className="mt-2 ml-4 space-y-1 list-disc">
+                  <li><strong>missing-autocomplete</strong> (warning) - Input collects personal data without autocomplete</li>
+                  <li><strong>invalid-autocomplete-value</strong> (error) - Invalid autocomplete token used</li>
+                  <li><strong>autocomplete-off-discouraged</strong> (info) - autocomplete="off" on personal data fields</li>
+                </ul>
+              </details>
+            </div>
+
+            {/* OrientationLockAnalyzer */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 hover:shadow-2xl transition-shadow">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">Sprint 14</div>
+                <h3 className="text-2xl font-bold">OrientationLockAnalyzer</h3>
+              </div>
+              <p className="text-gray-700 mb-3">
+                Detects Screen Orientation API usage that locks device orientation, preventing users from
+                viewing content in their preferred orientation. Catches matchMedia-based content blocking.
+                Essential for mobile accessibility and users with mounted devices.
+              </p>
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2 mb-2">
+                <strong>WCAG:</strong> 1.3.4 (Orientation) | <strong>Issue Types:</strong> 3
+              </div>
+              <details className="text-sm text-gray-600">
+                <summary className="cursor-pointer font-medium text-green-600 hover:text-green-700">
+                  View Issue Types
+                </summary>
+                <ul className="mt-2 ml-4 space-y-1 list-disc">
+                  <li><strong>screen-orientation-lock</strong> (error) - Uses Screen Orientation API to lock</li>
+                  <li><strong>matchmedia-orientation-restriction</strong> (warning) - JavaScript blocks content by orientation</li>
+                  <li><strong>css-orientation-lock</strong> (planned) - CSS hides content in one orientation</li>
+                </ul>
+              </details>
+            </div>
+
+            {/* TimeoutAnalyzer */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 hover:shadow-2xl transition-shadow">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">Sprint 14</div>
+                <h3 className="text-2xl font-bold">TimeoutAnalyzer</h3>
+              </div>
+              <p className="text-gray-700 mb-3">
+                Detects setTimeout/setInterval usage that creates time limits without user control. Identifies
+                session timeouts, automatic redirects, countdown timers without extension mechanisms. Validates
+                against WCAG 20-hour threshold. Critical for users who need more time to complete tasks.
+              </p>
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2 mb-2">
+                <strong>WCAG:</strong> 2.2.1 (Timing Adjustable) | <strong>Issue Types:</strong> 4
+              </div>
+              <details className="text-sm text-gray-600">
+                <summary className="cursor-pointer font-medium text-green-600 hover:text-green-700">
+                  View Issue Types
+                </summary>
+                <ul className="mt-2 ml-4 space-y-1 list-disc">
+                  <li><strong>session-timeout-no-warning</strong> (error/warning) - Session expires without warning</li>
+                  <li><strong>automatic-redirect-no-control</strong> (warning) - Redirect without user control</li>
+                  <li><strong>countdown-timer-no-extension</strong> (warning) - Timer without extension ability</li>
+                  <li><strong>inactivity-timeout-too-short</strong> (info) - Inactivity timeout under 20 hours</li>
+                </ul>
+              </details>
+            </div>
+
+            {/* PointerTargetAnalyzer */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 hover:shadow-2xl transition-shadow">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">Sprint 14</div>
+                <h3 className="text-2xl font-bold">PointerTargetAnalyzer</h3>
+              </div>
+              <p className="text-gray-700 mb-3">
+                Detects interactive elements with insufficient touch target size. Validates against WCAG Level AA
+                (24×24px) and AAA (44×44px) requirements. Checks spacing between adjacent targets. Critical for
+                mobile users and those with motor disabilities, tremors, or limited dexterity.
+              </p>
+              <div className="text-sm text-gray-600 bg-gray-50 rounded p-2 mb-2">
+                <strong>WCAG:</strong> 2.5.5 (Level AAA), 2.5.8 (Level AA) | <strong>Issue Types:</strong> 3
+              </div>
+              <details className="text-sm text-gray-600">
+                <summary className="cursor-pointer font-medium text-green-600 hover:text-green-700">
+                  View Issue Types
+                </summary>
+                <ul className="mt-2 ml-4 space-y-1 list-disc">
+                  <li><strong>touch-target-too-small</strong> (error/warning/info) - Target smaller than 24×24px or 44×44px</li>
+                  <li><strong>adjacent-targets-too-close</strong> (warning) - Interactive elements without spacing</li>
+                  <li><strong>inline-link-insufficient-target</strong> (info) - Inline links without adequate spacing</li>
+                </ul>
+              </details>
             </div>
           </div>
         </div>
