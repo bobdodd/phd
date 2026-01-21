@@ -380,7 +380,7 @@ export abstract class BaseAnalyzer {
     if (bodyRequiredIssues.has(issueType)) {
       if (!docContext.hasBodyTag) {
         return {
-          score: 0.6,
+          score: 0.5,
           reason: 'Complete <body> structure required for accurate detection',
         };
       }

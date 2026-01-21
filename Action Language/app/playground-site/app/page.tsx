@@ -45,6 +45,7 @@ import { AutocompleteAnalyzer } from '../../../src/analyzers/AutocompleteAnalyze
 import { OrientationLockAnalyzer } from '../../../src/analyzers/OrientationLockAnalyzer';
 import { TimeoutAnalyzer } from '../../../src/analyzers/TimeoutAnalyzer';
 import { PointerTargetAnalyzer } from '../../../src/analyzers/PointerTargetAnalyzer';
+import { LanguageAttributeAnalyzer } from '../../../src/analyzers/LanguageAttributeAnalyzer';
 import { ActionLanguageModelImpl } from '../../../src/models/ActionLanguageModel';
 import { HTMLParser } from '../../../src/parsers/HTMLParser';
 import { DocumentModel } from '../../../src/models/DocumentModel';
@@ -187,6 +188,9 @@ export default function Home() {
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [previewSRInitialState, setPreviewSRInitialState] = useState(false);
   const [previewSwitchInitialState, setPreviewSwitchInitialState] = useState(false);
+
+  // Filter state
+  const [confidenceFilter, setConfidenceFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all');
 
   // Save/Load state
   const [savedProjects, setSavedProjects] = useState<{ key: string; metadata?: PlaygroundFiles['metadata'] }[]>([]);
@@ -1820,6 +1824,55 @@ export default function Home() {
                 lowConfidenceCount={issues.filter(i => i.confidence && i.confidence.score < 0.6).length}
               />
 
+              {/* Confidence Filter */}
+              {issues.length > 0 && (
+                <div className="mb-4 flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-300">
+                  <span className="text-sm font-medium text-gray-700">Filter by confidence:</span>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setConfidenceFilter('all')}
+                      className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                        confidenceFilter === 'all'
+                          ? 'bg-gray-800 text-white'
+                          : 'bg-white text-gray-700 hover:bg-gray-200 border border-gray-300'
+                      }`}
+                    >
+                      All ({issues.length})
+                    </button>
+                    <button
+                      onClick={() => setConfidenceFilter('high')}
+                      className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                        confidenceFilter === 'high'
+                          ? 'bg-green-600 text-white'
+                          : 'bg-white text-green-700 hover:bg-green-50 border border-green-300'
+                      }`}
+                    >
+                      High ({issues.filter(i => i.confidence && i.confidence.score >= 0.9).length})
+                    </button>
+                    <button
+                      onClick={() => setConfidenceFilter('medium')}
+                      className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                        confidenceFilter === 'medium'
+                          ? 'bg-yellow-600 text-white'
+                          : 'bg-white text-yellow-700 hover:bg-yellow-50 border border-yellow-300'
+                      }`}
+                    >
+                      Medium ({issues.filter(i => i.confidence && i.confidence.score >= 0.6 && i.confidence.score < 0.9).length})
+                    </button>
+                    <button
+                      onClick={() => setConfidenceFilter('low')}
+                      className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                        confidenceFilter === 'low'
+                          ? 'bg-orange-600 text-white'
+                          : 'bg-white text-orange-700 hover:bg-orange-50 border border-orange-300'
+                      }`}
+                    >
+                      Low ({issues.filter(i => i.confidence && i.confidence.score < 0.6).length})
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {issues.length === 0 ? (
                 <div className="text-center py-8">
                   <div className="text-6xl mb-4" aria-hidden="true">
@@ -1831,23 +1884,50 @@ export default function Home() {
                 </div>
               ) : (
                 <div>
-                  <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4" role="alert">
-                    <div className="flex items-center">
-                      <span className="text-2xl mr-3" aria-hidden="true">⚠️</span>
-                      <div>
-                        <p className="font-semibold text-red-900">{issues.length} Issue{issues.length !== 1 ? 's' : ''} Found</p>
-                        <p className="text-sm text-red-700">Click each issue to highlight in code</p>
-                      </div>
-                    </div>
-                  </div>
+                  {(() => {
+                    // Filter issues based on confidence level
+                    const filteredIssues = issues.filter(issue => {
+                      if (confidenceFilter === 'all') return true;
+                      if (!issue.confidence) return confidenceFilter === 'all'; // Show issues without confidence in 'all'
 
-                  {/* Real issues */}
-                  <div className="space-y-3 max-h-[600px] overflow-y-auto">
-                    {issues.map((issue, index) => (
+                      const score = issue.confidence.score;
+                      if (confidenceFilter === 'high') return score >= 0.9;
+                      if (confidenceFilter === 'medium') return score >= 0.6 && score < 0.9;
+                      if (confidenceFilter === 'low') return score < 0.6;
+                      return true;
+                    });
+
+                    return (
+                      <>
+                        <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4" role="alert">
+                          <div className="flex items-center">
+                            <span className="text-2xl mr-3" aria-hidden="true">⚠️</span>
+                            <div>
+                              <p className="font-semibold text-red-900">
+                                {filteredIssues.length} Issue{filteredIssues.length !== 1 ? 's' : ''}
+                                {confidenceFilter !== 'all' && ` (${confidenceFilter} confidence)`}
+                              </p>
+                              <p className="text-sm text-red-700">Click each issue to highlight in code</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {filteredIssues.length === 0 ? (
+                          <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-300">
+                            <p className="text-gray-600">
+                              No {confidenceFilter !== 'all' ? `${confidenceFilter} confidence ` : ''}issues to display.
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                            {filteredIssues.map((issue, index) => {
+                              // Find original index in unfiltered array for proper selection handling
+                              const originalIndex = issues.indexOf(issue);
+                              return (
                       <div
-                        key={index}
+                        key={originalIndex}
                         className={`border-l-4 p-4 rounded cursor-pointer transition-all ${
-                          selectedIssueIndex === index
+                          selectedIssueIndex === originalIndex
                             ? 'border-yellow-500 bg-yellow-100'
                             : issue.severity === 'error'
                             ? 'border-red-500 bg-red-50 hover:bg-red-100'
@@ -1856,7 +1936,7 @@ export default function Home() {
                             : 'border-blue-500 bg-blue-50 hover:bg-blue-100'
                         }`}
                         onClick={() => {
-                          setSelectedIssueIndex(index);
+                          setSelectedIssueIndex(originalIndex);
 
                           // Switch to the correct tab based on issue location
                           const loc = issue.location || '';
@@ -1881,7 +1961,7 @@ export default function Home() {
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className={`font-semibold ${
-                              selectedIssueIndex === index
+                              selectedIssueIndex === originalIndex
                                 ? 'text-yellow-900'
                                 : issue.severity === 'error'
                                 ? 'text-red-900'
@@ -1949,8 +2029,13 @@ export default function Home() {
                           </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    );
+                  })}
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               )}
 
