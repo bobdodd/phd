@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Region Test Cases</title>
+    <style>
+        section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+        }
+        .error { border-color: #ef4444; }
+        .warning { border-color: #f59e0b; }
+        .compliant { border-color: #10b981; }
+        .status-box {
+            padding: 10px;
+            margin: 10px 0;
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>ARIA Live Region Test Cases (WCAG 4.1.3 Level AA)</h1>
+
+    <!-- Test 1: Live region without updates (WARNING) -->
+    <section class="warning">
+        <h2>Test 1: Live Region Without Updates (WARNING)</h2>
+        <!-- ⚠️ ISSUE: live-region-without-updates (warning) -->
+        <div id="static-status" aria-live="polite" role="status">
+            This text never changes but has aria-live="polite"
+        </div>
+        <p>Problem: aria-live suggests content will update, but no JavaScript updates this element.</p>
+    </section>
+
+    <!-- Test 2: DOM updates without live region (ERROR) -->
+    <section class="error">
+        <h2>Test 2: DOM Updates Without Live Region (ERROR)</h2>
+        <!-- ❌ ISSUE: updates-without-live-region (error) -->
+        <div id="update-no-live" class="status-box">
+            Initial message
+        </div>
+        <button onclick="updateWithoutLive()">Update (No Announcement)</button>
+        <p>Problem: textContent updated but no aria-live, so screen readers don't announce.</p>
+    </section>
+
+    <!-- Test 3: Invalid aria-live value (ERROR) -->
+    <section class="error">
+        <h2>Test 3: Invalid aria-live Value (ERROR)</h2>
+        <!-- ❌ ISSUE: invalid-live-region-value (error) -->
+        <div id="invalid-live" aria-live="sometimes" role="status">
+            Status message
+        </div>
+        <p>Problem: "sometimes" is not a valid aria-live value (must be: polite, assertive, or off).</p>
+    </section>
+
+    <!-- Test 4: Too many assertive regions (WARNING) -->
+    <section class="warning">
+        <h2>Test 4: Assertive Overuse (WARNING)</h2>
+        <p>Multiple assertive regions detected - interrupts user too often.</p>
+        <!-- ⚠️ ISSUE: assertive-overuse (warning) - 3 assertive regions -->
+        <div id="alert1" aria-live="assertive" role="alert">
+            Error notification 1
+        </div>
+        <div id="alert2" aria-live="assertive" role="alert">
+            Error notification 2
+        </div>
+        <div id="alert3" aria-live="assertive" role="alert">
+            Error notification 3
+        </div>
+        <p>Problem: Too many assertive regions. Use polite for most messages.</p>
+    </section>
+
+    <!-- Test 5: Live region without label (WARNING) -->
+    <section class="warning">
+        <h2>Test 5: Live Region Without Label (WARNING)</h2>
+        <!-- ⚠️ ISSUE: live-region-label-missing (warning) -->
+        <div id="unlabeled-live" aria-live="polite">
+            Status update without context
+        </div>
+        <p>Problem: No role or aria-label - user doesn't know what type of region this is.</p>
+    </section>
+
+    <!-- Test 6: Proper status region with updates (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 6: Proper Status Region With Updates (COMPLIANT)</h2>
+        <div id="proper-status" aria-live="polite" role="status">
+            Ready
+        </div>
+        <button onclick="updateProperStatus()">Update Status</button>
+        <p>Compliant: Has aria-live, role, and JavaScript updates the content.</p>
+    </section>
+
+    <!-- Test 7: Alert role (implicit assertive) (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 7: Alert Role - Implicit Assertive (COMPLIANT)</h2>
+        <div id="alert-implicit" role="alert">
+            <!-- Alert role has implicit aria-live="assertive" -->
+            Error: Form submission failed
+        </div>
+        <button onclick="updateAlert()">Trigger Alert</button>
+        <p>Compliant: role="alert" has implicit aria-live="assertive".</p>
+    </section>
+
+    <!-- Test 8: Status role (implicit polite) (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 8: Status Role - Implicit Polite (COMPLIANT)</h2>
+        <div id="status-implicit" role="status">
+            <!-- Status role has implicit aria-live="polite" -->
+            3 items in cart
+        </div>
+        <button onclick="updateStatus()">Add Item</button>
+        <p>Compliant: role="status" has implicit aria-live="polite".</p>
+    </section>
+
+    <!-- Test 9: aria-live="off" (COMPLIANT - disabled) -->
+    <section class="compliant">
+        <h2>Test 9: aria-live="off" - Explicitly Disabled (COMPLIANT)</h2>
+        <div id="live-off" aria-live="off" role="status">
+            This region does not announce updates (aria-live="off")
+        </div>
+        <button onclick="updateLiveOff()">Update (Silent)</button>
+        <p>Compliant: aria-live="off" explicitly disables announcements (valid).</p>
+    </section>
+
+    <!-- Test 10: Nested live region with proper updates (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 10: Nested Live Region (COMPLIANT)</h2>
+        <div aria-live="polite" role="status" aria-label="Notifications">
+            <div id="notification-area">
+                No new notifications
+            </div>
+        </div>
+        <button onclick="updateNotification()">New Notification</button>
+        <p>Compliant: Parent has aria-live, child is updated by JavaScript.</p>
+    </section>
+
+    <!-- Test 11: Log role (implicit polite) (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 11: Log Role - Chat Messages (COMPLIANT)</h2>
+        <div id="chat-log" role="log" aria-label="Chat messages">
+            <!-- Log role has implicit aria-live="polite" -->
+            <div>User1: Hello</div>
+        </div>
+        <button onclick="addChatMessage()">Add Message</button>
+        <p>Compliant: role="log" for chat/activity logs (implicit polite).</p>
+    </section>
+
+    <!-- Test 12: Timer role (implicit off) -->
+    <section class="compliant">
+        <h2>Test 12: Timer Role - Countdown (COMPLIANT)</h2>
+        <div id="countdown" role="timer">
+            <!-- Timer role has implicit aria-live="off" -->
+            10:00 remaining
+        </div>
+        <button onclick="startTimer()">Start Timer</button>
+        <p>Compliant: role="timer" for countdown displays (implicit off - no constant announcements).</p>
+    </section>
+
+    <!-- Test 13: Multiple polite regions (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 13: Multiple Polite Regions (COMPLIANT)</h2>
+        <div id="form-status" aria-live="polite" role="status" aria-label="Form status">
+            All fields valid
+        </div>
+        <div id="save-status" aria-live="polite" role="status" aria-label="Save status">
+            Not saved
+        </div>
+        <button onclick="updateMultipleRegions()">Submit Form</button>
+        <p>Compliant: Multiple polite regions are OK (don't interrupt user).</p>
+    </section>
+
+    <!-- Test 14: aria-atomic example (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 14: aria-atomic="true" (COMPLIANT)</h2>
+        <div id="progress-region" aria-live="polite" role="status" aria-atomic="true">
+            <span>Step 1 of 3:</span> <span id="step-name">Choose plan</span>
+        </div>
+        <button onclick="nextStep()">Next Step</button>
+        <p>Compliant: aria-atomic="true" announces entire region, not just changed part.</p>
+    </section>
+
+    <!-- Test 15: Loading spinner with live region (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 15: Loading State Announcements (COMPLIANT)</h2>
+        <div id="loading-status" aria-live="polite" role="status">
+            Ready
+        </div>
+        <div id="spinner" style="display: none;" aria-hidden="true">⏳ Loading...</div>
+        <button onclick="simulateLoad()">Load Data</button>
+        <p>Compliant: Live region announces loading/complete states.</p>
+    </section>
+
+    <script>
+        // Test 2: Update without live region
+        function updateWithoutLive() {
+            document.getElementById('update-no-live').textContent = 'Content updated at ' + new Date().toLocaleTimeString();
+        }
+
+        // Test 6: Proper status update
+        function updateProperStatus() {
+            const status = document.getElementById('proper-status');
+            status.textContent = 'Updated at ' + new Date().toLocaleTimeString();
+        }
+
+        // Test 7: Update alert
+        function updateAlert() {
+            const alert = document.getElementById('alert-implicit');
+            alert.textContent = 'New error: Connection timeout at ' + new Date().toLocaleTimeString();
+        }
+
+        // Test 8: Update status
+        let itemCount = 3;
+        function updateStatus() {
+            itemCount++;
+            document.getElementById('status-implicit').textContent = itemCount + ' items in cart';
+        }
+
+        // Test 9: Update live="off"
+        function updateLiveOff() {
+            document.getElementById('live-off').textContent = 'Silently updated at ' + new Date().toLocaleTimeString();
+        }
+
+        // Test 10: Update notification
+        function updateNotification() {
+            document.getElementById('notification-area').textContent = 'New message received at ' + new Date().toLocaleTimeString();
+        }
+
+        // Test 11: Add chat message
+        let msgCount = 1;
+        function addChatMessage() {
+            msgCount++;
+            const log = document.getElementById('chat-log');
+            const newMsg = document.createElement('div');
+            newMsg.textContent = 'User' + msgCount + ': Message ' + msgCount;
+            log.appendChild(newMsg);
+        }
+
+        // Test 12: Start timer
+        let seconds = 600;
+        function startTimer() {
+            const timer = document.getElementById('countdown');
+            const interval = setInterval(() => {
+                seconds--;
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                timer.textContent = mins + ':' + (secs < 10 ? '0' : '') + secs + ' remaining';
+                if (seconds <= 0) clearInterval(interval);
+            }, 1000);
+        }
+
+        // Test 13: Update multiple regions
+        function updateMultipleRegions() {
+            document.getElementById('form-status').textContent = 'Form submitted successfully';
+            setTimeout(() => {
+                document.getElementById('save-status').textContent = 'Saved at ' + new Date().toLocaleTimeString();
+            }, 1000);
+        }
+
+        // Test 14: Next step
+        let currentStep = 1;
+        const steps = ['Choose plan', 'Enter payment', 'Confirm'];
+        function nextStep() {
+            currentStep = (currentStep % 3) + 1;
+            document.getElementById('step-name').textContent = steps[currentStep - 1];
+            document.querySelector('#progress-region span:first-child').textContent = 'Step ' + currentStep + ' of 3:';
+        }
+
+        // Test 15: Simulate loading
+        function simulateLoad() {
+            const status = document.getElementById('loading-status');
+            const spinner = document.getElementById('spinner');
+
+            status.textContent = 'Loading data...';
+            spinner.style.display = 'inline';
+
+            setTimeout(() => {
+                status.textContent = 'Data loaded successfully';
+                spinner.style.display = 'none';
+            }, 2000);
+        }
+    </script>
+
+    <footer style="margin-top: 40px; padding: 40px; background: #f7fafc;">
+        <h3>Expected Issues Summary (LiveRegionAnalyzer):</h3>
+
+        <h4>Errors (3):</h4>
+        <ul>
+            <li><strong>updates-without-live-region (error):</strong> Test 2 - DOM updated but no aria-live</li>
+            <li><strong>invalid-live-region-value (error):</strong> Test 3 - aria-live="sometimes" is invalid</li>
+        </ul>
+
+        <h4>Warnings (3):</h4>
+        <ul>
+            <li><strong>live-region-without-updates (warning):</strong> Test 1 - aria-live but no JS updates</li>
+            <li><strong>assertive-overuse (warning):</strong> Test 4 - 3 assertive regions (too many)</li>
+            <li><strong>live-region-label-missing (warning):</strong> Test 5 - No role or aria-label</li>
+        </ul>
+
+        <p><strong>Total expected issues:</strong></p>
+        <ul>
+            <li>2 errors (actual ARIA live region violations)</li>
+            <li>3 warnings (best practice violations)</li>
+        </ul>
+
+        <p><strong>COMPLIANT examples:</strong> Tests 6-15 - No issues detected</p>
+
+        <h3 style="margin-top: 20px;">ARIA Live Region Best Practices:</h3>
+        <table border="1" cellpadding="10" style="border-collapse: collapse; margin-top: 10px;">
+            <thead>
+                <tr>
+                    <th>Value</th>
+                    <th>When to Use</th>
+                    <th>Behavior</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>polite</td>
+                    <td>Status messages, notifications, non-critical updates</td>
+                    <td>Announces when user is idle</td>
+                </tr>
+                <tr>
+                    <td>assertive</td>
+                    <td>Errors, alerts, critical time-sensitive info</td>
+                    <td>Interrupts immediately (use sparingly!)</td>
+                </tr>
+                <tr>
+                    <td>off</td>
+                    <td>Disable announcements (default)</td>
+                    <td>No announcements</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3 style="margin-top: 20px;">Implicit Live Region Roles:</h3>
+        <ul>
+            <li><strong>role="status":</strong> Implicit aria-live="polite" - for status messages</li>
+            <li><strong>role="alert":</strong> Implicit aria-live="assertive" - for alerts/errors</li>
+            <li><strong>role="log":</strong> Implicit aria-live="polite" - for chat/activity logs</li>
+            <li><strong>role="timer":</strong> Implicit aria-live="off" - for countdown displays</li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">Common Patterns:</h3>
+        <pre style="background: #f0f0f0; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>&lt;!-- Status messages (form validation, save confirmation) --&gt;
+&lt;div role="status" aria-live="polite" aria-atomic="true"&gt;
+  Form saved successfully
+&lt;/div&gt;
+
+&lt;!-- Errors/alerts (immediate attention needed) --&gt;
+&lt;div role="alert" aria-live="assertive"&gt;
+  Error: Payment failed
+&lt;/div&gt;
+
+&lt;!-- Loading states --&gt;
+&lt;div role="status" aria-live="polite" aria-busy="true"&gt;
+  Loading...
+&lt;/div&gt;
+
+&lt;!-- Chat/activity logs --&gt;
+&lt;div role="log" aria-label="Chat messages"&gt;
+  &lt;!-- New messages appended here --&gt;
+&lt;/div&gt;</code></pre>
+
+        <h3 style="margin-top: 20px;">Testing Live Regions:</h3>
+        <ul>
+            <li><strong>NVDA (Windows):</strong> Enable "Report dynamic content changes" in settings</li>
+            <li><strong>JAWS (Windows):</strong> Live regions announced by default</li>
+            <li><strong>VoiceOver (macOS):</strong> Use Safari, announcements happen automatically</li>
+            <li><strong>Browser DevTools:</strong> Use Accessibility Inspector to verify aria-live attributes</li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">Common Mistakes:</h3>
+        <ul>
+            <li><strong>Setting aria-live on static content</strong> - Only use when content will change</li>
+            <li><strong>Overusing assertive</strong> - Interrupts user constantly, very annoying</li>
+            <li><strong>Forgetting aria-atomic</strong> - May only announce changed part, not full context</li>
+            <li><strong>No accessible label</strong> - User doesn't know what region changed</li>
+            <li><strong>Updates too frequent</strong> - Overwhelming for screen reader users (throttle updates)</li>
+        </ul>
+    </footer>
+</body>
+</html>

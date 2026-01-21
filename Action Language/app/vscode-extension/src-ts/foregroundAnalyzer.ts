@@ -44,6 +44,7 @@ import { AriaStateManagementAnalyzer } from '../lib/analyzers/AriaStateManagemen
 import { NestedInteractiveElementsAnalyzer } from '../lib/analyzers/NestedInteractiveElementsAnalyzer';
 import { FormSubmissionAnalyzer } from '../lib/analyzers/FormSubmissionAnalyzer';
 import { ColorContrastAnalyzer } from '../lib/analyzers/ColorContrastAnalyzer';
+import { LiveRegionAnalyzer } from '../lib/analyzers/LiveRegionAnalyzer';
 import { ParadiseCodeActionProvider } from './codeActionProvider';
 
 export class ForegroundAnalyzer {
@@ -95,7 +96,8 @@ export class ForegroundAnalyzer {
       new AriaStateManagementAnalyzer(),
       new NestedInteractiveElementsAnalyzer(),
       new FormSubmissionAnalyzer(),
-      new ColorContrastAnalyzer()
+      new ColorContrastAnalyzer(),
+      new LiveRegionAnalyzer()
     ];
 
     this.outputChannel.appendLine(`[ForegroundAnalyzer] Initialized with ${this.analyzers.length} analyzers`);
