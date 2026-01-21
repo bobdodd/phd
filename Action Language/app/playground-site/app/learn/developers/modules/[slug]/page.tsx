@@ -14,8 +14,9 @@ const moduleContentMap: Record<string, React.ComponentType> = {
   'auditory-disabilities': AuditoryDisabilities,
 };
 
-export default function ModulePage({ params }: { params: { slug: string } }) {
-  const module = getModuleBySlug(params.slug);
+export default async function ModulePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const module = getModuleBySlug(slug);
 
   if (!module) {
     notFound();
@@ -27,7 +28,7 @@ export default function ModulePage({ params }: { params: { slug: string } }) {
   const nextModule = currentIndex < modules.length - 1 ? modules[currentIndex + 1] : undefined;
 
   // Get the content component for this module
-  const ContentComponent = moduleContentMap[params.slug];
+  const ContentComponent = moduleContentMap[slug];
 
   if (!ContentComponent) {
     return (
