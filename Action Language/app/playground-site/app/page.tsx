@@ -43,6 +43,7 @@ import { ColorContrastAnalyzer } from '../../../src/analyzers/ColorContrastAnaly
 import { LiveRegionAnalyzer } from '../../../src/analyzers/LiveRegionAnalyzer';
 import { AutocompleteAnalyzer } from '../../../src/analyzers/AutocompleteAnalyzer';
 import { OrientationLockAnalyzer } from '../../../src/analyzers/OrientationLockAnalyzer';
+import { TimeoutAnalyzer } from '../../../src/analyzers/TimeoutAnalyzer';
 import { ActionLanguageModelImpl } from '../../../src/models/ActionLanguageModel';
 import { HTMLParser } from '../../../src/parsers/HTMLParser';
 import { DocumentModel } from '../../../src/models/DocumentModel';
@@ -997,6 +998,36 @@ export default function Home() {
         });
 
         for (const issue of orientationLockIssues) {
+          detected.push({
+            type: issue.type,
+            severity: issue.severity,
+            wcag: issue.wcagCriteria || [],
+            message: issue.message,
+            location: issue.location?.file || 'JavaScript',
+            line: issue.location?.line,
+            column: issue.location?.column,
+            length: 10,
+            fix: issue.fix ? {
+              description: issue.fix.description,
+              code: issue.fix.code,
+              location: {
+                file: issue.fix.location?.file,
+                line: issue.fix.location?.line,
+                column: issue.fix.location?.column
+              }
+            } : undefined
+          });
+        }
+
+        // TimeoutAnalyzer - WCAG 2.2.1 (Timing Adjustable)
+        const timeoutAnalyzer = new TimeoutAnalyzer();
+        const timeoutIssues = timeoutAnalyzer.analyze({
+          documentModel,
+          actionLanguageModel,
+          scope: 'file'
+        });
+
+        for (const issue of timeoutIssues) {
           detected.push({
             type: issue.type,
             severity: issue.severity,

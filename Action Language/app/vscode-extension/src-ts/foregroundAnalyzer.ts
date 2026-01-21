@@ -47,6 +47,7 @@ import { ColorContrastAnalyzer } from '../lib/analyzers/ColorContrastAnalyzer';
 import { LiveRegionAnalyzer } from '../lib/analyzers/LiveRegionAnalyzer';
 import { AutocompleteAnalyzer } from '../lib/analyzers/AutocompleteAnalyzer';
 import { OrientationLockAnalyzer } from '../lib/analyzers/OrientationLockAnalyzer';
+import { TimeoutAnalyzer } from '../lib/analyzers/TimeoutAnalyzer';
 import { ParadiseCodeActionProvider } from './codeActionProvider';
 
 export class ForegroundAnalyzer {
@@ -101,7 +102,8 @@ export class ForegroundAnalyzer {
       new ColorContrastAnalyzer(),
       new LiveRegionAnalyzer(),
       new AutocompleteAnalyzer(),
-      new OrientationLockAnalyzer()
+      new OrientationLockAnalyzer(),
+      new TimeoutAnalyzer()
     ];
 
     this.outputChannel.appendLine(`[ForegroundAnalyzer] Initialized with ${this.analyzers.length} analyzers`);

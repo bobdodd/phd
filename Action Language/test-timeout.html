@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timeout Test Cases</title>
+    <style>
+        section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+        }
+        .error { border-color: #ef4444; }
+        .warning { border-color: #f59e0b; }
+        .info { border-color: #3b82f6; }
+        .compliant { border-color: #10b981; }
+        .code-example {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Timeout Test Cases (WCAG 2.2.1 Level A)</h1>
+
+    <!-- Test 1: Session timeout without warning (15 min) - ERROR -->
+    <section class="error">
+        <h2>Test 1: Session Timeout Without Warning (15 min) - ERROR</h2>
+        <p>❌ ISSUE: session-timeout-no-warning (error)</p>
+        <div class="code-example">// Session expires after 15 minutes without warning
+setTimeout(function() {
+    sessionStorage.clear();
+    localStorage.removeItem('authToken');
+    window.location.href = '/login?expired=true';
+}, 900000); // 15 minutes</div>
+        <p>Problem: User session expires after 15 minutes with no warning or ability to extend.</p>
+        <p>WCAG Violation: Time limit under 20 hours with no warning mechanism.</p>
+    </section>
+
+    <!-- Test 2: Session timeout with warning (14 min timeout, 1 min warning) - WARNING -->
+    <section class="warning">
+        <h2>Test 2: Session Timeout With Warning (14+1 min) - WARNING</h2>
+        <p>⚠️ ISSUE: session-timeout-no-warning (warning)</p>
+        <div class="code-example">// Warning at 14 minutes, timeout at 15 minutes
+setTimeout(function() {
+    alert('Your session will expire in 1 minute. Continue working?');
+}, 840000); // 14 minutes
+
+setTimeout(function() {
+    sessionStorage.clear();
+    window.location.href = '/login?expired=true';
+}, 900000); // 15 minutes</div>
+        <p>Problem: Warning provides only 1 minute to respond, which may not be enough.</p>
+        <p>Better: Provide at least 20 seconds warning with easy extension mechanism.</p>
+    </section>
+
+    <!-- Test 3: Automatic redirect after short delay (5 seconds) - WARNING -->
+    <section class="warning">
+        <h2>Test 3: Automatic Redirect (5 seconds) - WARNING</h2>
+        <p>⚠️ ISSUE: automatic-redirect-no-control (warning)</p>
+        <div class="code-example">// Redirects to home page after 5 seconds
+setTimeout(function() {
+    window.location.href = '/home';
+}, 5000);
+
+// Alternative forms that also fail:
+// setTimeout(() => location.assign('/home'), 5000);
+// setTimeout(() => location.replace('/home'), 5000);</div>
+        <p>Problem: Automatic redirect gives user no control to stay on page or extend time.</p>
+        <p>Users with disabilities may need more time to read content before redirect.</p>
+    </section>
+
+    <!-- Test 4: Countdown timer without extension (60 seconds) - WARNING -->
+    <section class="warning">
+        <h2>Test 4: Countdown Timer Without Extension (60s) - WARNING</h2>
+        <p>⚠️ ISSUE: countdown-timer-no-extension (warning)</p>
+        <div class="code-example">// Quiz countdown: 60 seconds
+let timeRemaining = 60;
+const countdownInterval = setInterval(function() {
+    timeRemaining--;
+    document.getElementById('countdown').textContent = timeRemaining + ' seconds remaining';
+
+    if (timeRemaining <= 0) {
+        clearInterval(countdownInterval);
+        submitQuiz();
+    }
+}, 1000);</div>
+        <button id="start-countdown">Start 60s Countdown</button>
+        <p id="countdown">60 seconds remaining</p>
+        <p>Problem: Countdown timer with no way to extend time or pause.</p>
+        <p>Users with disabilities may need additional time to complete tasks.</p>
+    </section>
+
+    <!-- Test 5: Inactivity timeout (3 minutes) - INFO -->
+    <section class="info">
+        <h2>Test 5: Inactivity Timeout (3 minutes) - INFO</h2>
+        <p>ℹ️ ISSUE: inactivity-timeout-too-short (info)</p>
+        <div class="code-example">// Logout after 3 minutes of inactivity
+let inactivityTimer;
+
+function resetInactivityTimer() {
+    clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(function() {
+        alert('You have been logged out due to inactivity');
+        window.location.href = '/logout';
+    }, 180000); // 3 minutes
+}
+
+// Reset on user activity
+document.addEventListener('mousemove', resetInactivityTimer);
+document.addEventListener('keypress', resetInactivityTimer);</div>
+        <p>Info: Inactivity timeout under 20 hours. Consider if user data is preserved.</p>
+        <p>If data is lost, provide warning mechanism or increase timeout.</p>
+    </section>
+
+    <!-- Test 6: Session timeout with proper warning and extension (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 6: Session Timeout With Warning & Extension (COMPLIANT)</h2>
+        <div class="code-example">// Session timeout with warning and extension ability
+const SESSION_DURATION = 900000; // 15 minutes
+const WARNING_BEFORE = 120000; // Warn 2 minutes before
+
+let sessionTimeout;
+let warningTimeout;
+
+function startSession() {
+    // Set main timeout
+    sessionTimeout = setTimeout(expireSession, SESSION_DURATION);
+
+    // Set warning timeout
+    warningTimeout = setTimeout(showWarning, SESSION_DURATION - WARNING_BEFORE);
+}
+
+function showWarning() {
+    // Show modal with extend button
+    const extend = confirm('Your session will expire in 2 minutes. Continue?');
+    if (extend) {
+        extendSession();
+    }
+}
+
+function extendSession() {
+    // Clear existing timeouts
+    clearTimeout(sessionTimeout);
+    clearTimeout(warningTimeout);
+
+    // Restart session
+    startSession();
+
+    console.log('Session extended by 15 minutes');
+}
+
+function expireSession() {
+    sessionStorage.clear();
+    window.location.href = '/login?expired=true';
+}
+
+startSession();</div>
+        <button onclick="extendSession()">Extend Session</button>
+        <p>Compliant: Provides 2-minute warning with ability to extend session.</p>
+    </section>
+
+    <!-- Test 7: Redirect with user control (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 7: Redirect With User Control (COMPLIANT)</h2>
+        <div class="code-example">// Redirect that user can control
+<p>You will be redirected in <span id="redirect-countdown">10</span> seconds.</p>
+<button id="redirect-now">Go Now</button>
+<button id="cancel-redirect">Stay on Page</button>
+
+<script>
+let redirectTime = 10;
+let redirectInterval;
+let redirectTimeout;
+
+function startRedirect() {
+    // Update countdown
+    redirectInterval = setInterval(function() {
+        redirectTime--;
+        document.getElementById('redirect-countdown').textContent = redirectTime;
+
+        if (redirectTime <= 0) {
+            clearInterval(redirectInterval);
+        }
+    }, 1000);
+
+    // Set actual redirect
+    redirectTimeout = setTimeout(function() {
+        window.location.href = '/home';
+    }, 10000);
+}
+
+document.getElementById('redirect-now').addEventListener('click', function() {
+    clearTimeout(redirectTimeout);
+    clearInterval(redirectInterval);
+    window.location.href = '/home';
+});
+
+document.getElementById('cancel-redirect').addEventListener('click', function() {
+    clearTimeout(redirectTimeout);
+    clearInterval(redirectInterval);
+    document.getElementById('redirect-countdown').textContent = 'Cancelled';
+});
+
+startRedirect();
+</script></div>
+        <p>You will be redirected in <span id="redirect-countdown">10</span> seconds.</p>
+        <button id="redirect-now">Go Now</button>
+        <button id="cancel-redirect">Stay on Page</button>
+        <p>Compliant: User can cancel, speed up, or let automatic redirect happen.</p>
+    </section>
+
+    <!-- Test 8: Countdown with pause/extend (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 8: Countdown With Pause/Extend (COMPLIANT)</h2>
+        <div class="code-example">// Quiz timer with pause and extension
+let quizTime = 120; // 2 minutes
+let quizInterval;
+let isPaused = false;
+
+function startQuizTimer() {
+    quizInterval = setInterval(function() {
+        if (!isPaused) {
+            quizTime--;
+            document.getElementById('quiz-time').textContent = quizTime + ' seconds';
+
+            if (quizTime <= 0) {
+                clearInterval(quizInterval);
+                alert('Time up!');
+            }
+        }
+    }, 1000);
+}
+
+function pauseQuizTimer() {
+    isPaused = true;
+    document.getElementById('pause-btn').textContent = 'Resume';
+}
+
+function resumeQuizTimer() {
+    isPaused = false;
+    document.getElementById('pause-btn').textContent = 'Pause';
+}
+
+function extendQuizTime() {
+    quizTime += 60; // Add 1 minute
+    document.getElementById('quiz-time').textContent = quizTime + ' seconds';
+}
+
+document.getElementById('pause-btn').addEventListener('click', function() {
+    if (isPaused) {
+        resumeQuizTimer();
+    } else {
+        pauseQuizTimer();
+    }
+});
+
+document.getElementById('extend-btn').addEventListener('click', extendQuizTime);
+
+startQuizTimer();</div>
+        <p id="quiz-time">120 seconds</p>
+        <button id="pause-btn">Pause</button>
+        <button id="extend-btn">Add 1 Minute</button>
+        <p>Compliant: User can pause timer or extend time as needed.</p>
+    </section>
+
+    <!-- Test 9: No timeout at all (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 9: No Timeout (COMPLIANT)</h2>
+        <div class="code-example">// No session timeout
+// User stays logged in indefinitely
+// Data is preserved between sessions
+
+// This is compliant because there is no time limit</div>
+        <p>Compliant: No time limit means no WCAG issue.</p>
+        <p>Best for applications where session persistence is acceptable.</p>
+    </section>
+
+    <!-- Test 10: Long session timeout (24 hours) (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 10: Long Session Timeout (24 hours) (COMPLIANT)</h2>
+        <div class="code-example">// Session expires after 24 hours (exceeds 20-hour WCAG threshold)
+setTimeout(function() {
+    sessionStorage.clear();
+    window.location.href = '/login?expired=true';
+}, 86400000); // 24 hours
+
+// Compliant because it exceeds 20 hours</div>
+        <p>Compliant: Timeout exceeds WCAG 20-hour threshold.</p>
+        <p>No warning needed when timeout is this long.</p>
+    </section>
+
+    <!-- Test 11: Real-time exception (Stock ticker) (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 11: Real-Time Exception (Stock Ticker) (COMPLIANT)</h2>
+        <div class="code-example">// Real-time stock price updates (exception to WCAG 2.2.1)
+setInterval(function() {
+    fetch('/api/stock-prices')
+        .then(response => response.json())
+        .then(data => {
+            updateStockPrices(data);
+        });
+}, 5000); // Update every 5 seconds
+
+function updateStockPrices(data) {
+    // Update UI with latest prices
+    document.getElementById('stock-ticker').innerHTML =
+        data.map(stock => `${stock.symbol}: $${stock.price}`).join(' | ');
+}</div>
+        <div id="stock-ticker">AAPL: $150.00 | GOOGL: $2800.00 | MSFT: $300.00</div>
+        <p>Compliant: Real-time events are essential and exempt from WCAG 2.2.1.</p>
+        <p>Stock prices, auction bids, live scores are real-time exceptions.</p>
+    </section>
+
+    <!-- Test 12: Data auto-save (Not a timeout issue) (COMPLIANT) -->
+    <section class="compliant">
+        <h2>Test 12: Auto-Save (Not a Timeout) (COMPLIANT)</h2>
+        <div class="code-example">// Auto-save draft every 30 seconds
+setInterval(function() {
+    const content = document.getElementById('editor').value;
+    saveDraft(content);
+}, 30000);
+
+function saveDraft(content) {
+    localStorage.setItem('draft', content);
+    console.log('Draft saved');
+}
+
+// This is NOT a timeout because:
+// - No session expiration
+// - No loss of data
+// - No loss of functionality
+// - User not forced to complete within time limit</div>
+        <textarea id="editor" placeholder="Type your content here..."></textarea>
+        <p>Compliant: Auto-save does not create a time limit for user.</p>
+        <p>Data is preserved, no functionality is lost.</p>
+    </section>
+
+    <script>
+        // Test 1: Session timeout without warning (15 min)
+        function test1SessionTimeout() {
+            setTimeout(function() {
+                sessionStorage.clear();
+                localStorage.removeItem('authToken');
+                alert('Session expired! (Test 1 - would redirect to login)');
+            }, 900000); // 15 minutes
+        }
+
+        // Test 2: Session timeout with warning
+        function test2SessionTimeoutWithWarning() {
+            setTimeout(function() {
+                const extend = confirm('Your session will expire in 1 minute. Continue working?');
+                if (extend) {
+                    console.log('Session extended');
+                }
+            }, 840000); // 14 minutes
+
+            setTimeout(function() {
+                alert('Session expired! (Test 2)');
+            }, 900000); // 15 minutes
+        }
+
+        // Test 3: Automatic redirect
+        function test3AutoRedirect() {
+            setTimeout(function() {
+                alert('Would redirect to /home (Test 3)');
+            }, 5000);
+        }
+
+        // Test 4: Countdown timer
+        let countdownRunning = false;
+        document.getElementById('start-countdown')?.addEventListener('click', function() {
+            if (countdownRunning) return;
+            countdownRunning = true;
+
+            let timeRemaining = 60;
+            const countdownInterval = setInterval(function() {
+                timeRemaining--;
+                const el = document.getElementById('countdown');
+                if (el) {
+                    el.textContent = timeRemaining + ' seconds remaining';
+                }
+
+                if (timeRemaining <= 0) {
+                    clearInterval(countdownInterval);
+                    alert('Time up! Quiz submitted. (Test 4)');
+                    countdownRunning = false;
+                }
+            }, 1000);
+        });
+
+        // Test 5: Inactivity timeout
+        function test5InactivityTimeout() {
+            let inactivityTimer;
+
+            function resetInactivityTimer() {
+                clearTimeout(inactivityTimer);
+                inactivityTimer = setTimeout(function() {
+                    alert('Logged out due to inactivity (Test 5)');
+                }, 180000); // 3 minutes
+            }
+
+            document.addEventListener('mousemove', resetInactivityTimer);
+            document.addEventListener('keypress', resetInactivityTimer);
+
+            resetInactivityTimer();
+        }
+
+        // Test 6: Compliant session timeout
+        let sessionTimeout6;
+        let warningTimeout6;
+
+        function startSession6() {
+            sessionTimeout6 = setTimeout(expireSession6, 900000);
+            warningTimeout6 = setTimeout(showWarning6, 780000);
+        }
+
+        function showWarning6() {
+            const extend = confirm('Your session will expire in 2 minutes. Continue?');
+            if (extend) {
+                extendSession6();
+            }
+        }
+
+        function extendSession6() {
+            clearTimeout(sessionTimeout6);
+            clearTimeout(warningTimeout6);
+            startSession6();
+            console.log('Session extended');
+        }
+
+        function expireSession6() {
+            alert('Session expired (Test 6 - compliant with warning)');
+        }
+
+        // Test 7: Redirect with control
+        let redirectTime7 = 10;
+        let redirectInterval7;
+        let redirectTimeout7;
+
+        function startRedirect7() {
+            const countdownEl = document.getElementById('redirect-countdown');
+            if (!countdownEl) return;
+
+            redirectInterval7 = setInterval(function() {
+                redirectTime7--;
+                countdownEl.textContent = redirectTime7;
+
+                if (redirectTime7 <= 0) {
+                    clearInterval(redirectInterval7);
+                }
+            }, 1000);
+
+            redirectTimeout7 = setTimeout(function() {
+                alert('Would redirect to /home (Test 7)');
+            }, 10000);
+        }
+
+        document.getElementById('redirect-now')?.addEventListener('click', function() {
+            clearTimeout(redirectTimeout7);
+            clearInterval(redirectInterval7);
+            alert('Redirecting now (Test 7)');
+        });
+
+        document.getElementById('cancel-redirect')?.addEventListener('click', function() {
+            clearTimeout(redirectTimeout7);
+            clearInterval(redirectInterval7);
+            const el = document.getElementById('redirect-countdown');
+            if (el) el.textContent = 'Cancelled';
+        });
+
+        // Test 8: Quiz timer with pause/extend
+        let quizTime8 = 120;
+        let quizInterval8;
+        let isPaused8 = false;
+
+        function startQuizTimer8() {
+            quizInterval8 = setInterval(function() {
+                if (!isPaused8) {
+                    quizTime8--;
+                    const el = document.getElementById('quiz-time');
+                    if (el) el.textContent = quizTime8 + ' seconds';
+
+                    if (quizTime8 <= 0) {
+                        clearInterval(quizInterval8);
+                        alert('Time up! (Test 8)');
+                    }
+                }
+            }, 1000);
+        }
+
+        document.getElementById('pause-btn')?.addEventListener('click', function() {
+            isPaused8 = !isPaused8;
+            this.textContent = isPaused8 ? 'Resume' : 'Pause';
+        });
+
+        document.getElementById('extend-btn')?.addEventListener('click', function() {
+            quizTime8 += 60;
+            const el = document.getElementById('quiz-time');
+            if (el) el.textContent = quizTime8 + ' seconds';
+        });
+
+        // Test 11: Stock ticker
+        function startStockTicker() {
+            setInterval(function() {
+                // Simulate price changes
+                const prices = [
+                    { symbol: 'AAPL', price: (150 + Math.random() * 10).toFixed(2) },
+                    { symbol: 'GOOGL', price: (2800 + Math.random() * 50).toFixed(2) },
+                    { symbol: 'MSFT', price: (300 + Math.random() * 15).toFixed(2) }
+                ];
+
+                const el = document.getElementById('stock-ticker');
+                if (el) {
+                    el.innerHTML = prices.map(s => `${s.symbol}: $${s.price}`).join(' | ');
+                }
+            }, 5000);
+        }
+
+        // Test 12: Auto-save
+        function startAutoSave() {
+            setInterval(function() {
+                const content = document.getElementById('editor')?.value;
+                if (content) {
+                    localStorage.setItem('draft', content);
+                    console.log('Draft saved');
+                }
+            }, 30000);
+        }
+
+        // Initialize compliant examples
+        window.addEventListener('load', function() {
+            // startSession6(); // Uncomment to test
+            // startRedirect7(); // Uncomment to test
+            // startQuizTimer8(); // Uncomment to test
+            // startStockTicker(); // Uncomment to test
+            // startAutoSave(); // Uncomment to test
+        });
+    </script>
+
+    <footer style="margin-top: 40px; padding: 40px; background: #f7fafc;">
+        <h3>Expected Issues Summary (TimeoutAnalyzer):</h3>
+
+        <h4>Errors (1):</h4>
+        <ul>
+            <li><strong>session-timeout-no-warning (error):</strong> Test 1 - Session timeout under 20 hours with no warning mechanism</li>
+        </ul>
+
+        <h4>Warnings (3):</h4>
+        <ul>
+            <li><strong>session-timeout-no-warning (warning):</strong> Test 2 - Session timeout with warning but insufficient time</li>
+            <li><strong>automatic-redirect-no-control (warning):</strong> Test 3 - Automatic redirect without user control</li>
+            <li><strong>countdown-timer-no-extension (warning):</strong> Test 4 - Countdown timer with no extension ability</li>
+        </ul>
+
+        <h4>Info (1):</h4>
+        <ul>
+            <li><strong>inactivity-timeout-too-short (info):</strong> Test 5 - Inactivity timeout under 20 hours</li>
+        </ul>
+
+        <p><strong>Total expected issues:</strong></p>
+        <ul>
+            <li>1 error (session timeout with no warning)</li>
+            <li>3 warnings (insufficient warning, no redirect control, no timer extension)</li>
+            <li>1 info (short inactivity timeout)</li>
+        </ul>
+
+        <p><strong>COMPLIANT examples:</strong> Tests 6-12 demonstrate proper timeout handling</p>
+
+        <h3 style="margin-top: 20px;">WCAG 2.2.1 Timing Adjustable Requirements:</h3>
+        <ul>
+            <li><strong>Level A:</strong> For each time limit, at least one of the following is true:
+                <ul>
+                    <li><strong>Turn off:</strong> User can turn off the time limit before encountering it</li>
+                    <li><strong>Adjust:</strong> User can adjust the time limit before encountering it over a wide range (at least 10 times the default)</li>
+                    <li><strong>Extend:</strong> User is warned before time expires and can extend the time limit with a simple action (e.g., "press spacebar"), at least 10 times</li>
+                    <li><strong>Real-time exception:</strong> Time limit is required (e.g., auction, real-time game) and no alternative is possible</li>
+                    <li><strong>Essential exception:</strong> Time limit is longer than 20 hours</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">Common Timeout Patterns That Fail WCAG:</h3>
+        <pre style="background: #fee; padding: 15px; border-radius: 4px;"><code>// ❌ Session timeout with no warning
+setTimeout(() => {
+  sessionStorage.clear();
+  location.href = '/login';
+}, 900000); // 15 minutes
+
+// ❌ Automatic redirect with no control
+setTimeout(() => {
+  location.href = '/home';
+}, 5000);
+
+// ❌ Countdown timer with no extension
+let time = 60;
+setInterval(() => {
+  time--;
+  if (time <= 0) submitForm();
+}, 1000);</code></pre>
+
+        <h3 style="margin-top: 20px;">Compliant Timeout Patterns:</h3>
+        <pre style="background: #efe; padding: 15px; border-radius: 4px;"><code>// ✅ Session timeout with warning and extension
+function startSession() {
+  // Warn 2 minutes before expiry
+  setTimeout(showWarning, SESSION_TIME - 120000);
+  setTimeout(expireSession, SESSION_TIME);
+}
+
+function showWarning() {
+  const extend = confirm('Session expiring soon. Continue?');
+  if (extend) restartSession();
+}
+
+// ✅ Redirect with user control
+<p>Redirecting in <span id="countdown">10</span> seconds</p>
+<button onclick="cancelRedirect()">Stay</button>
+<button onclick="redirectNow()">Go Now</button>
+
+// ✅ Timer with pause and extend
+let isPaused = false;
+function pauseTimer() { isPaused = true; }
+function extendTimer() { timeRemaining += 60; }
+
+// ✅ Long timeout (over 20 hours)
+setTimeout(logout, 86400000); // 24 hours - compliant
+
+// ✅ Real-time exception
+setInterval(updateStockPrices, 5000); // Real-time data</code></pre>
+
+        <h3 style="margin-top: 20px;">Why Timing Requirements Matter:</h3>
+        <ul>
+            <li><strong>Cognitive disabilities:</strong> May need more time to read and understand content</li>
+            <li><strong>Motor disabilities:</strong> May need more time to respond to warnings or complete actions</li>
+            <li><strong>Visual disabilities:</strong> Screen reader users need extra time to navigate</li>
+            <li><strong>Situational limitations:</strong> Users may be interrupted or distracted</li>
+            <li><strong>Age-related factors:</strong> Older users often need more time</li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">Warning Best Practices:</h3>
+        <ul>
+            <li>Provide warning at least 20 seconds before timeout</li>
+            <li>Make extension mechanism simple (one click or keypress)</li>
+            <li>Allow multiple extensions (at least 10 times)</li>
+            <li>Show clear countdown of remaining time</li>
+            <li>Preserve user data if session expires</li>
+            <li>Consider whether timeout is truly necessary</li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">Testing:</h3>
+        <ul>
+            <li>Identify all setTimeout and setInterval calls in code</li>
+            <li>Check what happens when timeout expires</li>
+            <li>Verify warning mechanism exists for session timeouts</li>
+            <li>Test extension mechanism works correctly</li>
+            <li>Ensure timeouts over 20 hours or have proper controls</li>
+            <li>Confirm real-time exceptions are truly essential</li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">Exceptions to WCAG 2.2.1:</h3>
+        <ul>
+            <li><strong>Real-time events:</strong> Live auctions, games, stock tickers, live chat</li>
+            <li><strong>Long timeouts:</strong> Over 20 hours (e.g., 24-hour session)</li>
+            <li><strong>No loss of data:</strong> Auto-save that preserves user work</li>
+            <li><strong>User-initiated:</strong> Video playback that user controls</li>
+        </ul>
+
+        <h3 style="margin-top: 20px;">TimeoutAnalyzer Detection Strategy:</h3>
+        <ul>
+            <li>Scans for setTimeout and setInterval function calls</li>
+            <li>Extracts timeout duration from code patterns</li>
+            <li>Identifies session-related timeouts (logout, expiry, authentication)</li>
+            <li>Detects automatic redirects (location.href changes)</li>
+            <li>Finds countdown timers (decreasing time variables)</li>
+            <li>Checks for inactivity timeout patterns</li>
+            <li>Validates against 20-hour WCAG threshold</li>
+            <li>Assesses severity based on duration and type</li>
+        </ul>
+    </footer>
+</body>
+</html>
