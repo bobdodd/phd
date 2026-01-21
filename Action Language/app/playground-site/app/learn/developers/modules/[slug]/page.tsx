@@ -5,11 +5,13 @@ import ModuleLayout from '../../../components/ModuleLayout';
 // Import individual module content components
 import UnderstandingDisabilityModels from './content/understanding-disability-models';
 import VisualDisabilities from './content/visual-disabilities';
+import AuditoryDisabilities from './content/auditory-disabilities';
 
 // Map slugs to content components
 const moduleContentMap: Record<string, React.ComponentType> = {
   'understanding-disability-models': UnderstandingDisabilityModels,
   'visual-disabilities': VisualDisabilities,
+  'auditory-disabilities': AuditoryDisabilities,
 };
 
 export default function ModulePage({ params }: { params: { slug: string } }) {
